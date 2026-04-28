@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 
+export const dynamic = "force-static";
+
 const DUNE_SIM_BASE = "https://api.sim.dune.com/beta/svm";
 
 function parseWallet(searchParams: URLSearchParams) {

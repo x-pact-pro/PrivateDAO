@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 
+export const dynamic = "force-static";
+
 type PrivateRail = "cloak" | "umbra";
 type SettlementAsset = "PUSD" | "AUDD" | "USDC" | "USDT" | "SOL";
 
