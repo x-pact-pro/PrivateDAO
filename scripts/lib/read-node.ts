@@ -336,6 +336,7 @@ export function resolveDevnetRpcEndpoints(): string[] {
 const IDL_CANDIDATE_PATHS = [
   path.resolve(__dirname, "..", "..", "target", "idl", "private_dao.json"),
   path.resolve(__dirname, "..", "..", "deploy", "primary-host", "target", "idl", "private_dao.json"),
+  path.resolve(__dirname, "..", "..", "idl", "private_dao.json"),
 ];
 
 function resolveIdlPath() {

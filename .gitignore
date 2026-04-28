@@ -15,6 +15,7 @@ wallets/
 wallets/
 .env
 *.json
+!idl/private_dao.json
 !apps/web/package.json
 !apps/web/package-lock.json
 !apps/web/components.json
@@ -80,3 +81,4 @@ scripts/generated-wallets/*
 !scripts/generated-wallets/.gitkeep
 zk/devnet-load/*
 !zk/devnet-load/.gitkeep
+.ccp
