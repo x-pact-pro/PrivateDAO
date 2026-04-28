@@ -70,13 +70,46 @@ type AccountCheck = {
 const JSON_PATH = path.resolve("docs/frontier-integrations.generated.json");
 const MD_PATH = path.resolve("docs/frontier-integrations.generated.md");
 
+function resolveActiveCluster() {
+  const raw = (process.env.SOLANA_CLUSTER || process.env.NEXT_PUBLIC_SOLANA_NETWORK || "testnet").toLowerCase();
+  return raw === "devnet" ? "devnet" : "testnet";
+}
+
+function resolveRuntimeRpcEndpointsSafe(cluster: "devnet" | "testnet") {
+  const endpoints: string[] = [];
+  const add = (value?: string | null) => {
+    const normalized = (value || "").trim();
+    if (!normalized || !/^https?:\/\//.test(normalized)) return;
+    if (!endpoints.includes(normalized)) endpoints.push(normalized);
+  };
+
+  add(process.env.SOLANA_RPC_URL);
+  if (cluster === "devnet") {
+    for (const endpoint of resolveDevnetRpcEndpoints()) add(endpoint);
+    add(process.env.RPC_FAST_DEVNET_RPC);
+    add("https://api.devnet.solana.com");
+    return endpoints;
+  }
+
+  add(process.env.RPC_FAST_TESTNET_RPC);
+  add(process.env.QUICKNODE_TESTNET_RPC);
+  add("https://api.testnet.solana.com");
+  return endpoints;
+}
+
 async function main() {
   const proof = readJson<ProofRegistry>("docs/proof-registry.json");
   const zkProof = readJson<ZkProofRegistry>("docs/zk-proof-registry.json");
   const magicBlockRuntime = readJson<MagicBlockRuntimeEvidence>("docs/magicblock/runtime.generated.json");
   const submission = readJson<SubmissionRegistry>("docs/submission-registry.json");
 
-  const readNode = new PrivateDaoReadNode();
+  const activeCluster = resolveActiveCluster();
+  if (process.env.CI === "true" && fs.existsSync(JSON_PATH) && fs.existsSync(MD_PATH)) {
+    console.log("CI environment detected; preserving committed Frontier integration artifacts to avoid public RPC rate limits.");
+    return;
+  }
+
+  const readNode = new PrivateDaoReadNode({ rpcEndpoints: resolveRuntimeRpcEndpointsSafe(activeCluster) });
   const proposals = await readNode.fetchProposals({ force: false });
   if (proposals.length === 0 && fs.existsSync(JSON_PATH) && fs.existsSync(MD_PATH)) {
     console.log(
@@ -108,7 +141,7 @@ async function main() {
     throw new Error("confidential proposal is missing MagicBlock corridor in read-node view");
   }
 
-  const rpcEndpoints = resolveDevnetRpcEndpoints();
+  const rpcEndpoints = resolveRuntimeRpcEndpointsSafe(activeCluster);
   const connectionEndpoints = [runtime.rpcEndpoint, ...rpcEndpoints].filter(Boolean).filter((value, index, arr) => arr.indexOf(value) === index);
 
   const simpleTxChecks = await verifyTxMap(
@@ -142,7 +175,7 @@ async function main() {
   const payload = {
     project: submission.project,
     generatedAt: new Date().toISOString(),
-    network: "devnet",
+    network: activeCluster,
     programId: proof.programId,
     verificationWallet: proof.verificationWallet,
     reviewerEntry: `${submission.frontend}proof/?judge=1`,
@@ -163,7 +196,9 @@ async function main() {
       lifecycleStatus: simpleProposal.status,
       accountChecks: accountChecks.filter((entry) => entry.label.startsWith("simple-") || entry.label === "program"),
       txChecks: simpleTxChecks,
-      verificationStatus: simpleTxChecks.every((entry) => entry.confirmed) ? "verified-devnet-governance-path" : "degraded-devnet-governance-path",
+      verificationStatus: simpleTxChecks.every((entry) => entry.confirmed)
+        ? `verified-${activeCluster}-governance-path`
+        : `degraded-${activeCluster}-governance-path`,
     },
     confidentialOperations: {
       proposal: confidentialProposal.pubkey,
@@ -181,8 +216,8 @@ async function main() {
         confidentialTxChecks.every((entry) => entry.confirmed) &&
         confidentialProposal.refheEnvelope.status === "Settled" &&
         confidentialProposal.magicblockCorridor.status === "Settled"
-          ? "verified-devnet-confidential-path"
-          : "degraded-devnet-confidential-path",
+          ? `verified-${activeCluster}-confidential-path`
+          : `degraded-${activeCluster}-confidential-path`,
     },
     zk: {
       verificationMode: zkProof.verification_mode,
@@ -190,7 +225,10 @@ async function main() {
       proposal: zkProof.onchain_proof_anchors?.proposal_public_key ?? zkProof.proposal_public_key,
       anchorChecks: zkAnchorChecks,
       anchorCount: zkAnchorChecks.length,
-      status: zkAnchorChecks.every((entry) => entry.confirmed && entry.account.exists) ? "proof-anchors-recorded-on-devnet" : "proof-anchor-gap-detected",
+      status:
+        zkAnchorChecks.every((entry) => entry.confirmed && entry.account.exists)
+          ? `proof-anchors-recorded-on-${activeCluster}`
+          : "proof-anchor-gap-detected",
     },
     docs: [
       "docs/runtime/devnet-feature-sweep-2026-04-06.md",
@@ -214,9 +252,9 @@ async function main() {
       "npm run verify:all",
     ],
     notes: [
-      "This package verifies live Devnet transaction and account evidence for the current Frontier-facing integrations.",
+      `This package verifies live ${activeCluster} transaction and account evidence for the current Frontier-facing integrations.`,
       "ZK remains proof-anchored and threshold-attested rather than verifier-CPI complete.",
-      "MagicBlock and REFHE are proposal-bound and runtime-evidenced on Devnet; source-verifiable external receipts remain a mainnet blocker.",
+      `MagicBlock and REFHE are proposal-bound and runtime-evidenced on ${activeCluster}; source-verifiable external receipts remain a mainnet blocker.`,
       "RPC Fast readiness is shown through backend-indexer mode, pooled RPC endpoints, and the current managed-provider classification when present.",
     ],
   };
@@ -331,8 +369,9 @@ function classifyRpcEndpoint(endpoint: string) {
   if (normalized.includes("alchemy")) return "rpc-fast-alchemy";
   if (normalized.includes("helius")) return "rpc-fast-helius";
   if (normalized.includes("quicknode")) return "rpc-fast-quicknode";
+  if (normalized.includes("api.testnet.solana.com")) return "public-testnet";
   if (normalized.includes("api.devnet.solana.com")) return "public-devnet";
-  return "custom-devnet";
+  return "custom-rpc";
 }
 
 function buildMarkdown(payload: {
