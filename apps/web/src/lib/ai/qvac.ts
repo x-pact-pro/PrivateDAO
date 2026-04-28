@@ -5,6 +5,12 @@ export type QvacCapabilityState = {
   workers: boolean;
   language: string;
   platform: string;
+  sdk: "loaded" | "not-installed" | "unavailable";
+};
+
+export type QvacRuntime = {
+  sdkState: QvacCapabilityState["sdk"];
+  capabilities: string[];
 };
 
 export async function detectQvacCapabilityState(): Promise<QvacCapabilityState> {
@@ -23,6 +29,30 @@ export async function detectQvacCapabilityState(): Promise<QvacCapabilityState> 
     workers,
     language: nav?.language ?? "unknown",
     platform: nav?.platform ?? "unknown",
+    sdk: await detectQvacSdkState(),
+  };
+}
+
+export async function detectQvacSdkState(): Promise<QvacCapabilityState["sdk"]> {
+  if (typeof window === "undefined") return "unavailable";
+
+  try {
+    const importer = new Function("return import('@qvac/sdk')") as () => Promise<unknown>;
+    const loaded = await importer();
+    return loaded && typeof loaded === "object" ? "loaded" : "unavailable";
+  } catch {
+    return "not-installed";
+  }
+}
+
+export async function loadQvacRuntime(): Promise<QvacRuntime> {
+  const sdkState = await detectQvacSdkState();
+  return {
+    sdkState,
+    capabilities:
+      sdkState === "loaded"
+        ? ["local-llm", "embeddings", "translation", "speech", "ocr"]
+        : ["deterministic-local-brief", "device-capability-check", "privacy-preserving-pre-sign-review"],
   };
 }
 
@@ -47,6 +77,9 @@ export function buildQvacOperationalBrief(input: {
   }
   if ((input.riskNotes || "").toLowerCase().includes("new recipient")) {
     alerts.push("New recipient signal detected: run counterparty check before settlement.");
+  }
+  if ((input.privacyMode || "").toLowerCase().includes("public")) {
+    alerts.push("Public execution mode detected: confirm that sensitive recipients and amounts are intentionally visible.");
   }
 
   return {

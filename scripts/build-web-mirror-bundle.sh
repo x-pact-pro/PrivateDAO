@@ -30,6 +30,34 @@ case "$MODE" in
     ;;
 esac
 
+# Next 16/Turbopack can prerender app-route HTML into `.next/server/app`
+# while omitting some nested static pages from `out/`. The public site is a
+# static mirror, so supplement missing service pages from the prerendered HTML
+# before the mirror bundle is copied to the repo root.
+SERVER_APP_DIR="$WEB_DIR/.next/server/app"
+if [[ -d "$SERVER_APP_DIR/services" && -d "$WEB_DIR/out/services" ]]; then
+  while IFS= read -r html_path; do
+    route_slug="$(basename "$html_path" .html)"
+    [[ "$route_slug" == "page" ]] && continue
+    out_dir="$WEB_DIR/out/services/$route_slug"
+    out_html="$out_dir/index.html"
+    if [[ ! -f "$out_html" ]]; then
+      mkdir -p "$out_dir"
+      cp "$html_path" "$out_html"
+      rsc_path="${html_path%.html}.rsc"
+      meta_path="${html_path%.html}.meta"
+      [[ -f "$rsc_path" ]] && cp "$rsc_path" "$out_dir/index.txt"
+      [[ -f "$meta_path" ]] && cp "$meta_path" "$out_dir/meta.txt"
+      echo "Supplemented static service route: /services/$route_slug/"
+    fi
+  done < <(find "$SERVER_APP_DIR/services" -maxdepth 1 -type f -name '*.html' | sort)
+fi
+
+if [[ -d "$WEB_DIR/.next/static" ]]; then
+  mkdir -p "$WEB_DIR/out/_next/static"
+  cp -R "$WEB_DIR/.next/static"/. "$WEB_DIR/out/_next/static"/
+fi
+
 cp -R "$WEB_DIR/out" "$TARGET_DIR"
 touch "$TARGET_DIR/.nojekyll"
 

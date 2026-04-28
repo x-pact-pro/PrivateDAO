@@ -5,7 +5,13 @@ import Link from "next/link";
 import { Cpu, Languages, Mic, ScanText, ShieldCheck, Sparkles } from "lucide-react";
 
 import { buttonVariants } from "@/components/ui/button";
-import { buildQvacOperationalBrief, detectQvacCapabilityState, type QvacCapabilityState } from "@/lib/ai/qvac";
+import {
+  buildQvacOperationalBrief,
+  detectQvacCapabilityState,
+  loadQvacRuntime,
+  type QvacCapabilityState,
+  type QvacRuntime,
+} from "@/lib/ai/qvac";
 import { cn } from "@/lib/utils";
 
 const defaultCapability: QvacCapabilityState = {
@@ -15,10 +21,17 @@ const defaultCapability: QvacCapabilityState = {
   workers: false,
   language: "unknown",
   platform: "unknown",
+  sdk: "unavailable",
+};
+
+const defaultRuntime: QvacRuntime = {
+  sdkState: "unavailable",
+  capabilities: ["deterministic-local-brief"],
 };
 
 export function QvacSovereignAiSurface({ compact = false }: { compact?: boolean }) {
   const [capability, setCapability] = useState<QvacCapabilityState>(defaultCapability);
+  const [runtime, setRuntime] = useState<QvacRuntime>(defaultRuntime);
   const [operationType, setOperationType] = useState("private_treasury_execution");
   const [amount, setAmount] = useState("1250");
   const [asset, setAsset] = useState("USDT");
@@ -28,6 +41,9 @@ export function QvacSovereignAiSurface({ compact = false }: { compact?: boolean 
   useEffect(() => {
     void detectQvacCapabilityState().then(setCapability).catch(() => {
       setCapability(defaultCapability);
+    });
+    void loadQvacRuntime().then(setRuntime).catch(() => {
+      setRuntime(defaultRuntime);
     });
   }, []);
 
@@ -64,6 +80,7 @@ export function QvacSovereignAiSurface({ compact = false }: { compact?: boolean 
             <div className="flex items-center justify-between"><span>WASM</span><span className="font-medium text-white">{capability.wasm ? "available" : "not detected"}</span></div>
             <div className="flex items-center justify-between"><span>Workers</span><span className="font-medium text-white">{capability.workers ? "available" : "not detected"}</span></div>
             <div className="flex items-center justify-between"><span>Language</span><span className="font-medium text-white">{capability.language}</span></div>
+            <div className="flex items-center justify-between"><span>QVAC SDK</span><span className="font-medium text-white">{runtime.sdkState}</span></div>
           </div>
         </div>
 
@@ -92,6 +109,17 @@ export function QvacSovereignAiSurface({ compact = false }: { compact?: boolean 
             <div key={item} className="rounded-2xl border border-white/10 bg-black/30 px-3 py-2 text-sm text-white/72">
               {item}
             </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="mt-4 rounded-[22px] border border-white/10 bg-black/20 p-4">
+        <div className="text-[11px] uppercase tracking-[0.2em] text-white/46">Runtime capabilities</div>
+        <div className="mt-3 flex flex-wrap gap-2">
+          {runtime.capabilities.map((item) => (
+            <span key={item} className="rounded-full border border-white/10 bg-white/[0.05] px-3 py-1 text-[11px] uppercase tracking-[0.16em] text-white/62">
+              {item}
+            </span>
           ))}
         </div>
       </div>
