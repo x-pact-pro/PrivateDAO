@@ -108,9 +108,38 @@ function privateRailRelayConfig(rail: string) {
     };
   }
   return {
-    url: process.env.UMBRA_RELAY_URL?.trim(),
+    url: process.env.UMBRA_CLAIM_PROXY_URL?.trim(),
     apiKey: process.env.UMBRA_API_KEY?.trim(),
-    source: "umbra-relay",
+    source: "umbra-claim-proxy",
+  };
+}
+
+function getUmbraRelayerEndpoint() {
+  return (process.env.UMBRA_RELAYER_API_ENDPOINT || "https://relayer.api-devnet.umbraprivacy.com").replace(/\/+$/, "");
+}
+
+async function fetchUmbraRelayerInfo() {
+  const endpoint = getUmbraRelayerEndpoint();
+  const response = await fetch(`${endpoint}/v1/relayer/info`, {
+    method: "GET",
+    headers: { Accept: "application/json" },
+  });
+  const raw = (await response.json().catch(() => null)) as Record<string, unknown> | null;
+  if (!response.ok) {
+    throw new Error(
+      (typeof raw?.error === "string" && raw.error) ||
+        (typeof raw?.message === "string" && raw.message) ||
+        `Umbra relayer info responded ${response.status}`,
+    );
+  }
+  return {
+    endpoint,
+    address: typeof raw?.address === "string" ? raw.address : null,
+    supportedMints: Array.isArray(raw?.supported_mints) ? raw.supported_mints.filter((item) => typeof item === "string") : [],
+    activeStealthPoolIndices: Array.isArray(raw?.active_stealth_pool_indices)
+      ? raw.active_stealth_pool_indices.filter((item) => typeof item === "string" || typeof item === "number")
+      : [],
+    raw,
   };
 }
 
@@ -141,6 +170,7 @@ async function handlePrivateSettlementIntent(body: Record<string, unknown>) {
     createdAt,
   };
 
+  const umbraRelayerInfo = rail === "umbra" ? await fetchUmbraRelayerInfo().catch((error) => ({ error: String((error as Error)?.message || error) })) : null;
   const relay = privateRailRelayConfig(rail);
   if (relay.url) {
     const response = await fetch(relay.url, {
@@ -186,10 +216,29 @@ async function handlePrivateSettlementIntent(body: Record<string, unknown>) {
       receiptHash,
       sdkPath:
         rail === "umbra"
-          ? "getUmbraClient -> register/deposit/create receiver-claimable UTXO"
+          ? "getUmbraClient -> getUmbraRelayer -> claim factory -> POST /v1/claims -> poll /v1/claims/{request_id}"
           : "Cloak shielded pool -> private transfer/batch receipt",
+      relayer: umbraRelayerInfo,
+      claimLifecycle:
+        rail === "umbra"
+          ? [
+              "received",
+              "validating",
+              "offsets_reserved",
+              "building_tx",
+              "tx_built",
+              "submitting",
+              "submitted",
+              "awaiting_callback",
+              "callback_received",
+              "finalizing",
+              "completed",
+            ]
+          : [],
       note:
-        "Set UMBRA_RELAY_URL/CLOAK_RELAY_URL on the hosted read-node to promote this endpoint from signed testnet intent receipt to live rail relay forwarding.",
+        rail === "umbra"
+          ? "Umbra relayer health is checked live. Claim submission still requires SDK-generated ZK proof_account_data and UTXO slot data; this endpoint intentionally does not fabricate cryptographic claim bodies."
+          : "Set CLOAK_RELAY_URL on the hosted read-node to promote this endpoint from signed testnet intent receipt to live rail relay forwarding.",
     },
   };
 }
@@ -241,9 +290,24 @@ async function handle(req: http.IncomingMessage, res: http.ServerResponse) {
       return;
     }
 
-    if (pathname === "/api/v1/magicblock/health") {
-      const magicblock = await readNode.getMagicBlockRuntime(url.searchParams.get("refresh") === "1");
-      writeJson(res, 200, { ok: true, source: "backend-indexer", magicblock });
+	    if (pathname === "/api/v1/magicblock/health") {
+	      const magicblock = await readNode.getMagicBlockRuntime(url.searchParams.get("refresh") === "1");
+	      writeJson(res, 200, { ok: true, source: "backend-indexer", magicblock });
+	      return;
+	    }
+
+    if (pathname === "/api/v1/umbra/relayer/info") {
+      const relayer = await fetchUmbraRelayerInfo();
+      writeJson(res, 200, {
+        ok: true,
+        source: "umbra-relayer",
+        relayer,
+        claimApi: {
+          submit: `${relayer.endpoint}/v1/claims`,
+          poll: `${relayer.endpoint}/v1/claims/{request_id}`,
+          terminalStatuses: ["completed", "failed", "timed_out"],
+        },
+      });
       return;
     }
 

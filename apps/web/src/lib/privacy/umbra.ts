@@ -32,6 +32,25 @@ export async function detectUmbraSdkExports() {
   }
 }
 
+export async function getUmbraDevnetRelayerReadiness(apiEndpoint = "https://relayer.api-devnet.umbraprivacy.com") {
+  const { getUmbraRelayer } = await import("@umbra-privacy/sdk");
+  const relayer = getUmbraRelayer({ apiEndpoint });
+  const [address, supportedMints] = await Promise.all([
+    relayer.getRelayerAddress(),
+    relayer.getSupportedMints(),
+  ]);
+
+  return {
+    apiEndpoint,
+    address: String(address),
+    supportedMints: supportedMints.mints.map(String),
+    supportedMintCount: Number(supportedMints.count),
+    claimSubmitPath: "/v1/claims",
+    claimPollPath: "/v1/claims/{request_id}",
+    terminalStatuses: ["completed", "failed", "timed_out"],
+  };
+}
+
 export async function prepareUmbraClientReceipt(intent: UmbraSettlementIntent): Promise<UmbraSdkReceipt> {
   if (!intent.recipient || intent.recipient.length < 20) {
     throw new Error("Umbra recipient is required.");

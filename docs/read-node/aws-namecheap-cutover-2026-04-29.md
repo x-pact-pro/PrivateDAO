@@ -49,10 +49,16 @@ PRIMARY_EDGE_HTTPS_BIND_PORT=443
 PRIVATE_DAO_READ_ALLOWED_ORIGIN=https://privatedao.org
 ```
 
-If Umbra or Cloak relay credentials are available, add only server-side values:
+Umbra devnet relayer readiness is public and should be set server-side:
 
 ```text
-UMBRA_RELAY_URL=
+UMBRA_RELAYER_API_ENDPOINT=https://relayer.api-devnet.umbraprivacy.com
+```
+
+If a project-owned Umbra claim proxy or Cloak relay is available, add only server-side values:
+
+```text
+UMBRA_CLAIM_PROXY_URL=
 UMBRA_API_KEY=
 CLOAK_RELAY_URL=
 CLOAK_API_KEY=
@@ -87,6 +93,7 @@ curl -fsS https://api.privatedao.org/healthz
 curl -fsS https://api.privatedao.org/api/v1/runtime
 curl -fsS https://api.privatedao.org/api/v1/metrics
 curl -fsS https://api.privatedao.org/api/v1/qvac/runtime-proof
+curl -fsS https://api.privatedao.org/api/v1/umbra/relayer/info
 curl -fsS -X POST https://api.privatedao.org/api/v1/private-settlement/intent \
   -H 'Content-Type: application/json' \
   -d '{"rail":"umbra","operationType":"private-payroll","asset":"USDC","amount":"1","recipient":"RecipientWalletxxxxxxxxxxxxxxxxxxxxxxxxxxxx"}'
