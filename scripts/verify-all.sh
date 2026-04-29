@@ -129,11 +129,18 @@ run_parallel_group \
   "runtime attestation" "npm run verify:runtime-attestation >/dev/null"
 
 echo "[verify-all] checking read-node bundle"
-run_parallel_group \
-  "read node" "npm run verify:read-node >/dev/null" \
-  "read node http surface" "run_with_retry 3 npm run verify:read-node:http >/dev/null" \
-  "read-node snapshot" "npm run verify:read-node-snapshot >/dev/null" \
-  "read-node ops snapshot" "npm run verify:read-node-ops >/dev/null"
+if [[ "${CI:-}" == "true" ]]; then
+  echo "[verify-all] CI detected; validating committed read-node snapshots to avoid public RPC rate limits"
+  run_parallel_group \
+    "read-node snapshot" "npm run verify:read-node-snapshot >/dev/null" \
+    "read-node ops snapshot" "npm run verify:read-node-ops >/dev/null"
+else
+  run_parallel_group \
+    "read node" "npm run verify:read-node >/dev/null" \
+    "read node http surface" "run_with_retry 3 npm run verify:read-node:http >/dev/null" \
+    "read-node snapshot" "npm run verify:read-node-snapshot >/dev/null" \
+    "read-node ops snapshot" "npm run verify:read-node-ops >/dev/null"
+fi
 
 echo "[verify-all] checking integration and runtime bundle"
 run_parallel_group \
