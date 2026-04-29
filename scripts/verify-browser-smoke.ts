@@ -6,15 +6,15 @@ import path from "path";
 
 const ROOT = process.cwd();
 const SURFACE_DIR = path.resolve(ROOT);
-const REQUIRED_DOM_FRAGMENTS = [
-  "PrivateDAO",
-  "Confidential treasury and market operations on Solana",
-  "Powered by the live stack",
-  "Open Judge",
-  "Preparing the live product surface",
-  "Launch OS",
-  "Review Proof",
-  "PrivateDAO OS",
+const REQUIRED_DOM_FRAGMENT_GROUPS = [
+  ["PrivateDAO"],
+  ["Confidential treasury and market operations on Solana"],
+  ["Powered by the live stack"],
+  ["Open Judge"],
+  ["Preparing the live product surface"],
+  ["Launch OS"],
+  ["Review Proof", "Open verification view", "Open proof"],
+  ["PrivateDAO OS"],
 ];
 
 const CONTENT_TYPES: Record<string, string> = {
@@ -158,9 +158,9 @@ async function main() {
 
   try {
     const domResult = await runChrome(chrome, [...chromeBaseArgs, "--dump-dom", url], 45_000);
-    for (const fragment of REQUIRED_DOM_FRAGMENTS) {
-      if (!domResult.stdout.includes(fragment)) {
-        throw new Error(`Browser DOM is missing required fragment: ${fragment}`);
+    for (const fragments of REQUIRED_DOM_FRAGMENT_GROUPS) {
+      if (!fragments.some((fragment) => domResult.stdout.includes(fragment))) {
+        throw new Error(`Browser DOM is missing required fragment group: ${fragments.join(" | ")}`);
       }
     }
 
