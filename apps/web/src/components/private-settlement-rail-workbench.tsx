@@ -47,7 +47,10 @@ function getRailEndpoint(rail: PrivateRail) {
     rail === "cloak"
       ? process.env.NEXT_PUBLIC_CLOAK_PROXY_ENDPOINT
       : process.env.NEXT_PUBLIC_UMBRA_PROXY_ENDPOINT;
-  return configured?.trim() || "/api/private-settlement/intent";
+  const readNode = process.env.NEXT_PUBLIC_PRIVATE_DAO_READ_NODE_ENDPOINT?.trim();
+  if (configured?.trim()) return configured.trim();
+  if (readNode) return `${readNode.replace(/\/+$/, "")}/api/v1/private-settlement/intent`;
+  return "/api/v1/private-settlement/intent";
 }
 
 type PrivateSettlementRailWorkbenchProps = {
@@ -65,7 +68,7 @@ export function PrivateSettlementRailWorkbench({
   const [amount, setAmount] = useState("250");
   const [recipient, setRecipient] = useState("RecipientWalletxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
   const [memo, setMemo] = useState("Payroll tranche / reviewer-safe memo");
-  const [status, setStatus] = useState("Prepare a private settlement intent, then forward it to a rail-specific proxy when available.");
+  const [status, setStatus] = useState("Prepare a private settlement intent, forward it through the read-node rail endpoint, and store the receipt.");
   const [preview, setPreview] = useState("");
   const [running, setRunning] = useState(false);
 
@@ -258,7 +261,7 @@ export function PrivateSettlementRailWorkbench({
           <div className="rounded-[24px] border border-white/10 bg-black/20 p-4">
             <div className="text-[11px] uppercase tracking-[0.22em] text-white/44">Latest response preview</div>
             <pre className="mt-3 overflow-x-auto rounded-2xl border border-white/10 bg-black/30 p-4 text-xs leading-6 text-white/70">
-              {preview || "No response yet. Prepare the intent or connect a live proxy endpoint first."}
+              {preview || "The rail receipt will appear here after the operator forwards the prepared intent."}
             </pre>
           </div>
         </div>

@@ -1,5 +1,8 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 import * as http from "http";
+import { createHash } from "crypto";
+import { readFile } from "fs/promises";
+import { join } from "path";
 import { URL } from "url";
 import { PrivateDaoReadNode } from "./lib/read-node";
 
@@ -21,10 +24,10 @@ const metrics = {
 
 function writeJson(res: http.ServerResponse, statusCode: number, payload: unknown) {
   res.writeHead(statusCode, {
-    "Content-Type": "application/json; charset=utf-8",
-    "Access-Control-Allow-Origin": allowedOrigin,
-    "Access-Control-Allow-Methods": "GET, OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type",
+	    "Content-Type": "application/json; charset=utf-8",
+	    "Access-Control-Allow-Origin": allowedOrigin,
+	    "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+	    "Access-Control-Allow-Headers": "Content-Type, Authorization",
     "Cache-Control": "no-store",
   });
   res.end(JSON.stringify(payload, null, 2));
@@ -59,13 +62,145 @@ function routeNotFound(res: http.ServerResponse, pathname: string) {
   writeJson(res, 404, { ok: false, error: `Unknown route: ${pathname}` });
 }
 
+function redactUrlSecret(value: string) {
+  return value
+    .replace(/([?&](?:api[_-]?key|key|token|secret)=)[^&]+/gi, "$1[redacted]")
+    .replace(/(Bearer\s+)[A-Za-z0-9._~+/=-]+/gi, "$1[redacted]");
+}
+
+function readRequestJson(req: http.IncomingMessage): Promise<Record<string, unknown>> {
+  return new Promise((resolve, reject) => {
+    const chunks: Buffer[] = [];
+    req.on("data", (chunk: Buffer) => {
+      chunks.push(chunk);
+      if (Buffer.concat(chunks).byteLength > 32_768) {
+        req.destroy(new Error("Request body too large"));
+      }
+    });
+    req.on("end", () => {
+      try {
+        const raw = Buffer.concat(chunks).toString("utf8") || "{}";
+        const parsed = JSON.parse(raw) as unknown;
+        if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
+          reject(new Error("JSON body must be an object"));
+          return;
+        }
+        resolve(parsed as Record<string, unknown>);
+      } catch (error) {
+        reject(error);
+      }
+    });
+    req.on("error", reject);
+  });
+}
+
+function stringField(body: Record<string, unknown>, key: string, fallback = "") {
+  const value = body[key];
+  return typeof value === "string" && value.trim() ? value.trim() : fallback;
+}
+
+function privateRailRelayConfig(rail: string) {
+  if (rail === "cloak") {
+    return {
+      url: process.env.CLOAK_RELAY_URL?.trim(),
+      apiKey: process.env.CLOAK_API_KEY?.trim(),
+      source: "cloak-relay",
+    };
+  }
+  return {
+    url: process.env.UMBRA_RELAY_URL?.trim(),
+    apiKey: process.env.UMBRA_API_KEY?.trim(),
+    source: "umbra-relay",
+  };
+}
+
+async function handlePrivateSettlementIntent(body: Record<string, unknown>) {
+  const rail = stringField(body, "rail", "umbra");
+  if (rail !== "umbra" && rail !== "cloak") throw new Error("rail must be umbra or cloak");
+
+  const asset = stringField(body, "asset", "USDC").toUpperCase();
+  if (!["PUSD", "AUDD", "USDC", "USDT", "SOL"].includes(asset)) throw new Error("Unsupported settlement asset");
+
+  const amount = stringField(body, "amount", "0");
+  if (!/^\d+(\.\d+)?$/.test(amount)) throw new Error("Invalid settlement amount");
+
+  const recipient = stringField(body, "recipient");
+  if (recipient.length < 20) throw new Error("Recipient is required");
+
+  const createdAt = new Date().toISOString();
+  const intent = {
+    rail,
+    network: process.env.PRIVATE_DAO_SETTLEMENT_NETWORK || "testnet",
+    operationType: stringField(body, "operationType", "private-settlement"),
+    asset,
+    amount,
+    recipient,
+    memo: stringField(body, "memo", "PrivateDAO private settlement"),
+    auditMode: stringField(body, "auditMode", rail === "umbra" ? "confidential-payout" : "selective-disclosure"),
+    recipientVisibility: stringField(body, "recipientVisibility", rail === "umbra" ? "recipient-private" : "private-by-default"),
+    createdAt,
+  };
+
+  const relay = privateRailRelayConfig(rail);
+  if (relay.url) {
+    const response = await fetch(relay.url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        ...(relay.apiKey ? { Authorization: `Bearer ${relay.apiKey}` } : {}),
+      },
+      body: JSON.stringify(intent),
+    });
+    const raw = (await response.json().catch(() => null)) as Record<string, unknown> | null;
+    if (!response.ok) {
+      throw new Error(
+        (typeof raw?.error === "string" && raw.error) ||
+          (typeof raw?.message === "string" && raw.message) ||
+          `${relay.source} responded ${response.status}`,
+      );
+    }
+    return {
+      ok: true,
+      mode: "relay-live",
+      source: relay.source,
+      receipt: {
+        ...intent,
+        executionReference:
+          (typeof raw?.signature === "string" && raw.signature) ||
+          (typeof raw?.reference === "string" && raw.reference) ||
+          `${rail}-${Date.now()}`,
+        raw,
+      },
+    };
+  }
+
+  const receiptHash = createHash("sha256").update(JSON.stringify(intent)).digest("hex");
+  return {
+    ok: true,
+    mode: "testnet-intent-receipt",
+    source: `${rail}-read-node-receipt`,
+    receipt: {
+      ...intent,
+      executionReference: `${rail}-${receiptHash.slice(0, 24)}`,
+      receiptHash,
+      sdkPath:
+        rail === "umbra"
+          ? "getUmbraClient -> register/deposit/create receiver-claimable UTXO"
+          : "Cloak shielded pool -> private transfer/batch receipt",
+      note:
+        "Set UMBRA_RELAY_URL/CLOAK_RELAY_URL on the hosted read-node to promote this endpoint from signed testnet intent receipt to live rail relay forwarding.",
+    },
+  };
+}
+
 async function handle(req: http.IncomingMessage, res: http.ServerResponse) {
   if (req.method === "OPTIONS") {
     writeJson(res, 200, { ok: true });
     return;
   }
 
-  if (req.method !== "GET") {
+  if (req.method !== "GET" && req.method !== "POST") {
     writeJson(res, 405, { ok: false, error: "Method not allowed" });
     return;
   }
@@ -81,8 +216,20 @@ async function handle(req: http.IncomingMessage, res: http.ServerResponse) {
   const pathname = url.pathname.replace(/\/+$/, "") || "/";
   markRoute(pathname);
 
-  try {
-    if (pathname === "/healthz") {
+	  try {
+    if (req.method === "POST" && pathname === "/api/v1/private-settlement/intent") {
+      const body = await readRequestJson(req);
+      const receipt = await handlePrivateSettlementIntent(body);
+      writeJson(res, 200, receipt);
+      return;
+    }
+
+    if (req.method !== "GET") {
+      writeJson(res, 405, { ok: false, error: "Method not allowed for this route" });
+      return;
+    }
+
+	    if (pathname === "/healthz") {
       const runtime = await readNode.getRuntimeSnapshot();
       writeJson(res, 200, { ok: true, health: "healthy", runtime });
       return;
@@ -127,19 +274,36 @@ async function handle(req: http.IncomingMessage, res: http.ServerResponse) {
       return;
     }
 
-    if (pathname === "/api/v1/config") {
+	    if (pathname === "/api/v1/config") {
       writeJson(res, 200, {
         ok: true,
         config: {
           host,
           port,
           allowedOrigin,
-          readPath: "backend-indexer",
-          programId: readNode.programId.toBase58(),
-          rpcEndpoints: readNode.rpcEndpoints,
-          cacheTtlMs: readNode.cacheTtlMs,
-        },
+	          readPath: "backend-indexer",
+	          programId: readNode.programId.toBase58(),
+	          rpcEndpoints: readNode.rpcEndpoints.map(redactUrlSecret),
+	          cacheTtlMs: readNode.cacheTtlMs,
+	        },
       });
+	      return;
+	    }
+
+    if (pathname === "/api/v1/qvac/runtime-proof") {
+      const proofPath = join(process.cwd(), "services/qvac-runtime/qvac-runtime-proof.generated.json");
+      const proof = await readFile(proofPath, "utf8")
+        .then((content) => JSON.parse(content) as unknown)
+        .catch((error) => ({
+          schemaVersion: 1,
+          project: "PrivateDAO",
+          track: "qvac-sovereign-ai",
+          sdkLoaded: false,
+          source: "qvac-runtime-proof-missing",
+          nextAction: "Run npm install and npm run probe inside services/qvac-runtime with Node.js >=22.17.",
+          error: String((error as Error)?.message || error),
+        }));
+      writeJson(res, 200, { ok: true, source: "qvac-runtime", proof });
       return;
     }
 
@@ -260,5 +424,5 @@ const server = http.createServer((req, res) => {
 server.listen(port, host, () => {
   console.log(`PrivateDAO read node listening on http://${host}:${port}`);
   console.log(`Program ID: ${readNode.programId.toBase58()}`);
-  console.log(`RPC pool: ${readNode.rpcEndpoints.join(", ")}`);
+  console.log(`RPC pool: ${readNode.rpcEndpoints.map(redactUrlSecret).join(", ")}`);
 });

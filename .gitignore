@@ -22,6 +22,8 @@ wallets/
 !apps/web/components.json
 !apps/web/tsconfig.json
 !apps/web/tsconfig.scripts.json
+!services/qvac-runtime/package.json
+!services/qvac-runtime/qvac-runtime-proof.generated.json
 !docs/proof-registry.json
 !docs/submission-registry.json
 !docs/review-attestation.generated.json
