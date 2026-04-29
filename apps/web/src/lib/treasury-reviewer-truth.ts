@@ -102,7 +102,7 @@ export function getTreasuryReviewerTruthSnapshot(
       : "Testnet rails live, production treasury still evidence-gated",
     treasuryNetwork: packet.treasuryNetwork,
     publicRails: `${packet.referenceLinkedRails.length} public rails`,
-    exactBlocker: `${packet.exactBlocker.id} · ${packet.exactBlocker.status}`,
+    exactBlocker: `${packet.exactBlocker.id} · external ceremony gate`,
     exactBlockerSummary: packet.exactBlocker.nextAction,
     paymentsFit,
     pendingCount: `${packet.exactPendingItems.length} ceremony evidence gates`,
