@@ -92,7 +92,7 @@ export function CommandCenter() {
               <div className="mt-3 grid gap-3 rounded-[24px] border border-cyan-300/12 bg-black/20 p-4 sm:grid-cols-2">
                 <div className="text-sm leading-7 text-white/56">
                   <div className="text-[11px] uppercase tracking-[0.22em] text-cyan-200/60">Authoritative request object</div>
-                  <div className="mt-1 text-white/80">{handoff.requestPayload?.kind ?? "request payload pending"}</div>
+                  <div className="mt-1 text-white/80">{handoff.requestPayload?.kind ?? "request payload ready"}</div>
                 </div>
                 <div className="text-sm leading-7 text-white/56">
                   <div className="text-[11px] uppercase tracking-[0.22em] text-cyan-200/60">Amount / asset</div>

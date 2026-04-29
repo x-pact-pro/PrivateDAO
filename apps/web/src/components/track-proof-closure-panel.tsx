@@ -22,7 +22,7 @@ export function TrackProofClosurePanel({
   const custody = getCanonicalCustodyProofSnapshot();
   const proofContext = getTrackSpecificProofContext(workspace);
   const topDeliverables = workspace.deliverables.slice(0, 3);
-  const pendingItems = custody.pendingItems.slice(0, 4);
+  const ceremonyGateItems = custody.pendingItems.slice(0, 4);
 
   return (
     <Card className="border-white/10 bg-[linear-gradient(180deg,rgba(10,16,32,0.94),rgba(7,11,23,0.98))]">
@@ -68,11 +68,11 @@ export function TrackProofClosurePanel({
           <div className="rounded-3xl border border-amber-300/14 bg-amber-300/[0.06] p-5">
             <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.28em] text-amber-200/78">
               <WalletCards className="h-3.5 w-3.5" />
-              What is still pending
+              Ceremony gates
             </div>
             <div className="mt-3 text-sm leading-7 text-white/62">{proofContext.pendingSummary}</div>
             <div className="mt-4 grid gap-2 text-sm leading-7 text-white/58">
-              {pendingItems.map((item) => (
+              {ceremonyGateItems.map((item) => (
                 <div key={item}>{item}</div>
               ))}
             </div>

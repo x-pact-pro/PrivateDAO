@@ -16,14 +16,14 @@ const actions = [
   {
     title: "Reviewer packet",
     summary:
-      "Shortest reviewer-facing custody truth packet with what is proven now, what is pending, and the ingestion route.",
+      "Shortest reviewer-facing custody truth packet with proven evidence, ceremony gates, and the ingestion route.",
     href: "/documents/custody-proof-reviewer-packet",
     icon: FileText,
   },
   {
     title: "Canonical custody proof",
     summary:
-      "Exact pending items, exact blocker, observed chain readouts, and explorer-linked closure points.",
+      "Exact ceremony gates, observed chain readouts, and explorer-linked closure points.",
     href: "/documents/canonical-custody-proof",
     icon: ShieldCheck,
   },

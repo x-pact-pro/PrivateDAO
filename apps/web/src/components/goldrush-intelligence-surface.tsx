@@ -314,7 +314,7 @@ export function GoldRushIntelligenceSurface() {
           <div className="rounded-[24px] border border-white/10 bg-black/20 p-4">
             <div className="text-[11px] uppercase tracking-[0.22em] text-white/44">Latest response preview</div>
             <pre className="mt-3 overflow-x-auto rounded-2xl border border-white/10 bg-black/30 p-4 text-xs leading-6 text-white/70">
-              {responsePreview || "No response yet. Run the workbench or connect the proxy endpoint first."}
+              {responsePreview || "Ready for a live GoldRush/Dune query. Run the workbench to populate this reviewer packet."}
             </pre>
           </div>
 

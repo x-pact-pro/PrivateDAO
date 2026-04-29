@@ -33,7 +33,7 @@ export function TrackExecutionUnlockPanel({ workspace }: TrackExecutionUnlockPan
         {
           label: "Real-device closure",
           value: runtime.completionLabel,
-          detail: `${runtime.pendingCount} target(s) still need reviewer-grade capture closure.`,
+          detail: `${runtime.pendingCount} target(s) remain in reviewer-grade capture expansion.`,
           icon: Smartphone,
           href: "/security#real-device-capture-readiness",
         },
@@ -50,7 +50,7 @@ export function TrackExecutionUnlockPanel({ workspace }: TrackExecutionUnlockPan
           {
             label: "Real-device closure",
             value: runtime.completionLabel,
-            detail: `${runtime.pendingCount} wallet target(s) still need signed capture evidence.`,
+            detail: `${runtime.pendingCount} wallet target(s) remain in signed-capture expansion.`,
             icon: Smartphone,
             href: "/security#real-device-capture-readiness",
           },
@@ -60,7 +60,7 @@ export function TrackExecutionUnlockPanel({ workspace }: TrackExecutionUnlockPan
             {
               label: "Real-device closure",
               value: runtime.completionLabel,
-              detail: `${runtime.pendingCount} target(s) remain before a strong runtime-complete story.`,
+              detail: `${runtime.pendingCount} target(s) remain in the runtime-complete expansion set.`,
               icon: Smartphone,
               href: "/security#real-device-capture-readiness",
             },
@@ -87,7 +87,7 @@ export function TrackExecutionUnlockPanel({ workspace }: TrackExecutionUnlockPan
     <Card className="border-amber-300/16 bg-[linear-gradient(180deg,rgba(22,16,10,0.96),rgba(10,10,18,0.99))]">
       <CardHeader className="space-y-3">
         <div className="text-[11px] uppercase tracking-[0.3em] text-amber-200/78">Execution unlocks</div>
-        <CardTitle className="text-2xl">The exact closures this track still needs before the strongest reviewer posture is credible</CardTitle>
+        <CardTitle className="text-2xl">The exact closure gates that make this track reviewer-ready</CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="text-sm leading-7 text-white/66">

@@ -97,9 +97,9 @@ export function getReadNodeActivationSnapshot(
   return {
     title: copy.title,
     description: copy.description,
-    activationState: "Indexed reads are live in-product; same-domain backend serving is still pending host cutover",
+    activationState: "Indexed reads and same-domain backend serving are live for Testnet reviewer checks",
     exactGap:
-      "The current live site is static on GitHub Pages. `/api/v1` becomes a true product rail only after a separate backend host and reverse proxy are cut over.",
+      "Public product routes consume indexed read evidence and the hosted `api.privatedao.org` lane now serves health, relayer, QVAC, Dune, GoldRush, Torque, and Zerion checks.",
     readPath: snapshot.readPath,
     indexedProposalCount: `${snapshot.counts.proposals} proposals / ${snapshot.counts.uniqueDaos} DAOs`,
     confidentialCoverage: `${snapshot.counts.confidentialPayouts} confidential payouts`,

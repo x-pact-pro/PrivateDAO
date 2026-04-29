@@ -213,11 +213,11 @@ export function analyzeTreasuryProposalCard(proposal: ProposalCardModel): Treasu
   const bullets = [...analysis.bullets];
 
   if (context.amount === null) {
-    bullets.push("Treasury magnitude is still pending in the structured proposal payload, so payout risk should stay conservative.");
+    bullets.push("Treasury magnitude is not yet present in the structured proposal payload, so payout risk should stay conservative.");
   }
 
   if (!context.recipientKnown) {
-    bullets.push("Recipient disclosure is still pending, so beneficiary validation cannot be completed from the current packet alone.");
+    bullets.push("Recipient disclosure is not yet present, so beneficiary validation cannot be completed from the current packet alone.");
   }
 
   if (!context.mintSymbol) {
@@ -260,7 +260,7 @@ export function analyzeProposalRisk(input: {
 
   if (input.amount >= 500) {
     score += 3.2;
-    bullets.push("Large treasury transfer detected relative to a normal Devnet operating motion.");
+    bullets.push("Large treasury transfer detected relative to a normal Testnet operating motion.");
   } else if (input.amount >= 150) {
     score += 1.8;
     bullets.push("Transfer size is meaningful enough to justify an explicit treasury review note.");

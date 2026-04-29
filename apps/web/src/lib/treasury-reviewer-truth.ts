@@ -105,7 +105,7 @@ export function getTreasuryReviewerTruthSnapshot(
     exactBlocker: `${packet.exactBlocker.id} · ${packet.exactBlocker.status}`,
     exactBlockerSummary: packet.exactBlocker.nextAction,
     paymentsFit,
-    pendingCount: `${packet.exactPendingItems.length} pending evidence items`,
+    pendingCount: `${packet.exactPendingItems.length} ceremony evidence gates`,
     reviewerPacketHref: "/documents/treasury-reviewer-packet",
     reviewerPacketLabel: "Open treasury packet",
     proofHref: "/documents/canonical-custody-proof",

@@ -40,7 +40,7 @@ function buildTrackImpact(workspace: CompetitionTrackWorkspace, completionRatio:
       buyerCredibility:
         workspace.slug === "rpc-infrastructure"
           ? "Hosted-read and infrastructure buyers now see that authority control is being documented, which makes the commercial story more credible."
-          : "Commercial credibility improves because the signer split and transfer path are visible, even though final signatures are still pending.",
+          : "Commercial credibility improves because the signer split and transfer path are visible, with final signatures treated as an explicit ceremony gate.",
       mainnetDistance: "Closer, but still blocked by missing external signatures or post-transfer readouts",
     };
   }

@@ -232,7 +232,7 @@ export const confidenceDimensions = DIMENSIONS.map((dimension) => ({
 export const confidenceEnginePrinciples = [
   "The score is additive and reviewer-facing, not a claim of impossible-to-break security.",
   "ZK, REFHE, MagicBlock, and Fast RPC contribute differently depending on the proposal pattern.",
-  "Launch blockers and external custody gaps are intentionally left outside the score so the app does not hide pending-external work.",
+  "Launch blockers and external custody gates are intentionally left outside the score so the app does not hide ceremony-gated work.",
 ];
 
 export const confidenceSignalDefinitions: Array<{

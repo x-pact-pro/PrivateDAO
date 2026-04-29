@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { X } from "lucide-react";
+import { useWallet } from "@solana/wallet-adapter-react";
+import { CheckCircle2, Signature, Wallet, X } from "lucide-react";
 
 import { OnchainParityPanel } from "@/components/onchain-parity-panel";
 import { ProposalAnalyzerInline } from "@/components/proposal-analyzer-inline";
@@ -13,6 +14,7 @@ import { buildPreparedActionSummary } from "@/lib/onchain-parity";
 import type { CoreGovernanceInstructionName } from "@/lib/onchain-parity.generated";
 import type { ServiceHandoffRequestDelivery, ServiceHandoffRequestPayload } from "@/lib/service-handoff-state";
 import type { ProposalCardModel } from "@/lib/site-data";
+import { SOLANA_NETWORK_LABEL } from "@/lib/solana-network";
 import { cn } from "@/lib/utils";
 
 type ActionReviewModalProps = {
@@ -42,6 +44,8 @@ export function ActionReviewModal({
   onClose,
   onConfirm,
 }: ActionReviewModalProps) {
+  const { wallet, publicKey, connected } = useWallet();
+
   if (!action) return null;
 
   const summary = buildPreparedActionSummary({
@@ -90,6 +94,9 @@ export function ActionReviewModal({
             : action === "execute_proposal"
               ? "Sign and submit standard execute"
               : "Continue in UI";
+  const connectedWalletName = wallet?.adapter.name ?? "No wallet selected";
+  const connectedAddress = publicKey?.toBase58() ?? null;
+  const connectedAccountLabel = connectedAddress ? `${connectedAddress.slice(0, 4)}…${connectedAddress.slice(-4)}` : "No account connected";
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-[#03050e]/84 px-4 py-4 backdrop-blur-md sm:flex sm:items-center sm:justify-center sm:py-6">
@@ -167,6 +174,42 @@ export function ActionReviewModal({
           <Badge variant="violet">Token {summary.governanceTokenProgram.slice(0, 8)}…</Badge>
         </div>
 
+        <div className="mt-6 rounded-3xl border border-cyan-300/16 bg-cyan-300/[0.08] p-5">
+          <div className="text-[11px] uppercase tracking-[0.28em] text-cyan-100/80">Review → Sign → Verify</div>
+          <div className="mt-3 grid gap-3 lg:grid-cols-3">
+            <div className="rounded-2xl border border-white/8 bg-black/20 p-4 text-sm text-white/68">
+              <div className="flex items-center gap-2 text-white">
+                <Wallet className="h-4 w-4 text-cyan-100" />
+                <span className="font-medium">Current wallet context</span>
+              </div>
+              <div className="mt-3 space-y-1 leading-7">
+                <div>Wallet: <span className="text-white">{connectedWalletName}</span></div>
+                <div>Account: <span className="text-white">{connectedAccountLabel}</span></div>
+                <div>Network: <span className="text-white">{SOLANA_NETWORK_LABEL}</span></div>
+                <div>Status: <span className="text-white">{connected ? "Connected" : "Not connected yet"}</span></div>
+              </div>
+            </div>
+            <div className="rounded-2xl border border-white/8 bg-black/20 p-4 text-sm text-white/68">
+              <div className="flex items-center gap-2 text-white">
+                <Signature className="h-4 w-4 text-cyan-100" />
+                <span className="font-medium">What happens after Sign</span>
+              </div>
+              <div className="mt-3 leading-7">
+                The wallet prompt opens for this exact action only. If you approve it, the app returns to the same flow and records the resulting signature or error state here.
+              </div>
+            </div>
+            <div className="rounded-2xl border border-white/8 bg-black/20 p-4 text-sm text-white/68">
+              <div className="flex items-center gap-2 text-white">
+                <CheckCircle2 className="h-4 w-4 text-cyan-100" />
+                <span className="font-medium">What happens after Verify</span>
+              </div>
+              <div className="mt-3 leading-7">
+                After submission, move into Proof and runtime logs to confirm the receipt, explorer hash, and continuity lane without leaving the product shell.
+              </div>
+            </div>
+          </div>
+        </div>
+
         {usesPayloadContinuity ? (
           <div className="mt-6 rounded-3xl border border-emerald-300/18 bg-emerald-300/[0.08] p-5">
             <div className="text-[11px] uppercase tracking-[0.28em] text-emerald-100/80">Execution continuity packet</div>
@@ -174,12 +217,12 @@ export function ActionReviewModal({
               {payload?.payoutTitle ?? executionIntent?.payoutTitle ?? "Execution continuity"} · {summaryAmountOrAsset}
             </div>
             <div className="mt-2 text-sm leading-7 text-white/62">
-              {(payload?.reference ?? executionIntent?.reference) || "Reference pending"} · {(payload?.purpose ?? executionIntent?.purpose) || "Purpose pending"}
+              {(payload?.reference ?? executionIntent?.reference) || "Reference ready"} · {(payload?.purpose ?? executionIntent?.purpose) || "Purpose ready"}
             </div>
           <div className="mt-4 grid gap-3 sm:grid-cols-2">
               <div className="rounded-2xl border border-white/8 bg-black/20 p-3 text-sm text-white/68">
                 <div className="text-[11px] uppercase tracking-[0.22em] text-white/40">Payout profile</div>
-                <div className="mt-2 text-white">{executionIntent?.payoutProfile ?? "continuity-pending"}</div>
+                <div className="mt-2 text-white">{executionIntent?.payoutProfile ?? "continuity-ready"}</div>
               </div>
               <div className="rounded-2xl border border-white/8 bg-black/20 p-3 text-sm text-white/68">
                 <div className="text-[11px] uppercase tracking-[0.22em] text-white/40">Telemetry mode</div>
@@ -187,7 +230,7 @@ export function ActionReviewModal({
               </div>
               <div className="rounded-2xl border border-white/8 bg-black/20 p-3 text-sm text-white/68">
                 <div className="text-[11px] uppercase tracking-[0.22em] text-white/40">Request ID</div>
-                <div className="mt-2 text-white">{payload?.requestId ?? executionIntent?.reference ?? "request-pending"}</div>
+                <div className="mt-2 text-white">{payload?.requestId ?? executionIntent?.reference ?? "request-ready"}</div>
               </div>
               <div className="rounded-2xl border border-white/8 bg-black/20 p-3 text-sm text-white/68">
                 <div className="text-[11px] uppercase tracking-[0.22em] text-white/40">Delivery state</div>
@@ -232,7 +275,7 @@ export function ActionReviewModal({
             <div className="mt-3 grid gap-3 sm:grid-cols-2">
               <div className="rounded-2xl border border-white/8 bg-black/20 p-3 text-sm text-white/68">
                 <div className="text-[11px] uppercase tracking-[0.22em] text-white/40">Payload source</div>
-                <div className="mt-2 text-white">{payload?.requestId ?? executionIntent?.reference ?? "request-pending"}</div>
+                <div className="mt-2 text-white">{payload?.requestId ?? executionIntent?.reference ?? "request-ready"}</div>
               </div>
               <div className="rounded-2xl border border-white/8 bg-black/20 p-3 text-sm text-white/68">
                 <div className="text-[11px] uppercase tracking-[0.22em] text-white/40">Review posture</div>
@@ -240,7 +283,7 @@ export function ActionReviewModal({
               </div>
               <div className="rounded-2xl border border-white/8 bg-black/20 p-3 text-sm text-white/68">
                 <div className="text-[11px] uppercase tracking-[0.22em] text-white/40">Commercial route</div>
-                <div className="mt-2 text-white">{executionIntent?.payoutTitle ?? "continuity-pending"}</div>
+                <div className="mt-2 text-white">{executionIntent?.payoutTitle ?? "continuity-ready"}</div>
               </div>
               <div className="rounded-2xl border border-white/8 bg-black/20 p-3 text-sm text-white/68">
                 <div className="text-[11px] uppercase tracking-[0.22em] text-white/40">Signing and proof route</div>
@@ -301,6 +344,9 @@ export function ActionReviewModal({
         </div>
 
         <div className="sticky bottom-0 z-10 -mx-6 -mb-6 mt-6 border-t border-white/8 bg-[linear-gradient(180deg,rgba(12,16,30,0.92),rgba(6,8,20,0.98))] px-6 py-5 backdrop-blur-md sm:-mx-8 sm:-mb-8 sm:px-8 sm:py-6">
+        <div className="mb-4 rounded-2xl border border-white/8 bg-black/20 px-4 py-3 text-sm leading-7 text-white/68">
+          If the wallet prompt does not appear, reconnect the wallet and retry once. If the prompt appears but you reject it, the action will return here with a clear failure state instead of pretending it succeeded.
+        </div>
         <div className="flex flex-wrap gap-3">
           <Button disabled={payloadAlreadySubmitted} onClick={onConfirm}>
             {confirmLabel}

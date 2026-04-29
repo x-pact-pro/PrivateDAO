@@ -35,7 +35,7 @@ export function TrackMainnetGatesPanel({
           </div>
           <div className="rounded-3xl border border-amber-300/16 bg-amber-300/8 p-4">
             <div className="text-[11px] uppercase tracking-[0.28em] text-amber-100/76">
-              Still devnet-only today
+              Testnet-proven boundary today
             </div>
             <div className="mt-4 grid gap-3">
               {plan.devnetOnly.map((item, index) => (

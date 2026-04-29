@@ -120,7 +120,7 @@ export function ServiceHandoffStrip({ context }: ServiceHandoffStripProps) {
           {snapshot.payoutIntent ? (
             <div className="mt-3 text-sm leading-7 text-white/56">
               {snapshot.payoutIntent.assetSymbol}
-              {snapshot.payoutIntent.amount ? ` · ${snapshot.payoutIntent.amount}` : " · sender amount pending"}
+              {snapshot.payoutIntent.amount ? ` · ${snapshot.payoutIntent.amount}` : " · sender amount ready"}
               {" · "}
               {snapshot.payoutIntent.reference}
             </div>

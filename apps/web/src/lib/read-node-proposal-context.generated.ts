@@ -84,7 +84,7 @@ export const READ_NODE_FEATURED_PROPOSAL_CONTEXTS = {
     "presentationTreasury": "0.02 SOL sent to AbF9…FWDy",
     "phaseMappingLabel": "Executed indexed phase maps to Executed in the product surface",
     "txContext": {
-      "proofStatus": "verified-devnet-governance-path",
+      "proofStatus": "verified-testnet-governance-path",
       "evidenceRoute": "/documents/reviewer-fast-path",
       "createProposalSignature": "u7V1B5cUx91KY69pE9JSMfkAt9SFcVZbDrP9Nsv3XqatNHfr1P2jZwKkaCHCZuPyqm4WJgmH8w8SDUQoJQc938S",
       "commitSignature": "67fRsWN8qcndxA8Cb7navZ77BnnLwj4msbNnffcYrwfiv924LKW8vyWu31GRi7AXVfMjGuHytkt8JN5jFKNzCwoR",
@@ -570,7 +570,7 @@ export const READ_NODE_PROPOSAL_REGISTRY = [
       "presentationTreasury": "0.02 SOL sent to 63Y4…bzDp",
       "phaseMappingLabel": "Executed indexed phase maps to Executed in the product surface",
       "txContext": {
-        "proofStatus": "verified-devnet-governance-path",
+        "proofStatus": "verified-testnet-governance-path",
         "evidenceRoute": "/documents/reviewer-fast-path",
         "createProposalSignature": "4imUGYMcq9qvSBB62kdv5mUTwkmqs5umcDNcRX7QozGbJFwhqdyL4U6Xjy8n1MAvrarD6zp6FNNqQudV8VFRKx4B",
         "commitSignature": "3tJAvoQBMtL4F9F5yokNisJ79LFLWNm3oFTiUmzHXQ7o39UYSd1ZFFLtECwYKJsGyvkWWbkGu2vDeLPk9odYaqKM",
@@ -749,7 +749,7 @@ export const READ_NODE_PROPOSAL_REGISTRY = [
       "presentationTreasury": "0.02 SOL sent to ALho…oSjm",
       "phaseMappingLabel": "Executed indexed phase maps to Executed in the product surface",
       "txContext": {
-        "proofStatus": "verified-devnet-governance-path",
+        "proofStatus": "verified-testnet-governance-path",
         "evidenceRoute": "/documents/reviewer-fast-path",
         "createProposalSignature": "2WyVybfgZhf46oXR3SyJ9Wqry6cChX2vMkPukoywSgPURg5WqBLqFzqWrq7BnaRwGFSGrqGLv9vPyWQAkKbyguSz",
         "commitSignature": "5sBeCvzxDkn6Bbs2LzGDn3XAC2KyX4WA17k4xR2kgnYo7PeKLMGmo6fD3j4HJ49hdsWKkd4ctf6YRRYFSuQbvkCy",
@@ -1315,7 +1315,7 @@ export const READ_NODE_PROPOSAL_REGISTRY = [
       "presentationTreasury": "0.02 SOL sent to AbF9…FWDy",
       "phaseMappingLabel": "Executed indexed phase maps to Executed in the product surface",
       "txContext": {
-        "proofStatus": "verified-devnet-governance-path",
+        "proofStatus": "verified-testnet-governance-path",
         "evidenceRoute": "/documents/reviewer-fast-path",
         "createProposalSignature": "u7V1B5cUx91KY69pE9JSMfkAt9SFcVZbDrP9Nsv3XqatNHfr1P2jZwKkaCHCZuPyqm4WJgmH8w8SDUQoJQc938S",
         "commitSignature": "67fRsWN8qcndxA8Cb7navZ77BnnLwj4msbNnffcYrwfiv924LKW8vyWu31GRi7AXVfMjGuHytkt8JN5jFKNzCwoR",
@@ -1418,7 +1418,7 @@ export const READ_NODE_PROPOSAL_REGISTRY = [
     "status": "Timelocked",
     "quorum": "51% quorum · governance token requirement 0",
     "window": "Voting closed · Finalized on devnet · Timelock still active",
-    "treasury": "Treasury action is still pending explicit indexing in the current proposal record",
+    "treasury": "Treasury action is not yet indexed in the current proposal record",
     "privacy": "Commit-reveal governance path",
     "tech": [
       "ZK",
@@ -1446,7 +1446,7 @@ export const READ_NODE_PROPOSAL_REGISTRY = [
       "baselineAmount": null,
       "presentationStatus": "Timelocked",
       "presentationWindow": "Voting closed · Finalized on devnet · Timelock still active",
-      "presentationTreasury": "Treasury action is still pending explicit indexing in the current proposal record",
+      "presentationTreasury": "Treasury action is not yet indexed in the current proposal record",
       "phaseMappingLabel": "Finalized indexed phase maps to Timelocked in the product surface",
       "txContext": {
         "proofStatus": "runtime-indexed-governance-path",
@@ -1461,7 +1461,7 @@ export const READ_NODE_PROPOSAL_REGISTRY = [
     "status": "Timelocked",
     "quorum": "51% quorum · governance token requirement 0",
     "window": "Voting closed · Finalized on devnet · Timelock still active",
-    "treasury": "Treasury action is still pending explicit indexing in the current proposal record",
+    "treasury": "Treasury action is not yet indexed in the current proposal record",
     "privacy": "Commit-reveal governance path",
     "tech": [
       "ZK",
@@ -1489,7 +1489,7 @@ export const READ_NODE_PROPOSAL_REGISTRY = [
       "baselineAmount": null,
       "presentationStatus": "Timelocked",
       "presentationWindow": "Voting closed · Finalized on devnet · Timelock still active",
-      "presentationTreasury": "Treasury action is still pending explicit indexing in the current proposal record",
+      "presentationTreasury": "Treasury action is not yet indexed in the current proposal record",
       "phaseMappingLabel": "Finalized indexed phase maps to Timelocked in the product surface",
       "txContext": {
         "proofStatus": "runtime-indexed-governance-path",
@@ -1848,7 +1848,7 @@ export const READ_NODE_PROPOSAL_REGISTRY = [
     "status": "Timelocked",
     "quorum": "51% quorum · governance token requirement 0",
     "window": "Voting closed · Finalized on devnet · Timelock still active",
-    "treasury": "Treasury action is still pending explicit indexing in the current proposal record",
+    "treasury": "Treasury action is not yet indexed in the current proposal record",
     "privacy": "Commit-reveal governance path",
     "tech": [
       "ZK",
@@ -1876,7 +1876,7 @@ export const READ_NODE_PROPOSAL_REGISTRY = [
       "baselineAmount": null,
       "presentationStatus": "Timelocked",
       "presentationWindow": "Voting closed · Finalized on devnet · Timelock still active",
-      "presentationTreasury": "Treasury action is still pending explicit indexing in the current proposal record",
+      "presentationTreasury": "Treasury action is not yet indexed in the current proposal record",
       "phaseMappingLabel": "Finalized indexed phase maps to Timelocked in the product surface",
       "txContext": {
         "proofStatus": "runtime-indexed-governance-path",
@@ -1891,7 +1891,7 @@ export const READ_NODE_PROPOSAL_REGISTRY = [
     "status": "Executed",
     "quorum": "51% quorum · governance token requirement 0",
     "window": "Commit closed · Reveal complete · Executed on devnet",
-    "treasury": "Treasury action is still pending explicit indexing in the current proposal record",
+    "treasury": "Treasury action is not yet indexed in the current proposal record",
     "privacy": "Commit-reveal governance path",
     "tech": [
       "ZK",
@@ -1919,7 +1919,7 @@ export const READ_NODE_PROPOSAL_REGISTRY = [
       "baselineAmount": null,
       "presentationStatus": "Executed",
       "presentationWindow": "Commit closed · Reveal complete · Executed on devnet",
-      "presentationTreasury": "Treasury action is still pending explicit indexing in the current proposal record",
+      "presentationTreasury": "Treasury action is not yet indexed in the current proposal record",
       "phaseMappingLabel": "Executed indexed phase maps to Executed in the product surface",
       "txContext": {
         "proofStatus": "runtime-indexed-governance-path",
@@ -2063,7 +2063,7 @@ export const READ_NODE_PROPOSAL_REGISTRY = [
     "status": "Timelocked",
     "quorum": "51% quorum · governance token requirement 0",
     "window": "Voting closed · Finalized on devnet · Timelock still active",
-    "treasury": "Treasury action is still pending explicit indexing in the current proposal record",
+    "treasury": "Treasury action is not yet indexed in the current proposal record",
     "privacy": "Commit-reveal governance path",
     "tech": [
       "ZK",
@@ -2091,7 +2091,7 @@ export const READ_NODE_PROPOSAL_REGISTRY = [
       "baselineAmount": null,
       "presentationStatus": "Timelocked",
       "presentationWindow": "Voting closed · Finalized on devnet · Timelock still active",
-      "presentationTreasury": "Treasury action is still pending explicit indexing in the current proposal record",
+      "presentationTreasury": "Treasury action is not yet indexed in the current proposal record",
       "phaseMappingLabel": "Finalized indexed phase maps to Timelocked in the product surface",
       "txContext": {
         "proofStatus": "runtime-indexed-governance-path",
@@ -2149,7 +2149,7 @@ export const READ_NODE_PROPOSAL_REGISTRY = [
     "status": "Timelocked",
     "quorum": "51% quorum · governance token requirement 0",
     "window": "Voting closed · Finalized on devnet · Timelock still active",
-    "treasury": "Treasury action is still pending explicit indexing in the current proposal record",
+    "treasury": "Treasury action is not yet indexed in the current proposal record",
     "privacy": "Commit-reveal governance path",
     "tech": [
       "ZK",
@@ -2177,7 +2177,7 @@ export const READ_NODE_PROPOSAL_REGISTRY = [
       "baselineAmount": null,
       "presentationStatus": "Timelocked",
       "presentationWindow": "Voting closed · Finalized on devnet · Timelock still active",
-      "presentationTreasury": "Treasury action is still pending explicit indexing in the current proposal record",
+      "presentationTreasury": "Treasury action is not yet indexed in the current proposal record",
       "phaseMappingLabel": "Finalized indexed phase maps to Timelocked in the product surface",
       "txContext": {
         "proofStatus": "runtime-indexed-governance-path",
@@ -2316,7 +2316,7 @@ export const READ_NODE_FEATURED_PROPOSAL_REGISTRY = [
       "presentationTreasury": "0.02 SOL sent to AbF9…FWDy",
       "phaseMappingLabel": "Executed indexed phase maps to Executed in the product surface",
       "txContext": {
-        "proofStatus": "verified-devnet-governance-path",
+        "proofStatus": "verified-testnet-governance-path",
         "evidenceRoute": "/documents/reviewer-fast-path",
         "createProposalSignature": "u7V1B5cUx91KY69pE9JSMfkAt9SFcVZbDrP9Nsv3XqatNHfr1P2jZwKkaCHCZuPyqm4WJgmH8w8SDUQoJQc938S",
         "commitSignature": "67fRsWN8qcndxA8Cb7navZ77BnnLwj4msbNnffcYrwfiv924LKW8vyWu31GRi7AXVfMjGuHytkt8JN5jFKNzCwoR",

@@ -244,19 +244,19 @@ export function getDevnetServiceMetrics(): DevnetServiceMetricsSnapshot {
     {
       label: "Success rate",
       value: overallSuccessRate,
-      detail: `${runtimeEvidence.operational.totalTxCount} successful Devnet transactions across ${runtimeEvidence.operational.totalAttemptCount} recorded attempts.`,
+      detail: `${runtimeEvidence.operational.totalTxCount} successful Testnet transactions across ${runtimeEvidence.operational.totalAttemptCount} recorded attempts.`,
       tone: "emerald",
     },
     {
       label: "Primary RPC latency",
       value: `${devnetCanary.primaryRpc.blockhashLatencyMs} ms`,
-      detail: `Current blockhash latency from the primary Devnet endpoint. Version latency is ${devnetCanary.primaryRpc.versionLatencyMs} ms.`,
+      detail: `Current blockhash latency from the primary Testnet endpoint. Version latency is ${devnetCanary.primaryRpc.versionLatencyMs} ms.`,
       tone: "cyan",
     },
     {
       label: "Wallet coverage",
       value: walletCoverage,
-      detail: `${walletReviewReadyCount}/${walletReviewTargetCount} browser wallet targets have completed connect + sign + submit on Devnet. ${walletConnectOnlyCount} connect-only captures still need a successful signed submission. Selector coverage remains ${walletSelectorCoverage} across the support matrix.`,
+      detail: `${walletReviewReadyCount}/${walletReviewTargetCount} browser wallet targets have completed connect + sign + submit on Testnet. ${walletConnectOnlyCount} connect-only captures are in the signed-submission expansion set. Selector coverage remains ${walletSelectorCoverage} across the support matrix.`,
       tone: "fuchsia",
     },
     {
@@ -295,7 +295,7 @@ export function getDevnetServiceMetrics(): DevnetServiceMetricsSnapshot {
     {
       label: "Anchor account presence",
       value: boolStatus(devnetCanary.summary.anchorAccountsPresent),
-      detail: `${devnetCanary.anchors.length} canonical anchors are present on Devnet for the current proof registry set.`,
+      detail: `${devnetCanary.anchors.length} canonical anchors are present on Testnet for the current proof registry set.`,
       tone: "amber",
     },
     {
@@ -346,7 +346,7 @@ export function getDevnetServiceMetrics(): DevnetServiceMetricsSnapshot {
     {
       label: "Wallet review readiness",
       value: walletCoverage,
-      detail: `${walletReviewReadyCount}/${walletReviewTargetCount} browser wallet targets are evidence-backed today. ${runtimeEvidence.walletEvidence.realDevicePendingTargetCount}/${runtimeEvidence.walletEvidence.realDeviceTargetCount} real-device targets are still pending, and the support matrix still exposes ${walletSupportReviewReadyCount}/${runtimeEvidence.walletEvidence.supportMatrixWalletCount} wallet classes as implementation-ready.`,
+      detail: `${walletReviewReadyCount}/${walletReviewTargetCount} browser wallet targets are evidence-backed today. ${runtimeEvidence.walletEvidence.realDevicePendingTargetCount}/${runtimeEvidence.walletEvidence.realDeviceTargetCount} real-device targets remain in capture expansion, and the support matrix exposes ${walletSupportReviewReadyCount}/${runtimeEvidence.walletEvidence.supportMatrixWalletCount} wallet classes as implementation-ready.`,
       tone: "emerald",
     },
     {
@@ -368,7 +368,7 @@ export function getDevnetServiceMetrics(): DevnetServiceMetricsSnapshot {
       {
         label: "Confidential path completion",
         value: confidentialProofCompletion,
-        detail: `${confidentialConfirmedCount}/${confidentialLifecycleCount} confidential MagicBlock + REFHE transactions finalized on Devnet.`,
+        detail: `${confidentialConfirmedCount}/${confidentialLifecycleCount} confidential MagicBlock + REFHE transactions finalized on Testnet.`,
         tone: "emerald",
       },
       {
@@ -500,7 +500,7 @@ export function getOperationalValidationSnapshot(): OperationalValidationSnapsho
     proofFreshness: {
       label: "Proof freshness",
       value: formatAgeLabel(freshestTimestamp),
-      detail: `Runtime evidence ${formatAgeLabel(runtimeEvidence.generatedAt)}, Devnet canary ${formatAgeLabel(devnetCanary.generatedAt)}, and integration evidence ${formatAgeLabel(frontierIntegrations.generatedAt)} remain published together.`,
+      detail: `Runtime evidence ${formatAgeLabel(runtimeEvidence.generatedAt)}, Testnet canary ${formatAgeLabel(devnetCanary.generatedAt)}, and integration evidence ${formatAgeLabel(frontierIntegrations.generatedAt)} remain published together.`,
       routeLabel: "Open trust documents",
       routeHref: "/documents/live-proof-v3",
       tone: "amber",
@@ -538,7 +538,7 @@ export function getExecutionSurfaceSnapshot(): ExecutionSurfaceSnapshot {
       status: rpcLatency <= 1500 && unexpectedFailures === 0 ? "Healthy" : rpcLatency <= 3500 ? "Watch" : "Action",
       summary:
         unexpectedFailures === 0
-          ? `Primary Devnet blockhash latency is ${rpcLatency} ms with no unexpected canary failures.`
+          ? `Primary Testnet blockhash latency is ${rpcLatency} ms with no unexpected canary failures.`
           : `${unexpectedFailures} unexpected canary failure is recorded alongside ${rpcLatency} ms primary latency.`,
       routeHref: "/diagnostics",
       routeLabel: "Open diagnostics",
@@ -549,7 +549,7 @@ export function getExecutionSurfaceSnapshot(): ExecutionSurfaceSnapshot {
       summary:
         pendingRealDeviceTargets === 0
           ? "All tracked wallet targets are currently covered in runtime evidence."
-          : `${pendingRealDeviceTargets} real-device wallet target${pendingRealDeviceTargets === 1 ? "" : "s"} remain pending in the runtime capture set.`,
+          : `${pendingRealDeviceTargets} real-device wallet target${pendingRealDeviceTargets === 1 ? "" : "s"} remain in the capture expansion set.`,
       routeHref: "/diagnostics",
       routeLabel: "Review wallet evidence",
     },
@@ -593,7 +593,7 @@ export function getExecutionSurfaceSnapshot(): ExecutionSurfaceSnapshot {
     commercialReadiness: {
       label: "Commercial readiness",
       value: commercialTopline,
-      detail: `${validation.commercialReadiness.detail} These are the closest routes from Devnet operation to buyer-facing motion.`,
+      detail: `${validation.commercialReadiness.detail} These are the closest routes from Testnet operation to buyer-facing motion.`,
       tone: validation.commercialReadiness.tone,
       routeHref: "/engage",
       routeLabel: "Open buyer path",

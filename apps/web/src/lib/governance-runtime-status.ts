@@ -44,7 +44,7 @@ export const GOVERNANCE_RUNTIME_STATUS: Record<CoreGovernanceInstructionName, Go
     browserWalletProofCaptured: true,
     realDeviceProofCaptured: false,
     supportNote:
-      "Reveal vote is live in the web wallet lane once a live commit already exists in the same session. The full Solflare browser cycle is captured; Android capture expansion is still pending for this stage.",
+      "Reveal vote is live in the web wallet lane once a live commit already exists in the same session. The full Solflare browser cycle is captured; Android remains in capture expansion for this stage.",
   },
   finalize_proposal: {
     action: "finalize_proposal",
@@ -53,7 +53,7 @@ export const GOVERNANCE_RUNTIME_STATUS: Record<CoreGovernanceInstructionName, Go
     browserWalletProofCaptured: true,
     realDeviceProofCaptured: false,
     supportNote:
-      "Finalize proposal is live in the web wallet lane. Repo-script proof exists and the full Solflare browser cycle is captured; Android capture expansion is still pending for this stage.",
+      "Finalize proposal is live in the web wallet lane. Repo-script proof exists and the full Solflare browser cycle is captured; Android remains in capture expansion for this stage.",
   },
   execute_proposal: {
     action: "execute_proposal",

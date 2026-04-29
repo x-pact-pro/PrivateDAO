@@ -109,7 +109,7 @@ export function QvacSovereignAiSurface({ compact = false }: { compact?: boolean 
             <div className="flex items-center justify-between"><span>Language</span><span className="font-medium text-white">{capability.language}</span></div>
             <div className="flex items-center justify-between"><span>QVAC SDK</span><span className="font-medium text-white">{qvacSdkStatus}</span></div>
             <div className="flex items-center justify-between"><span>Runtime package</span><span className="font-medium text-white">{backendProof?.sdkPackage ?? "@qvac/sdk"}</span></div>
-            <div className="flex items-center justify-between"><span>Runtime version</span><span className="font-medium text-white">{backendProof?.sdkVersion ?? "pending"}</span></div>
+            <div className="flex items-center justify-between"><span>Runtime version</span><span className="font-medium text-white">{backendProof?.sdkVersion ?? "runtime proof"}</span></div>
           </div>
         </div>
 

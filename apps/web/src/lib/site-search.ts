@@ -178,13 +178,13 @@ export const siteSearchItems: SiteSearchItem[] = [
     title: "Canonical Custody Proof",
     href: "/documents/canonical-custody-proof",
     category: "Document",
-    summary: "Repo-backed custody truth packet with exact pending items, observed readouts, and explorer-linked closure points.",
+    summary: "Repo-backed custody truth packet with exact ceremony gates, observed readouts, and explorer-linked closure points.",
   },
   {
     title: "Custody Proof Reviewer Packet",
     href: "/documents/custody-proof-reviewer-packet",
     category: "Document",
-    summary: "Reviewer-facing custody packet that condenses what is proven now, what is still pending, and the strict ingestion route.",
+    summary: "Reviewer-facing custody packet that condenses what is proven now, what remains ceremony-gated, and the strict ingestion route.",
   },
   {
     title: "Treasury Reviewer Packet",
@@ -687,14 +687,14 @@ function getCustodyLeadItems(query: string): SiteSearchItem[] {
       href: "/documents/custody-proof-reviewer-packet",
       category: "Document",
       summary:
-        "Start here for reviewer-facing custody truth. It condenses what is externally proven now, what is still pending, and the exact strict ingestion route.",
+        "Start here for reviewer-facing custody truth. It condenses what is externally proven now, what remains ceremony-gated, and the exact strict ingestion route.",
     },
     {
       title: "Canonical Custody Proof",
       href: "/documents/canonical-custody-proof",
       category: "Document",
       summary:
-        "Open the canonical custody truth packet next for exact pending items, exact blocker, and explorer-linked closure points.",
+        "Open the canonical custody truth packet next for exact ceremony gates, exact blocker, and explorer-linked closure points.",
     },
     {
       title: "Custody Workspace",
@@ -831,7 +831,7 @@ function getPaymentsTruthLeadItems(query: string): SiteSearchItem[] {
       summary:
         `Readiness: Testnet rails live, production treasury still evidence-gated. ` +
         `Network: ${treasury.network}. Rails: ${treasury.assets.length}. ` +
-        `Blocker: upgrade-authority-multisig · pending-external. ` +
+        `Blocker: upgrade-authority-multisig · external ceremony gate. ` +
         `Open treasury reviewer packet first, then continue into ${bestRouteLabel} for the best route.`,
     },
     {

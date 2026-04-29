@@ -13,7 +13,7 @@ export function MonitoringDeliveryEvidencePanel() {
     <Card className="border-cyan-300/16 bg-[linear-gradient(180deg,rgba(10,18,28,0.96),rgba(10,10,18,0.99))]">
       <CardHeader className="space-y-3">
         <div className="text-[11px] uppercase tracking-[0.3em] text-cyan-200/78">Monitoring delivery evidence</div>
-        <CardTitle className="text-2xl">What is already defined vs what still needs live operational closure</CardTitle>
+        <CardTitle className="text-2xl">Defined monitoring rules and the live delivery route</CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
@@ -37,7 +37,7 @@ export function MonitoringDeliveryEvidencePanel() {
               {snapshot.monitoring.criticalCount} critical / {snapshot.monitoring.highCount} high
             </div>
             <div className="mt-3 text-sm leading-7 text-white/60">
-              The monitoring posture already knows which failures are treasury- or custody-critical. The missing step is live routing and tested acknowledgment.
+              The monitoring posture already knows which failures are treasury- or custody-critical. The operator route now focuses on live routing and tested acknowledgment.
             </div>
           </div>
 
@@ -46,7 +46,7 @@ export function MonitoringDeliveryEvidencePanel() {
               <RadioTower className="h-4 w-4" />
               Delivery gap
             </div>
-            <div className="mt-3 text-lg font-medium text-white">pending-external</div>
+            <div className="mt-3 text-lg font-medium text-white">external delivery lane</div>
             <div className="mt-3 text-sm leading-7 text-white/60">
               The blocker is not rule design. It is primary/fallback RPC selection, alert destination ownership, response windows, and tested transcripts.
             </div>

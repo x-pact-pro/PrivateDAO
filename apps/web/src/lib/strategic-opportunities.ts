@@ -103,7 +103,7 @@ export const strategicOpportunities: StrategicOpportunity[] = [
     shippedNow:
       "Canonical custody proof, reviewer packet, authority hardening, incident readiness, and diagnostics already exist as a serious review surface.",
     missingFeature:
-      "External audit closure is still pending, so the product should present hardening truth with discipline rather than bounty-style hype.",
+      "External audit closure remains an evidence gate, so the product should present hardening truth with discipline rather than bounty-style hype.",
     action:
       "Lead with canonical custody proof, authority hardening, incident readiness, and diagnostics as the strict hardening packet.",
     skillsNeeded: ["Security", "Backend", "Operations"],

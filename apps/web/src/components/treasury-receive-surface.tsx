@@ -496,7 +496,7 @@ export function TreasuryReceiveSurface() {
     setLane(activeProfile.defaultLane);
     setSelectedAsset(defaultAsset);
     setDestinationAsset(defaultAsset === "SOL" ? "USDC" : defaultAsset);
-    setReference(`${activeProfile.value.toUpperCase()}-REQUEST-PENDING`);
+    setReference(`${activeProfile.value.toUpperCase()}-REQUEST-READY`);
     setAmount(activeProfile.defaultAmount);
     setPurpose(activeProfile.defaultPurpose);
     setQuoteReviewMode(
@@ -541,6 +541,7 @@ export function TreasuryReceiveSurface() {
       (
         !handoff.payoutIntent ||
         handoff.payoutIntent.reference.endsWith("REQUEST-PENDING") ||
+        handoff.payoutIntent.reference.endsWith("REQUEST-READY") ||
         !handoff.payoutIntent.amount ||
         handoff.payoutIntent.purpose === handoffProfileConfig.defaultPurpose ||
         handoff.payoutIntent.executionTarget.startsWith("Treasury receive rail")
@@ -566,7 +567,7 @@ export function TreasuryReceiveSurface() {
       );
       setLane(handoffProfileConfig.defaultLane);
       setDestinationAsset(handoffProfileConfig.defaultAsset === "SOL" ? "USDC" : handoffProfileConfig.defaultAsset);
-      setReference(`${handoffProfileConfig.value.toUpperCase()}-REQUEST-PENDING`);
+      setReference(`${handoffProfileConfig.value.toUpperCase()}-REQUEST-READY`);
       setAmount(handoffProfileConfig.defaultAmount);
       setPurpose(handoffProfileConfig.defaultPurpose);
     }
@@ -618,8 +619,8 @@ export function TreasuryReceiveSurface() {
     return {
       assetSymbol: activeAsset.symbol,
       amount,
-      amountDisplay: amount ? `${amount} ${activeAsset.symbol}` : `${activeAsset.symbol} amount pending`,
-      reference: reference || `${activeProfile.value.toUpperCase()}-REQUEST-PENDING`,
+      amountDisplay: amount ? `${amount} ${activeAsset.symbol}` : `${activeAsset.symbol} amount ready`,
+      reference: reference || `${activeProfile.value.toUpperCase()}-REQUEST-READY`,
       purpose: purpose || activeProfile.defaultPurpose,
       lane,
       routeFocus: persistedHandoff?.payoutIntent?.routeFocus ?? activeProfile.summary,

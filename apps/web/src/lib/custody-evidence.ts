@@ -351,7 +351,7 @@ function resolveCustodyIngestionStatus(evidence: CustodyEvidence) {
         transfer.postTransferReadout.trim().length > 0,
     );
 
-  return anyStructuredProgress ? "ready-for-transfer" : "pending-external";
+  return anyStructuredProgress ? "ready-for-transfer" : "external-ceremony-gate";
 }
 
 export function buildCustodyEvidenceIntakePayload(evidence: CustodyEvidence) {

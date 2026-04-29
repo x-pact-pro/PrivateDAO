@@ -178,7 +178,7 @@ function buildPayoutAmountDisplay(
     return `${amount} ${assetSymbol}`;
   }
 
-  return `${assetSymbol} sender amount pending`;
+  return `${assetSymbol} sender amount ready for review`;
 }
 
 function buildPayoutReference(
@@ -604,7 +604,7 @@ export function WalletFirstServiceActionsWorkbench({
                       : " · amount left open for sender input"}
                   </div>
                   <div className="mt-1 text-sm text-white/54">
-                    {handoffState.payoutIntent?.reference ?? "Reference pending"}
+                    {handoffState.payoutIntent?.reference ?? "Reference ready"}
                   </div>
                 </div>
                 <div className="rounded-2xl border border-white/8 bg-black/20 p-3">
