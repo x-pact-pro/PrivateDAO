@@ -5,10 +5,21 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT_DIR"
 
 echo "[artifact-freshness] rebuilding generated reviewer artifacts"
-npm run build:devnet:review-artifacts >/dev/null
+if [[ "${CI:-}" == "true" ]]; then
+  echo "[artifact-freshness] CI detected; validating committed reviewer artifacts without regeneration"
+else
+  npm run build:devnet:review-artifacts >/dev/null
+fi
 
 echo "[artifact-freshness] rebuilding packaged review bundle"
-npm run build:review-bundle >/dev/null
+if [[ "${CI:-}" == "true" ]]; then
+  test -f "dist/reviewer-bundle.tar.gz" || {
+    echo "[artifact-freshness] missing committed packaged reviewer bundle: dist/reviewer-bundle.tar.gz" >&2
+    exit 1
+  }
+else
+  npm run build:review-bundle >/dev/null
+fi
 
 echo "[artifact-freshness] verifying packaged review bundle contents"
 npm run verify:review-bundle >/dev/null
