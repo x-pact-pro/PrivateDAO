@@ -5,8 +5,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "build:github": "NEXT_PUBLIC_LIVE_SITE_URL=https://privatedao.org NEXT_PUBLIC_BASE_PATH=/PrivateDAO next build",
-    "build:root": "NEXT_PUBLIC_LIVE_SITE_URL=https://privatedao.org NEXT_PUBLIC_BASE_PATH= next build",
+    "build:github": "PRIVATE_DAO_NEXT_OUTPUT_MODE=export NEXT_PUBLIC_LIVE_SITE_URL=https://privatedao.org NEXT_PUBLIC_BASE_PATH=/PrivateDAO next build",
+    "build:root": "PRIVATE_DAO_NEXT_OUTPUT_MODE=export NEXT_PUBLIC_LIVE_SITE_URL=https://privatedao.org NEXT_PUBLIC_BASE_PATH= next build",
     "start": "next start",
     "lint": "eslint"
   },

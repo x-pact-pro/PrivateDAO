@@ -1,0 +1,16 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/services/layout,_N_T_/services/eitherway-live-dapp/layout,_N_T_/services/eitherway-live-dapp/page,_N_T_/services/eitherway-live-dapp"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/services/eitherway-live-dapp/__PAGE__",
+    "/services/eitherway-live-dapp",
+    "/services",
+    "/_index",
+    "/_head"
+  ]
+}

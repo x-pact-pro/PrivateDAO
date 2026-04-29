@@ -1,0 +1,16 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/services/layout,_N_T_/services/consumer-governance-ux/layout,_N_T_/services/consumer-governance-ux/page,_N_T_/services/consumer-governance-ux"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/services/consumer-governance-ux/__PAGE__",
+    "/services/consumer-governance-ux",
+    "/services",
+    "/_index",
+    "/_head"
+  ]
+}
