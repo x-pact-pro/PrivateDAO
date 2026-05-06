@@ -160,6 +160,18 @@ const curatedDocuments: CuratedDocument[] = [
     rawHref: `${repositoryBlobBase}/docs/excellence-closure-matrix-2026-05-06.md`,
   },
   {
+    slug: "aws-namecheap-read-node-cutover-2026-04-29",
+    title: "AWS Namecheap Read-Node Cutover",
+    category: "Operations",
+    summary:
+      "Production-style cutover guide for keeping the static frontend on privatedao.org while serving the Testnet read-node from api.privatedao.org with Anchor 1.0.1 program drift checks.",
+    audience: "Operators, reviewers, infrastructure partners, security reviewers",
+    boundary:
+      "Infrastructure runbook only; it defines the live API target, DNS shape, and verification gates without claiming the EC2 host is aligned unless the published remote verifier passes.",
+    docPath: "docs/read-node/aws-namecheap-cutover-2026-04-29.md",
+    rawHref: `${repositoryBlobBase}/docs/read-node/aws-namecheap-cutover-2026-04-29.md`,
+  },
+  {
     slug: "encrypted-operations-lane",
     title: "Encrypted Operations Lane",
     category: "Security",

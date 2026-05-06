@@ -5,6 +5,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 STACK_DIR="$REPO_ROOT/deploy/primary-host"
 ENV_FILE="$STACK_DIR/.env"
+EXPECTED_PROGRAM_ID="${PRIVATE_DAO_EXPECTED_PROGRAM_ID:-EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva}"
 
 bash "$SCRIPT_DIR/up-primary-host-stack.sh"
 
@@ -34,10 +35,10 @@ CONFIG_JSON="$(curl -fsS "$BASE_URL/api/v1/config")"
 METRICS_JSON="$(curl -fsS "$BASE_URL/api/v1/metrics")"
 SNAPSHOT_JSON="$(curl -fsS "$BASE_URL/api/v1/ops/snapshot")"
 
-python3 - <<'PY' "$ROOT_HEADERS" "$ROOT_BODY" "$HEALTH_JSON" "$CONFIG_JSON" "$METRICS_JSON" "$SNAPSHOT_JSON"
+python3 - <<'PY' "$EXPECTED_PROGRAM_ID" "$ROOT_HEADERS" "$ROOT_BODY" "$HEALTH_JSON" "$CONFIG_JSON" "$METRICS_JSON" "$SNAPSHOT_JSON"
 import json, pathlib, sys
 
-headers_path, root_body, health_json, config_json, metrics_json, snapshot_json = sys.argv[1:]
+expected_program_id, headers_path, root_body, health_json, config_json, metrics_json, snapshot_json = sys.argv[1:]
 headers = pathlib.Path(headers_path).read_text().lower()
 assert "x-privatedao-primary-host: candidate" in headers, "missing primary-host header"
 assert "PrivateDAO" in root_body, "root static site did not render PrivateDAO"
@@ -46,7 +47,9 @@ config = json.loads(config_json)
 metrics = json.loads(metrics_json)
 snapshot = json.loads(snapshot_json)
 assert health["ok"] is True and health["health"] == "healthy", "healthz did not report healthy"
+assert health["runtime"]["programId"] == expected_program_id, f"healthz program drift: {health['runtime']['programId']} != {expected_program_id}"
 assert config["ok"] is True and config["config"]["readPath"] == "backend-indexer", "config route lost backend-indexer mode"
+assert config["config"]["programId"] == expected_program_id, f"config program drift: {config['config']['programId']} != {expected_program_id}"
 assert metrics["ok"] is True and "requestsTotal" in metrics["metrics"], "metrics route missing requestsTotal"
 assert snapshot["ok"] is True and snapshot["snapshot"]["deployment"]["readApiPath"] == "/api/v1", "ops snapshot readApiPath mismatch"
 print("Primary host stack verification: PASS")

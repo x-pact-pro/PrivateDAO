@@ -68,6 +68,12 @@ The read-node backend is expected behind `api.privatedao.org`. It should serve:
 - `/api/v1/umbra/relayer/health`
 - `/api/v1/umbra/relayer/info`
 
+Alignment gate:
+
+- Current Anchor 1.0.1 Testnet program: `EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva`
+- Remote verifier: `npm run verify:remote-primary-host -- https://api.privatedao.org`
+- Cutover runbook: `https://privatedao.org/documents/aws-namecheap-read-node-cutover-2026-04-29/`
+
 ## Mainnet Truth
 
 PrivateDAO is live on Solana Testnet. Production mainnet release remains gated by custody ceremony, multisig authority transfer, external audit / focused review, monitoring, and final readouts.

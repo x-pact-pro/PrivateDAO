@@ -2,4 +2,4 @@
 2:I[339756,["/_next/static/chunks/0og9v~0.wbgel.js","/_next/static/chunks/0c3rgjc-0fe3r.js","/_next/static/chunks/0f6kvf~_~fcr7.js","/_next/static/chunks/01v-109x2_k5o.js","/_next/static/chunks/0i.l9589uvx0j.js","/_next/static/chunks/07ch6ku1wly-d.js","/_next/static/chunks/127esg9z7tiwn.js","/_next/static/chunks/0j4pbljnny6-v.js"],"default"]
 3:I[837457,["/_next/static/chunks/0og9v~0.wbgel.js","/_next/static/chunks/0c3rgjc-0fe3r.js","/_next/static/chunks/0f6kvf~_~fcr7.js","/_next/static/chunks/01v-109x2_k5o.js","/_next/static/chunks/0i.l9589uvx0j.js","/_next/static/chunks/07ch6ku1wly-d.js","/_next/static/chunks/127esg9z7tiwn.js","/_next/static/chunks/0j4pbljnny6-v.js"],"default"]
 4:[]
-0:{"rsc":["$","$1","c",{"children":[null,["$","$L2",null,{"parallelRouterKey":"children","template":["$","$L3",null,{}]}]]}],"isPartial":false,"staleTime":300,"varyParams":"$W4","buildId":"f3U4QFlSbPxN4xIjWVfNN"}
+0:{"rsc":["$","$1","c",{"children":[null,["$","$L2",null,{"parallelRouterKey":"children","template":["$","$L3",null,{}]}]]}],"isPartial":false,"staleTime":300,"varyParams":"$W4","buildId":"kYWJRhn3rbvIdsysdeQpi"}

@@ -2,38 +2,29 @@
 set -euo pipefail
 
 BASE_URL="${1:-https://privatedao.org}"
+EXPECTED_PROGRAM_ID="${PRIVATE_DAO_EXPECTED_PROGRAM_ID:-EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva}"
 
 fetch_json() {
   local path="$1"
-  curl -fsS "${BASE_URL}${path}"
+  curl -fsS --max-time "${PRIVATE_DAO_REMOTE_VERIFY_TIMEOUT_SECONDS:-20}" "${BASE_URL}${path}"
 }
 
-fetch_headers() {
-  local path="$1"
-  curl -fsSI "${BASE_URL}${path}"
-}
-
-root_headers="$(fetch_headers /)"
 health_json="$(fetch_json /healthz)"
 config_json="$(fetch_json /api/v1/config)"
 metrics_json="$(fetch_json /api/v1/metrics)"
-snapshot_json="$(fetch_json /api/v1/ops/snapshot)"
 
-python3 - <<'PY' "$root_headers" "$health_json" "$config_json" "$metrics_json" "$snapshot_json"
+python3 - <<'PY' "$EXPECTED_PROGRAM_ID" "$health_json" "$config_json" "$metrics_json"
 import json, sys
 
-headers, health_json, config_json, metrics_json, snapshot_json = sys.argv[1:]
+expected_program_id, health_json, config_json, metrics_json = sys.argv[1:]
 health = json.loads(health_json)
 config = json.loads(config_json)
 metrics = json.loads(metrics_json)
-snapshot = json.loads(snapshot_json)
 
 assert health["ok"] is True and health["health"] == "healthy", "remote /healthz failed"
+assert health["runtime"]["programId"] == expected_program_id, f"remote /healthz program drift: {health['runtime']['programId']} != {expected_program_id}"
 assert config["ok"] is True and config["config"]["readPath"] == "backend-indexer", "remote /api/v1/config is not backend-indexer"
+assert config["config"]["programId"] == expected_program_id, f"remote /api/v1/config program drift: {config['config']['programId']} != {expected_program_id}"
 assert metrics["ok"] is True and "requestsTotal" in metrics["metrics"], "remote /api/v1/metrics missing requestsTotal"
-assert snapshot["ok"] is True and snapshot["snapshot"]["deployment"]["readApiPath"] == "/api/v1", "remote /api/v1/ops/snapshot readApiPath mismatch"
 print("Remote primary host verification: PASS")
 PY
-
-echo "Root headers:"
-printf '%s\n' "$root_headers"

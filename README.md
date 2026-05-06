@@ -516,6 +516,18 @@ The hosted read node at `https://api.privatedao.org` now exposes reviewer-verifi
 
 Current boundary: PrivateDAO verifies relayer health, supported mints, and testnet settlement intent receipts. It does not fabricate a full Umbra claim. A full claim still requires SDK-generated ZK `proof_account_data` and UTXO slot data produced by the Umbra SDK path.
 
+## Read-Node Program Alignment Gate
+
+The public frontend is intentionally static and resilient at `https://privatedao.org`, while the hosted read-node lane lives at `https://api.privatedao.org`.
+
+The read node must report the current Anchor 1.0.1 Testnet program before it is treated as aligned:
+
+- Expected program: `EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva`
+- Verification command: `npm run verify:remote-primary-host -- https://api.privatedao.org`
+- Operator runbook: [`docs/read-node/aws-namecheap-cutover-2026-04-29.md`](docs/read-node/aws-namecheap-cutover-2026-04-29.md)
+
+This gate prevents a healthy-looking API from silently serving stale program metadata after an AWS or DNS cutover.
+
 ## Feature Map
 
 | Layer | What exists now | Key references |
