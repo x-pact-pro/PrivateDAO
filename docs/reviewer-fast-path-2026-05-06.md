@@ -14,6 +14,7 @@ PrivateDAO is a wallet-first Solana Testnet financial OS for private governance,
 | Private settlement | https://privatedao.org/services/cloak-private-settlement/ |
 | Proof matrix | https://privatedao.org/proof/?judge=1 |
 | Custody truth | https://privatedao.org/custody/ |
+| Excellence closure matrix | https://privatedao.org/documents/excellence-closure-matrix-2026-05-06/ |
 | Technology video | https://youtu.be/iFTUe4CTWP0 |
 
 ## Anchor 1.0.1

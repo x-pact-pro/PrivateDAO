@@ -49,6 +49,7 @@ PrivateDAO is live on Solana Testnet with the Anchor 1.0.1 program deployed, web
 - Track-by-track delivery board and submission artifacts: [`submissions-new/TRACK_EXECUTION_BOARD.md`](submissions-new/TRACK_EXECUTION_BOARD.md)
 - Submission index and publish log: [`submissions-new/README.md`](submissions-new/README.md)
 - theMiracle wallet-placement benefit proposal: [`docs/themiracle-benefit-proposal.md`](docs/themiracle-benefit-proposal.md) and `https://privatedao.org/documents/themiracle-benefit-proposal/`
+- Excellence closure matrix: [`docs/excellence-closure-matrix-2026-05-06.md`](docs/excellence-closure-matrix-2026-05-06.md) and `https://privatedao.org/documents/excellence-closure-matrix-2026-05-06/`
 - Security baseline snapshot (current gate findings and mitigations): [`docs/security-baseline-2026-04-24.md`](docs/security-baseline-2026-04-24.md)
 
 ## What PrivateDAO Is Now
@@ -62,6 +63,8 @@ PrivateDAO is a wallet-first Solana Testnet financial OS for organizations that 
 - **Informed:** GoldRush, Dune, QVAC `qvac/fabric-llm-finetune`, and the Intelligence layer before a user signs.
 
 The core product narrative is simple: PrivateDAO turns operations that used to require developers, command lines, custom scripts, and cryptography specialists into guided interface workflows. A user can learn the idea in `/learn`, connect a wallet, review the action in normal product language, sign the exact request, and verify the receipt from the web app or Android surface.
+
+The release discipline is also part of the product. Remaining external gates are not hidden as footnotes; they are exposed as operating lanes with routes, schemas, commands, and reviewer-readable boundaries. The current closure map is published in [`docs/excellence-closure-matrix-2026-05-06.md`](docs/excellence-closure-matrix-2026-05-06.md).
 
 It combines:
 

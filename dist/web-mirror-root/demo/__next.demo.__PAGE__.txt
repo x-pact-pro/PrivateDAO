@@ -1,6 +1,6 @@
 1:"$Sreact.fragment"
 3:I[897367,["/_next/static/chunks/0og9v~0.wbgel.js","/_next/static/chunks/0c3rgjc-0fe3r.js","/_next/static/chunks/0f6kvf~_~fcr7.js","/_next/static/chunks/01v-109x2_k5o.js","/_next/static/chunks/0i.l9589uvx0j.js","/_next/static/chunks/07ch6ku1wly-d.js","/_next/static/chunks/127esg9z7tiwn.js","/_next/static/chunks/0j4pbljnny6-v.js"],"OutletBoundary"]
 4:"$Sreact.suspense"
-0:{"rsc":["$","$1","c",{"children":["$L2",null,["$","$L3",null,{"children":["$","$4",null,{"name":"Next.MetadataOutlet","children":"$@5"}]}]]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"sSI_Uv7GohcDSQ7E5f2hi"}
+0:{"rsc":["$","$1","c",{"children":["$L2",null,["$","$L3",null,{"children":["$","$4",null,{"name":"Next.MetadataOutlet","children":"$@5"}]}]]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"b5lpwzyxuEySKPCgfZ2PH"}
 5:null
 2:E{"digest":"NEXT_REDIRECT;replace;/learn;308;"}

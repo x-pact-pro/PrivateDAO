@@ -148,6 +148,18 @@ const curatedDocuments: CuratedDocument[] = [
     rawHref: `${repositoryBlobBase}/docs/themiracle-benefit-proposal.md`,
   },
   {
+    slug: "excellence-closure-matrix-2026-05-06",
+    title: "PrivateDAO Excellence Closure Matrix",
+    category: "Operations",
+    summary:
+      "Judge and operator matrix that converts every serious launch gate into a visible product route, evidence schema, verification command, and truth-aligned closure lane.",
+    audience: "Judges, operators, investors, security reviewers, ecosystem partners",
+    boundary:
+      "Closure matrix only; it strengthens the product operating surface without claiming unrecorded custody ceremony, external audit completion, or mainnet real-funds release.",
+    docPath: "docs/excellence-closure-matrix-2026-05-06.md",
+    rawHref: `${repositoryBlobBase}/docs/excellence-closure-matrix-2026-05-06.md`,
+  },
+  {
     slug: "encrypted-operations-lane",
     title: "Encrypted Operations Lane",
     category: "Security",
