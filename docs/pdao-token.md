@@ -28,6 +28,10 @@ PrivateDAO now documents and publishes a live Devnet governance voting token pro
 - PrivateDAO governance program: `EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva`
 - Token-2022 program: `TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb`
 
+Legacy Devnet PDAO token issuance evidence remains bound to the archived governance program used when this token surface was created:
+
+- PrivateDAO governance program: `5AhUsbQ4mJ8Xh7QJEomuS85qGgmK9iNvFqzF669Y7Psx`
+
 These are intentionally different:
 
 - the PrivateDAO governance program id is the on-chain protocol identity
