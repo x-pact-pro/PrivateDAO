@@ -482,7 +482,8 @@ export function HomeShell() {
         <div className="grid items-start gap-8 xl:grid-cols-[1.14fr_0.86fr] xl:gap-10">
           <div className="space-y-6 sm:space-y-8">
             <div className="flex flex-wrap gap-3">
-              <Badge variant="cyan">Anchor 1 Testnet</Badge>
+              <Badge variant="cyan">Private governance on Solana</Badge>
+              <Badge variant="violet">Anchor 1 Testnet</Badge>
               <Badge variant="violet">QVAC local AI</Badge>
               <Badge variant="success">Private by design</Badge>
             </div>
