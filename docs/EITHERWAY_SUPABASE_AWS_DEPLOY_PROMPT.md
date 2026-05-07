@@ -5,7 +5,7 @@ Build and deploy the missing production-style backend layer for PrivateDAO witho
 Project context:
 - Site: https://privatedao.org
 - API domain: https://api.privatedao.org
-- Supabase project ref: dnwihptxxffijfjjpnri
+- Supabase project ref: zhjtxxykchcbtnqiykyj
 - Solana cluster: Testnet only. Do not claim mainnet.
 - Current PrivateDAO program ID: EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva
 - Anchor Rust toolchain: 1.0.1
