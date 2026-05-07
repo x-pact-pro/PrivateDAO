@@ -2159,15 +2159,15 @@ export const analyticsSeries = {
 export const awards = [
   {
     label: "Recognition",
-    value: "1st Place - Superteam Poland",
+    value: "1st Place - Superteam Poland, March 2026",
   },
   {
-    label: "What shipped",
-    value: "Private governance, treasury evidence, and buyer-ready product surfaces",
+    label: "Live hosting",
+    value: "Eitherway preview, Supabase receipt continuity, AWS read-node, and privatedao.org proof routes are linked from the reviewer surface",
   },
   {
-    label: "Why it matters",
-    value: "The product is reviewer-facing, operator-friendly, and additive to existing protocol rails",
+    label: "Track packaging",
+    value: "23 side-track surfaces are mapped to product routes so reviewers can inspect each integration without hunting through raw docs",
   },
 ];
 

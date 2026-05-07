@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { Trophy, Shield } from "lucide-react";
+import Link from "next/link";
+import { ArrowUpRight, CheckCircle2, Shield, Trophy } from "lucide-react";
 
 import { GuidedOperationRail } from "@/components/guided-operation-rail";
 import { MetricsStrip } from "@/components/metrics-strip";
@@ -9,9 +10,11 @@ import { OperationsShell } from "@/components/operations-shell";
 import { SectionHeader } from "@/components/section-header";
 import { TrustSurface } from "@/components/trust-surface";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { buttonVariants } from "@/components/ui/button";
 import { awards } from "@/lib/site-data";
 import { getJudgeRuntimeLogsSnapshot } from "@/lib/judge-runtime-logs";
 import { buildRouteMetadata } from "@/lib/route-metadata";
+import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = buildRouteMetadata({
   title: "Recognition and Operating Trust",
@@ -20,6 +23,32 @@ export const metadata: Metadata = buildRouteMetadata({
   path: "/awards",
   keywords: ["recognition", "trust package", "trust links", "operating credibility"],
 });
+
+const sideTrackSubmissions = [
+  "QVAC sovereign AI",
+  "MagicBlock private execution",
+  "Jupiter treasury routing",
+  "GoldRush intelligence",
+  "Dune SIM analytics",
+  "Zerion agent policy",
+  "Torque growth loop",
+  "Umbra confidential payout",
+  "Cloak private settlement",
+  "Encrypt / IKA REFHE",
+  "PUSD treasury layer",
+  "AUDD stablecoin settlement",
+  "RPC/read-node infrastructure",
+  "SNS .sol identity",
+  "Android mobile parity",
+  "Gaming DAO",
+  "Compliance hub",
+  "Proof Matrix",
+  "Developers portal",
+  "Command Center",
+  "Eitherway live dApp",
+  "theMiracle benefit",
+  "Colosseum Frontier core",
+];
 
 export default function AwardsPage() {
   const runtimeSnapshot = getJudgeRuntimeLogsSnapshot();
@@ -78,8 +107,32 @@ export default function AwardsPage() {
               The public surface keeps that same discipline: proof clarity, operator clarity, and buyer-facing product language remain intact.
             </p>
             <p className="text-white/52">
-              FastRPC is supporting PrivateDAO throughout the hackathon with RPC infrastructure, and we appreciate that support.
+              FastRPC supports the infrastructure narrative, while the live product keeps the proof path centered on Testnet execution, hosted reads, and reviewer-visible receipt continuity.
             </p>
+            <div className="flex flex-wrap gap-3 pt-2">
+              <Link href="/benefit" className={cn(buttonVariants({ variant: "secondary" }), "justify-between")}>
+                Open theMiracle benefit
+                <ArrowUpRight className="h-4 w-4" />
+              </Link>
+              <a
+                href="https://preview.eitherway.ai/169057d4-cf4e-4a3e-88e5-2fe436eac112/"
+                target="_blank"
+                rel="noreferrer"
+                className={cn(buttonVariants({ variant: "outline" }), "justify-between")}
+              >
+                Eitherway live preview
+                <ArrowUpRight className="h-4 w-4" />
+              </a>
+              <a
+                href="https://arena.colosseum.org/projects/explore/praivatedao"
+                target="_blank"
+                rel="noreferrer"
+                className={cn(buttonVariants({ variant: "outline" }), "justify-between")}
+              >
+                Colosseum project
+                <ArrowUpRight className="h-4 w-4" />
+              </a>
+            </div>
           </CardContent>
         </Card>
 
@@ -99,6 +152,31 @@ export default function AwardsPage() {
           ))}
         </div>
       </div>
+      <Card className="border-emerald-300/16 bg-emerald-300/[0.07]">
+        <CardHeader>
+          <div className="flex items-center gap-3">
+            <div className="rounded-2xl border border-emerald-300/18 bg-emerald-300/10 p-3 text-emerald-100">
+              <CheckCircle2 className="h-5 w-5" />
+            </div>
+            <div>
+              <div className="text-[11px] uppercase tracking-[0.28em] text-emerald-100/76">Submission coverage</div>
+              <CardTitle className="mt-2">23 side-track surfaces are organized as product routes, not disconnected claims</CardTitle>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-5">
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {sideTrackSubmissions.map((track) => (
+              <div key={track} className="rounded-2xl border border-white/8 bg-black/20 px-4 py-3 text-sm text-white/68">
+                {track}
+              </div>
+            ))}
+          </div>
+          <div className="rounded-2xl border border-white/8 bg-black/20 px-4 py-3 text-sm leading-7 text-white/62">
+            Eitherway hosting, Supabase receipt continuity, AWS read-node checks, and the Colosseum registration link are kept visible so reviewers can move from recognition to live proof without searching the repository.
+          </div>
+        </CardContent>
+      </Card>
       <div>
         <TrustSurface />
       </div>

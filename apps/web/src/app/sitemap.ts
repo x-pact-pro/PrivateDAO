@@ -50,6 +50,7 @@ const coreRoutes = [
   "/learn",
   "/documents",
   "/awards",
+  "/benefit",
   "/story",
 ];
 

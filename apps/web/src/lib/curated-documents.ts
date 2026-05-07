@@ -526,6 +526,30 @@ const curatedDocuments: CuratedDocument[] = [
     rawHref: `${repositoryBlobBase}/docs/solrouter-encrypted-ai-evidence-2026-05-07.md`,
   },
   {
+    slug: "umbra-intent-evidence-2026-05-07",
+    title: "Umbra Intent Evidence 2026-05-07",
+    category: "Reviewer core",
+    summary:
+      "Reviewer packet for the PrivateDAO Umbra lane: stealth-settlement intent, recipient privacy hash, relayer readiness, and the exact SDK/UTXO claim boundary.",
+    audience: "Judges, Umbra reviewers, privacy reviewers, operators",
+    boundary:
+      "Intent and relayer-readiness evidence only. It does not claim a full Umbra UTXO claim without SDK-generated proof_account_data and UTXO slot data.",
+    docPath: "docs/umbra-intent-evidence-2026-05-07.md",
+    rawHref: `${repositoryBlobBase}/docs/umbra-intent-evidence-2026-05-07.md`,
+  },
+  {
+    slug: "solrouter-vs-qvac-boundary",
+    title: "SolRouter vs QVAC Boundary",
+    category: "AI",
+    summary:
+      "Clear product boundary between QVAC local-first sensitive-decision inference and SolRouter encrypted general-analysis output handling.",
+    audience: "Judges, AI reviewers, privacy reviewers, operators",
+    boundary:
+      "Boundary explainer only. It separates local inference from encrypted AI-output routing without claiming SolRouter replaces QVAC.",
+    docPath: "docs/solrouter-vs-qvac-boundary.md",
+    rawHref: `${repositoryBlobBase}/docs/solrouter-vs-qvac-boundary.md`,
+  },
+  {
     slug: "treasury-reviewer-packet",
     title: "Treasury Reviewer Packet",
     category: "Reviewer core",

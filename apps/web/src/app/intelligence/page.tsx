@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 
 import { GuidedOperationRail } from "@/components/guided-operation-rail";
 import { GoldRushIntelligenceSurface } from "@/components/goldrush-intelligence-surface";
@@ -67,6 +68,14 @@ export default function IntelligencePage() {
             Open proof path
           </a>
         </div>
+      </div>
+      <div className="rounded-[28px] border border-violet-300/16 bg-violet-300/[0.07] p-6 text-sm leading-7 text-white/68">
+        Sensitive DAO and treasury decisions use the QVAC local-first path; general encrypted analysis uses the SolRouter lane.
+        Review the exact boundary at{" "}
+        <Link className="text-violet-100 underline underline-offset-4" href="/documents/solrouter-vs-qvac-boundary">
+          /documents/solrouter-vs-qvac-boundary
+        </Link>
+        .
       </div>
       <div>
         <MetricsStrip />

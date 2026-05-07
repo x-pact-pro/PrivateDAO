@@ -49,6 +49,7 @@ PrivateDAO is live on Solana Testnet with the Anchor 1.0.1 program deployed, web
 - Track-by-track delivery board and submission artifacts: [`submissions-new/TRACK_EXECUTION_BOARD.md`](submissions-new/TRACK_EXECUTION_BOARD.md)
 - Submission index and publish log: [`submissions-new/README.md`](submissions-new/README.md)
 - theMiracle wallet-placement benefit proposal: [`docs/themiracle-benefit-proposal.md`](docs/themiracle-benefit-proposal.md) and `https://privatedao.org/documents/themiracle-benefit-proposal/`
+- theMiracle live benefit route: `https://privatedao.org/benefit/`
 - Excellence closure matrix: [`docs/excellence-closure-matrix-2026-05-06.md`](docs/excellence-closure-matrix-2026-05-06.md) and `https://privatedao.org/documents/excellence-closure-matrix-2026-05-06/`
 - Security baseline snapshot (current gate findings and mitigations): [`docs/security-baseline-2026-04-24.md`](docs/security-baseline-2026-04-24.md)
 
@@ -155,6 +156,7 @@ The first product view exposes the highest-value lanes immediately so a judge, i
 | Payroll | `https://privatedao.org/payroll/` | Private CSV payroll, stablecoin selection, Umbra/Cloak posture, and audit receipts. |
 | Gaming | `https://privatedao.org/gaming/` | Guilds, tournaments, inventory proposals, and private reward operations. |
 | Compliance | `https://privatedao.org/compliance/` | Scoped compliance packs, bounded viewing keys, and dWallet-signed evidence framing. |
+| Benefit | `https://privatedao.org/benefit/` | theMiracle wallet-placement design, Founding Governor incentive, and conversion-ready CTA. |
 | Proof | `https://privatedao.org/proof/` | Proof Matrix, Solscan links, ZK badges, viewing-key evidence, and judge mode. |
 | Developers | `https://privatedao.org/developers/` | SDK/API surface, Anchor 1 evidence, privacy integration, and read-node entry points. |
 | RPC Services | `https://privatedao.org/rpc-services/` | Hosted reads, relayer health, QVAC runtime proof, and backend evidence. |
@@ -196,6 +198,7 @@ PrivateDAO has been upgraded at the Solana program layer to Anchor `1.0.1`.
 
 | Layer | Current value | Evidence |
 | --- | --- | --- |
+| Local Anchor CLI | `anchor-cli 1.0.1` | `anchor --version` on the current build host |
 | `Anchor.toml` | `anchor_version = "1.0.1"` | [`Anchor.toml`](Anchor.toml) |
 | Rust program crates | `anchor-lang = "1.0.1"`, `anchor-spl = "1.0.1"` | [`Cargo.toml`](Cargo.toml), [`Cargo.lock`](Cargo.lock) |
 | Deployed Testnet program | `EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva` | [`docs/anchor-1-migration-evidence-2026-04-30.md`](docs/anchor-1-migration-evidence-2026-04-30.md) |
@@ -226,6 +229,7 @@ These packets are the shortest judge path for the cryptography-heavy layers:
 | REFHE / Encrypt / IKA | Confidential execution commitments and verifier-program binding for sensitive treasury metadata. | [`docs/testnet-refhe-encrypt-ika-commitment-2026-05-07.md`](docs/testnet-refhe-encrypt-ika-commitment-2026-05-07.md) |
 | ZK proof continuity | Proof badges for hidden vote, delegation, and tally layers without exposing the underlying intent. | [`docs/testnet-zk-verification-receipts-2026-05-07.md`](docs/testnet-zk-verification-receipts-2026-05-07.md) |
 | Umbra / Cloak | Private settlement lanes with relayer readiness and browser-direct receipt continuity. | [`docs/testnet-integration-runtime-closure-2026-05-07.md`](docs/testnet-integration-runtime-closure-2026-05-07.md) |
+| Umbra intent boundary | Stealth-settlement intent, recipient hash posture, relayer readiness, and full SDK/UTXO claim boundary. | [`docs/umbra-intent-evidence-2026-05-07.md`](docs/umbra-intent-evidence-2026-05-07.md) |
 | GoldRush / Dune / Zerion / MagicBlock / QVAC | Live hosted checks from `api.privatedao.org` for intelligence, policy, relayer, and runtime status. | [`docs/testnet-integration-runtime-closure-2026-05-07.md`](docs/testnet-integration-runtime-closure-2026-05-07.md) |
 
 Normal users see simple route names: `Review with QVAC`, `Check wallet with GoldRush`, `Prepare private settlement`, and `Verify proof`. Judges get direct Solana Testnet transaction links and JSON/Markdown evidence packets.

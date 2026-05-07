@@ -35,3 +35,15 @@ PrivateDAO development is maintained in public through **[X-PACT/PrivateDAO](htt
 - Telegram: [@Fahdkotb](https://t.me/Fahdkotb)
 - Discord: [PrivateDAO community server](https://discord.gg/PbM8BC2A)
 - Operating contact packet: [docs/ownership-and-contact.md](ownership-and-contact.md)
+
+## Current Reviewer Links
+
+- Awards route: `https://privatedao.org/awards/`
+- Benefit route for theMiracle: `https://privatedao.org/benefit/`
+- Eitherway live preview: `https://preview.eitherway.ai/169057d4-cf4e-4a3e-88e5-2fe436eac112/`
+- Colosseum project page: `https://arena.colosseum.org/projects/explore/praivatedao`
+- Proof route: `https://privatedao.org/proof/?judge=1`
+
+## Side Track Coverage
+
+PrivateDAO maintains a broad side-track submission surface across QVAC, MagicBlock, Jupiter, GoldRush, Dune, Zerion, Torque, Umbra/Cloak, Encrypt/IKA, PUSD, AUDD, RPC/read-node infrastructure, SNS identity, Android/mobile parity, gaming DAO, compliance, analytics, and theMiracle wallet-placement benefit design.

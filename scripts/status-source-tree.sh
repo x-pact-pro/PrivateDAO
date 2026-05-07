@@ -26,7 +26,7 @@ git -C "$REPO_ROOT" status --short --untracked-files=all -- \
     path="${path#\"}"
     path="${path%\"}"
     case "$path" in
-      404.html|CNAME|__next.*|_next/*|_not-found/*|analytics/*|assistant/*|awards/*|command-center/*|community/*|dashboard/*|developers/*|diagnostics/*|documents/*|network/*|products/*|proof/*|search/*|security/*|services/*|start/*|story/*|tracks/*|treasury/*|viewer/*|dist/*|docs/index.html|docs/assets/weekly-live-captures/*|docs/assets/weekly-updates-live/*|docs/assets/weekly-youtube-ready/*|docs/assets/weekly-updates/private-dao-week-1-update.mp4|docs/assets/weekly-updates/week-1-scene-1.png|docs/assets/weekly-updates/week-1-scene-2.png|docs/assets/weekly-updates/week-1-scene-3.png|docs/assets/weekly-updates/week-1-scene-4.png|docs/assets/weekly-updates/week-1-scene-5.png)
+      404.html|CNAME|__next.*|_next/*|_not-found/*|analytics/*|assistant/*|awards/*|benefit/*|command-center/*|community/*|dashboard/*|developers/*|diagnostics/*|documents/*|network/*|products/*|proof/*|search/*|security/*|services/*|start/*|story/*|tracks/*|treasury/*|viewer/*|dist/*|docs/index.html|docs/assets/weekly-live-captures/*|docs/assets/weekly-updates-live/*|docs/assets/weekly-youtube-ready/*|docs/assets/weekly-updates/private-dao-week-1-update.mp4|docs/assets/weekly-updates/week-1-scene-1.png|docs/assets/weekly-updates/week-1-scene-2.png|docs/assets/weekly-updates/week-1-scene-3.png|docs/assets/weekly-updates/week-1-scene-4.png|docs/assets/weekly-updates/week-1-scene-5.png)
         continue
         ;;
     esac

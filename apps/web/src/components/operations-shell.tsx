@@ -17,6 +17,7 @@ import {
   FileText,
   Gamepad2,
   Gauge,
+  Gift,
   KeyRound,
   LayoutDashboard,
   MessageSquareMore,
@@ -53,6 +54,7 @@ const operationsNav = [
   { href: "/live", label: "Live State", icon: LayoutDashboard, summary: "Proposals, treasury, and action logs" },
   { href: "/story", label: "Story", icon: PlayCircle, summary: "Live product story and fast explanation" },
   { href: "/community", label: "Community", icon: MessageSquareMore, summary: "Join, updates, pilot interest, and support routing" },
+  { href: "/benefit", label: "Benefit", icon: Gift, summary: "theMiracle wallet-placement benefit and Founding Governor access" },
   { href: "/android", label: "Android", icon: Smartphone, summary: "Mobile app, APK download, parity plan" },
   { href: "/trust", label: "Trust", icon: ShieldCheck, summary: "Security, proof, and operating boundaries" },
   { href: "/diagnostics", label: "Health", icon: Activity, summary: "Runtime status and verification health" },
@@ -134,6 +136,8 @@ export function OperationsShell({
         return copy.chrome.trust;
       case "/services":
         return copy.chrome.apiPricing;
+      case "/benefit":
+        return "Benefit";
       case "/products":
         return copy.chrome.products;
       case "/network":
