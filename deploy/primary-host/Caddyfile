@@ -11,7 +11,7 @@
 		X-PrivateDAO-Backup-Policy "github-pages-backup-only"
 	}
 
-	@health path /healthz
+	@health path /healthz /api/health
 	handle @health {
 		reverse_proxy read-node:8787
 	}

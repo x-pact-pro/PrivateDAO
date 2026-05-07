@@ -528,6 +528,28 @@ async function handle(req: http.IncomingMessage, res: http.ServerResponse) {
       return;
     }
 
+    if (pathname === "/api/v1") {
+      const [runtime, overview] = await Promise.all([
+        readNode.getRuntimeSnapshot(url.searchParams.get("refresh") === "1"),
+        readNode.getOpsOverview(url.searchParams.get("refresh") === "1"),
+      ]);
+      writeJson(res, 200, {
+        ok: true,
+        source: "backend-indexer",
+        runtime,
+        overview,
+        endpoints: {
+          health: "/api/v1/health",
+          metrics: "/api/v1/metrics",
+          proposals: "/api/v1/proposals",
+          qvac: "/api/v1/qvac/runtime-proof",
+          umbraRelayer: "/api/v1/umbra/relayer/health",
+          privateSettlementIntent: "/api/v1/private-settlement/intent",
+        },
+      });
+      return;
+    }
+
 	    if (pathname === "/api/v1/magicblock/health") {
 	      const magicblock = await readNode.getMagicBlockRuntime(url.searchParams.get("refresh") === "1");
 	      writeJson(res, 200, { ok: true, source: "backend-indexer", magicblock });
