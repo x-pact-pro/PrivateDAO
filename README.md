@@ -525,6 +525,21 @@ Use only public receive addresses here. Do not place signer keypairs, seed phras
 
 The 2026-05-06 Testnet rehearsal inserted real receipt rows into both `governance_receipts` and `operation_receipts`. The timeline remains non-blocking: on-chain actions still run even if Supabase is not configured, and recent browser receipts are shown as local fallback.
 
+## Telegram Operator Notifications
+
+The AWS read-node can notify the operator when a visitor opens the site, submits an onboarding request, or signs a Testnet transaction from the interface.
+
+Set one of these configurations on the AWS host, never in frontend code:
+
+- Generic webhook: `PRIVATE_DAO_TELEGRAM_WEBHOOK_URL`, accepting a JSON body shaped as `{ "text": "..." }`.
+- Telegram Bot API: `PRIVATE_DAO_TELEGRAM_BOT_TOKEN` and `PRIVATE_DAO_TELEGRAM_CHAT_ID`.
+
+Visitor notifications are privacy-preserving. They include page, timestamp, country hint when supplied by the edge, and a short hash of the browser session. They do not store or send IP addresses. To reduce spam, normal visit notifications are throttled by:
+
+- `PRIVATE_DAO_TELEGRAM_VISITOR_NOTIFICATIONS=true`
+- `PRIVATE_DAO_TELEGRAM_VISITOR_MIN_INTERVAL_MS=60000`
+- `PRIVATE_DAO_TELEGRAM_VISITOR_SESSION_TTL_MS=1800000`
+
 ## Umbra / Cloak Settlement Boundary
 
 The hosted read node at `https://api.privatedao.org` now exposes reviewer-verifiable Umbra Devnet relayer readiness:

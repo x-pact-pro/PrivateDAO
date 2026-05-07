@@ -22,6 +22,13 @@ const rateLimit = Number(process.env.PRIVATE_DAO_READ_RATE_LIMIT || 180);
 const readNode = new PrivateDaoReadNode();
 const memoProgramId = new PublicKey("MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr");
 const freshnessMinIntervalMs = Number(process.env.PRIVATE_DAO_FRESHNESS_MIN_INTERVAL_MS || 5 * 60_000);
+const telegramWebhookUrl = process.env.PRIVATE_DAO_TELEGRAM_WEBHOOK_URL?.trim() || "";
+const telegramBotToken = process.env.PRIVATE_DAO_TELEGRAM_BOT_TOKEN?.trim() || "";
+const telegramChatId = process.env.PRIVATE_DAO_TELEGRAM_CHAT_ID?.trim() || "";
+const telegramVisitorNotifications =
+  process.env.PRIVATE_DAO_TELEGRAM_VISITOR_NOTIFICATIONS?.toLowerCase() !== "false";
+const telegramVisitorMinIntervalMs = Number(process.env.PRIVATE_DAO_TELEGRAM_VISITOR_MIN_INTERVAL_MS || 60_000);
+const telegramVisitorSessionTtlMs = Number(process.env.PRIVATE_DAO_TELEGRAM_VISITOR_SESSION_TTL_MS || 30 * 60_000);
 const supabaseUrl = (process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || "").replace(/\/+$/, "");
 const supabaseKey =
   process.env.SUPABASE_SERVICE_ROLE_KEY ||
@@ -34,6 +41,8 @@ const rateMap = new Map<string, { count: number; resetAt: number }>();
 const serverStartedAt = new Date().toISOString();
 const visitorPingsMemory: VisitorPingRow[] = [];
 let lastFreshnessPingMemory: FreshnessPingRow | null = null;
+let lastVisitorTelegramAt = 0;
+const visitorTelegramSessions = new Map<string, number>();
 const metrics = {
   requestsTotal: 0,
   requestsFailed: 0,
@@ -214,6 +223,60 @@ function hashVisitorSession(sessionId: string) {
   return createHash("sha256").update(sessionId).digest("hex");
 }
 
+function hasTelegramConfig() {
+  return Boolean(telegramWebhookUrl || (telegramBotToken && telegramChatId));
+}
+
+function compactTelegramText(value: string) {
+  return value.replace(/\s+/g, " ").trim().slice(0, 3900);
+}
+
+async function sendTelegramNotification(text: string) {
+  if (!hasTelegramConfig()) return { ok: false, source: "disabled" };
+  const payload = { text: compactTelegramText(text) };
+  try {
+    if (telegramWebhookUrl) {
+      const response = await fetch(telegramWebhookUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      return { ok: response.ok, source: "webhook", status: response.status };
+    }
+    const response = await fetch(`https://api.telegram.org/bot${telegramBotToken}/sendMessage`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        chat_id: telegramChatId,
+        text: payload.text,
+        disable_web_page_preview: true,
+      }),
+    });
+    return { ok: response.ok, source: "telegram-bot", status: response.status };
+  } catch {
+    return { ok: false, source: "telegram-error" };
+  }
+}
+
+function pruneVisitorTelegramSessions(now: number) {
+  visitorTelegramSessions.forEach((timestamp, sessionId) => {
+    if (now - timestamp > telegramVisitorSessionTtlMs) {
+      visitorTelegramSessions.delete(sessionId);
+    }
+  });
+}
+
+function shouldNotifyVisitor(sessionId: string) {
+  if (!telegramVisitorNotifications || !hasTelegramConfig()) return false;
+  const now = Date.now();
+  pruneVisitorTelegramSessions(now);
+  if (visitorTelegramSessions.has(sessionId)) return false;
+  if (now - lastVisitorTelegramAt < telegramVisitorMinIntervalMs) return false;
+  visitorTelegramSessions.set(sessionId, now);
+  lastVisitorTelegramAt = now;
+  return true;
+}
+
 async function latestFreshnessPing() {
   const rows = await supabaseSelect<FreshnessPingRow>(
     "freshness_pings",
@@ -302,6 +365,17 @@ async function handleVisitorPing(body: Record<string, unknown>, req: http.Incomi
   visitorPingsMemory.push(row);
   if (visitorPingsMemory.length > 5000) visitorPingsMemory.shift();
   const stored = await supabaseInsert("visitor_sessions", row);
+  if (shouldNotifyVisitor(row.session_id)) {
+    void sendTelegramNotification(
+      [
+        "PrivateDAO site visit",
+        `Page: ${page}`,
+        `Session: ${row.session_id.slice(0, 12)}`,
+        `Country hint: ${row.country_hint || "unknown"}`,
+        `Time: ${row.timestamp}`,
+      ].join("\n"),
+    );
+  }
   return { ok: true, source: stored.ok ? "supabase" : "memory-fallback", session: row.session_id.slice(0, 12), page };
 }
 
@@ -326,6 +400,16 @@ async function handleVisitorTransactionReceipt(body: Record<string, unknown>) {
     slot: typeof body.slot === "number" && Number.isFinite(body.slot) ? Math.round(body.slot) : null,
   };
   const stored = await supabaseInsert("visitor_transactions", row as SupabaseRow);
+  void sendTelegramNotification(
+    [
+      "PrivateDAO visitor Testnet transaction",
+      `Action: ${action}`,
+      `Wallet: ${walletName}`,
+      walletAddress ? `Address: ${walletAddress}` : "Address: not provided",
+      `Tx: https://explorer.solana.com/tx/${txSignature}?cluster=testnet`,
+      `Page: ${page}`,
+    ].join("\n"),
+  );
   return {
     ok: true,
     source: stored.ok ? "supabase" : "memory-fallback",
@@ -378,16 +462,21 @@ async function handleOnboardingRequest(body: Record<string, unknown>) {
     throw new Error("Onboarding request could not be stored.");
   }
 
-  const telegramEndpoint = process.env.PRIVATE_DAO_TELEGRAM_WEBHOOK_URL?.trim();
-  if (telegramEndpoint) {
-    void fetch(telegramEndpoint, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        text: `New PrivateDAO onboarding: ${name} | ${tier} | ${row.treasury_size} | ${email}`,
-      }),
-    }).catch(() => null);
-  }
+  void sendTelegramNotification(
+    [
+      "New PrivateDAO onboarding request",
+      `Name: ${name}`,
+      `Email: ${email}`,
+      `Tier: ${tier}`,
+      `Profile: ${profile}`,
+      `Treasury: ${row.treasury_size}`,
+      `Timeline: ${row.timeline}`,
+      row.organization ? `Organization: ${row.organization}` : "",
+      row.telegram ? `Telegram: ${row.telegram}` : "",
+    ]
+      .filter(Boolean)
+      .join("\n"),
+  );
 
   return {
     ok: true,
@@ -436,6 +525,9 @@ async function visitorStats() {
     const createdAt = row.created_at || "";
     return createdAt ? new Date(createdAt).getTime() >= today.getTime() : false;
   });
+  const verifiedUserKey = (row: VisitorTransactionRow) => row.wallet_address || row.session_id;
+  const solscanVerifiedUsers = new Set(visitorTransactions.map(verifiedUserKey)).size;
+  const solscanVerifiedUsersToday = new Set(visitorTransactionsToday.map(verifiedUserKey)).size;
   return {
     ok: true,
     source: rows.length ? "supabase" : "memory-fallback",
@@ -445,6 +537,8 @@ async function visitorStats() {
     totalSessions,
     visitorTransactionsToday: visitorTransactionsToday.length,
     totalVisitorTransactions: visitorTransactions.length,
+    solscanVerifiedUsers,
+    solscanVerifiedUsersToday,
     latestVisitorTransactions: visitorTransactions.slice(0, 6).map((row) => ({
       ...row,
       explorer: `https://explorer.solana.com/tx/${row.tx_signature}?cluster=testnet`,
