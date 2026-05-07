@@ -83,8 +83,17 @@ export function SiteFooter() {
           <Link href="/awards" className="hover:text-white">
             Awards
           </Link>
+          <Link href="/judges" className="hover:text-white">
+            Judges
+          </Link>
           <Link href="/benefit" className="hover:text-white">
             Benefit
+          </Link>
+          <Link href="/versus" className="hover:text-white">
+            Versus
+          </Link>
+          <Link href="/revenue" className="hover:text-white">
+            Revenue
           </Link>
           <a href={judgeViewUrl} target="_blank" rel="noreferrer" className="hover:text-white">
             {copy.chrome.verificationView}

@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { MetricsStrip } from "@/components/metrics-strip";
 import { LocalizedRouteBrief } from "@/components/localized-route-brief";
 import { MainnetExecutionScorecardPanel } from "@/components/mainnet-execution-scorecard-panel";
+import { MainnetLaunchTimeline } from "@/components/mainnet-launch-timeline";
 import { MonitoringDeliveryEvidencePanel } from "@/components/monitoring-delivery-evidence-panel";
 import { MonitoringDeliveryClosurePanel } from "@/components/monitoring-delivery-closure-panel";
 import { AuthorityHardeningPanel } from "@/components/authority-hardening-panel";
@@ -106,6 +107,9 @@ export default function SecurityPage() {
       </div>
       <div>
         <MainnetExecutionScorecardPanel />
+      </div>
+      <div>
+        <MainnetLaunchTimeline />
       </div>
       <div id="monitoring-delivery-readiness">
         <MonitoringDeliveryClosurePanel />

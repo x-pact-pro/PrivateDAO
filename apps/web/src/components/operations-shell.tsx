@@ -22,12 +22,15 @@ import {
   LayoutDashboard,
   MessageSquareMore,
   PlayCircle,
+  Scale,
   Rocket,
   Router,
   ShieldCheck,
   Smartphone,
   Sparkles,
   SquareTerminal,
+  Trophy,
+  WalletCards,
 } from "lucide-react";
 
 import { useI18n } from "@/components/i18n-provider";
@@ -37,6 +40,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 const operationsNav = [
+  { href: "/judges", label: "Judges", icon: Trophy, summary: "60-second judge fast path with demo, proof, repo, and contact" },
   { href: "/start", label: "Start", icon: Compass, summary: "Guided onboarding and wallet-first flow" },
   { href: "/learn", label: "Learn", icon: FileText, summary: "Workflow-first onboarding and product operating guide" },
   { href: "/assistant", label: "AI Assistant", icon: Sparkles, summary: "Product guide across routes, docs, and proof" },
@@ -55,6 +59,8 @@ const operationsNav = [
   { href: "/story", label: "Story", icon: PlayCircle, summary: "Live product story and fast explanation" },
   { href: "/community", label: "Community", icon: MessageSquareMore, summary: "Join, updates, pilot interest, and support routing" },
   { href: "/benefit", label: "Benefit", icon: Gift, summary: "theMiracle wallet-placement benefit and Founding Governor access" },
+  { href: "/versus", label: "Versus", icon: Scale, summary: "PrivateDAO compared with Realms, Squads, Snapshot, and DAOhaus" },
+  { href: "/revenue", label: "Revenue", icon: WalletCards, summary: "Self-hosted, managed SLA, and enterprise commercial tiers" },
   { href: "/android", label: "Android", icon: Smartphone, summary: "Mobile app, APK download, parity plan" },
   { href: "/trust", label: "Trust", icon: ShieldCheck, summary: "Security, proof, and operating boundaries" },
   { href: "/diagnostics", label: "Health", icon: Activity, summary: "Runtime status and verification health" },
@@ -138,6 +144,12 @@ export function OperationsShell({
         return copy.chrome.apiPricing;
       case "/benefit":
         return "Benefit";
+      case "/judges":
+        return "Judges";
+      case "/versus":
+        return "Versus";
+      case "/revenue":
+        return "Revenue";
       case "/products":
         return copy.chrome.products;
       case "/network":
