@@ -21,8 +21,8 @@ export default function SolrouterEncryptedAiPage() {
   return (
     <OperationsShell
       eyebrow="Encrypted AI"
-      title="Generate decision intelligence, encrypt the brief locally, and keep proof continuity"
-      description="This route is the operational SolRouter fit: deterministic AI summary from live proposals, encrypted export in-browser, and receipt continuity through proof lanes."
+      title="SolRouter for general proposal analysis and encrypted brief export"
+      description="SolRouter is the general analysis lane: summarize proposals, produce an operator-ready brief, encrypt the output locally, then continue to proof without positioning it as the sensitive-decision gate."
       badges={[
         { label: "SolRouter", variant: "cyan" },
         { label: "Deterministic AI", variant: "success" },
@@ -50,4 +50,3 @@ export default function SolrouterEncryptedAiPage() {
     </OperationsShell>
   );
 }
-

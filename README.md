@@ -174,14 +174,14 @@ PrivateDAO keeps each integration tied to a user-facing job. The product does no
 | Icon | Technology | Where it appears | How PrivateDAO uses it |
 | --- | --- | --- | --- |
 | ⚓ | Anchor 1.0.1 | `/govern`, `/proof`, program docs | Current Solana Testnet governance program: DAO creation, proposals, commit/reveal voting, finalization, execution, and reviewer-visible account state. |
-| 🟣 | QVAC `qvac/fabric-llm-finetune` | `/services/qvac-sovereign-ai`, `/intelligence`, `/assistant` | Local-first proposal and treasury briefs: operation type, risk notes, privacy mode, and counterparty context without sending sensitive intent to a centralized AI endpoint. |
+| 🟣 | QVAC `qvac/fabric-llm-finetune` | `/services/qvac-sovereign-ai`, `/intelligence`, `/assistant` | Sensitive-decision AI before signing: private payroll, treasury, compliance, and high-value vote context stays local instead of going to a centralized model endpoint. |
 | 🧠 | OpenRouter-ready assistant | `/assistant`, `/search` | Optional live product guide for demos. It converts a user problem into the right route and proof path; keys stay in the browser session, not the repo. |
 | 🔐 | ZK proof rails | `/proof`, `/security`, `/documents/zk-capability-matrix` | Shows when an action has proof anchors, privacy badges, and reviewer evidence without exposing private voting or payout intent. |
-| 🧮 | REFHE / Encrypt | `/services/encrypt-ika-operations`, `/treasury`, README proof docs | Frames confidential solvency and encrypted settlement gates where sensitive values can be evaluated without public disclosure. |
+| 🧮 | REFHE / Encrypt / IKA | `/services/encrypt-ika-operations`, `/treasury`, `/documents/testnet-refhe-encrypt-ika-commitment-2026-05-07` | Proposal-bound confidential execution metadata, encrypted hashes, verifier-program binding, and fresh Testnet REFHE settlement evidence. |
 | ⚡ | MagicBlock | `/services/main-frontier-closure`, MagicBlock docs | Private-payment and fast execution corridor for confidential payout stories after governance approval. |
 | 🌑 | Umbra / Cloak | `/services/cloak-private-settlement`, `/payroll`, `/proof` | Private settlement intent, relayer readiness, scoped viewing-key posture, and audit-friendly confidential payout flows. |
 | 🔁 | Jupiter | `/services/jupiter-treasury-route`, `/treasury` | No-key quote preview for governed treasury routes so operators can review output, slippage, and route rationale before execution. |
-| 📊 | GoldRush / Dune | `/intelligence`, `/treasury` | Wallet and transaction context for treasury health, counterparty trust, suspicious flows, and proposal review before signing. |
+| 📊 | GoldRush / Dune | `/intelligence`, `/treasury`, `/documents/testnet-integration-runtime-closure-2026-05-07` | Prominent financial intelligence before signing: wallet history, stablecoin flow, counterparty trust, suspicious flows, and proposal review. |
 | 🏆 | Torque | `/services/torque-growth-loop`, `/proof` | Governance participation and receipt events for growth loops, rewards, and reviewer-visible engagement telemetry. |
 | 🤖 | Zerion agent policy | `/services/zerion-agent-policy`, `/treasury` | Bounded treasury assistant policy: allowed pairs, spend caps, and governance-controlled rebalancing context. |
 | 🧾 | Supabase | `/proof`, `/live`, `/dashboard` | Browser-direct receipt timeline for confirmed operations, avoiding static-export API limitations while keeping proof visible. |
@@ -216,6 +216,19 @@ PrivateDAO uses the official QVAC model `qvac/fabric-llm-finetune` as the local 
 - Fallback boundary: if a device cannot load the model, the page falls back to deterministic local policy analysis and labels that state explicitly.
 
 The QVAC lane is core product functionality, not a wrapper demo: it sits in the pre-sign review path used by `/intelligence/`, `/execute/`, and `/services/qvac-sovereign-ai/`.
+
+## Fresh Testnet Cryptographic Evidence
+
+These packets are the shortest judge path for the cryptography-heavy layers:
+
+| Layer | Product role | Fresh proof |
+| --- | --- | --- |
+| REFHE / Encrypt / IKA | Confidential execution commitments and verifier-program binding for sensitive treasury metadata. | [`docs/testnet-refhe-encrypt-ika-commitment-2026-05-07.md`](docs/testnet-refhe-encrypt-ika-commitment-2026-05-07.md) |
+| ZK proof continuity | Proof badges for hidden vote, delegation, and tally layers without exposing the underlying intent. | [`docs/testnet-zk-verification-receipts-2026-05-07.md`](docs/testnet-zk-verification-receipts-2026-05-07.md) |
+| Umbra / Cloak | Private settlement lanes with relayer readiness and browser-direct receipt continuity. | [`docs/testnet-integration-runtime-closure-2026-05-07.md`](docs/testnet-integration-runtime-closure-2026-05-07.md) |
+| GoldRush / Dune / Zerion / MagicBlock / QVAC | Live hosted checks from `api.privatedao.org` for intelligence, policy, relayer, and runtime status. | [`docs/testnet-integration-runtime-closure-2026-05-07.md`](docs/testnet-integration-runtime-closure-2026-05-07.md) |
+
+Normal users see simple route names: `Review with QVAC`, `Check wallet with GoldRush`, `Prepare private settlement`, and `Verify proof`. Judges get direct Solana Testnet transaction links and JSON/Markdown evidence packets.
 
 ## Replay Pressure Note
 

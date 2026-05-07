@@ -47,21 +47,21 @@ export default function ProofPage() {
   const integrationEvidenceLanes = [
     {
       title: "Cloak private settlement",
-      summary: "Confidential treasury and payroll settlement lane with proxy execution references and receipt exports.",
+      summary: "For users: prepare a private payroll or treasury settlement. For judges: inspect the live receipt path and current relay boundary.",
       featureHref: "/services/cloak-private-settlement",
-      proofHref: "/proof",
+      proofHref: "/documents/testnet-integration-runtime-closure-2026-05-07",
     },
     {
       title: "Umbra confidential payout",
-      summary: "Claim-link payout and recipient-private settlement lane with proof-linked continuity.",
+      summary: "For users: route recipient-private payouts. For judges: verify the Umbra relayer health and intent receipt evidence.",
       featureHref: "/services/umbra-confidential-payout",
-      proofHref: "/documents/privacy-and-encryption-proof-guide",
+      proofHref: "/documents/testnet-integration-runtime-closure-2026-05-07",
     },
     {
       title: "Intelligence evidence",
-      summary: "GoldRush and Dune Sim reviewer-facing intelligence lane for wallet history, stablecoin review, and counterparty screening.",
+      summary: "GoldRush is the visible financial intelligence layer: wallet history, stablecoin review, and counterparty screening before signing.",
       featureHref: "/intelligence",
-      proofHref: "/proof",
+      proofHref: "/documents/testnet-integration-runtime-closure-2026-05-07",
     },
     {
       title: "AUDD treasury mode",
@@ -113,21 +113,27 @@ export default function ProofPage() {
     },
     {
       title: "Encrypt / IKA operations",
-      summary: "Encrypted payload preparation and commitment-safe planning lane tied to proof continuity.",
+      summary: "For users: confidential execution commitments stay behind a simple proof badge. For judges: inspect the settled Testnet REFHE envelope.",
       featureHref: "/services/encrypt-ika-operations",
-      proofHref: "/documents/encrypted-operations-lane",
+      proofHref: "/documents/testnet-refhe-encrypt-ika-commitment-2026-05-07",
     },
     {
       title: "SolRouter encrypted AI",
-      summary: "Deterministic proposal intelligence with encrypted brief export and receipt continuity.",
+      summary: "General proposal analysis and encrypted local output. This is not the sensitive-decision gate; QVAC owns that role.",
       featureHref: "/services/solrouter-encrypted-ai",
-      proofHref: "/proof",
+      proofHref: "/documents/solrouter-encrypted-ai-evidence-2026-05-07",
     },
     {
       title: "QVAC sovereign AI",
-      summary: "On-device AI decision layer for private operations: local briefing, local context transformation, and privacy-preserving operator assistance.",
+      summary: "Sensitive-decision AI: local-first proposal and treasury briefing before a signer approves anything.",
       featureHref: "/services/qvac-sovereign-ai",
-      proofHref: "/proof",
+      proofHref: "/documents/testnet-integration-runtime-closure-2026-05-07",
+    },
+    {
+      title: "ZK proof continuity",
+      summary: "For users: proof badges explain hidden voting safely. For judges: verify fresh Testnet anchors and receipt transactions.",
+      featureHref: "/proof",
+      proofHref: "/documents/testnet-zk-verification-receipts-2026-05-07",
     },
     {
       title: "Main Frontier closure",
@@ -175,6 +181,20 @@ export default function ProofPage() {
       <TestnetProofMatrix />
       <div>
         <PrivacyPolicySelector compact />
+      </div>
+      <div className="rounded-[26px] border border-white/10 bg-white/[0.04] p-5">
+        <div className="grid gap-3 lg:grid-cols-3">
+          {[
+            ["Sensitive decisions", "QVAC runs local-first review before signing so private treasury intent does not need a cloud model.", "/services/qvac-sovereign-ai"],
+            ["Financial intelligence", "GoldRush and Dune make wallet, stablecoin, and counterparty context visible before an operator acts.", "/intelligence"],
+            ["Cryptographic proof", "ZK, REFHE/Encrypt, IKA, Umbra, Cloak, and MagicBlock each have a clear feature route and a judge proof route.", "/documents/testnet-refhe-encrypt-ika-commitment-2026-05-07"],
+          ].map(([title, summary, href]) => (
+            <Link key={title} href={href} className="rounded-[22px] border border-white/8 bg-black/20 p-4 transition hover:border-cyan-200/40">
+              <div className="text-sm font-semibold text-white">{title}</div>
+              <div className="mt-2 text-sm leading-6 text-white/62">{summary}</div>
+            </Link>
+          ))}
+        </div>
       </div>
       <div className="rounded-[26px] border border-white/10 bg-white/[0.04] p-5">
         <div className="text-[11px] uppercase tracking-[0.24em] text-white/42">Integration proof lanes</div>

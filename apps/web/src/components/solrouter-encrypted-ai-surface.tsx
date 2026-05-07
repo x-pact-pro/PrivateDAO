@@ -156,7 +156,7 @@ export function SolrouterEncryptedAiSurface() {
         </div>
         <h3 className="mt-3 text-xl font-semibold text-white">Deterministic governance intelligence + encrypted brief export</h3>
         <p className="mt-2 text-sm leading-7 text-white/68">
-          The lane generates deterministic governance/treasury analysis for a live proposal, then encrypts the brief locally before it leaves the browser.
+        This lane handles general governance and treasury analysis. Sensitive pre-sign decision support belongs to QVAC; SolRouter turns the broader proposal review into a local encrypted bundle for operators and judges.
         </p>
       </div>
 
@@ -214,4 +214,3 @@ export function SolrouterEncryptedAiSurface() {
     </div>
   );
 }
-

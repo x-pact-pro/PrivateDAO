@@ -66,6 +66,10 @@ function sha256Buffers(buffers: Buffer[]): Buffer {
   return hasher.digest();
 }
 
+function explorerCluster(url: string) {
+  return url.includes("testnet") ? "testnet" : "devnet";
+}
+
 async function anchorLayer(
   program: anchor.Program,
   recorder: Keypair,
@@ -127,7 +131,7 @@ async function anchorLayer(
     layer,
     zkProofAnchor: zkProofAnchor.toBase58(),
     txSignature,
-    explorerUrl: `https://explorer.solana.com/tx/${txSignature}?cluster=devnet`,
+    explorerUrl: `https://explorer.solana.com/tx/${txSignature}?cluster=${explorerCluster(DEFAULT_RPC_URL)}`,
     skipped: false,
   };
 }
@@ -190,8 +194,8 @@ async function main() {
   }
 
   const proof = loadProofRegistry();
-  const dao = new PublicKey(proof.dao);
-  const proposal = new PublicKey(proof.proposal);
+  const dao = new PublicKey(process.env.PRIVATE_DAO_ZK_DAO || proof.dao);
+  const proposal = new PublicKey(process.env.PRIVATE_DAO_ZK_PROPOSAL || proof.proposal);
 
   console.log(`RPC: ${DEFAULT_RPC_URL}`);
   console.log(`WS: ${DEFAULT_WS_URL}`);

@@ -490,6 +490,42 @@ const curatedDocuments: CuratedDocument[] = [
     rawHref: `${repositoryBlobBase}/docs/testnet-integration-runtime-closure-2026-05-07.md`,
   },
   {
+    slug: "testnet-refhe-encrypt-ika-commitment-2026-05-07",
+    title: "Testnet REFHE Encrypt/IKA Commitment 2026-05-07",
+    category: "Reviewer core",
+    summary:
+      "Fresh Solana Testnet REFHE evidence path: confidential payout proposal, payout plan, REFHE envelope configuration, settlement, and verifier-program binding.",
+    audience: "Judges, Encrypt/IKA reviewers, privacy reviewers, operators",
+    boundary:
+      "Real Testnet commitment and settlement evidence for proposal-bound confidential execution metadata. It does not claim external FHE computation-service custody.",
+    docPath: "docs/testnet-refhe-encrypt-ika-commitment-2026-05-07.md",
+    rawHref: `${repositoryBlobBase}/docs/testnet-refhe-encrypt-ika-commitment-2026-05-07.md`,
+  },
+  {
+    slug: "testnet-zk-verification-receipts-2026-05-07",
+    title: "Testnet ZK Verification Receipts 2026-05-07",
+    category: "Reviewer core",
+    summary:
+      "Fresh Solana Testnet ZK proof anchors and parallel verification receipts for vote, delegation, and tally layers on the current confidential proposal.",
+    audience: "Judges, ZK reviewers, privacy reviewers, operators",
+    boundary:
+      "Real Testnet proof-continuity evidence. It records anchors and verification receipts; verifier-CPI enforcement remains the stricter production mode.",
+    docPath: "docs/testnet-zk-verification-receipts-2026-05-07.md",
+    rawHref: `${repositoryBlobBase}/docs/testnet-zk-verification-receipts-2026-05-07.md`,
+  },
+  {
+    slug: "solrouter-encrypted-ai-evidence-2026-05-07",
+    title: "SolRouter Encrypted AI Evidence 2026-05-07",
+    category: "Reviewer core",
+    summary:
+      "Local encrypted AI-output evidence for the SolRouter lane, including deterministic operation brief generation, AES-GCM encryption, and plaintext/ciphertext hashes.",
+    audience: "Judges, AI reviewers, privacy reviewers, operators",
+    boundary:
+      "Local encrypted-output proof only. It proves the product can encrypt AI briefs before they leave the device, without claiming SolRouter vendor custody or external relay execution.",
+    docPath: "docs/solrouter-encrypted-ai-evidence-2026-05-07.md",
+    rawHref: `${repositoryBlobBase}/docs/solrouter-encrypted-ai-evidence-2026-05-07.md`,
+  },
+  {
     slug: "treasury-reviewer-packet",
     title: "Treasury Reviewer Packet",
     category: "Reviewer core",

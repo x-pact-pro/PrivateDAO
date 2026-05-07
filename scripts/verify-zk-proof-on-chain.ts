@@ -12,7 +12,11 @@ const DEFAULT_RPC_URL =
 const DEFAULT_WS_URL =
   process.env.PRIVATE_DAO_WS_URL ||
   process.env.ANCHOR_WALLET_WS_URL ||
-  DEFAULT_RPC_URL.replace(/^https:/, "wss:").replace(/^http:/, "ws:");
+    DEFAULT_RPC_URL.replace(/^https:/, "wss:").replace(/^http:/, "ws:");
+
+function explorerCluster(url: string) {
+  return url.includes("testnet") ? "testnet" : "devnet";
+}
 
 const LAYER_CONFIG: Record<
   LayerName,
@@ -124,7 +128,7 @@ async function verifyLayer(
     zkProofAnchor: zkProofAnchor.toBase58(),
     zkVerificationReceipt: zkVerificationReceipt.toBase58(),
     txSignature,
-    explorerUrl: `https://explorer.solana.com/tx/${txSignature}?cluster=devnet`,
+    explorerUrl: `https://explorer.solana.com/tx/${txSignature}?cluster=${explorerCluster(DEFAULT_RPC_URL)}`,
     skipped: false,
   };
 }
@@ -169,8 +173,8 @@ async function main() {
   }
 
   const proof = loadProofRegistry();
-  const dao = new PublicKey(proof.dao);
-  const proposal = new PublicKey(proof.proposal);
+  const dao = new PublicKey(process.env.PRIVATE_DAO_ZK_DAO || proof.dao);
+  const proposal = new PublicKey(process.env.PRIVATE_DAO_ZK_PROPOSAL || proof.proposal);
 
   console.log(`RPC: ${DEFAULT_RPC_URL}`);
   console.log(`Verifier: ${verifier.publicKey.toBase58()}`);

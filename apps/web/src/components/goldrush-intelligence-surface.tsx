@@ -104,7 +104,7 @@ export function GoldRushIntelligenceSurface() {
   const [walletAddress, setWalletAddress] = useState("So11111111111111111111111111111111111111112");
   const [activeTemplate, setActiveTemplate] = useState<GoldRushTemplateId>("wallet-history");
   const [deliveryState, setDeliveryState] = useState(
-    "Prepare a GoldRush intelligence payload here, then connect a proxy endpoint to forward live requests.",
+    "Run a live GoldRush intelligence request here. The hosted read-node now forwards configured GoldRush and Dune checks for reviewer-visible pre-sign context.",
   );
   const [responsePreview, setResponsePreview] = useState<string>("");
   const [responseData, setResponseData] = useState<GoldRushResponse | null>(null);
@@ -144,9 +144,9 @@ export function GoldRushIntelligenceSurface() {
       </div>
       <h2 className="mt-3 text-2xl font-semibold text-white">Structured on-chain intelligence for treasury and counterparty review</h2>
       <p className="mt-3 max-w-4xl text-sm leading-7 text-white/68">
-        This surface turns GoldRush into a real pre-execution lane inside PrivateDAO: prepare wallet history, stablecoin flow,
-        counterparty, and holdings queries before the signer moves into execution. The UI is live now; forwarding to a live
-        GoldRush-backed proxy is activated through one environment variable.
+        This surface makes GoldRush prominent where it belongs: before signature. It turns wallet history, stablecoin flow,
+        counterparty trust, and holdings queries into a pre-execution review lane for normal users and a live evidence lane
+        for judges.
       </p>
 
       <div className="mt-5 grid gap-4 xl:grid-cols-[0.95fr_1.05fr]">
@@ -314,7 +314,7 @@ export function GoldRushIntelligenceSurface() {
           <div className="rounded-[24px] border border-white/10 bg-black/20 p-4">
             <div className="text-[11px] uppercase tracking-[0.22em] text-white/44">Latest response preview</div>
             <pre className="mt-3 overflow-x-auto rounded-2xl border border-white/10 bg-black/30 p-4 text-xs leading-6 text-white/70">
-              {responsePreview || "Ready for a live GoldRush/Dune query. Run the workbench to populate this reviewer packet."}
+              {responsePreview || "Ready for a live GoldRush/Dune query. Run the workbench to populate this reviewer packet with wallet intelligence before signing."}
             </pre>
           </div>
 

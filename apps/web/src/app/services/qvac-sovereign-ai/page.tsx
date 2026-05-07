@@ -17,8 +17,8 @@ export default function QvacSovereignAiPage() {
   return (
     <OperationsShell
       eyebrow="Services"
-      title="QVAC Sovereign AI lane"
-      description="This lane integrates local-first AI into PrivateDAO execution so operation context can be transformed on device before signing."
+      title="QVAC for sensitive decisions before signing"
+      description="QVAC is the private decision gate: it prepares proposal, payroll, treasury, and compliance context locally before a signer exposes anything to execution."
       navigationMode="guided"
       badges={[
         { label: "QVAC", variant: "cyan" },

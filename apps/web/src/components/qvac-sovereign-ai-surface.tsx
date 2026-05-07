@@ -122,10 +122,11 @@ export function QvacSovereignAiSurface({ compact = false }: { compact?: boolean 
         <Cpu className="h-4 w-4" />
         QVAC sovereign AI layer
       </div>
-      <h2 className="mt-3 text-2xl font-semibold text-white">Local-first decision layer for private DAO operations</h2>
+      <h2 className="mt-3 text-2xl font-semibold text-white">Local-first decision layer for sensitive DAO operations</h2>
       <p className="mt-3 max-w-4xl text-sm leading-7 text-white/68">
-        This lane keeps AI-assisted operation context on-device before signing: local risk briefing, local language-ready guidance,
-        and zero requirement to send sensitive governance intent to a centralized model endpoint.
+        QVAC is used where disclosure would hurt the operator: private payroll, confidential treasury proposals, compliance review,
+        and high-value votes. It prepares the brief locally before signing so sensitive governance intent does not need a centralized
+        model endpoint.
       </p>
 
       <div className="mt-5 grid gap-4 lg:grid-cols-2">
