@@ -58,6 +58,18 @@ type VisitorPingRow = {
   country_hint?: string | null;
 };
 
+type VisitorTransactionRow = {
+  tx_signature: string;
+  session_id: string;
+  wallet_address?: string | null;
+  wallet_name?: string | null;
+  action: string;
+  page: string;
+  status: string;
+  slot?: number | null;
+  created_at?: string;
+};
+
 type LiveTransactionRow = {
   sig: string;
   instruction: string;
@@ -293,6 +305,99 @@ async function handleVisitorPing(body: Record<string, unknown>, req: http.Incomi
   return { ok: true, source: stored.ok ? "supabase" : "memory-fallback", session: row.session_id.slice(0, 12), page };
 }
 
+async function handleVisitorTransactionReceipt(body: Record<string, unknown>) {
+  const txSignature = stringField(body, "txSignature");
+  if (!/^[1-9A-HJ-NP-Za-km-z]{64,96}$/.test(txSignature)) {
+    throw new Error("txSignature must be a Solana base58 signature.");
+  }
+  const sessionIdRaw = stringField(body, "sessionId", "anonymous-session");
+  const walletAddress = stringField(body, "walletAddress").slice(0, 64) || null;
+  const walletName = stringField(body, "walletName", "unknown-wallet").slice(0, 80);
+  const action = stringField(body, "action", "testnet-transaction").slice(0, 80);
+  const page = stringField(body, "page", "/").slice(0, 180);
+  const row: VisitorTransactionRow = {
+    tx_signature: txSignature,
+    session_id: hashVisitorSession(sessionIdRaw),
+    wallet_address: walletAddress,
+    wallet_name: walletName,
+    action,
+    page,
+    status: stringField(body, "status", "confirmed").slice(0, 40),
+    slot: typeof body.slot === "number" && Number.isFinite(body.slot) ? Math.round(body.slot) : null,
+  };
+  const stored = await supabaseInsert("visitor_transactions", row as SupabaseRow);
+  return {
+    ok: true,
+    source: stored.ok ? "supabase" : "memory-fallback",
+    tx: txSignature,
+    action,
+    walletName,
+    explorer: `https://explorer.solana.com/tx/${txSignature}?cluster=testnet`,
+  };
+}
+
+function stringArrayField(body: Record<string, unknown>, key: string) {
+  const value = body[key];
+  if (!Array.isArray(value)) return [] as string[];
+  return value.filter((item): item is string => typeof item === "string" && item.trim().length > 0).map((item) => item.trim().slice(0, 120));
+}
+
+async function handleOnboardingRequest(body: Record<string, unknown>) {
+  const tier = stringField(body, "tier", "open").slice(0, 40);
+  const profile = stringField(body, "profile").slice(0, 80);
+  const name = stringField(body, "name").slice(0, 120);
+  const email = stringField(body, "email").slice(0, 160);
+  if (!profile) throw new Error("profile is required.");
+  if (!name) throw new Error("name is required.");
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw new Error("valid email is required.");
+
+  const row = {
+    tier,
+    profile,
+    challenges: stringArrayField(body, "challenges"),
+    other_challenge: stringField(body, "otherChallenge").slice(0, 240) || null,
+    treasury_size: stringField(body, "treasurySize", "prefer-not-to-say").slice(0, 80),
+    voting_members: stringField(body, "votingMembers", "unknown").slice(0, 80),
+    monthly_decisions: stringField(body, "monthlyDecisions", "unknown").slice(0, 80),
+    current_setup: stringArrayField(body, "currentSetup"),
+    preferred_chain: stringField(body, "preferredChain", "solana").slice(0, 80),
+    developer_context: stringField(body, "developerContext", "unknown").slice(0, 120),
+    name,
+    email,
+    organization: stringField(body, "organization").slice(0, 160) || null,
+    website: stringField(body, "website").slice(0, 240) || null,
+    telegram: stringField(body, "telegram").slice(0, 120) || null,
+    timeline: stringField(body, "timeline", "testnet-exploration").slice(0, 120),
+    source: stringField(body, "source", "privatedao-site").slice(0, 120),
+    notes: stringField(body, "notes").slice(0, 2000) || null,
+    utm_source: stringField(body, "utmSource").slice(0, 120) || null,
+    status: "new",
+  };
+  const stored = await supabaseInsert("onboarding_requests", row);
+  if (!stored.ok) {
+    throw new Error("Onboarding request could not be stored.");
+  }
+
+  const telegramEndpoint = process.env.PRIVATE_DAO_TELEGRAM_WEBHOOK_URL?.trim();
+  if (telegramEndpoint) {
+    void fetch(telegramEndpoint, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        text: `New PrivateDAO onboarding: ${name} | ${tier} | ${row.treasury_size} | ${email}`,
+      }),
+    }).catch(() => null);
+  }
+
+  return {
+    ok: true,
+    source: "supabase",
+    tier,
+    next: "/onboard/confirmed/",
+    message: "We received your governance brief. Expect a response within 24 hours.",
+  };
+}
+
 async function visitorStats() {
   const rows =
     (await supabaseSelect<VisitorPingRow>(
@@ -323,6 +428,14 @@ async function visitorStats() {
     .sort((a, b) => b[1] - a[1])
     .slice(0, 8)
     .map(([page, visits]) => ({ page, visits }));
+  const visitorTransactions = await supabaseSelect<VisitorTransactionRow>(
+    "visitor_transactions",
+    "?select=tx_signature,session_id,wallet_address,wallet_name,action,page,status,slot,created_at&order=created_at.desc&limit=5000",
+  );
+  const visitorTransactionsToday = visitorTransactions.filter((row) => {
+    const createdAt = row.created_at || "";
+    return createdAt ? new Date(createdAt).getTime() >= today.getTime() : false;
+  });
   return {
     ok: true,
     source: rows.length ? "supabase" : "memory-fallback",
@@ -330,6 +443,12 @@ async function visitorStats() {
     activeToday,
     activeNow,
     totalSessions,
+    visitorTransactionsToday: visitorTransactionsToday.length,
+    totalVisitorTransactions: visitorTransactions.length,
+    latestVisitorTransactions: visitorTransactions.slice(0, 6).map((row) => ({
+      ...row,
+      explorer: `https://explorer.solana.com/tx/${row.tx_signature}?cluster=testnet`,
+    })),
     byDay,
     topPages,
     generatedAt: new Date().toISOString(),
@@ -764,6 +883,20 @@ async function handle(req: http.IncomingMessage, res: http.ServerResponse) {
       return;
     }
 
+    if (req.method === "POST" && pathname === "/api/v1/transactions/receipt") {
+      const body = await readRequestJson(req);
+      const result = await handleVisitorTransactionReceipt(body);
+      writeJson(res, 200, result);
+      return;
+    }
+
+    if (req.method === "POST" && pathname === "/api/v1/onboard/request") {
+      const body = await readRequestJson(req);
+      const result = await handleOnboardingRequest(body);
+      writeJson(res, 200, result);
+      return;
+    }
+
     if (req.method !== "GET") {
       writeJson(res, 405, { ok: false, error: "Method not allowed for this route" });
       return;
@@ -820,6 +953,8 @@ async function handle(req: http.IncomingMessage, res: http.ServerResponse) {
           visitorPing: "/api/v1/visitors/ping",
           visitorStats: "/api/v1/visitors/stats",
           chainLatest: "/api/v1/chain/latest",
+          transactionReceipt: "/api/v1/transactions/receipt",
+          onboardRequest: "/api/v1/onboard/request",
         },
       });
       return;

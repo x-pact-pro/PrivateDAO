@@ -54,6 +54,9 @@ const coreRoutes = [
   "/benefit",
   "/versus",
   "/revenue",
+  "/pricing",
+  "/onboard",
+  "/onboard/confirmed",
   "/story",
 ];
 

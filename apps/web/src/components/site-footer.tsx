@@ -35,6 +35,12 @@ export function SiteFooter() {
             <Link href="/services" className="hover:text-white">
               {copy.chrome.apiPricing}
             </Link>
+            <Link href="/pricing" className="hover:text-white">
+              Pricing
+            </Link>
+            <Link href="/onboard" className="hover:text-white">
+              Onboard
+            </Link>
             <Link href="/about" className="hover:text-white">
               About
             </Link>

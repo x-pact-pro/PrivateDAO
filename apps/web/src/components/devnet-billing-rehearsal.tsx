@@ -10,6 +10,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { buildSolanaTxUrl, SOLANA_NETWORK_LABEL } from "@/lib/solana-network";
 import { persistOperationReceipt } from "@/lib/supabase/operation-receipts";
 import { getTreasuryReceiveConfig } from "@/lib/treasury-receive-config";
+import { captureVisitorTransaction } from "@/lib/visitor-transaction-capture";
 import { cn } from "@/lib/utils";
 
 const MEMO_PROGRAM_ID = new PublicKey("MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr");
@@ -278,6 +279,13 @@ export function TestnetBillingRehearsal() {
       const nextSignature = await sendTransaction(transaction, connection, {
         maxRetries: 3,
         skipPreflight: false,
+      });
+      captureVisitorTransaction({
+        txSignature: nextSignature,
+        walletAddress: publicKey.toBase58(),
+        walletName: wallet?.adapter.name,
+        action: "billing-rehearsal",
+        status: "submitted",
       });
 
       setSignature(nextSignature);

@@ -112,6 +112,44 @@ create table if not exists public.live_transactions (
   wallet_type text not null default 'wallet-signed-testnet'
 );
 
+create table if not exists public.visitor_transactions (
+  id uuid primary key default gen_random_uuid(),
+  tx_signature text not null unique,
+  session_id text not null,
+  wallet_address text,
+  wallet_name text,
+  action text not null default 'testnet-transaction',
+  page text not null default '/',
+  status text not null default 'submitted',
+  slot bigint,
+  created_at timestamptz not null default now()
+);
+
+create table if not exists public.onboarding_requests (
+  id uuid primary key default gen_random_uuid(),
+  created_at timestamptz not null default now(),
+  tier text not null,
+  profile text not null,
+  challenges text[] not null default '{}'::text[],
+  other_challenge text,
+  treasury_size text not null,
+  voting_members text not null,
+  monthly_decisions text not null,
+  current_setup text[] not null default '{}'::text[],
+  preferred_chain text not null,
+  developer_context text not null,
+  name text not null,
+  email text not null,
+  organization text,
+  website text,
+  telegram text,
+  timeline text not null,
+  source text,
+  notes text,
+  utm_source text,
+  status text not null default 'new'
+);
+
 create table if not exists public.proof_stats (
   id text primary key default 'global',
   last_tx_signature text,
@@ -183,6 +221,18 @@ create index if not exists live_transactions_timestamp_idx
 create index if not exists live_transactions_instruction_idx
   on public.live_transactions (instruction);
 
+create index if not exists visitor_transactions_created_at_idx
+  on public.visitor_transactions (created_at desc);
+
+create index if not exists visitor_transactions_session_idx
+  on public.visitor_transactions (session_id);
+
+create index if not exists onboarding_requests_created_at_idx
+  on public.onboarding_requests (created_at desc);
+
+create index if not exists onboarding_requests_tier_idx
+  on public.onboarding_requests (tier);
+
 do $$
 begin
   begin
@@ -233,6 +283,20 @@ begin
     when duplicate_object then null;
     when undefined_object then null;
   end;
+
+  begin
+    alter publication supabase_realtime add table public.visitor_transactions;
+  exception
+    when duplicate_object then null;
+    when undefined_object then null;
+  end;
+
+  begin
+    alter publication supabase_realtime add table public.onboarding_requests;
+  exception
+    when duplicate_object then null;
+    when undefined_object then null;
+  end;
 end $$;
 
 alter table public.operation_receipts enable row level security;
@@ -242,6 +306,8 @@ alter table public.freshness_pings enable row level security;
 alter table public.visitor_sessions enable row level security;
 alter table public.live_transactions enable row level security;
 alter table public.proof_stats enable row level security;
+alter table public.visitor_transactions enable row level security;
+alter table public.onboarding_requests enable row level security;
 
 grant select, insert on public.operation_receipts to anon;
 grant select, insert on public.governance_receipts to anon;
@@ -250,6 +316,8 @@ grant select, insert on public.freshness_pings to anon;
 grant select, insert on public.visitor_sessions to anon;
 grant select, insert on public.live_transactions to anon;
 grant select, update on public.proof_stats to anon;
+grant select, insert on public.visitor_transactions to anon;
+grant select, insert on public.onboarding_requests to anon;
 
 do $$
 begin
@@ -482,6 +550,74 @@ begin
       for update
       to anon, authenticated
       using (true)
+      with check (true);
+  end if;
+end $$;
+
+do $$
+begin
+  if not exists (
+    select 1
+    from pg_policies
+    where schemaname = 'public'
+      and tablename = 'visitor_transactions'
+      and policyname = 'visitor_transactions_select'
+  ) then
+    create policy visitor_transactions_select
+      on public.visitor_transactions
+      for select
+      to anon, authenticated
+      using (true);
+  end if;
+end $$;
+
+do $$
+begin
+  if not exists (
+    select 1
+    from pg_policies
+    where schemaname = 'public'
+      and tablename = 'visitor_transactions'
+      and policyname = 'visitor_transactions_insert'
+  ) then
+    create policy visitor_transactions_insert
+      on public.visitor_transactions
+      for insert
+      to anon, authenticated
+      with check (true);
+  end if;
+end $$;
+
+do $$
+begin
+  if not exists (
+    select 1
+    from pg_policies
+    where schemaname = 'public'
+      and tablename = 'onboarding_requests'
+      and policyname = 'onboarding_requests_select'
+  ) then
+    create policy onboarding_requests_select
+      on public.onboarding_requests
+      for select
+      to anon, authenticated
+      using (true);
+  end if;
+end $$;
+
+do $$
+begin
+  if not exists (
+    select 1
+    from pg_policies
+    where schemaname = 'public'
+      and tablename = 'onboarding_requests'
+      and policyname = 'onboarding_requests_insert'
+  ) then
+    create policy onboarding_requests_insert
+      on public.onboarding_requests
+      for insert
+      to anon, authenticated
       with check (true);
   end if;
 end $$;

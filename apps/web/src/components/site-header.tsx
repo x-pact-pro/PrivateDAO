@@ -20,6 +20,7 @@ const navItems = [
   { href: "/payroll", label: "Payroll", rel: "nofollow" },
   { href: "/execute", label: "Execute", rel: "nofollow" },
   { href: "/proof", label: "Proof" },
+  { href: "/pricing", label: "Pricing" },
 ];
 
 const utilityNav = [
@@ -63,6 +64,8 @@ export function SiteHeader() {
         return "Execute";
       case "/proof":
         return "Proof";
+      case "/pricing":
+        return "Pricing";
       default:
         return fallback;
     }

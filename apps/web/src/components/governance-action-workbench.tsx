@@ -36,6 +36,7 @@ import { persistOperationReceipt } from "@/lib/supabase/operation-receipts";
 import { getTreasuryReceiveConfig } from "@/lib/treasury-receive-config";
 import { useServiceHandoffSnapshot } from "@/lib/use-service-handoff-snapshot";
 import { cn } from "@/lib/utils";
+import { captureVisitorTransaction } from "@/lib/visitor-transaction-capture";
 
 const voteChoices = ["Approve", "Reject"] as const;
 // The browser-first governance lane needs enough time for a human wallet prompt
@@ -273,31 +274,48 @@ async function submitWalletTransactionWithFallback({
   connection,
   sendTransaction,
   signTransaction,
+  action = "governance-action",
+  walletAddress,
+  walletName,
   extraSigners = [],
 }: {
   transaction: import("@solana/web3.js").Transaction;
   connection: ReturnType<typeof useConnection>["connection"];
   sendTransaction: ReturnType<typeof useWallet>["sendTransaction"];
   signTransaction?: ReturnType<typeof useWallet>["signTransaction"];
+  action?: string;
+  walletAddress?: string;
+  walletName?: string;
   extraSigners?: import("@solana/web3.js").Signer[];
 }) {
+  let signature: string;
   if (signTransaction) {
     const transactionForManualSend = transaction;
     if (extraSigners.length > 0) {
       transactionForManualSend.partialSign(...extraSigners);
     }
     const signedTransaction = await signTransaction(transactionForManualSend);
-    return connection.sendRawTransaction(signedTransaction.serialize(), {
+    signature = await connection.sendRawTransaction(signedTransaction.serialize(), {
       maxRetries: 3,
       preflightCommitment: "confirmed",
       skipPreflight: false,
     });
+  } else {
+    signature = await sendTransaction(transaction, connection, {
+      preflightCommitment: "confirmed",
+      signers: extraSigners,
+    });
   }
 
-  return sendTransaction(transaction, connection, {
-    preflightCommitment: "confirmed",
-    signers: extraSigners,
+  captureVisitorTransaction({
+    txSignature: signature,
+    walletAddress,
+    walletName,
+    action,
+    status: "submitted",
   });
+
+  return signature;
 }
 
 type ActionFollowUpLink = {
@@ -1014,6 +1032,9 @@ export function GovernanceActionWorkbench() {
         connection,
         sendTransaction,
         signTransaction,
+        action: "create-dao",
+        walletAddress: publicKey.toBase58(),
+        walletName: wallet?.adapter.name,
         extraSigners: [bootstrap.mintSigner],
       });
 
@@ -1140,6 +1161,9 @@ export function GovernanceActionWorkbench() {
         connection,
         sendTransaction,
         signTransaction,
+        action: "create-proposal",
+        walletAddress: publicKey.toBase58(),
+        walletName: wallet?.adapter.name,
       });
 
       await awaitLiveSignatureOnCluster({ connection, signature });
@@ -1262,6 +1286,9 @@ export function GovernanceActionWorkbench() {
         connection,
         sendTransaction,
         signTransaction,
+        action: "commit-vote",
+        walletAddress: publicKey.toBase58(),
+        walletName: wallet?.adapter.name,
       });
 
       await awaitLiveSignatureOnCluster({ connection, signature });
@@ -1350,6 +1377,9 @@ export function GovernanceActionWorkbench() {
         connection,
         sendTransaction,
         signTransaction,
+        action: "reveal-vote",
+        walletAddress: publicKey.toBase58(),
+        walletName: wallet?.adapter.name,
       });
 
       await awaitLiveSignatureOnCluster({ connection, signature });
@@ -1429,6 +1459,9 @@ export function GovernanceActionWorkbench() {
         connection,
         sendTransaction,
         signTransaction,
+        action: "finalize-proposal",
+        walletAddress: publicKey.toBase58(),
+        walletName: wallet?.adapter.name,
       });
 
       await awaitLiveSignatureOnCluster({ connection, signature });
@@ -1525,6 +1558,9 @@ export function GovernanceActionWorkbench() {
         connection,
         sendTransaction,
         signTransaction,
+        action: "execute-proposal",
+        walletAddress: publicKey.toBase58(),
+        walletName: wallet?.adapter.name,
       });
 
       await awaitLiveSignatureOnCluster({ connection, signature });

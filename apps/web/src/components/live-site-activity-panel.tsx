@@ -26,6 +26,15 @@ type VisitorStats = {
   activeToday: number;
   activeNow: number;
   totalSessions: number;
+  visitorTransactionsToday: number;
+  totalVisitorTransactions: number;
+  latestVisitorTransactions: {
+    tx_signature: string;
+    wallet_name?: string | null;
+    action: string;
+    status: string;
+    explorer: string;
+  }[];
   byDay: { date: string; sessions: number }[];
   topPages: { page: string; visits: number }[];
   generatedAt: string;
@@ -107,9 +116,9 @@ export function LiveSiteActivityPanel({ variant = "compact" }: { variant?: "comp
         </div>
         <div className="rounded-[22px] border border-white/10 bg-black/25 p-4">
           <Activity className="h-5 w-5 text-emerald-200" />
-          <div className="mt-3 text-xs uppercase tracking-[0.22em] text-white/42">Active today</div>
-          <div className="mt-1 text-lg font-semibold text-white">{visitors?.activeToday ?? "..."}</div>
-          <div className="mt-1 text-xs text-white/48">governance explorers</div>
+          <div className="mt-3 text-xs uppercase tracking-[0.22em] text-white/42">Signed today</div>
+          <div className="mt-1 text-lg font-semibold text-white">{visitors?.visitorTransactionsToday ?? "..."}</div>
+          <div className="mt-1 text-xs text-white/48">visitor Testnet txs</div>
         </div>
         <div className="rounded-[22px] border border-white/10 bg-black/25 p-4">
           <Eye className="h-5 w-5 text-violet-200" />
@@ -120,10 +129,34 @@ export function LiveSiteActivityPanel({ variant = "compact" }: { variant?: "comp
         <div className="rounded-[22px] border border-white/10 bg-black/25 p-4">
           <ShieldCheck className="h-5 w-5 text-amber-100" />
           <div className="mt-3 text-xs uppercase tracking-[0.22em] text-white/42">Since launch</div>
-          <div className="mt-1 text-lg font-semibold text-white">{visitors?.totalSessions ?? "..."}</div>
-          <div className="mt-1 text-xs text-white/48">hashed sessions</div>
+          <div className="mt-1 text-lg font-semibold text-white">{visitors?.totalVisitorTransactions ?? "..."}</div>
+          <div className="mt-1 text-xs text-white/48">visitor-signed txs</div>
         </div>
       </div>
+
+      {(visitors?.latestVisitorTransactions?.length || 0) > 0 ? (
+        <div className="mt-5 rounded-[24px] border border-white/10 bg-black/20 p-4">
+          <div className="text-sm font-semibold text-white">Latest visitor-signed Testnet transactions</div>
+          <div className="mt-3 grid gap-2 lg:grid-cols-2">
+            {visitors?.latestVisitorTransactions.slice(0, 4).map((tx) => (
+              <Link
+                key={tx.tx_signature}
+                href={tx.explorer}
+                target="_blank"
+                className="rounded-2xl border border-white/8 bg-white/[0.04] px-3 py-2 text-sm transition hover:border-cyan-200/40"
+              >
+                <div className="flex items-center justify-between gap-3">
+                  <span className="truncate font-medium text-white">{tx.action}</span>
+                  <span className="text-xs uppercase tracking-[0.18em] text-emerald-200">{tx.status}</span>
+                </div>
+                <div className="mt-1 truncate text-xs text-white/48">
+                  {(tx.wallet_name || "wallet")} · {tx.tx_signature}
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      ) : null}
 
       {variant === "analytics" ? (
         <div className="mt-5 grid gap-4 lg:grid-cols-[1.1fr_0.9fr]">
