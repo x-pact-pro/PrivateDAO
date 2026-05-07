@@ -2,7 +2,7 @@
 
 This report is generated from the canonical PrivateDAO registries and reviewer artifacts. It exists to summarize what is already verified inside the repository and what still remains outside repository scope before any production cutover.
 
-> Status note, 2026-05-06: this generated report includes legacy Devnet evidence from the pre-Anchor-1 migration surface. The current reviewer-facing Testnet program is `EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva`; see `docs/anchor-1-migration-evidence-2026-04-30.md` and `docs/testnet-lifecycle-rehearsal-2026-05-06.md`. Production mainnet remains blocked until custody, audit, monitoring, and cutover evidence are recorded.
+> Status note, 2026-05-06: this generated report includes legacy Devnet evidence from the pre-Anchor-1 migration surface. The current reviewer-facing Testnet program is `EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva`; see `docs/anchor-1-migration-evidence-2026-04-30.md` and `docs/testnet-lifecycle-rehearsal-2026-05-07.md`. Production mainnet remains blocked until custody, audit, monitoring, and cutover evidence are recorded.
 
 ## Current Identity
 

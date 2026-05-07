@@ -466,7 +466,7 @@ export function getOperationalValidationSnapshot(): OperationalValidationSnapsho
   const devnetCanary = readJson<DevnetCanaryJson>("docs/devnet-canary.generated.json");
   const frontierIntegrations = readJson<FrontierIntegrationsJson>("docs/frontier-integrations.generated.json");
   const latestTestnetRehearsal = readOptionalJson<TestnetLifecycleRehearsalJson>(
-    "docs/testnet-lifecycle-rehearsal-2026-05-06.json",
+    "docs/testnet-lifecycle-rehearsal-2026-05-07.json",
   );
 
   const liveVotingCount = proposalCards.filter((proposal) => proposal.status === "Live voting").length;

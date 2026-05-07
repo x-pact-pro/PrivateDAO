@@ -2,7 +2,7 @@
 
 This note captures a real end-to-end governance run executed on Solana devnet from the repository surface using the verification wallet.
 
-Use this file as the canonical legacy Devnet baseline lifecycle proof. The current reviewer-facing Anchor 1.0.1 Testnet program is `EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva`; see [`testnet-lifecycle-rehearsal-2026-05-06.md`](testnet-lifecycle-rehearsal-2026-05-06.md) and [`anchor-1-migration-evidence-2026-04-30.md`](anchor-1-migration-evidence-2026-04-30.md).
+Use this file as the canonical legacy Devnet baseline lifecycle proof. The current reviewer-facing Anchor 1.0.1 Testnet program is `EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva`; see [`testnet-lifecycle-rehearsal-2026-05-07.md`](testnet-lifecycle-rehearsal-2026-05-07.md) and [`anchor-1-migration-evidence-2026-04-30.md`](anchor-1-migration-evidence-2026-04-30.md).
 
 For the stricter additive hardening path, open:
 

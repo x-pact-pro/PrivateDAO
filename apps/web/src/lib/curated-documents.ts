@@ -336,6 +336,18 @@ const curatedDocuments: CuratedDocument[] = [
     rawHref: `${repositoryBlobBase}/docs/testnet-lifecycle-rehearsal-2026-05-06.md`,
   },
   {
+    slug: "testnet-lifecycle-rehearsal-2026-05-07",
+    title: "Testnet Lifecycle Rehearsal 2026-05-07",
+    category: "Infrastructure",
+    summary:
+      "Latest Solana Testnet proof for DAO creation, proposal creation, treasury deposit, commit, reveal, finalize, execute, Supabase receipt intake, and treasury delta verification against the Anchor 1.0.1 program.",
+    audience: "Judges, infrastructure reviewers, operators, funders",
+    boundary:
+      "Standard Testnet governance and SOL treasury execution proof only; custody/multisig and full Umbra claim proof remain separate gated evidence lanes.",
+    docPath: "docs/testnet-lifecycle-rehearsal-2026-05-07.md",
+    rawHref: `${repositoryBlobBase}/docs/testnet-lifecycle-rehearsal-2026-05-07.md`,
+  },
+  {
     slug: "testnet-lifecycle-rehearsal-2026-04-19",
     title: "Testnet Lifecycle Rehearsal",
     category: "Infrastructure",
@@ -464,6 +476,18 @@ const curatedDocuments: CuratedDocument[] = [
     boundary: "Relayer readiness and receipt evidence only; full Umbra claim submission still requires SDK-generated ZK proof data and UTXO slot data.",
     docPath: "docs/umbra-devnet-relayer-receipt-2026-05-06.md",
     rawHref: `${repositoryBlobBase}/docs/umbra-devnet-relayer-receipt-2026-05-06.md`,
+  },
+  {
+    slug: "testnet-integration-runtime-closure-2026-05-07",
+    title: "Testnet Integration Runtime Closure 2026-05-07",
+    category: "Reviewer core",
+    summary:
+      "Fresh Solana Testnet lifecycle proof plus live AWS read-node checks for Dune SIM, GoldRush, Zerion, Umbra relayer, MagicBlock, QVAC, and private-settlement receipt paths.",
+    audience: "Judges, privacy reviewers, infrastructure reviewers, operators",
+    boundary:
+      "Fresh runtime packet only. It distinguishes real Testnet execution from vendor intent receipts and does not claim full Umbra claim execution, Cloak relay execution, or on-chain ZK verifier CPI where those are still separate integration boundaries.",
+    docPath: "docs/testnet-integration-runtime-closure-2026-05-07.md",
+    rawHref: `${repositoryBlobBase}/docs/testnet-integration-runtime-closure-2026-05-07.md`,
   },
   {
     slug: "treasury-reviewer-packet",

@@ -20,7 +20,7 @@
   <a href="docs/pdao-token.md"><img src="https://img.shields.io/badge/PDAO-Token--2022%20Governance%20Mint-0f766e" alt="PDAO token" /></a>
   <a href="docs/security-hardening-v2.md"><img src="https://img.shields.io/badge/Security-Strict%20V2%20Hardening-1d4ed8" alt="Strict V2 security hardening" /></a>
   <a href="docs/operational-evidence.generated.md"><img src="https://img.shields.io/badge/Devnet-50%20Wallet%20Rehearsal-7c3aed" alt="Devnet rehearsal" /></a>
-  <a href="docs/testnet-lifecycle-rehearsal-2026-05-06.md"><img src="https://img.shields.io/badge/Testnet-Lifecycle%20Rehearsal%202026--05--06-0ea5e9" alt="Fresh Testnet lifecycle rehearsal" /></a>
+  <a href="docs/testnet-lifecycle-rehearsal-2026-05-07.md"><img src="https://img.shields.io/badge/Testnet-Lifecycle%20Rehearsal%202026--05--07-0ea5e9" alt="Fresh Testnet lifecycle rehearsal" /></a>
   <a href="docs/magicblock/private-payments.md"><img src="https://img.shields.io/badge/MagicBlock-Private%20Payments-06b6d4" alt="MagicBlock private payments" /></a>
   <a href="docs/rpc-architecture.md"><img src="https://img.shields.io/badge/RPC%20Fast-Read%20Node%20Ready-f97316" alt="RPC Fast ready" /></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-AGPLv3%2B%20%7C%20Apache--2.0%20%7C%20MIT-green" alt="License" /></a>
@@ -228,7 +228,7 @@ The non-terminal path is now explicit:
 1. Open [`https://privatedao.org/start/`](https://privatedao.org/start/).
 2. Connect a Testnet wallet. Solflare, Phantom, Glow, Backpack, and Wallet Standard wallets are surfaced from the browser product.
 3. Continue to [`https://privatedao.org/govern/`](https://privatedao.org/govern/) and run the flow: create DAO, create proposal, commit, reveal, finalize, and execute.
-4. Open [`https://privatedao.org/proof/?judge=1`](https://privatedao.org/proof/?judge=1) and [`docs/testnet-lifecycle-rehearsal-2026-05-06.md`](docs/testnet-lifecycle-rehearsal-2026-05-06.md) to verify the public signatures, accounts, treasury delta, Supabase receipt intake, and explorer links.
+4. Open [`https://privatedao.org/proof/?judge=1`](https://privatedao.org/proof/?judge=1) and [`docs/testnet-lifecycle-rehearsal-2026-05-07.md`](docs/testnet-lifecycle-rehearsal-2026-05-07.md) to verify the public signatures, accounts, treasury delta, Supabase receipt intake, and explorer links.
 5. Use [`https://privatedao.org/learn/`](https://privatedao.org/learn/) for the lecture, code, quiz, and assignment corridor that explains what the user just executed.
 
 Repo scripts remain the reproducible reviewer path, but the ordinary product path is browser-first: click, sign, run, verify.
@@ -265,7 +265,7 @@ PrivateDAO is already strong enough for Testnet evaluation, judge review, and pi
 | Stage | Current status | Evidence |
 | --- | --- | --- |
 | Product and protocol | Live on Solana Testnet with browser product surfaces and reviewer proof | Live frontend, Anchor program, PDAO governance mint, commit-reveal lifecycle, confidential payout flows, Strict V2 hardening. |
-| Reviewer evidence | Implemented and generated | 50-wallet Devnet rehearsal, fresh 2026-05-06 Testnet lifecycle proof, Supabase receipt rows, Android Solflare capture, ZK anchors, operational evidence, audit packet, cryptographic manifest, and `npm run verify:all`. |
+| Reviewer evidence | Implemented and generated | 50-wallet Devnet rehearsal, fresh 2026-05-07 Testnet lifecycle proof, Supabase receipt rows, Android Solflare capture, ZK anchors, operational evidence, audit packet, cryptographic manifest, and `npm run verify:all`. |
 | Launch operations | Repo-defined and ready for closure | Multisig intake, authority transfer runbook, launch ops checklist, monitoring rules, wallet E2E plan. |
 | Production custody | Structured for execution with recorded evidence next | 2-of-3 multisig, 48+ hour timelock, authority transfer signatures, signer backups, and post-transfer authority readouts. |
 | Mainnet real funds | Final production gate | External audit, live monitoring, real-device captures, source-verifiable MagicBlock/REFHE receipts, and final cutover ceremony. |
@@ -354,7 +354,7 @@ This is intentional: the product now exposes the exact custody proof shape and t
 | Treasury receive surface | https://privatedao.org/services/ |
 | Lifecycle product video | https://privatedao.org/assets/private-dao-demo-flow.mp4 |
 | Testnet program | https://solscan.io/account/EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva?cluster=testnet |
-| Testnet lifecycle proof | [`docs/testnet-lifecycle-rehearsal-2026-05-06.md`](docs/testnet-lifecycle-rehearsal-2026-05-06.md) |
+| Testnet lifecycle proof | [`docs/testnet-lifecycle-rehearsal-2026-05-07.md`](docs/testnet-lifecycle-rehearsal-2026-05-07.md) |
 | Final closure workplan | [`docs/final-closure-workplan-2026-04-19.md`](docs/final-closure-workplan-2026-04-19.md) |
 | Canonical custody intake | [`docs/multisig-setup-intake.json`](docs/multisig-setup-intake.json) |
 
@@ -587,7 +587,7 @@ Primary artifacts:
 
 ## Evidence From The Standard Testnet Rehearsal
 
-The latest Testnet packet proves the standard governance and treasury lifecycle on Solana Testnet for the current Anchor 1.0.1 program. The deployment target is tracked in [`docs/anchor-1-migration-evidence-2026-04-30.md`](docs/anchor-1-migration-evidence-2026-04-30.md), and the fresh lifecycle packet is [`docs/testnet-lifecycle-rehearsal-2026-05-06.md`](docs/testnet-lifecycle-rehearsal-2026-05-06.md).
+The latest Testnet packet proves the standard governance and treasury lifecycle on Solana Testnet for the current Anchor 1.0.1 program. The deployment target is tracked in [`docs/anchor-1-migration-evidence-2026-04-30.md`](docs/anchor-1-migration-evidence-2026-04-30.md), and the fresh lifecycle packet is [`docs/testnet-lifecycle-rehearsal-2026-05-07.md`](docs/testnet-lifecycle-rehearsal-2026-05-07.md).
 
 | Metric | Value |
 | --- | --- |
@@ -596,16 +596,16 @@ The latest Testnet packet proves the standard governance and treasury lifecycle 
 | Current Anchor 1 ProgramData | `FKyt5DcmRQcCF8kzMGjCvfGb3ZPHMQnH1SqiG9Mi8xEc` |
 | Current Anchor 1 deploy signature | `2HucNtqnL3fxAvW911b6poj3hJWTUg2EN344EhRruhPyxxHmt8P4ba3gnnHxmRnjBU3Kps3V1hevt61W9Lik1bvm` |
 | Latest rehearsal operator | `4Mm5YTRbJuyA8NcWM85wTnx6ZQMXNph2DSnzCCKLhsMD` |
-| Latest rehearsal report | [`docs/testnet-lifecycle-rehearsal-2026-05-06.md`](docs/testnet-lifecycle-rehearsal-2026-05-06.md) |
-| Latest rehearsal JSON | [`docs/testnet-lifecycle-rehearsal-2026-05-06.json`](docs/testnet-lifecycle-rehearsal-2026-05-06.json) |
+| Latest rehearsal report | [`docs/testnet-lifecycle-rehearsal-2026-05-07.md`](docs/testnet-lifecycle-rehearsal-2026-05-07.md) |
+| Latest rehearsal JSON | [`docs/testnet-lifecycle-rehearsal-2026-05-07.json`](docs/testnet-lifecycle-rehearsal-2026-05-07.json) |
 | Result | Passed and executed |
 | Treasury delta | `5,000,000` lamports |
 | Execute transaction | `zAFdbqz7FS4zaB48VjQ7KSsmstv7fyaaP7sqrs3LToryXu1zZF6GN4xiSvUBmtvTMcXqGa7VAnmaRHUQmCuC9Vz` |
 
 Primary artifacts:
 
-- [`docs/testnet-lifecycle-rehearsal-2026-05-06.md`](docs/testnet-lifecycle-rehearsal-2026-05-06.md)
-- [`docs/testnet-lifecycle-rehearsal-2026-05-06.json`](docs/testnet-lifecycle-rehearsal-2026-05-06.json)
+- [`docs/testnet-lifecycle-rehearsal-2026-05-07.md`](docs/testnet-lifecycle-rehearsal-2026-05-07.md)
+- [`docs/testnet-lifecycle-rehearsal-2026-05-07.json`](docs/testnet-lifecycle-rehearsal-2026-05-07.json)
 - [`docs/supabase-operation-receipts.sql`](docs/supabase-operation-receipts.sql)
 - [`docs/testnet-migration-report-2026-04-18.md`](docs/testnet-migration-report-2026-04-18.md)
 
@@ -717,7 +717,7 @@ If you only have a few minutes:
 2. Open judge mode: https://privatedao.org/proof/?judge=1
 3. Read [`docs/reviewer-fast-path.md`](docs/reviewer-fast-path.md)
 4. Read [`docs/security-hardening-v2.md`](docs/security-hardening-v2.md)
-5. Read [`docs/testnet-lifecycle-rehearsal-2026-05-06.md`](docs/testnet-lifecycle-rehearsal-2026-05-06.md)
+5. Read [`docs/testnet-lifecycle-rehearsal-2026-05-07.md`](docs/testnet-lifecycle-rehearsal-2026-05-07.md)
 6. Read [`docs/operational-evidence.generated.md`](docs/operational-evidence.generated.md)
 7. Read [`docs/technical-verification-status-2026.md`](docs/technical-verification-status-2026.md)
 8. Inspect the program: [`programs/private-dao/src/lib.rs`](programs/private-dao/src/lib.rs)
