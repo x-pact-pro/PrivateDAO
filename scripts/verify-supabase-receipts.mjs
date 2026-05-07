@@ -48,6 +48,7 @@ const checks = [
 ];
 
 const results = [];
+const allowLegacy = process.env.ALLOW_LEGACY_SUPABASE_SCHEMA === "1";
 
 async function insertWithCompatibility(check) {
   const { error } = await supabase.from(check.table).insert(check.row);
@@ -113,8 +114,21 @@ for (const check of checks) {
 }
 
 const failed = results.filter((result) => !result.ok);
-console.log(JSON.stringify({ ok: failed.length === 0, url, runId, results }, null, 2));
+const compatibilityRows = results.filter((result) => result.ok && result.mode !== "canonical");
+const ok = failed.length === 0 && (allowLegacy || compatibilityRows.length === 0);
 
-if (failed.length > 0) {
+console.log(JSON.stringify({
+  ok,
+  url,
+  runId,
+  schemaMode: compatibilityRows.length === 0 ? "canonical" : "compatibility",
+  allowLegacy,
+  results,
+  nextAction: compatibilityRows.length === 0
+    ? null
+    : "Run docs/supabase-operation-receipts.sql in the Supabase SQL Editor, then rerun npm run verify:supabase-receipts.",
+}, null, 2));
+
+if (!ok) {
   process.exit(1);
 }
