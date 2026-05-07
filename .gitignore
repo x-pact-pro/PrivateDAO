@@ -7,6 +7,7 @@ target/
 apps/web/.env.local
 apps/web/.env.*
 !apps/web/.env.example
+supabase/.temp/
 test-ledger/
 *.so
 migration-report-*.json
