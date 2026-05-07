@@ -8,7 +8,7 @@ export const metadata: Metadata = buildRouteMetadata({
   description:
     "PrivateDAO compliance hub for scoped audit packs, bounded viewing-key evidence, date-windowed reporting, dWallet signatures, and proof-linked reviewer exports.",
   path: "/compliance",
-  keywords: ["compliance", "viewing keys", "audit pack", "dWallet", "selective disclosure", "VARA"],
+  keywords: ["compliance", "viewing keys", "audit pack", "dWallet", "selective disclosure", "audit readiness"],
 });
 
 export default function ComplianceLayout({ children }: { children: ReactNode }) {

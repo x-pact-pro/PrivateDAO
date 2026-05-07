@@ -150,7 +150,7 @@ export default function JudgesPage() {
           <div className="rounded-2xl border border-white/10 bg-black/20 px-4 py-3">
             <div className="flex items-center gap-2 text-white">
               <Mail className="h-4 w-4 text-cyan-100" />
-              Fahd Kotb · UAE · Telegram
+              Fahd Kotb · Founder · Telegram
             </div>
             <div className="mt-1 text-white/54">Founder contact for reviewer follow-up and pilot coordination.</div>
           </div>
