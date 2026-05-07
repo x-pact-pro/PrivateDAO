@@ -87,6 +87,48 @@ create table if not exists public.cloak_delivery_state (
   created_at timestamptz not null default now()
 );
 
+create table if not exists public.freshness_pings (
+  id uuid primary key default gen_random_uuid(),
+  tx_signature text not null unique,
+  slot bigint not null,
+  timestamp timestamptz not null default now(),
+  visitor_ua text
+);
+
+create table if not exists public.visitor_sessions (
+  id uuid primary key default gen_random_uuid(),
+  session_id text not null,
+  page text not null default '/',
+  timestamp timestamptz not null default now(),
+  country_hint text
+);
+
+create table if not exists public.live_transactions (
+  sig text primary key,
+  instruction text not null default 'program-interaction',
+  wallet text not null default 'unknown-wallet',
+  slot bigint not null,
+  timestamp timestamptz not null default now(),
+  wallet_type text not null default 'wallet-signed-testnet'
+);
+
+create table if not exists public.proof_stats (
+  id text primary key default 'global',
+  last_tx_signature text,
+  last_tx_time timestamptz,
+  last_tx_slot bigint,
+  total_proposals integer not null default 0,
+  total_daos integer not null default 0,
+  total_payouts integer not null default 0,
+  wallet_coverage_count integer not null default 0,
+  freshness_seconds integer not null default 0,
+  updated_at timestamptz not null default now()
+);
+
+insert into public.proof_stats (id)
+values ('global')
+on conflict (id) do nothing;
+
 alter table public.cloak_delivery_state
   add column if not exists updated_at timestamptz not null default now(),
   add column if not exists operation_id text,
@@ -123,6 +165,24 @@ create index if not exists governance_receipts_proposal_id_idx
 create index if not exists cloak_delivery_state_created_at_idx
   on public.cloak_delivery_state (created_at desc);
 
+create index if not exists freshness_pings_timestamp_idx
+  on public.freshness_pings (timestamp desc);
+
+create index if not exists visitor_sessions_timestamp_idx
+  on public.visitor_sessions (timestamp desc);
+
+create index if not exists visitor_sessions_session_idx
+  on public.visitor_sessions (session_id);
+
+create index if not exists visitor_sessions_page_idx
+  on public.visitor_sessions (page);
+
+create index if not exists live_transactions_timestamp_idx
+  on public.live_transactions (timestamp desc);
+
+create index if not exists live_transactions_instruction_idx
+  on public.live_transactions (instruction);
+
 do $$
 begin
   begin
@@ -145,15 +205,51 @@ begin
     when duplicate_object then null;
     when undefined_object then null;
   end;
+
+  begin
+    alter publication supabase_realtime add table public.freshness_pings;
+  exception
+    when duplicate_object then null;
+    when undefined_object then null;
+  end;
+
+  begin
+    alter publication supabase_realtime add table public.visitor_sessions;
+  exception
+    when duplicate_object then null;
+    when undefined_object then null;
+  end;
+
+  begin
+    alter publication supabase_realtime add table public.live_transactions;
+  exception
+    when duplicate_object then null;
+    when undefined_object then null;
+  end;
+
+  begin
+    alter publication supabase_realtime add table public.proof_stats;
+  exception
+    when duplicate_object then null;
+    when undefined_object then null;
+  end;
 end $$;
 
 alter table public.operation_receipts enable row level security;
 alter table public.governance_receipts enable row level security;
 alter table public.cloak_delivery_state enable row level security;
+alter table public.freshness_pings enable row level security;
+alter table public.visitor_sessions enable row level security;
+alter table public.live_transactions enable row level security;
+alter table public.proof_stats enable row level security;
 
 grant select, insert on public.operation_receipts to anon;
 grant select, insert on public.governance_receipts to anon;
 grant select, insert on public.cloak_delivery_state to anon;
+grant select, insert on public.freshness_pings to anon;
+grant select, insert on public.visitor_sessions to anon;
+grant select, insert on public.live_transactions to anon;
+grant select, update on public.proof_stats to anon;
 
 do $$
 begin
@@ -166,6 +262,57 @@ begin
   ) then
     create policy operation_receipts_select
       on public.operation_receipts
+      for select
+      to anon, authenticated
+      using (true);
+  end if;
+end $$;
+
+do $$
+begin
+  if not exists (
+    select 1
+    from pg_policies
+    where schemaname = 'public'
+      and tablename = 'live_transactions'
+      and policyname = 'live_transactions_select'
+  ) then
+    create policy live_transactions_select
+      on public.live_transactions
+      for select
+      to anon, authenticated
+      using (true);
+  end if;
+end $$;
+
+do $$
+begin
+  if not exists (
+    select 1
+    from pg_policies
+    where schemaname = 'public'
+      and tablename = 'live_transactions'
+      and policyname = 'live_transactions_insert'
+  ) then
+    create policy live_transactions_insert
+      on public.live_transactions
+      for insert
+      to anon, authenticated
+      with check (true);
+  end if;
+end $$;
+
+do $$
+begin
+  if not exists (
+    select 1
+    from pg_policies
+    where schemaname = 'public'
+      and tablename = 'proof_stats'
+      and policyname = 'proof_stats_select'
+  ) then
+    create policy proof_stats_select
+      on public.proof_stats
       for select
       to anon, authenticated
       using (true);
@@ -249,6 +396,92 @@ begin
       on public.operation_receipts
       for insert
       to anon, authenticated
+      with check (true);
+  end if;
+end $$;
+
+do $$
+begin
+  if not exists (
+    select 1
+    from pg_policies
+    where schemaname = 'public'
+      and tablename = 'freshness_pings'
+      and policyname = 'freshness_pings_select'
+  ) then
+    create policy freshness_pings_select
+      on public.freshness_pings
+      for select
+      to anon, authenticated
+      using (true);
+  end if;
+end $$;
+
+do $$
+begin
+  if not exists (
+    select 1
+    from pg_policies
+    where schemaname = 'public'
+      and tablename = 'freshness_pings'
+      and policyname = 'freshness_pings_insert'
+  ) then
+    create policy freshness_pings_insert
+      on public.freshness_pings
+      for insert
+      to anon, authenticated
+      with check (true);
+  end if;
+end $$;
+
+do $$
+begin
+  if not exists (
+    select 1
+    from pg_policies
+    where schemaname = 'public'
+      and tablename = 'visitor_sessions'
+      and policyname = 'visitor_sessions_select'
+  ) then
+    create policy visitor_sessions_select
+      on public.visitor_sessions
+      for select
+      to anon, authenticated
+      using (true);
+  end if;
+end $$;
+
+do $$
+begin
+  if not exists (
+    select 1
+    from pg_policies
+    where schemaname = 'public'
+      and tablename = 'visitor_sessions'
+      and policyname = 'visitor_sessions_insert'
+  ) then
+    create policy visitor_sessions_insert
+      on public.visitor_sessions
+      for insert
+      to anon, authenticated
+      with check (true);
+  end if;
+end $$;
+
+do $$
+begin
+  if not exists (
+    select 1
+    from pg_policies
+    where schemaname = 'public'
+      and tablename = 'proof_stats'
+      and policyname = 'proof_stats_update'
+  ) then
+    create policy proof_stats_update
+      on public.proof_stats
+      for update
+      to anon, authenticated
+      using (true)
       with check (true);
   end if;
 end $$;

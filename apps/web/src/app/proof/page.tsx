@@ -7,6 +7,7 @@ import { JudgeRuntimeLogsPanel } from "@/components/judge-runtime-logs-panel";
 import { JudgeExecutionContinuityPanel } from "@/components/judge-execution-continuity-panel";
 import { LocalizedProofPrimer } from "@/components/localized-proof-primer";
 import { LocalizedRouteSummary } from "@/components/localized-route-summary";
+import { LiveSiteActivityPanel } from "@/components/live-site-activity-panel";
 import { GuidedOperationRail } from "@/components/guided-operation-rail";
 import { NormalUserOperationPath } from "@/components/normal-user-operation-path";
 import { OperatingJourneyStrip } from "@/components/operating-journey-strip";
@@ -163,6 +164,7 @@ export default function ProofPage() {
       />
       <LocalizedRouteSummary routeKey="proof" />
       <LocalizedProofPrimer />
+      <LiveSiteActivityPanel />
       <VideoCenter compact />
       <OperatingJourneyStrip
         snapshot={runtimeSnapshot}

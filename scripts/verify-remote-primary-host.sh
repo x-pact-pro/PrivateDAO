@@ -14,16 +14,22 @@ config_json="$(fetch_json /api/v1/config)"
 metrics_json="$(fetch_json /api/v1/metrics)"
 qvac_json="$(fetch_json /api/v1/qvac/runtime-proof)"
 umbra_json="$(fetch_json /api/v1/umbra/relayer/health)"
+freshness_json="$(fetch_json /api/v1/freshness/latest)"
+visitors_json="$(fetch_json /api/v1/visitors/stats)"
+chain_json="$(fetch_json /api/v1/chain/latest)"
 
-python3 - <<'PY' "$EXPECTED_PROGRAM_ID" "$health_json" "$config_json" "$metrics_json" "$qvac_json" "$umbra_json"
+python3 - <<'PY' "$EXPECTED_PROGRAM_ID" "$health_json" "$config_json" "$metrics_json" "$qvac_json" "$umbra_json" "$freshness_json" "$visitors_json" "$chain_json"
 import json, sys
 
-expected_program_id, health_json, config_json, metrics_json, qvac_json, umbra_json = sys.argv[1:]
+expected_program_id, health_json, config_json, metrics_json, qvac_json, umbra_json, freshness_json, visitors_json, chain_json = sys.argv[1:]
 health = json.loads(health_json)
 config = json.loads(config_json)
 metrics = json.loads(metrics_json)
 qvac = json.loads(qvac_json)
 umbra = json.loads(umbra_json)
+freshness = json.loads(freshness_json)
+visitors = json.loads(visitors_json)
+chain = json.loads(chain_json)
 
 assert health["ok"] is True and health["health"] == "healthy", "remote /healthz failed"
 assert health["runtime"]["programId"] == expected_program_id, f"remote /healthz program drift: {health['runtime']['programId']} != {expected_program_id}"
@@ -43,5 +49,8 @@ assert "translate" in qvac["proof"].get("exportedCapabilities", []), "remote QVA
 assert "ocr" in qvac["proof"].get("exportedCapabilities", []), "remote QVAC runtime proof missing OCR capability"
 assert umbra["ok"] is True and umbra["source"] == "umbra-relayer", "remote Umbra relayer endpoint failed"
 assert umbra["health"].get("status") == "ok", f"remote Umbra relayer unhealthy: {umbra['health']}"
+assert freshness["ok"] is True and "latest" in freshness, "remote freshness endpoint failed"
+assert visitors["ok"] is True and "totalSessions" in visitors, "remote visitor stats endpoint failed"
+assert chain["ok"] is True and "transactions" in chain, "remote chain watcher endpoint failed"
 print("Remote primary host verification: PASS")
 PY

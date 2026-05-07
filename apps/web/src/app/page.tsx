@@ -3,6 +3,7 @@ import { Suspense } from "react";
 
 import { HomeShell } from "@/components/home-shell";
 import { LegacyEntryBridge } from "@/components/legacy-entry-bridge";
+import { LiveSiteActivityPanel } from "@/components/live-site-activity-panel";
 import { buildBrandHomeMetadata } from "@/lib/route-metadata";
 
 export const metadata: Metadata = buildBrandHomeMetadata();
@@ -16,6 +17,9 @@ export default function HomePage() {
         <LegacyEntryBridge />
       </Suspense>
       <HomeShell />
+      <div className="mx-auto w-full max-w-7xl px-4 pb-12 sm:px-6 lg:px-8">
+        <LiveSiteActivityPanel />
+      </div>
     </>
   );
 }

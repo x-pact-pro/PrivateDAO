@@ -4,6 +4,14 @@ import { createHash } from "crypto";
 import { readFile } from "fs/promises";
 import { join } from "path";
 import { URL } from "url";
+import {
+  Connection,
+  Keypair,
+  PublicKey,
+  Transaction,
+  TransactionInstruction,
+  sendAndConfirmTransaction,
+} from "@solana/web3.js";
 import { PrivateDaoReadNode } from "./lib/read-node";
 
 const host = process.env.PRIVATE_DAO_READ_NODE_HOST || "127.0.0.1";
@@ -12,15 +20,51 @@ const allowedOrigin = process.env.PRIVATE_DAO_READ_ALLOWED_ORIGIN || "*";
 const rateWindowMs = Number(process.env.PRIVATE_DAO_READ_RATE_WINDOW_MS || 60_000);
 const rateLimit = Number(process.env.PRIVATE_DAO_READ_RATE_LIMIT || 180);
 const readNode = new PrivateDaoReadNode();
+const memoProgramId = new PublicKey("MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr");
+const freshnessMinIntervalMs = Number(process.env.PRIVATE_DAO_FRESHNESS_MIN_INTERVAL_MS || 5 * 60_000);
+const supabaseUrl = (process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || "").replace(/\/+$/, "");
+const supabaseKey =
+  process.env.SUPABASE_SERVICE_ROLE_KEY ||
+  process.env.SUPABASE_PUBLISHABLE_KEY ||
+  process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
+  "";
 
 const rateMap = new Map<string, { count: number; resetAt: number }>();
 const serverStartedAt = new Date().toISOString();
+const visitorPingsMemory: VisitorPingRow[] = [];
+let lastFreshnessPingMemory: FreshnessPingRow | null = null;
 const metrics = {
   requestsTotal: 0,
   requestsFailed: 0,
   rateLimited: 0,
   blockedProbes: 0,
   routeHits: new Map<string, number>(),
+};
+
+type SupabaseRow = Record<string, string | number | boolean | null | Record<string, unknown> | unknown[]>;
+
+type FreshnessPingRow = {
+  tx_signature: string;
+  slot: number;
+  timestamp: string;
+  visitor_ua?: string | null;
+};
+
+type VisitorPingRow = {
+  session_id: string;
+  page: string;
+  timestamp: string;
+  country_hint?: string | null;
+};
+
+type LiveTransactionRow = {
+  sig: string;
+  instruction: string;
+  wallet: string;
+  slot: number;
+  timestamp: string;
+  wallet_type: string;
 };
 
 const suspiciousPathPatterns = [
@@ -112,6 +156,200 @@ function readRequestJson(req: http.IncomingMessage): Promise<Record<string, unkn
 function stringField(body: Record<string, unknown>, key: string, fallback = "") {
   const value = body[key];
   return typeof value === "string" && value.trim() ? value.trim() : fallback;
+}
+
+function hasSupabaseRestConfig() {
+  return Boolean(supabaseUrl && supabaseKey);
+}
+
+function supabaseHeaders(extra?: Record<string, string>) {
+  return {
+    apikey: supabaseKey,
+    Authorization: `Bearer ${supabaseKey}`,
+    Accept: "application/json",
+    ...extra,
+  };
+}
+
+async function supabaseInsert(table: string, row: SupabaseRow) {
+  if (!hasSupabaseRestConfig()) {
+    return { ok: false, source: "memory-fallback", error: "Supabase REST is not configured" };
+  }
+  const response = await fetch(`${supabaseUrl}/rest/v1/${table}`, {
+    method: "POST",
+    headers: supabaseHeaders({
+      "Content-Type": "application/json",
+      Prefer: "return=representation",
+    }),
+    body: JSON.stringify(row),
+  });
+  const raw = (await response.json().catch(() => null)) as unknown;
+  return { ok: response.ok, status: response.status, raw };
+}
+
+async function supabaseSelect<T>(table: string, query: string) {
+  if (!hasSupabaseRestConfig()) return [] as T[];
+  const response = await fetch(`${supabaseUrl}/rest/v1/${table}${query}`, {
+    method: "GET",
+    headers: supabaseHeaders(),
+  });
+  if (!response.ok) return [] as T[];
+  const raw = (await response.json().catch(() => [])) as unknown;
+  return Array.isArray(raw) ? (raw as T[]) : ([] as T[]);
+}
+
+function hashVisitorSession(sessionId: string) {
+  return createHash("sha256").update(sessionId).digest("hex");
+}
+
+async function latestFreshnessPing() {
+  const rows = await supabaseSelect<FreshnessPingRow>(
+    "freshness_pings",
+    "?select=tx_signature,slot,timestamp,visitor_ua&order=timestamp.desc&limit=1",
+  );
+  if (rows[0]) {
+    lastFreshnessPingMemory = rows[0];
+    return rows[0];
+  }
+  return lastFreshnessPingMemory;
+}
+
+async function getFreshnessBotKeypair() {
+  const jsonValue = process.env.PRIVATE_DAO_FRESHNESS_BOT_KEYPAIR_JSON?.trim();
+  const keypairPath = process.env.PRIVATE_DAO_FRESHNESS_BOT_KEYPAIR_PATH?.trim();
+  const raw = jsonValue || (keypairPath ? await readFile(keypairPath, "utf8") : "");
+  if (!raw) {
+    throw new Error("Freshness bot keypair is not configured.");
+  }
+  const parsed = JSON.parse(raw) as unknown;
+  if (!Array.isArray(parsed) || parsed.some((item) => typeof item !== "number")) {
+    throw new Error("Freshness bot keypair must be a JSON number array.");
+  }
+  return Keypair.fromSecretKey(Uint8Array.from(parsed));
+}
+
+async function sendFreshnessMemo(visitorUa: string) {
+  const latest = await latestFreshnessPing();
+  const nowMs = Date.now();
+  if (latest && nowMs - new Date(latest.timestamp).getTime() < freshnessMinIntervalMs) {
+    return {
+      ok: true,
+      throttled: true,
+      tx: latest.tx_signature,
+      slot: latest.slot,
+      time: latest.timestamp,
+      explorer: `https://explorer.solana.com/tx/${latest.tx_signature}?cluster=testnet`,
+    };
+  }
+
+  const keypair = await getFreshnessBotKeypair();
+  const connection = new Connection(process.env.SOLANA_RPC_URL || "https://api.testnet.solana.com", "confirmed");
+  const time = new Date().toISOString();
+  const transaction = new Transaction().add(
+    new TransactionInstruction({
+      keys: [{ pubkey: keypair.publicKey, isSigner: true, isWritable: true }],
+      programId: memoProgramId,
+      data: Buffer.from(`PrivateDAO proof-freshness | visitor | ${time}`, "utf8"),
+    }),
+  );
+  const tx = await sendAndConfirmTransaction(connection, transaction, [keypair], {
+    commitment: "confirmed",
+  });
+  const parsed = await connection
+    .getParsedTransaction(tx, { commitment: "confirmed", maxSupportedTransactionVersion: 0 })
+    .catch(() => null);
+  const slot = parsed?.slot ?? (await connection.getSlot("confirmed"));
+  const row: FreshnessPingRow = {
+    tx_signature: tx,
+    slot,
+    timestamp: time,
+    visitor_ua: visitorUa.slice(0, 180),
+  };
+  lastFreshnessPingMemory = row;
+  await supabaseInsert("freshness_pings", row);
+  return {
+    ok: true,
+    throttled: false,
+    tx,
+    slot,
+    time,
+    explorer: `https://explorer.solana.com/tx/${tx}?cluster=testnet`,
+  };
+}
+
+async function handleVisitorPing(body: Record<string, unknown>, req: http.IncomingMessage) {
+  const sessionIdRaw = stringField(body, "sessionId", createHash("sha256").update(`${Date.now()}:${Math.random()}`).digest("hex"));
+  const page = stringField(body, "page", "/").slice(0, 180);
+  const countryHint = stringField(body, "countryHint", "unknown").slice(0, 80);
+  const row: VisitorPingRow = {
+    session_id: hashVisitorSession(sessionIdRaw),
+    page,
+    timestamp: new Date().toISOString(),
+    country_hint: countryHint || req.headers["cf-ipcountry"]?.toString() || null,
+  };
+  visitorPingsMemory.push(row);
+  if (visitorPingsMemory.length > 5000) visitorPingsMemory.shift();
+  const stored = await supabaseInsert("visitor_sessions", row);
+  return { ok: true, source: stored.ok ? "supabase" : "memory-fallback", session: row.session_id.slice(0, 12), page };
+}
+
+async function visitorStats() {
+  const rows =
+    (await supabaseSelect<VisitorPingRow>(
+      "visitor_sessions",
+      "?select=session_id,page,timestamp,country_hint&order=timestamp.desc&limit=5000",
+    )) || visitorPingsMemory;
+  const sourceRows = rows.length ? rows : visitorPingsMemory;
+  const now = Date.now();
+  const today = new Date();
+  today.setUTCHours(0, 0, 0, 0);
+  const todayRows = sourceRows.filter((row) => new Date(row.timestamp).getTime() >= today.getTime());
+  const activeRows = sourceRows.filter((row) => now - new Date(row.timestamp).getTime() <= 30 * 60_000);
+  const totalSessions = new Set(sourceRows.map((row) => row.session_id)).size;
+  const activeToday = new Set(todayRows.map((row) => row.session_id)).size;
+  const activeNow = new Set(activeRows.map((row) => row.session_id)).size;
+  const byDay = Array.from({ length: 7 }).map((_, offset) => {
+    const date = new Date();
+    date.setUTCDate(date.getUTCDate() - (6 - offset));
+    const key = date.toISOString().slice(0, 10);
+    const count = new Set(
+      sourceRows.filter((row) => row.timestamp.slice(0, 10) === key).map((row) => row.session_id),
+    ).size;
+    return { date: key, sessions: count };
+  });
+  const pageCounts = new Map<string, number>();
+  for (const row of sourceRows) pageCounts.set(row.page, (pageCounts.get(row.page) || 0) + 1);
+  const topPages = Array.from(pageCounts.entries())
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 8)
+    .map(([page, visits]) => ({ page, visits }));
+  return {
+    ok: true,
+    source: rows.length ? "supabase" : "memory-fallback",
+    privacy: "Counted privately — no IP address or personal data stored.",
+    activeToday,
+    activeNow,
+    totalSessions,
+    byDay,
+    topPages,
+    generatedAt: new Date().toISOString(),
+  };
+}
+
+async function latestLiveTransactions() {
+  const rows = await supabaseSelect<LiveTransactionRow>(
+    "live_transactions",
+    "?select=sig,instruction,wallet,slot,timestamp,wallet_type&order=timestamp.desc&limit=10",
+  );
+  return {
+    ok: true,
+    source: rows.length ? "supabase-chain-watcher" : "not-yet-indexed",
+    count: rows.length,
+    transactions: rows.map((row) => ({
+      ...row,
+      explorer: `https://explorer.solana.com/tx/${row.sig}?cluster=testnet`,
+    })),
+  };
 }
 
 function privateRailRelayConfig(rail: string) {
@@ -511,14 +749,46 @@ async function handle(req: http.IncomingMessage, res: http.ServerResponse) {
       return;
     }
 
+    if (req.method === "POST" && pathname === "/api/v1/freshness/ping") {
+      const body = await readRequestJson(req);
+      const visitorUa = stringField(body, "visitorUa", String(req.headers["user-agent"] || "unknown"));
+      const result = await sendFreshnessMemo(visitorUa);
+      writeJson(res, 200, result);
+      return;
+    }
+
+    if (req.method === "POST" && pathname === "/api/v1/visitors/ping") {
+      const body = await readRequestJson(req);
+      const result = await handleVisitorPing(body, req);
+      writeJson(res, 200, result);
+      return;
+    }
+
     if (req.method !== "GET") {
       writeJson(res, 405, { ok: false, error: "Method not allowed for this route" });
       return;
     }
 
-	    if (pathname === "/healthz" || pathname === "/api/health" || pathname === "/api/v1/health") {
+    if (pathname === "/healthz" || pathname === "/api/health" || pathname === "/api/v1/health") {
       const runtime = await readNode.getRuntimeSnapshot();
-      writeJson(res, 200, { ok: true, health: "healthy", runtime });
+      const [freshness, chain] = await Promise.all([
+        latestFreshnessPing().catch(() => null),
+        latestLiveTransactions().catch(() => ({ count: 0, transactions: [] })),
+      ]);
+      writeJson(res, 200, {
+        ok: true,
+        health: "healthy",
+        runtime,
+        liveProof: {
+          freshnessEndpoint: "/api/v1/freshness/ping",
+          visitorEndpoint: "/api/v1/visitors/ping",
+          latestFreshness: freshness,
+          chainWatcher: {
+            endpoint: "/api/v1/chain/latest",
+            latestIndexed: "transactions" in chain ? chain.transactions[0] || null : null,
+          },
+        },
+      });
       return;
     }
 
@@ -545,8 +815,41 @@ async function handle(req: http.IncomingMessage, res: http.ServerResponse) {
           qvac: "/api/v1/qvac/runtime-proof",
           umbraRelayer: "/api/v1/umbra/relayer/health",
           privateSettlementIntent: "/api/v1/private-settlement/intent",
+          freshnessPing: "/api/v1/freshness/ping",
+          freshnessLatest: "/api/v1/freshness/latest",
+          visitorPing: "/api/v1/visitors/ping",
+          visitorStats: "/api/v1/visitors/stats",
+          chainLatest: "/api/v1/chain/latest",
         },
       });
+      return;
+    }
+
+    if (pathname === "/api/v1/freshness/latest") {
+      const latest = await latestFreshnessPing();
+      writeJson(res, 200, {
+        ok: true,
+        source: latest ? "supabase-or-memory" : "not-yet-started",
+        latest: latest
+          ? {
+              tx: latest.tx_signature,
+              slot: latest.slot,
+              time: latest.timestamp,
+              explorer: `https://explorer.solana.com/tx/${latest.tx_signature}?cluster=testnet`,
+            }
+          : null,
+        minIntervalMs: freshnessMinIntervalMs,
+      });
+      return;
+    }
+
+    if (pathname === "/api/v1/visitors/stats") {
+      writeJson(res, 200, await visitorStats());
+      return;
+    }
+
+    if (pathname === "/api/v1/chain/latest") {
+      writeJson(res, 200, await latestLiveTransactions());
       return;
     }
 

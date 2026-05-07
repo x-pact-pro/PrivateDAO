@@ -10,6 +10,8 @@ services:
     restart: unless-stopped
     expose:
       - "8787"
+    volumes:
+      - ./secrets:/srv/privatedao/deploy/primary-host/secrets:ro
     healthcheck:
       test:
         [
@@ -22,6 +24,17 @@ services:
       timeout: 10s
       retries: 8
       start_period: 20s
+
+  chain-watcher:
+    build:
+      context: ../..
+      dockerfile: deploy/primary-host/read-node.Dockerfile
+    env_file:
+      - .env
+    restart: unless-stopped
+    command: ["npm", "run", "start:chain-watcher"]
+    volumes:
+      - ./secrets:/srv/privatedao/deploy/primary-host/secrets:ro
 
   edge:
     image: caddy:2.10.2-alpine

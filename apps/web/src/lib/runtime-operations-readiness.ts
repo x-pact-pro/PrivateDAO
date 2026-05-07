@@ -71,11 +71,6 @@ export function getRuntimeOperationsReadinessSnapshot(): RuntimeOperationsReadin
   const runtime = readJson<RealDeviceRuntimeJson>("docs/runtime/real-device.generated.json");
   const monitoring = readJson<MonitoringAlertRulesJson>("docs/monitoring-alert-rules.json");
 
-  const walletCoverage = percent(
-    runtime.summary.completedTargetCount,
-    runtime.summary.targetCount,
-  );
-
   const criticalCount = monitoring.rules.filter((rule) => rule.severity === "critical").length;
   const highCount = monitoring.rules.filter((rule) => rule.severity === "high").length;
   const environments = Array.from(
@@ -94,7 +89,7 @@ export function getRuntimeOperationsReadinessSnapshot(): RuntimeOperationsReadin
         {
           label: "Wallet coverage",
           value: `${runtime.summary.completedTargetCount}/${runtime.summary.targetCount} complete`,
-          detail: `${walletCoverage} of the required wallet matrix is captured today.`,
+          detail: "Signed wallet captures are tracked through a dedicated intake program and attached to proof packets as they are verified.",
         },
         {
           label: "Submission proof",

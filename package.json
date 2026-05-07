@@ -50,6 +50,7 @@
     "verify:web-next-doc-viewer-plan": "ts-node scripts/verify-web-next-doc-viewer-plan.ts",
     "web:lint": "npm --prefix apps/web run lint",
     "start:read-node": "ts-node scripts/run-read-node.ts",
+    "start:chain-watcher": "ts-node scripts/chain-watcher.ts",
     "probe:qvac-runtime": "node scripts/probe-qvac-sdk.mjs",
     "build:solrouter-encrypted-ai-evidence": "node scripts/generate-solrouter-encrypted-ai-evidence.mjs",
     "verify:supabase-receipts": "node scripts/verify-supabase-receipts.mjs",

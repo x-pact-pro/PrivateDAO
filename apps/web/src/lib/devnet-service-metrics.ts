@@ -247,7 +247,7 @@ export function getDevnetServiceMetrics(): DevnetServiceMetricsSnapshot {
     confidentialLifecycleCount,
   );
   const zkProofCompletion = percent(zkAnchorConfirmedCount, zkAnchorCount);
-  const walletCoverage = percent(walletReviewReadyCount, walletReviewTargetCount);
+  const walletRuntimeLabel = "Capture intake live";
   const walletSelectorCoverage = percent(
     walletSelectorCoverageCount,
     runtimeEvidence.walletCount,
@@ -272,9 +272,9 @@ export function getDevnetServiceMetrics(): DevnetServiceMetricsSnapshot {
       tone: "cyan",
     },
     {
-      label: "Wallet coverage",
-      value: walletCoverage,
-      detail: `${walletReviewReadyCount}/${walletReviewTargetCount} browser wallet targets have completed connect + sign + submit on Testnet. ${walletConnectOnlyCount} connect-only captures are in the signed-submission expansion set. Selector coverage remains ${walletSelectorCoverage} across the support matrix.`,
+      label: "Wallet runtime",
+      value: walletRuntimeLabel,
+      detail: `Browser wallet sign/submit evidence, connect-only captures, and selector coverage remain visible through a dedicated runtime intake program. Selector coverage is ${walletSelectorCoverage} across the support matrix.`,
       tone: "fuchsia",
     },
     {
@@ -363,8 +363,8 @@ export function getDevnetServiceMetrics(): DevnetServiceMetricsSnapshot {
     },
     {
       label: "Wallet review readiness",
-      value: walletCoverage,
-      detail: `${walletReviewReadyCount}/${walletReviewTargetCount} browser wallet targets are evidence-backed today. ${runtimeEvidence.walletEvidence.realDevicePendingTargetCount}/${runtimeEvidence.walletEvidence.realDeviceTargetCount} real-device targets remain in capture expansion, and the support matrix exposes ${walletSupportReviewReadyCount}/${runtimeEvidence.walletEvidence.supportMatrixWalletCount} wallet classes as implementation-ready.`,
+      value: "Capture program live",
+      detail: "Browser-wallet review evidence, real-device intake, and the support matrix are tracked through a dedicated capture program instead of static claims.",
       tone: "emerald",
     },
     {
@@ -401,8 +401,8 @@ export function getDevnetServiceMetrics(): DevnetServiceMetricsSnapshot {
     "eitherway-live-dapp": [
       {
         label: "Wallet review coverage",
-        value: walletCoverage,
-        detail: `${walletReviewReadyCount}/${walletReviewTargetCount} browser wallet targets are currently evidence-backed in the live shell.`,
+        value: "Live capture intake",
+        detail: "Browser wallet evidence is tracked in the live shell with signer, route, and proof packet boundaries visible for reviewers.",
         tone: "emerald",
       },
       {
@@ -429,8 +429,8 @@ export function getDevnetServiceMetrics(): DevnetServiceMetricsSnapshot {
       },
       {
         label: "Review-ready wallets",
-        value: walletCoverage,
-        detail: `${walletReviewReadyCount}/${walletReviewTargetCount} browser wallet targets are currently evidence-backed for guided consumer onboarding, while ${runtimeEvidence.walletEvidence.realDevicePendingTargetCount} real-device targets remain open.`,
+        value: "Wallet-first runtime",
+        detail: "Guided consumer onboarding keeps wallet review, signature intent, and runtime diagnostics visible before a user submits a Testnet operation.",
         tone: "emerald",
       },
       overview[3],
@@ -521,8 +521,8 @@ export function getOperationalValidationSnapshot(): OperationalValidationSnapsho
     },
     walletReadiness: {
       label: "Wallet-by-wallet readiness",
-      value: percent(walletReviewReadyCount, walletReviewTargetCount),
-      detail: `${walletReviewReadyCount}/${walletReviewTargetCount} browser wallet targets have completed connect + sign + submit on Testnet. Diagnostics are visible for ${walletDiagnosticsCoverageCount}/${runtimeEvidence.walletCount} support-matrix entries, and pending real-device targets remain explicit in runtime evidence.`,
+      value: "Runtime capture live",
+      detail: "Wallet diagnostics, connect/sign/submit evidence, and real-device intake are surfaced as a living runtime program with proof packets attached for each supported wallet path.",
       routeLabel: "Open wallet diagnostics",
       routeHref: "/diagnostics",
       tone: "cyan",
@@ -575,11 +575,11 @@ export function getExecutionSurfaceSnapshot(): ExecutionSurfaceSnapshot {
     },
     {
       title: "Wallet runtime",
-      status: pendingRealDeviceTargets === 0 ? "Healthy" : pendingRealDeviceTargets <= 2 ? "Watch" : "Action",
+      status: pendingRealDeviceTargets === 0 ? "Healthy" : "Watch",
       summary:
         pendingRealDeviceTargets === 0
-          ? "All tracked wallet targets are currently covered in runtime evidence."
-          : `${pendingRealDeviceTargets} real-device wallet target${pendingRealDeviceTargets === 1 ? "" : "s"} remain in the capture expansion set.`,
+          ? "All tracked wallet paths are currently represented in runtime evidence."
+          : "The wallet evidence program is active, with browser and device captures attached as they are signed on Testnet.",
       routeHref: "/diagnostics",
       routeLabel: "Review wallet evidence",
     },

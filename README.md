@@ -96,7 +96,7 @@ The roadmap is intentionally simple and fundable:
 
 1. make the wallet-first Testnet flow effortless for first-time visitors
 2. keep proof, telemetry, custody, and diagnostics attached to the same product corridor
-3. strengthen audit, monitoring, real-device wallet coverage, and settlement publication
+3. strengthen audit, monitoring, signed wallet capture intake, and settlement publication
 4. close the remaining production gates and ship the strongest possible release candidate
 
 ## What Is Live Now

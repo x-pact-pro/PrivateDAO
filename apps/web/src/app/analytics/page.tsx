@@ -7,6 +7,7 @@ import { AnalyticsSummary } from "@/components/analytics-summary";
 import { DataCorridorQuickLinks } from "@/components/data-corridor-quick-links";
 import { HostedReadProofStrip } from "@/components/hosted-read-proof-strip";
 import { LaunchBlockersPanel } from "@/components/launch-blockers-panel";
+import { LiveSiteActivityPanel } from "@/components/live-site-activity-panel";
 import { OperationsShell } from "@/components/operations-shell";
 import { ReviewerTelemetryTruthStrip } from "@/components/reviewer-telemetry-truth-strip";
 import { TelemetryExportReadinessPanel } from "@/components/telemetry-export-readiness-panel";
@@ -40,6 +41,7 @@ export default function AnalyticsPage() {
       <div className="rounded-[28px] border border-cyan-300/16 bg-cyan-300/[0.08] p-6 text-sm leading-7 text-white/68">
         Start with <a className="text-cyan-100 underline underline-offset-4" href="/learn">/learn</a> if you are new. Use this route after a real Testnet action to understand the product through counts, freshness, and treasury movement before going deeper into proof or diagnostics.
       </div>
+      <LiveSiteActivityPanel variant="analytics" />
       <div>
         <Suspense fallback={null}>
           <TelemetryModeHandoffStrip context="analytics" />
