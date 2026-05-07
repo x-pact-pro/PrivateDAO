@@ -55,7 +55,9 @@ alter table public.governance_receipts
   add column if not exists recipient text not null default 'testnet-recipient',
   add column if not exists rail text not null default 'browser-direct-supabase',
   add column if not exists tx_hash text not null default 'pending-testnet-signature',
-  add column if not exists status text not null default 'confirmed';
+  add column if not exists status text not null default 'confirmed',
+  add column if not exists voter text not null default 'browser-direct-supabase',
+  add column if not exists vote_direction text not null default 'abstain';
 
 alter table public.governance_receipts
   alter column proposal_id set default 'unknown-proposal',
