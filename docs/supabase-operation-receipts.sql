@@ -15,6 +15,25 @@ create table if not exists public.operation_receipts (
   metadata jsonb not null default '{}'::jsonb
 );
 
+alter table public.operation_receipts
+  add column if not exists updated_at timestamptz not null default now(),
+  add column if not exists operation_type text not null default 'operation_receipt',
+  add column if not exists proposal_id text not null default 'unknown-proposal',
+  add column if not exists dao_address text,
+  add column if not exists approval_state text not null default 'confirmed',
+  add column if not exists execution_reference text not null default 'manual-intake',
+  add column if not exists private_settlement_rail text not null default 'testnet-receipt-rail',
+  add column if not exists stablecoin_symbol text not null default 'SOL',
+  add column if not exists audit_mode text not null default 'scoped-viewing-key',
+  add column if not exists recipient_visibility text not null default 'recipient-private',
+  add column if not exists metadata jsonb not null default '{}'::jsonb,
+  add column if not exists rail text,
+  add column if not exists asset text,
+  add column if not exists amount text,
+  add column if not exists recipient text,
+  add column if not exists memo text,
+  add column if not exists status text;
+
 create table if not exists public.governance_receipts (
   id uuid primary key default gen_random_uuid(),
   proposal_id text not null,
@@ -27,6 +46,16 @@ create table if not exists public.governance_receipts (
   status text not null,
   created_at timestamptz not null default now()
 );
+
+alter table public.governance_receipts
+  add column if not exists proposal_id text not null default 'unknown-proposal',
+  add column if not exists operation_type text not null default 'governance_operation',
+  add column if not exists asset text not null default 'SOL',
+  add column if not exists amount text not null default '0',
+  add column if not exists recipient text not null default 'testnet-recipient',
+  add column if not exists rail text not null default 'browser-direct-supabase',
+  add column if not exists tx_hash text not null default 'pending-testnet-signature',
+  add column if not exists status text not null default 'confirmed';
 
 create table if not exists public.cloak_delivery_state (
   id uuid primary key default gen_random_uuid(),
@@ -41,6 +70,27 @@ create table if not exists public.cloak_delivery_state (
   response_status text not null,
   created_at timestamptz not null default now()
 );
+
+alter table public.cloak_delivery_state
+  add column if not exists updated_at timestamptz not null default now(),
+  add column if not exists operation_id text,
+  add column if not exists cloak_status text,
+  add column if not exists relayer_endpoint text,
+  add column if not exists relayer_response jsonb,
+  add column if not exists attempts integer not null default 0,
+  add column if not exists last_attempt_at timestamptz,
+  add column if not exists delivered_at timestamptz,
+  add column if not exists stealth_address text,
+  add column if not exists ephemeral_pubkey text,
+  add column if not exists rail text not null default 'umbra-devnet-relayer',
+  add column if not exists operation_type text not null default 'private_settlement',
+  add column if not exists asset text not null default 'USDC',
+  add column if not exists amount text not null default '0',
+  add column if not exists recipient text not null default 'testnet-recipient-private',
+  add column if not exists memo text not null default 'manual-intake',
+  add column if not exists audit_mode text not null default 'scoped-viewing-key',
+  add column if not exists recipient_visibility text not null default 'recipient-private',
+  add column if not exists response_status text not null default 'prepared';
 
 create index if not exists operation_receipts_created_at_idx
   on public.operation_receipts (created_at desc);
@@ -186,3 +236,5 @@ begin
       with check (true);
   end if;
 end $$;
+
+notify pgrst, 'reload schema';
