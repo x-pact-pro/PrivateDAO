@@ -20,7 +20,7 @@
   <a href="docs/pdao-token.md"><img src="https://img.shields.io/badge/PDAO-Token--2022%20Governance%20Mint-0f766e" alt="PDAO token" /></a>
   <a href="docs/security-hardening-v2.md"><img src="https://img.shields.io/badge/Security-Strict%20V2%20Hardening-1d4ed8" alt="Strict V2 security hardening" /></a>
   <a href="docs/operational-evidence.generated.md"><img src="https://img.shields.io/badge/Devnet-50%20Wallet%20Rehearsal-7c3aed" alt="Devnet rehearsal" /></a>
-  <a href="docs/testnet-lifecycle-rehearsal-2026-05-06.md"><img src="https://img.shields.io/badge/Testnet-Lifecycle%20Rehearsal%202026--05--06-0ea5e9" alt="Fresh Testnet lifecycle rehearsal" /></a>
+  <a href="docs/testnet-lifecycle-rehearsal-2026-05-07.md"><img src="https://img.shields.io/badge/Testnet-Lifecycle%20Rehearsal%202026--05--07-0ea5e9" alt="Fresh Testnet lifecycle rehearsal" /></a>
   <a href="docs/magicblock/private-payments.md"><img src="https://img.shields.io/badge/MagicBlock-Private%20Payments-06b6d4" alt="MagicBlock private payments" /></a>
   <a href="docs/rpc-architecture.md"><img src="https://img.shields.io/badge/RPC%20Fast-Read%20Node%20Ready-f97316" alt="RPC Fast ready" /></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-AGPLv3%2B%20%7C%20Apache--2.0%20%7C%20MIT-green" alt="License" /></a>
@@ -48,6 +48,9 @@ PrivateDAO is live on Solana Testnet with the Anchor 1.0.1 program deployed, web
 
 - Track-by-track delivery board and submission artifacts: [`submissions-new/TRACK_EXECUTION_BOARD.md`](submissions-new/TRACK_EXECUTION_BOARD.md)
 - Submission index and publish log: [`submissions-new/README.md`](submissions-new/README.md)
+- theMiracle wallet-placement benefit proposal: [`docs/themiracle-benefit-proposal.md`](docs/themiracle-benefit-proposal.md) and `https://privatedao.org/documents/themiracle-benefit-proposal/`
+- theMiracle live benefit route: `https://privatedao.org/benefit/`
+- Excellence closure matrix: [`docs/excellence-closure-matrix-2026-05-06.md`](docs/excellence-closure-matrix-2026-05-06.md) and `https://privatedao.org/documents/excellence-closure-matrix-2026-05-06/`
 - Security baseline snapshot (current gate findings and mitigations): [`docs/security-baseline-2026-04-24.md`](docs/security-baseline-2026-04-24.md)
 
 ## What PrivateDAO Is Now
@@ -61,6 +64,8 @@ PrivateDAO is a wallet-first Solana Testnet financial OS for organizations that 
 - **Informed:** GoldRush, Dune, QVAC `qvac/fabric-llm-finetune`, and the Intelligence layer before a user signs.
 
 The core product narrative is simple: PrivateDAO turns operations that used to require developers, command lines, custom scripts, and cryptography specialists into guided interface workflows. A user can learn the idea in `/learn`, connect a wallet, review the action in normal product language, sign the exact request, and verify the receipt from the web app or Android surface.
+
+The release discipline is also part of the product. Remaining external gates are not hidden as footnotes; they are exposed as operating lanes with routes, schemas, commands, and reviewer-readable boundaries. The current closure map is published in [`docs/excellence-closure-matrix-2026-05-06.md`](docs/excellence-closure-matrix-2026-05-06.md).
 
 It combines:
 
@@ -151,6 +156,7 @@ The first product view exposes the highest-value lanes immediately so a judge, i
 | Payroll | `https://privatedao.org/payroll/` | Private CSV payroll, stablecoin selection, Umbra/Cloak posture, and audit receipts. |
 | Gaming | `https://privatedao.org/gaming/` | Guilds, tournaments, inventory proposals, and private reward operations. |
 | Compliance | `https://privatedao.org/compliance/` | Scoped compliance packs, bounded viewing keys, and dWallet-signed evidence framing. |
+| Benefit | `https://privatedao.org/benefit/` | theMiracle wallet-placement design, Founding Governor incentive, and conversion-ready CTA. |
 | Proof | `https://privatedao.org/proof/` | Proof Matrix, Solscan links, ZK badges, viewing-key evidence, and judge mode. |
 | Developers | `https://privatedao.org/developers/` | SDK/API surface, Anchor 1 evidence, privacy integration, and read-node entry points. |
 | RPC Services | `https://privatedao.org/rpc-services/` | Hosted reads, relayer health, QVAC runtime proof, and backend evidence. |
@@ -170,14 +176,14 @@ PrivateDAO keeps each integration tied to a user-facing job. The product does no
 | Icon | Technology | Where it appears | How PrivateDAO uses it |
 | --- | --- | --- | --- |
 | ⚓ | Anchor 1.0.1 | `/govern`, `/proof`, program docs | Current Solana Testnet governance program: DAO creation, proposals, commit/reveal voting, finalization, execution, and reviewer-visible account state. |
-| 🟣 | QVAC `qvac/fabric-llm-finetune` | `/services/qvac-sovereign-ai`, `/intelligence`, `/assistant` | Local-first proposal and treasury briefs: operation type, risk notes, privacy mode, and counterparty context without sending sensitive intent to a centralized AI endpoint. |
+| 🟣 | QVAC `qvac/fabric-llm-finetune` | `/services/qvac-sovereign-ai`, `/intelligence`, `/assistant` | Sensitive-decision AI before signing: private payroll, treasury, compliance, and high-value vote context stays local instead of going to a centralized model endpoint. |
 | 🧠 | OpenRouter-ready assistant | `/assistant`, `/search` | Optional live product guide for demos. It converts a user problem into the right route and proof path; keys stay in the browser session, not the repo. |
 | 🔐 | ZK proof rails | `/proof`, `/security`, `/documents/zk-capability-matrix` | Shows when an action has proof anchors, privacy badges, and reviewer evidence without exposing private voting or payout intent. |
-| 🧮 | REFHE / Encrypt | `/services/encrypt-ika-operations`, `/treasury`, README proof docs | Frames confidential solvency and encrypted settlement gates where sensitive values can be evaluated without public disclosure. |
+| 🧮 | REFHE / Encrypt / IKA | `/services/encrypt-ika-operations`, `/treasury`, `/documents/testnet-refhe-encrypt-ika-commitment-2026-05-07` | Proposal-bound confidential execution metadata, encrypted hashes, verifier-program binding, and fresh Testnet REFHE settlement evidence. |
 | ⚡ | MagicBlock | `/services/main-frontier-closure`, MagicBlock docs | Private-payment and fast execution corridor for confidential payout stories after governance approval. |
 | 🌑 | Umbra / Cloak | `/services/cloak-private-settlement`, `/payroll`, `/proof` | Private settlement intent, relayer readiness, scoped viewing-key posture, and audit-friendly confidential payout flows. |
 | 🔁 | Jupiter | `/services/jupiter-treasury-route`, `/treasury` | No-key quote preview for governed treasury routes so operators can review output, slippage, and route rationale before execution. |
-| 📊 | GoldRush / Dune | `/intelligence`, `/treasury` | Wallet and transaction context for treasury health, counterparty trust, suspicious flows, and proposal review before signing. |
+| 📊 | GoldRush / Dune | `/intelligence`, `/treasury`, `/documents/testnet-integration-runtime-closure-2026-05-07` | Prominent financial intelligence before signing: wallet history, stablecoin flow, counterparty trust, suspicious flows, and proposal review. |
 | 🏆 | Torque | `/services/torque-growth-loop`, `/proof` | Governance participation and receipt events for growth loops, rewards, and reviewer-visible engagement telemetry. |
 | 🤖 | Zerion agent policy | `/services/zerion-agent-policy`, `/treasury` | Bounded treasury assistant policy: allowed pairs, spend caps, and governance-controlled rebalancing context. |
 | 🧾 | Supabase | `/proof`, `/live`, `/dashboard` | Browser-direct receipt timeline for confirmed operations, avoiding static-export API limitations while keeping proof visible. |
@@ -192,6 +198,7 @@ PrivateDAO has been upgraded at the Solana program layer to Anchor `1.0.1`.
 
 | Layer | Current value | Evidence |
 | --- | --- | --- |
+| Local Anchor CLI | `anchor-cli 1.0.1` | `anchor --version` on the current build host |
 | `Anchor.toml` | `anchor_version = "1.0.1"` | [`Anchor.toml`](Anchor.toml) |
 | Rust program crates | `anchor-lang = "1.0.1"`, `anchor-spl = "1.0.1"` | [`Cargo.toml`](Cargo.toml), [`Cargo.lock`](Cargo.lock) |
 | Deployed Testnet program | `EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva` | [`docs/anchor-1-migration-evidence-2026-04-30.md`](docs/anchor-1-migration-evidence-2026-04-30.md) |
@@ -205,11 +212,27 @@ PrivateDAO uses the official QVAC model `qvac/fabric-llm-finetune` as the local 
 
 - Route: `https://privatedao.org/services/qvac-sovereign-ai/`
 - Product use: local execution brief for DAO proposals, private treasury movement, counterparty review, and privacy-mode recommendation before signing.
+- SDK proof: `npm run probe:qvac-runtime` imports `@qvac/sdk`, records SDK version `0.10.0`, and publishes the runtime proof through `https://api.privatedao.org/api/v1/qvac/runtime-proof`.
 - Runtime: browser-side Transformers.js using `@xenova/transformers`, with browser cache enabled after first model load.
+- Capability surface: the runtime proof verifies QVAC SDK exports used by the product lane, including `loadModel`, `completion`, `embed`, `translate`, `transcribe`, and `ocr`.
 - Privacy posture: no API key, no centralized model endpoint, no wallet intent sent to a hosted LLM.
 - Fallback boundary: if a device cannot load the model, the page falls back to deterministic local policy analysis and labels that state explicitly.
 
 The QVAC lane is core product functionality, not a wrapper demo: it sits in the pre-sign review path used by `/intelligence/`, `/execute/`, and `/services/qvac-sovereign-ai/`.
+
+## Fresh Testnet Cryptographic Evidence
+
+These packets are the shortest judge path for the cryptography-heavy layers:
+
+| Layer | Product role | Fresh proof |
+| --- | --- | --- |
+| REFHE / Encrypt / IKA | Confidential execution commitments and verifier-program binding for sensitive treasury metadata. | [`docs/testnet-refhe-encrypt-ika-commitment-2026-05-07.md`](docs/testnet-refhe-encrypt-ika-commitment-2026-05-07.md) |
+| ZK proof continuity | Proof badges for hidden vote, delegation, and tally layers without exposing the underlying intent. | [`docs/testnet-zk-verification-receipts-2026-05-07.md`](docs/testnet-zk-verification-receipts-2026-05-07.md) |
+| Umbra / Cloak | Private settlement lanes with relayer readiness and browser-direct receipt continuity. | [`docs/testnet-integration-runtime-closure-2026-05-07.md`](docs/testnet-integration-runtime-closure-2026-05-07.md) |
+| Umbra intent boundary | Stealth-settlement intent, recipient hash posture, relayer readiness, and full SDK/UTXO claim boundary. | [`docs/umbra-intent-evidence-2026-05-07.md`](docs/umbra-intent-evidence-2026-05-07.md) |
+| GoldRush / Dune / Zerion / MagicBlock / QVAC | Live hosted checks from `api.privatedao.org` for intelligence, policy, relayer, and runtime status. | [`docs/testnet-integration-runtime-closure-2026-05-07.md`](docs/testnet-integration-runtime-closure-2026-05-07.md) |
+
+Normal users see simple route names: `Review with QVAC`, `Check wallet with GoldRush`, `Prepare private settlement`, and `Verify proof`. Judges get direct Solana Testnet transaction links and JSON/Markdown evidence packets.
 
 ## Replay Pressure Note
 
@@ -222,7 +245,7 @@ The non-terminal path is now explicit:
 1. Open [`https://privatedao.org/start/`](https://privatedao.org/start/).
 2. Connect a Testnet wallet. Solflare, Phantom, Glow, Backpack, and Wallet Standard wallets are surfaced from the browser product.
 3. Continue to [`https://privatedao.org/govern/`](https://privatedao.org/govern/) and run the flow: create DAO, create proposal, commit, reveal, finalize, and execute.
-4. Open [`https://privatedao.org/proof/?judge=1`](https://privatedao.org/proof/?judge=1) and [`docs/testnet-lifecycle-rehearsal-2026-05-06.md`](docs/testnet-lifecycle-rehearsal-2026-05-06.md) to verify the public signatures, accounts, treasury delta, Supabase receipt intake, and explorer links.
+4. Open [`https://privatedao.org/proof/?judge=1`](https://privatedao.org/proof/?judge=1) and [`docs/testnet-lifecycle-rehearsal-2026-05-07.md`](docs/testnet-lifecycle-rehearsal-2026-05-07.md) to verify the public signatures, accounts, treasury delta, Supabase receipt intake, and explorer links.
 5. Use [`https://privatedao.org/learn/`](https://privatedao.org/learn/) for the lecture, code, quiz, and assignment corridor that explains what the user just executed.
 
 Repo scripts remain the reproducible reviewer path, but the ordinary product path is browser-first: click, sign, run, verify.
@@ -259,7 +282,7 @@ PrivateDAO is already strong enough for Testnet evaluation, judge review, and pi
 | Stage | Current status | Evidence |
 | --- | --- | --- |
 | Product and protocol | Live on Solana Testnet with browser product surfaces and reviewer proof | Live frontend, Anchor program, PDAO governance mint, commit-reveal lifecycle, confidential payout flows, Strict V2 hardening. |
-| Reviewer evidence | Implemented and generated | 50-wallet Devnet rehearsal, fresh 2026-05-06 Testnet lifecycle proof, Supabase receipt rows, Android Solflare capture, ZK anchors, operational evidence, audit packet, cryptographic manifest, and `npm run verify:all`. |
+| Reviewer evidence | Implemented and generated | 50-wallet Devnet rehearsal, fresh 2026-05-07 Testnet lifecycle proof, Supabase receipt rows, Android Solflare capture, ZK anchors, operational evidence, audit packet, cryptographic manifest, and `npm run verify:all`. |
 | Launch operations | Repo-defined and ready for closure | Multisig intake, authority transfer runbook, launch ops checklist, monitoring rules, wallet E2E plan. |
 | Production custody | Structured for execution with recorded evidence next | 2-of-3 multisig, 48+ hour timelock, authority transfer signatures, signer backups, and post-transfer authority readouts. |
 | Mainnet real funds | Final production gate | External audit, live monitoring, real-device captures, source-verifiable MagicBlock/REFHE receipts, and final cutover ceremony. |
@@ -348,7 +371,7 @@ This is intentional: the product now exposes the exact custody proof shape and t
 | Treasury receive surface | https://privatedao.org/services/ |
 | Lifecycle product video | https://privatedao.org/assets/private-dao-demo-flow.mp4 |
 | Testnet program | https://solscan.io/account/EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva?cluster=testnet |
-| Testnet lifecycle proof | [`docs/testnet-lifecycle-rehearsal-2026-05-06.md`](docs/testnet-lifecycle-rehearsal-2026-05-06.md) |
+| Testnet lifecycle proof | [`docs/testnet-lifecycle-rehearsal-2026-05-07.md`](docs/testnet-lifecycle-rehearsal-2026-05-07.md) |
 | Final closure workplan | [`docs/final-closure-workplan-2026-04-19.md`](docs/final-closure-workplan-2026-04-19.md) |
 | Canonical custody intake | [`docs/multisig-setup-intake.json`](docs/multisig-setup-intake.json) |
 
@@ -512,6 +535,19 @@ The hosted read node at `https://api.privatedao.org` now exposes reviewer-verifi
 
 Current boundary: PrivateDAO verifies relayer health, supported mints, and testnet settlement intent receipts. It does not fabricate a full Umbra claim. A full claim still requires SDK-generated ZK `proof_account_data` and UTXO slot data produced by the Umbra SDK path.
 
+## Read-Node Program Alignment Gate
+
+The public frontend is intentionally static and resilient at `https://privatedao.org`, while the hosted read-node lane lives at `https://api.privatedao.org`.
+
+The read node must report the current Anchor 1.0.1 Testnet program before it is treated as aligned:
+
+- Expected program: `EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva`
+- Verification command: `npm run verify:remote-primary-host -- https://api.privatedao.org`
+- EC2 repair command: `scripts/fix-primary-host-program-alignment.sh`
+- Operator runbook: [`docs/read-node/aws-namecheap-cutover-2026-04-29.md`](docs/read-node/aws-namecheap-cutover-2026-04-29.md)
+
+This gate prevents a healthy-looking API from silently serving stale program metadata after an AWS or DNS cutover.
+
 ## Feature Map
 
 | Layer | What exists now | Key references |
@@ -568,7 +604,7 @@ Primary artifacts:
 
 ## Evidence From The Standard Testnet Rehearsal
 
-The latest Testnet packet proves the standard governance and treasury lifecycle on Solana Testnet for the current Anchor 1.0.1 program. The deployment target is tracked in [`docs/anchor-1-migration-evidence-2026-04-30.md`](docs/anchor-1-migration-evidence-2026-04-30.md), and the fresh lifecycle packet is [`docs/testnet-lifecycle-rehearsal-2026-05-06.md`](docs/testnet-lifecycle-rehearsal-2026-05-06.md).
+The latest Testnet packet proves the standard governance and treasury lifecycle on Solana Testnet for the current Anchor 1.0.1 program. The deployment target is tracked in [`docs/anchor-1-migration-evidence-2026-04-30.md`](docs/anchor-1-migration-evidence-2026-04-30.md), and the fresh lifecycle packet is [`docs/testnet-lifecycle-rehearsal-2026-05-07.md`](docs/testnet-lifecycle-rehearsal-2026-05-07.md).
 
 | Metric | Value |
 | --- | --- |
@@ -577,16 +613,16 @@ The latest Testnet packet proves the standard governance and treasury lifecycle 
 | Current Anchor 1 ProgramData | `FKyt5DcmRQcCF8kzMGjCvfGb3ZPHMQnH1SqiG9Mi8xEc` |
 | Current Anchor 1 deploy signature | `2HucNtqnL3fxAvW911b6poj3hJWTUg2EN344EhRruhPyxxHmt8P4ba3gnnHxmRnjBU3Kps3V1hevt61W9Lik1bvm` |
 | Latest rehearsal operator | `4Mm5YTRbJuyA8NcWM85wTnx6ZQMXNph2DSnzCCKLhsMD` |
-| Latest rehearsal report | [`docs/testnet-lifecycle-rehearsal-2026-05-06.md`](docs/testnet-lifecycle-rehearsal-2026-05-06.md) |
-| Latest rehearsal JSON | [`docs/testnet-lifecycle-rehearsal-2026-05-06.json`](docs/testnet-lifecycle-rehearsal-2026-05-06.json) |
+| Latest rehearsal report | [`docs/testnet-lifecycle-rehearsal-2026-05-07.md`](docs/testnet-lifecycle-rehearsal-2026-05-07.md) |
+| Latest rehearsal JSON | [`docs/testnet-lifecycle-rehearsal-2026-05-07.json`](docs/testnet-lifecycle-rehearsal-2026-05-07.json) |
 | Result | Passed and executed |
 | Treasury delta | `5,000,000` lamports |
 | Execute transaction | `zAFdbqz7FS4zaB48VjQ7KSsmstv7fyaaP7sqrs3LToryXu1zZF6GN4xiSvUBmtvTMcXqGa7VAnmaRHUQmCuC9Vz` |
 
 Primary artifacts:
 
-- [`docs/testnet-lifecycle-rehearsal-2026-05-06.md`](docs/testnet-lifecycle-rehearsal-2026-05-06.md)
-- [`docs/testnet-lifecycle-rehearsal-2026-05-06.json`](docs/testnet-lifecycle-rehearsal-2026-05-06.json)
+- [`docs/testnet-lifecycle-rehearsal-2026-05-07.md`](docs/testnet-lifecycle-rehearsal-2026-05-07.md)
+- [`docs/testnet-lifecycle-rehearsal-2026-05-07.json`](docs/testnet-lifecycle-rehearsal-2026-05-07.json)
 - [`docs/supabase-operation-receipts.sql`](docs/supabase-operation-receipts.sql)
 - [`docs/testnet-migration-report-2026-04-18.md`](docs/testnet-migration-report-2026-04-18.md)
 
@@ -698,7 +734,7 @@ If you only have a few minutes:
 2. Open judge mode: https://privatedao.org/proof/?judge=1
 3. Read [`docs/reviewer-fast-path.md`](docs/reviewer-fast-path.md)
 4. Read [`docs/security-hardening-v2.md`](docs/security-hardening-v2.md)
-5. Read [`docs/testnet-lifecycle-rehearsal-2026-05-06.md`](docs/testnet-lifecycle-rehearsal-2026-05-06.md)
+5. Read [`docs/testnet-lifecycle-rehearsal-2026-05-07.md`](docs/testnet-lifecycle-rehearsal-2026-05-07.md)
 6. Read [`docs/operational-evidence.generated.md`](docs/operational-evidence.generated.md)
 7. Read [`docs/technical-verification-status-2026.md`](docs/technical-verification-status-2026.md)
 8. Inspect the program: [`programs/private-dao/src/lib.rs`](programs/private-dao/src/lib.rs)

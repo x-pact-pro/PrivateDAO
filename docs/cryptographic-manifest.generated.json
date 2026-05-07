@@ -1,9 +1,9 @@
 {
   "project": "PrivateDAO",
-  "generatedAt": "2026-05-06T11:01:41.602Z",
+  "generatedAt": "2026-05-07T03:25:24.924Z",
   "algorithm": "sha256",
   "entryCount": 143,
-  "aggregateSha256": "9e5bd79d42024b2a4a76431b6c19075fa9789a478daece0a9f0c2d227d8b0352",
+  "aggregateSha256": "1b079107325aa8396c8751121a370f00396e3746eba47bca7a20615c8625d8a3",
   "files": [
     {
       "path": "zk/circuits/private_dao_vote_overlay.circom",
@@ -152,7 +152,7 @@
     },
     {
       "path": "docs/live-proof.md",
-      "sha256": "52872e45789722b2d65592c9d096c37d986f61be66f78c0119f23e4cec20fe94",
+      "sha256": "c6449ddb53fe10ded09fa937ff0bf5d489d7435c1d57f60c257c12d6f7f4b138",
       "bytes": 5764
     },
     {
@@ -507,12 +507,12 @@
     },
     {
       "path": "docs/supply-chain-attestation.generated.md",
-      "sha256": "8777a07bfd29d43d30f0a42754c2ca80e721db50a175e3d952a5ab0c477d0118",
+      "sha256": "472a73484bd1a31c33523258fdeb4eefb28a0cc376bd5b5c7af62b4e93f04ece",
       "bytes": 1694
     },
     {
       "path": "docs/supply-chain-attestation.generated.json",
-      "sha256": "6c6f57396a8e3ab6bda53fec0225d7f9adad2a673fe0e6cde865623ed9d8fed7",
+      "sha256": "d4d327d29ff71ff6b195743feafad9353e397504ad5f6152e34d7025a7fb00fc",
       "bytes": 2020
     },
     {
@@ -522,17 +522,17 @@
     },
     {
       "path": "docs/wallet-compatibility-matrix.generated.json",
-      "sha256": "9fa8a9a94347411a3e925a258383dec4b9b0a4fbe21e49abf0e583269389666c",
+      "sha256": "9c92c12c570986a58eb96b9b7837881db1d8a3f6a975261ab863b08617056c41",
       "bytes": 2937
     },
     {
       "path": "docs/devnet-canary.generated.md",
-      "sha256": "9f34f0e13012e10fc1d50acde441016b74fd81873b9d7d95218c101e9324d1cc",
+      "sha256": "baf5fe5f2451d9ed52bfc199c044d073209b8961044fdda52fb0a3927c9425f5",
       "bytes": 2294
     },
     {
       "path": "docs/devnet-canary.generated.json",
-      "sha256": "3b75e700d664248e9496d9c5590ed30f4ca47bfe53d440dff138a0fa6911898e",
+      "sha256": "38a7927e618747ba910f0ef2a92f7b2ea1963acfa548259b3b4bf9653c453efa",
       "bytes": 3073
     },
     {
