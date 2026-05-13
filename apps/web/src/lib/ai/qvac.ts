@@ -39,6 +39,26 @@ export type QvacModelProgress = {
 };
 
 const QVAC_FABRIC_MODEL = "qvac/fabric-llm-finetune";
+const QVAC_MODEL_LOAD_TIMEOUT_MS = 45_000;
+const QVAC_INFERENCE_TIMEOUT_MS = 20_000;
+
+function withTimeout<T>(promise: Promise<T>, timeoutMs: number, label: string): Promise<T> {
+  return new Promise((resolve, reject) => {
+    const timeout = window.setTimeout(() => {
+      reject(new Error(`${label} exceeded ${Math.round(timeoutMs / 1000)}s; using deterministic local fallback.`));
+    }, timeoutMs);
+
+    promise
+      .then((value) => {
+        window.clearTimeout(timeout);
+        resolve(value);
+      })
+      .catch((error) => {
+        window.clearTimeout(timeout);
+        reject(error);
+      });
+  });
+}
 
 export async function detectQvacCapabilityState(): Promise<QvacCapabilityState> {
   const nav = typeof navigator !== "undefined" ? navigator : null;
@@ -143,9 +163,13 @@ export async function generateQvacFabricBrief(
     }
 
     onProgress?.({ status: "loading-model", file: QVAC_FABRIC_MODEL, progress: 0 });
-    const generator = await transformers.pipeline("text-generation", QVAC_FABRIC_MODEL, {
-      progress_callback: onProgress,
-    });
+    const generator = await withTimeout(
+      transformers.pipeline("text-generation", QVAC_FABRIC_MODEL, {
+        progress_callback: onProgress,
+      }),
+      QVAC_MODEL_LOAD_TIMEOUT_MS,
+      "QVAC model load",
+    );
 
     const prompt = [
       "PrivateDAO local sovereign AI brief.",
@@ -157,11 +181,15 @@ export async function generateQvacFabricBrief(
     ].join("\n");
 
     onProgress?.({ status: "running-local-inference", file: QVAC_FABRIC_MODEL, progress: 100 });
-    const result = await generator(prompt, {
-      max_new_tokens: 96,
-      temperature: 0.2,
-      do_sample: false,
-    });
+    const result = await withTimeout(
+      generator(prompt, {
+        max_new_tokens: 96,
+        temperature: 0.2,
+        do_sample: false,
+      }),
+      QVAC_INFERENCE_TIMEOUT_MS,
+      "QVAC local inference",
+    );
     const first = Array.isArray(result) ? result[0] : result;
     const rawText =
       first && typeof first === "object" && "generated_text" in first && typeof first.generated_text === "string"
@@ -174,7 +202,12 @@ export async function generateQvacFabricBrief(
       rawText,
       ...parseGeneratedBrief(rawText, input),
     };
-  } catch {
+  } catch (error) {
+    onProgress?.({
+      status: error instanceof Error ? error.message : "QVAC local runtime unavailable; using deterministic local fallback.",
+      file: QVAC_FABRIC_MODEL,
+      progress: 100,
+    });
     return buildQvacOperationalBrief(input);
   }
 }

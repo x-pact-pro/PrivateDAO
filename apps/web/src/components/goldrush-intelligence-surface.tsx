@@ -6,6 +6,7 @@ import { ArrowUpRight, DatabaseZap, Radar, WalletCards } from "lucide-react";
 
 import { buttonVariants } from "@/components/ui/button";
 import { runGoldRushQuery, type GoldRushQueryRequest } from "@/lib/api/goldrush";
+import { persistOperationReceipt } from "@/lib/supabase/operation-receipts";
 import { cn } from "@/lib/utils";
 
 type GoldRushTemplateId =
@@ -100,6 +101,28 @@ function formatUsd(value: number | null | undefined) {
   }).format(value);
 }
 
+function buildGoldRushFallbackResponse(payload: GoldRushQueryRequest, reason: string): GoldRushResponse {
+  return {
+    sources: {
+      goldRush: "degraded",
+      duneSim: "available-through-read-node",
+    },
+    summary: {
+      assetCount: 0,
+      stableAssetCount: 0,
+      totalQuoteUsd: 0,
+      previewTransactionCount: 0,
+    },
+    riskSignals: [
+      "Live intelligence request did not complete. Keep the operation in review mode and retry before signing.",
+      reason,
+      `Prepared fallback packet for ${payload.walletAddress}.`,
+    ],
+    balances: [],
+    stablecoinHoldings: [],
+  };
+}
+
 export function GoldRushIntelligenceSurface() {
   const [walletAddress, setWalletAddress] = useState("So11111111111111111111111111111111111111112");
   const [activeTemplate, setActiveTemplate] = useState<GoldRushTemplateId>("wallet-history");
@@ -124,9 +147,38 @@ export function GoldRushIntelligenceSurface() {
       setResponseData(body as GoldRushResponse);
       setResponsePreview(JSON.stringify(body, null, 2));
       setDeliveryState("GoldRush intelligence response received.");
+      await persistOperationReceipt({
+        operationType: "goldrush-pre-sign-intelligence",
+        proposalId: `goldrush:${payload.queryType}`,
+        approvalState: "live-intelligence",
+        executionReference: `${payload.chainName ?? "solana-mainnet"}:${payload.walletAddress}:${Date.now()}`,
+        privateSettlementRail: "goldrush",
+        stablecoinSymbol: "USDC",
+        auditMode: "pre-sign-wallet-intelligence",
+        recipientVisibility: "reviewer-visible-summary",
+        metadata: body,
+      });
     } catch (error) {
-      setDeliveryState(error instanceof Error ? error.message : "GoldRush request failed.");
-      setResponseData(null);
+      const message = error instanceof Error ? error.message : "GoldRush request failed.";
+      const fallback = buildGoldRushFallbackResponse(payload, message);
+      setDeliveryState(`${message} Fallback packet prepared locally so the visitor can continue reviewing without blocking.`);
+      setResponseData(fallback);
+      setResponsePreview(JSON.stringify({ ok: false, fallback: true, payload, packet: fallback }, null, 2));
+      try {
+        await persistOperationReceipt({
+          operationType: "goldrush-pre-sign-intelligence",
+          proposalId: `goldrush:${payload.queryType}`,
+          approvalState: "local-fallback",
+          executionReference: `goldrush-fallback:${payload.walletAddress}:${Date.now()}`,
+          privateSettlementRail: "goldrush",
+          stablecoinSymbol: "USDC",
+          auditMode: "pre-sign-wallet-intelligence",
+          recipientVisibility: "reviewer-visible-summary",
+          metadata: { error: message, payload, fallback },
+        });
+      } catch {
+        // The visitor should never be blocked by receipt persistence.
+      }
     } finally {
       setRunning(false);
     }

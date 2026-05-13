@@ -158,7 +158,46 @@ export function PrivateSettlementRailWorkbench({
         // Keep settlement execution non-blocking if growth relay fails.
       }
     } catch (error) {
-      setStatus(error instanceof Error ? error.message : "Private settlement request failed.");
+      const message = error instanceof Error ? error.message : "Private settlement request failed.";
+      const fallbackReceipt = {
+        ok: false,
+        mode: "local-prepared-intent",
+        source: `${rail}-browser-fallback`,
+        endpoint,
+        executionReference: reference,
+        error: message,
+        intent: payload,
+        nextAction: "Retry the read-node private settlement endpoint before any wallet signing or external relay execution.",
+      };
+      setPreview(JSON.stringify(fallbackReceipt, null, 2));
+      setStatus(`${message} Local prepared intent retained and receipt persistence attempted so the visitor can continue review.`);
+      try {
+        await persistOperationReceipt({
+          operationType,
+          proposalId: `${rail}:${operationType}`,
+          approvalState: "local-prepared",
+          executionReference: reference,
+          privateSettlementRail: rail,
+          stablecoinSymbol: asset,
+          auditMode: profile.auditMode,
+          recipientVisibility: profile.visibility,
+          metadata: fallbackReceipt,
+        });
+
+        await persistCloakDeliveryState({
+          rail,
+          operationType,
+          asset,
+          amount,
+          recipient,
+          memo,
+          auditMode: profile.auditMode,
+          recipientVisibility: profile.visibility,
+          responseStatus: "local-prepared",
+        });
+      } catch {
+        // Keep the operator unblocked when Supabase or the rail endpoint is unavailable.
+      }
     } finally {
       setRunning(false);
     }

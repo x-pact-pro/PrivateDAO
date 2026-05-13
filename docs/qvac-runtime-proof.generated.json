@@ -3,7 +3,7 @@
   "project": "PrivateDAO",
   "track": "qvac-sovereign-ai",
   "source": "qvac-sdk-runtime-probe",
-  "generatedAt": "2026-05-13T16:30:42.773Z",
+  "generatedAt": "2026-05-13T20:59:51.538Z",
   "node": "v20.20.0",
   "runtimeMode": "browser-local-first",
   "model": "qvac/fabric-llm-finetune",

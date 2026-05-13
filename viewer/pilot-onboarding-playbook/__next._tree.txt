@@ -2,4 +2,4 @@
 :HL["/_next/static/chunks/0057tnm9bka7q.css","style"]
 :HL["/_next/static/media/0c89a48fa5027cee-s.p.0rd3rjvnnhw7n.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
 :HL["/_next/static/media/797e433ab948586e-s.p.0.q-h669a_dqa.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
-0:{"tree":{"name":"","param":null,"prefetchHints":16,"slots":{"children":{"name":"viewer","param":null,"prefetchHints":0,"slots":{"children":{"name":"slug","param":{"type":"c","key":"pilot-onboarding-playbook","siblings":null},"prefetchHints":0,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":0,"slots":null}}}}}}},"staleTime":300,"buildId":"Zyvz2bDmgs7lbPWiXlzRn"}
+0:{"tree":{"name":"","param":null,"prefetchHints":16,"slots":{"children":{"name":"viewer","param":null,"prefetchHints":0,"slots":{"children":{"name":"slug","param":{"type":"c","key":"pilot-onboarding-playbook","siblings":null},"prefetchHints":0,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":0,"slots":null}}}}}}},"staleTime":300,"buildId":"iUBCbcPtbs7FZhkf7ZTXH"}
