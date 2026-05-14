@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-14T12:24:19.591Z",
+  "generatedAt": "2026-05-14T13:27:57.043Z",
   "api": {
     "payments": "https://payments.magicblock.app",
     "docsIndex": "https://docs.magicblock.gg/llms.txt",
@@ -62,7 +62,13 @@
         "magicblock": {
           "apiBase": "https://payments.magicblock.app",
           "cluster": "devnet",
-          "health": "ok"
+          "health": "ok",
+          "privatePayments": {
+            "challengePath": "/v1/spl/challenge",
+            "loginPath": "/v1/spl/login",
+            "privateBalancePath": "/v1/spl/private-balance",
+            "bearerTokenRequired": true
+          }
         }
       }
     },
@@ -78,9 +84,9 @@
       }
     },
     "privateDaoChallenge": {
-      "ok": false,
-      "status": 404,
-      "note": "PrivateDAO challenge proxy is implemented in this repo and will be live after the read-node deployment is refreshed."
+      "ok": true,
+      "status": 200,
+      "note": "PrivateDAO challenge proxy is live."
     },
     "mintInitialization": {
       "ok": true,
@@ -138,7 +144,7 @@
         "services": {
           "er": true,
           "rpc_router": true,
-          "pricing_oracle": true,
+          "pricing_oracle": false,
           "vrf_oracle": true
         }
       }
