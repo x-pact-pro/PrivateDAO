@@ -1120,6 +1120,42 @@ const curatedDocuments: CuratedDocument[] = [
     rawHref: `${repositoryBlobBase}/docs/real-device-capture-closure-packet.md`,
   },
   {
+    slug: "runtime-evidence",
+    title: "Runtime Evidence",
+    category: "Runtime",
+    summary:
+      "Generated runtime package consolidating runtime attestation, wallet compatibility, Devnet canary, resilience evidence, MagicBlock runtime notes, and ZK-enforced runtime references.",
+    audience: "Judges, reviewers, operators, infrastructure partners",
+    boundary:
+      "Generated evidence package only; it reports the captured runtime posture and linked verification commands without upgrading unclosed production or mainnet gates.",
+    docPath: "docs/runtime-evidence.generated.md",
+    rawHref: `${repositoryBlobBase}/docs/runtime-evidence.generated.md`,
+  },
+  {
+    slug: "authority-transfer-runbook",
+    title: "Authority Transfer Runbook",
+    category: "Custody",
+    summary:
+      "Operational runbook for authority transfer, multisig custody, timelock posture, backup procedures, and incident-facing governance controls.",
+    audience: "Operators, custody reviewers, security reviewers, launch partners",
+    boundary:
+      "Runbook only; it documents the required custody process and evidence dependencies without claiming a production authority transfer has been executed.",
+    docPath: "docs/authority-transfer-runbook.md",
+    rawHref: `${repositoryBlobBase}/docs/authority-transfer-runbook.md`,
+  },
+  {
+    slug: "grant-committee-pack",
+    title: "Grant Committee Pack",
+    category: "Grants",
+    summary:
+      "Compact grant-review packet linking the product routes, use-case proof, service surface, and committee-facing evidence needed for funding review.",
+    audience: "Grant committees, ecosystem reviewers, operators, partners",
+    boundary:
+      "Grant packet only; it organizes available proof and product routes without claiming funding approval or unverified production deployments.",
+    docPath: "docs/grant-committee-pack.md",
+    rawHref: `${repositoryBlobBase}/docs/grant-committee-pack.md`,
+  },
+  {
     slug: "settlement-receipt-closure-packet",
     title: "Settlement Receipt Closure Packet",
     category: "Trust",
@@ -1128,6 +1164,42 @@ const curatedDocuments: CuratedDocument[] = [
     boundary: "Closure packet only; it does not claim source-verifiable settlement receipts are already closed or that confidential payout is already mainnet real-funds ready.",
     docPath: "docs/settlement-receipt-closure-packet.md",
     rawHref: `${repositoryBlobBase}/docs/settlement-receipt-closure-packet.md`,
+  },
+  {
+    slug: "settlement-receipt-closure",
+    title: "Settlement Receipt Closure",
+    category: "Trust",
+    summary:
+      "Generated closure evidence for settlement receipt requirements, linked supporting artifacts, and the remaining boundary before stronger production payout claims.",
+    audience: "Funders, judges, buyers, operators, reviewers",
+    boundary:
+      "Generated closure evidence only; it does not claim source-verifiable settlement receipts are already closed.",
+    docPath: "docs/settlement-receipt-closure.generated.md",
+    rawHref: `${repositoryBlobBase}/docs/settlement-receipt-closure.generated.md`,
+  },
+  {
+    slug: "mainnet-execution-readiness-packet",
+    title: "Mainnet Execution Readiness Packet",
+    category: "Launch",
+    summary:
+      "Mainnet execution readiness packet covering execution gates, launch dependencies, monitoring posture, custody requirements, and reviewer-visible proof routes.",
+    audience: "Launch reviewers, operators, security reviewers, infrastructure partners",
+    boundary:
+      "Readiness packet only; it describes mainnet preparation and remaining gates without claiming mainnet production release is complete.",
+    docPath: "docs/mainnet-execution-readiness-packet.md",
+    rawHref: `${repositoryBlobBase}/docs/mainnet-execution-readiness-packet.md`,
+  },
+  {
+    slug: "launch-ops-checklist",
+    title: "Launch Ops Checklist",
+    category: "Launch",
+    summary:
+      "Human-readable launch operations checklist mapping mainnet blockers to custody, monitoring, wallet runtime, MagicBlock, REFHE, and cutover evidence.",
+    audience: "Operators, launch reviewers, security reviewers, ecosystem partners",
+    boundary:
+      "Checklist only; it tracks required launch controls and evidence paths without claiming all checklist items are closed.",
+    docPath: "docs/launch-ops-checklist.md",
+    rawHref: `${repositoryBlobBase}/docs/launch-ops-checklist.md`,
   },
   {
     slug: "monitoring-delivery-closure-packet",

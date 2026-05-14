@@ -12,6 +12,8 @@
     "web:bundle:root": "bash scripts/build-web-mirror-bundle.sh root",
     "web:verify:bundle:github": "bash scripts/verify-web-mirror-bundle.sh github",
     "web:verify:bundle:root": "bash scripts/verify-web-mirror-bundle.sh root",
+    "web:verify:internal-links:github": "node scripts/verify-web-internal-links.mjs github",
+    "web:verify:internal-links:root": "node scripts/verify-web-internal-links.mjs root",
     "web:publish:github": "bash scripts/publish-web-live-surface.sh github",
     "web:publish:root": "bash scripts/publish-web-live-surface.sh root",
     "web:verify:live:github": "bash scripts/verify-web-live-surface.sh github",
