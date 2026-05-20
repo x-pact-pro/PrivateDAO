@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 const phaseTwoRails = [
   "Encrypted intake from the first form field through service delivery.",
   "Time-bound license keys issued from on-chain payment and service terms.",
-  "Client-selected intelligence rails across QVAC local models, GoldRush, Dune SIM, Zerion, SNS, and Covalent-style recovery prompts.",
+  "Client-selected intelligence rails across QVAC local models, Covalent GoldRush, Zerion, SNS, and recovery prompts.",
   "Auditor-visible security review before sensitive source, policy matrices, and partner-only integration bundles are closed.",
   "Mainnet deployment begins after the current judging phase and the required external security reviews.",
   "Phase 3 expands the infrastructure cross-chain while Solana remains the guardian chain and first governance home.",

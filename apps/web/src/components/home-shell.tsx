@@ -336,7 +336,7 @@ export function HomeShell() {
     {
       title: "Intelligence",
       eyebrow: "AI + data",
-      description: "GoldRush, Dune, QVAC, counterparty trust, and proposal context before signing.",
+      description: "Covalent GoldRush, QVAC, SNS, Zerion policy, counterparty trust, and proposal context before signing.",
       href: "/intelligence",
       icon: BrainCircuit,
       badge: "Review first",

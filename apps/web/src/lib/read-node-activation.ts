@@ -99,7 +99,7 @@ export function getReadNodeActivationSnapshot(
     description: copy.description,
     activationState: "Indexed reads and same-domain backend serving are live for Testnet reviewer checks",
     exactGap:
-      "Public product routes consume indexed read evidence and the hosted `api.privatedao.org` lane now serves health, relayer, QVAC, Dune, GoldRush, Torque, and Zerion checks.",
+      "Public product routes consume indexed read evidence and the hosted `api.privatedao.org` lane now serves health, relayer, QVAC, Covalent GoldRush, Torque, Zerion, and SNS checks.",
     readPath: snapshot.readPath,
     indexedProposalCount: `${snapshot.counts.proposals} proposals / ${snapshot.counts.uniqueDaos} DAOs`,
     confidentialCoverage: `${snapshot.counts.confidentialPayouts} confidential payouts`,

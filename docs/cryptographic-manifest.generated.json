@@ -1,9 +1,9 @@
 {
   "project": "PrivateDAO",
-  "generatedAt": "2026-05-07T03:25:24.924Z",
+  "generatedAt": "2026-05-20T17:25:11.046Z",
   "algorithm": "sha256",
   "entryCount": 143,
-  "aggregateSha256": "1b079107325aa8396c8751121a370f00396e3746eba47bca7a20615c8625d8a3",
+  "aggregateSha256": "158b98d102687a10f816512cfc011c8be015f29d825c7e339774de7d11e33068",
   "files": [
     {
       "path": "zk/circuits/private_dao_vote_overlay.circom",
@@ -507,13 +507,13 @@
     },
     {
       "path": "docs/supply-chain-attestation.generated.md",
-      "sha256": "472a73484bd1a31c33523258fdeb4eefb28a0cc376bd5b5c7af62b4e93f04ece",
-      "bytes": 1694
+      "sha256": "13543cfdf728cea53126f532f668dbe66f09483fa0a808b86803b20404f325a4",
+      "bytes": 1695
     },
     {
       "path": "docs/supply-chain-attestation.generated.json",
-      "sha256": "d4d327d29ff71ff6b195743feafad9353e397504ad5f6152e34d7025a7fb00fc",
-      "bytes": 2020
+      "sha256": "5b1e5113c5cafc0141627f5d14e9e8c7234ab93c4350cc8b95225431553703a2",
+      "bytes": 2021
     },
     {
       "path": "docs/wallet-compatibility-matrix.generated.md",
@@ -522,17 +522,17 @@
     },
     {
       "path": "docs/wallet-compatibility-matrix.generated.json",
-      "sha256": "9c92c12c570986a58eb96b9b7837881db1d8a3f6a975261ab863b08617056c41",
+      "sha256": "b589e75756f5cc424c233b3fd12524d0839505d079206bc5ff8cda91bab0901e",
       "bytes": 2937
     },
     {
       "path": "docs/devnet-canary.generated.md",
-      "sha256": "baf5fe5f2451d9ed52bfc199c044d073209b8961044fdda52fb0a3927c9425f5",
+      "sha256": "f713460999bbfa93ee6aedf15dbd6d12822398df3629a80a1fc9be5578e9a542",
       "bytes": 2294
     },
     {
       "path": "docs/devnet-canary.generated.json",
-      "sha256": "38a7927e618747ba910f0ef2a92f7b2ea1963acfa548259b3b4bf9653c453efa",
+      "sha256": "cbcba0d119c94384c2b1f14545c61b048587fee7f9a8c09f00ea245980b2bb94",
       "bytes": 3073
     },
     {

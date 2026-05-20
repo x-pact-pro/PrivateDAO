@@ -77,7 +77,7 @@ const languages = [
 const architectureCards = [
   ["Encrypted intake", "Every service starts from an encrypted requirement form tied to package, duration, delivery method, and customer-selected integrations.", LockKeyhole],
   ["Payment-bound access", "The on-chain transaction hash can become the activation reference after settlement confirmation and license issuance.", KeyRound],
-  ["Intelligence routing", "QVAC handles local private briefs; GoldRush, Dune SIM, Zerion, SNS, and related rails add external context when selected.", Sparkles],
+  ["Intelligence routing", "QVAC handles local private briefs; Covalent GoldRush, Zerion, SNS, and related rails add external context when selected.", Sparkles],
   ["Security boundary", "Sensitive source, cryptographic matrices, and anti-tamper details are reserved for auditors and selected partners.", ShieldCheck],
   ["Mainnet review", "Production deployment follows the active judging phase and external security review, not unreviewed claims.", Globe2],
   ["Phase 3 cross-chain", "The infrastructure expands beyond Solana while Solana remains the guardian chain and first decision home.", Network],

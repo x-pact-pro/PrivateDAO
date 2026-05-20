@@ -17,7 +17,7 @@ const platformLanes = [
   },
   {
     title: "Intelligence",
-    body: "GoldRush, Dune, QVAC, and SolRouter turn wallet data, treasury context, and proposal signals into review-grade operational context before approval.",
+    body: "Covalent GoldRush, QVAC, SNS, Zerion, and SolRouter turn wallet data, treasury context, and proposal signals into review-grade operational context before approval.",
     href: "/intelligence",
   },
   {

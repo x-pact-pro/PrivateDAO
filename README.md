@@ -30,7 +30,7 @@
   <a href="https://privatedao.org/api-status/"><img src="https://img.shields.io/badge/Supabase-Receipts%20%2B%20Visitors-3ecf8e?logo=supabase" alt="Supabase receipts and visitors" /></a>
   <a href="https://privatedao.org/services/cloak-private-settlement/"><img src="https://img.shields.io/badge/Cloak-Private%20Settlement-8b5cf6" alt="Cloak private settlement" /></a>
   <a href="https://privatedao.org/services/umbra-private-payments/"><img src="https://img.shields.io/badge/Umbra-Private%20Payments-10b981" alt="Umbra private payments" /></a>
-  <a href="https://privatedao.org/intelligence/"><img src="https://img.shields.io/badge/GoldRush%20%2B%20Dune-Intelligence-fbbf24" alt="GoldRush and Dune intelligence" /></a>
+  <a href="https://privatedao.org/intelligence/"><img src="https://img.shields.io/badge/Covalent%20GoldRush-Intelligence-fbbf24" alt="Covalent GoldRush intelligence" /></a>
   <a href="https://privatedao.org/services/zerion-agent-policy/"><img src="https://img.shields.io/badge/Zerion-Agent%20Policy-8b5cf6" alt="Zerion agent policy" /></a>
   <a href="https://privatedao.org/services/jupiter-treasury-route/"><img src="https://img.shields.io/badge/Jupiter-Treasury%20Route-f97316" alt="Jupiter treasury route" /></a>
   <a href="https://privatedao.org/services/torque-growth-loop/"><img src="https://img.shields.io/badge/Torque-Growth%20Loop-ef4444" alt="Torque growth loop" /></a>
@@ -112,11 +112,11 @@ PrivateDAO is live on Solana Testnet with the Anchor 1.0.1 program deployed, web
 
 PrivateDAO is a wallet-first Solana Testnet financial OS for organizations that need private governance, confidential treasury execution, local-first intelligence, and reviewer-visible proof without forcing normal users into terminal workflows.
 
-**Private. Verified. Informed.** PrivateDAO combines ZK privacy, REFHE confidential execution, MagicBlock speed, and GoldRush intelligence into one governance OS where every decision is private, verified, and informed.
+**Private. Verified. Informed.** PrivateDAO combines ZK privacy, REFHE confidential execution, MagicBlock speed, and Covalent GoldRush intelligence into one governance OS where every decision is private, verified, and informed.
 
 - **Private:** ZK proof rails, commit-reveal voting, Cloak settlement posture, and Umbra confidential payout lanes.
 - **Verified:** fresh Testnet proof, V3 hardening, Anchor 1.0.1 toolchain evidence, Solscan-linked receipts, and Supabase timeline continuity.
-- **Informed:** GoldRush, Dune, QVAC `qvac/fabric-llm-finetune`, and the Intelligence layer before a user signs.
+- **Informed:** Covalent GoldRush, QVAC `qvac/fabric-llm-finetune`, SNS resolution, Zerion policy context, and the Intelligence layer before a user signs.
 
 The core product narrative is simple: PrivateDAO turns operations that used to require developers, command lines, custom scripts, and cryptography specialists into guided interface workflows. A user can learn the idea in `/learn`, connect a wallet, review the action in normal product language, sign the exact request, and verify the receipt from the web app or Android surface.
 
@@ -205,7 +205,7 @@ The first product view exposes the highest-value lanes immediately so a judge, i
 
 | Lane | Route | Why it matters |
 | --- | --- | --- |
-| Intelligence | `https://privatedao.org/intelligence/` | QVAC, GoldRush, Dune, counterparty trust, proposal context, and RPC quality before signing. |
+| Intelligence | `https://privatedao.org/intelligence/` | QVAC, Covalent GoldRush, SNS, Zerion policy context, counterparty trust, proposal context, and RPC quality before signing. |
 | Governance | `https://privatedao.org/govern/` | DAO creation, proposal creation, voting, reveal, finalize, and execution path. |
 | Treasury | `https://privatedao.org/treasury/` | Treasury health, policy, solvency posture, and agent context. |
 | Payroll | `https://privatedao.org/payroll/` | Private CSV payroll, stablecoin selection, Umbra/Cloak posture, and audit receipts. |

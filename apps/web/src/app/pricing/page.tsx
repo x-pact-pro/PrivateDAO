@@ -197,7 +197,7 @@ export default function PricingPage() {
               {[
                 ["Governance OS", "DAO creation, proposals, voting, execution"],
                 ["Confidential operations", "Payroll, vendor payouts, gaming rewards"],
-                ["Intelligence layer", "QVAC, GoldRush, Dune, Zerion policy"],
+                ["Intelligence layer", "QVAC, Covalent GoldRush, SNS, Zerion policy"],
                 ["Proof layer", "ZK, REFHE, IKA, receipts, Solscan links"],
               ].map(([title, body]) => (
                 <div key={title} className="rounded-2xl border border-white/10 bg-black/20 p-4">
