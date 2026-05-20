@@ -2,9 +2,12 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { ConfidentialPaymentsSystemSurface } from "@/components/confidential-payments-system-surface";
+import { CloakSdkIntegrationStatus } from "@/components/cloak-sdk-integration-status";
 import { IkaUserShareOpsGuardrail } from "@/components/ika-user-share-ops-guardrail";
 import { LocalizedRouteSummary } from "@/components/localized-route-summary";
+import { MagicBlockPrivatePaymentsStatus } from "@/components/magicblock-private-payments-status";
 import { OperationsShell } from "@/components/operations-shell";
+import { UmbraSdkIntegrationStatus } from "@/components/umbra-sdk-integration-status";
 import { buttonVariants } from "@/components/ui/button";
 import { buildRouteMetadata } from "@/lib/route-metadata";
 import { cn } from "@/lib/utils";
@@ -32,6 +35,9 @@ export default function ConfidentialPaymentsPage() {
       <LocalizedRouteSummary routeKey="services" />
       <ConfidentialPaymentsSystemSurface />
       <IkaUserShareOpsGuardrail />
+      <MagicBlockPrivatePaymentsStatus />
+      <CloakSdkIntegrationStatus />
+      <UmbraSdkIntegrationStatus />
 
       <div className="rounded-[28px] border border-white/10 bg-white/[0.04] p-5">
         <div className="text-[11px] uppercase tracking-[0.24em] text-white/44">Operational flow</div>
