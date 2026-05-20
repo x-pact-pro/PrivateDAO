@@ -1068,7 +1068,7 @@ async function fetchGoldRushQuery(body: Record<string, unknown>) {
     walletAddress,
     sources: {
       goldRush: goldRushState,
-      duneSim: covalentStatus,
+      legacyAnalytics: covalentStatus,
       covalentGoldRush: covalentStatus,
       zerion: zerionFallback.ok ? "live" : "unavailable",
       solanaRpc: rpcFallback.ok ? "live" : "unavailable",

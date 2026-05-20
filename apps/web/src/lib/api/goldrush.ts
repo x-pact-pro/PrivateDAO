@@ -19,7 +19,7 @@ export type GoldRushQueryResponse = {
   walletAddress: string;
   sources: {
     goldRush: string;
-    duneSim: string;
+    legacyAnalytics?: string;
     covalentGoldRush?: string;
     zerion?: string;
     solanaRpc?: string;

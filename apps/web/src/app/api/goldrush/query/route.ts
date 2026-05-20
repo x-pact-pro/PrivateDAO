@@ -210,7 +210,7 @@ export async function POST(request: Request) {
       walletAddress,
       sources: {
         goldRush: "live",
-        duneSim: covalentGoldRushState,
+        legacyAnalytics: covalentGoldRushState,
         covalentGoldRush: covalentGoldRushState,
       },
       summary: {

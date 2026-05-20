@@ -72,7 +72,7 @@ type GoldRushResponse = {
   ok?: boolean;
   sources?: {
     goldRush?: string;
-    duneSim?: string;
+    legacyAnalytics?: string;
     covalentGoldRush?: string;
     zerion?: string;
     solanaRpc?: string;
@@ -110,7 +110,7 @@ function buildGoldRushFallbackResponse(payload: GoldRushQueryRequest, reason: st
   return {
     sources: {
       goldRush: "degraded",
-      duneSim: "covalent-goldrush-read-node",
+      legacyAnalytics: "covalent-goldrush-read-node",
       covalentGoldRush: "covalent-goldrush-read-node",
       zerion: "fallback-pending",
       solanaRpc: "fallback-pending",
@@ -291,7 +291,7 @@ export function GoldRushIntelligenceSurface() {
                 </div>
                 <div className="rounded-2xl border border-white/10 bg-black/30 p-3 text-sm text-white/70">
                   <div className="text-[11px] uppercase tracking-[0.18em] text-white/42">Covalent</div>
-                  <div className="mt-1 text-white">{responseData.sources.covalentGoldRush ?? responseData.sources.duneSim ?? "unknown"}</div>
+                  <div className="mt-1 text-white">{responseData.sources.covalentGoldRush ?? responseData.sources.legacyAnalytics ?? "unknown"}</div>
                 </div>
                 <div className="rounded-2xl border border-white/10 bg-black/30 p-3 text-sm text-white/70">
                   <div className="text-[11px] uppercase tracking-[0.18em] text-white/42">Zerion</div>
