@@ -13,11 +13,29 @@ const curveOptions = [
   { value: "RISTRETTO", label: "RISTRETTO / Schnorrkel", fit: "privacy and Substrate-style flows" },
 ];
 
+type IkaRoutePreview = {
+  solanaPreAlpha?: {
+    grpcUrl?: string;
+    rpcUrl?: string;
+    programId?: string;
+    executionBoundary?: string;
+    program?: {
+      executable?: boolean;
+    };
+    operator?: {
+      publicKey?: string;
+      balanceSol?: number;
+      funded?: boolean;
+    };
+  };
+};
+
 export function IkaDwalletCustodyWorkbench() {
   const [curve, setCurve] = useState("SECP256K1");
   const [custodyMode, setCustodyMode] = useState("shared-dwallet");
   const [status, setStatus] = useState("Prepare a live Ika SDK custody route against testnet.");
   const [preview, setPreview] = useState("");
+  const [routePreview, setRoutePreview] = useState<IkaRoutePreview | null>(null);
   const [running, setRunning] = useState(false);
 
   async function handlePrepare() {
@@ -35,8 +53,13 @@ export function IkaDwalletCustodyWorkbench() {
         }),
       });
       const body = await response.json().catch(() => null);
+      setRoutePreview(body && typeof body === "object" ? (body as IkaRoutePreview) : null);
       setPreview(JSON.stringify(body, null, 2));
-      setStatus(response.ok ? "Ika SDK route initialized. Live network encryption key and dWallet boundary are visible." : `Ika route responded ${response.status}.`);
+      setStatus(
+        response.ok
+          ? "Ika route initialized. The response now shows Sui SDK readiness plus the funded Solana pre-alpha operator lane."
+          : `Ika route responded ${response.status}.`,
+      );
     } catch (error) {
       setStatus(error instanceof Error ? error.message : "Ika custody route failed.");
     } finally {
@@ -50,7 +73,8 @@ export function IkaDwalletCustodyWorkbench() {
       <h2 className="mt-3 text-2xl font-semibold text-white">Programmable custody for private payroll and treasury execution</h2>
       <p className="mt-3 max-w-4xl text-sm leading-7 text-white/66">
         This workbench uses <code>@ika.xyz/sdk</code> on the read node to initialize Ika testnet, read the live network
-        encryption key, choose the dWallet curve, and expose the exact boundary before DKG submission.
+        encryption key, choose the dWallet curve, and expose the exact boundary before DKG submission. It also reads the
+        Ika Solana pre-alpha program and the funded devnet operator wallet used for the approval-flow lane.
       </p>
 
       <div className="mt-5 grid gap-4 lg:grid-cols-[0.9fr_1.1fr]">
@@ -102,6 +126,29 @@ export function IkaDwalletCustodyWorkbench() {
             <div className="text-[11px] uppercase tracking-[0.22em] text-emerald-100/76">Route status</div>
             <div className="mt-3 text-sm leading-7 text-white/72">{status}</div>
           </div>
+          {routePreview?.solanaPreAlpha ? (
+            <div className="grid gap-3 sm:grid-cols-3">
+              <div className="rounded-[20px] border border-white/10 bg-black/24 p-4">
+                <div className="text-[11px] uppercase tracking-[0.2em] text-white/44">Ika program</div>
+                <div className="mt-2 text-sm font-semibold text-white">
+                  {routePreview.solanaPreAlpha.program?.executable ? "Executable" : "Not executable"}
+                </div>
+                <div className="mt-2 break-all text-xs leading-5 text-white/52">{routePreview.solanaPreAlpha.programId}</div>
+              </div>
+              <div className="rounded-[20px] border border-white/10 bg-black/24 p-4">
+                <div className="text-[11px] uppercase tracking-[0.2em] text-white/44">Operator wallet</div>
+                <div className="mt-2 text-sm font-semibold text-white">
+                  {routePreview.solanaPreAlpha.operator?.funded ? `${routePreview.solanaPreAlpha.operator.balanceSol ?? 0} SOL funded` : "Needs SOL"}
+                </div>
+                <div className="mt-2 break-all text-xs leading-5 text-white/52">{routePreview.solanaPreAlpha.operator?.publicKey}</div>
+              </div>
+              <div className="rounded-[20px] border border-white/10 bg-black/24 p-4">
+                <div className="text-[11px] uppercase tracking-[0.2em] text-white/44">Execution lane</div>
+                <div className="mt-2 text-sm font-semibold text-white">Solana devnet</div>
+                <div className="mt-2 text-xs leading-5 text-white/52">{routePreview.solanaPreAlpha.executionBoundary}</div>
+              </div>
+            </div>
+          ) : null}
           <pre className="max-h-[520px] overflow-auto rounded-[24px] border border-white/10 bg-black/30 p-4 text-xs leading-6 text-cyan-100/82">
             {preview || "The Ika SDK route response will appear here."}
           </pre>

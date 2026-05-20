@@ -1107,6 +1107,92 @@ function sha256Hex(value: string | Buffer) {
   return createHash("sha256").update(value).digest("hex");
 }
 
+async function readSolanaKeypairPublicKey(keypairPath: string) {
+  const raw = await readFile(resolve(keypairPath), "utf8");
+  const secret = JSON.parse(raw) as number[];
+  if (!Array.isArray(secret) || secret.length !== 64 || !secret.every((value) => Number.isInteger(value) && value >= 0 && value <= 255)) {
+    throw new Error("Invalid Solana keypair file shape");
+  }
+  return Keypair.fromSecretKey(Uint8Array.from(secret)).publicKey;
+}
+
+async function readIkaSolanaPreAlphaStatus() {
+  const grpcUrl = process.env.IKA_PREALPHA_GRPC_URL?.trim() || "https://pre-alpha-dev-1.ika.ika-network.net:443";
+  const rpcUrl = process.env.IKA_PREALPHA_SOLANA_RPC?.trim() || process.env.SOLANA_RPC_URL?.trim() || "https://api.devnet.solana.com";
+  const programIdRaw =
+    process.env.IKA_PREALPHA_PROGRAM_ID?.trim() || "87W54kGYFQ1rgWqMeu4XTPHWXWmXSQCcjm8vCTfiq1oY";
+  const keypairPath = process.env.IKA_SOLANA_KEYPAIR_PATH?.trim();
+  const connection = new Connection(rpcUrl, "confirmed");
+  const programId = new PublicKey(programIdRaw);
+  const [programAccount, latestBlockhash] = await Promise.all([
+    connection.getAccountInfo(programId).catch((error: unknown) => ({ error })),
+    connection.getLatestBlockhash().catch((error: unknown) => ({ error })),
+  ]);
+
+  let operator: Record<string, unknown> = {
+    configured: Boolean(keypairPath),
+    publicKey: null,
+    balanceSol: null,
+    balanceLamports: null,
+    funded: false,
+    keypairPathConfigured: Boolean(keypairPath),
+  };
+
+  if (keypairPath) {
+    try {
+      const publicKey = await readSolanaKeypairPublicKey(keypairPath);
+      const lamports = await connection.getBalance(publicKey, "confirmed");
+      operator = {
+        configured: true,
+        publicKey: publicKey.toBase58(),
+        balanceSol: lamports / 1_000_000_000,
+        balanceLamports: lamports,
+        funded: lamports > 0,
+        keypairPathConfigured: true,
+      };
+    } catch (error) {
+      operator = {
+        ...operator,
+        error: error instanceof Error ? error.message : "Failed to read configured Solana operator keypair",
+      };
+    }
+  }
+
+  const operatorFunded = operator.funded === true;
+
+  return {
+    source: "ika-solana-prealpha-live-readiness",
+    grpcUrl,
+    rpcUrl,
+    programId: programId.toBase58(),
+    program: {
+      exists: Boolean(programAccount && !("error" in programAccount)),
+      executable: Boolean(programAccount && !("error" in programAccount) && programAccount.executable),
+      owner:
+        programAccount && !("error" in programAccount) && programAccount.owner
+          ? programAccount.owner.toBase58()
+          : null,
+      lamports:
+        programAccount && !("error" in programAccount) && typeof programAccount.lamports === "number"
+          ? programAccount.lamports
+          : null,
+      error:
+        programAccount && "error" in programAccount
+          ? programAccount.error instanceof Error
+            ? programAccount.error.message
+            : "Unable to read Ika pre-alpha program account"
+          : null,
+    },
+    operator,
+    latestBlockhash: "error" in latestBlockhash ? null : latestBlockhash.blockhash,
+    latestValidBlockHeight: "error" in latestBlockhash ? null : latestBlockhash.lastValidBlockHeight,
+    executionBoundary:
+      operatorFunded && programAccount && !("error" in programAccount) && programAccount.executable
+        ? "funded-solana-devnet-operator-ready-for-ika-prealpha-approval-flow"
+        : "requires-funded-solana-devnet-operator-and-executable-ika-prealpha-program",
+  };
+}
+
 async function handleIkaCustodyPrepare(body: Record<string, unknown>) {
   const network = stringField(body, "network", "testnet") === "mainnet" ? "mainnet" : "testnet";
   const curveInput = stringField(body, "curve", "SECP256K1").toUpperCase();
@@ -1149,6 +1235,8 @@ async function handleIkaCustodyPrepare(body: Record<string, unknown>) {
   const routeId = sha256Hex(JSON.stringify({ network, curve, signatureAlgorithm, hashScheme, custodyMode, operationLabel })).slice(0, 24);
   const hasFundedSigner = Boolean(process.env.IKA_SUI_KEYPAIR || process.env.IKA_SUI_SECRET_KEY || process.env.IKA_DWALLET_CAP_ID);
 
+  const solanaPreAlpha = await readIkaSolanaPreAlphaStatus();
+
   return {
     ok: true,
     source: "ika-sdk-live-readiness",
@@ -1169,6 +1257,7 @@ async function handleIkaCustodyPrepare(body: Record<string, unknown>) {
       packages: (config.packages as Record<string, unknown>) || null,
       coordinator: ((config.objects as Record<string, unknown>)?.ikaDWalletCoordinator as Record<string, unknown>) || null,
     },
+    solanaPreAlpha,
     dWalletExecutionBoundary: hasFundedSigner
       ? "funded-signer-config-present-ready-for-dkg-transaction"
       : "requires-funded-sui-ika-signer-before-dkg-submit",
