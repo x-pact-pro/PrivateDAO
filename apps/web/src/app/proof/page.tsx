@@ -223,7 +223,7 @@ export default function ProofPage() {
         <div className="grid gap-3 lg:grid-cols-3">
           {[
             ["Sensitive decisions", "QVAC runs local-first review before signing so private treasury intent does not need a cloud model.", "/services/qvac-sovereign-ai"],
-            ["Financial intelligence", "GoldRush and Dune make wallet, stablecoin, and counterparty context visible before an operator acts.", "/intelligence"],
+            ["Financial intelligence", "Covalent GoldRush makes wallet, stablecoin, and counterparty context visible before an operator acts.", "/intelligence"],
             ["Cryptographic proof", "ZK, REFHE/Encrypt, IKA, Umbra, Cloak, and MagicBlock each have a clear feature route and a judge proof route.", "/documents/testnet-refhe-encrypt-ika-commitment-2026-05-07"],
           ].map(([title, summary, href]) => (
             <Link key={title} href={href} className="rounded-[22px] border border-white/8 bg-black/20 p-4 transition hover:border-cyan-200/40">

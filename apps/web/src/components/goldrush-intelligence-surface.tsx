@@ -135,7 +135,7 @@ export function GoldRushIntelligenceSurface() {
   const [walletAddress, setWalletAddress] = useState("So11111111111111111111111111111111111111112");
   const [activeTemplate, setActiveTemplate] = useState<GoldRushTemplateId>("wallet-history");
   const [deliveryState, setDeliveryState] = useState(
-    "Run a live GoldRush intelligence request here. The hosted read-node now forwards configured GoldRush and Dune checks for reviewer-visible pre-sign context.",
+    "Run a live Covalent GoldRush intelligence request here. The hosted read-node now forwards configured GoldRush, Zerion, SNS, and Solana RPC checks for reviewer-visible pre-sign context.",
   );
   const [responsePreview, setResponsePreview] = useState<string>("");
   const [responseData, setResponseData] = useState<GoldRushResponse | null>(null);
@@ -403,7 +403,7 @@ export function GoldRushIntelligenceSurface() {
           <div className="rounded-[24px] border border-white/10 bg-black/20 p-4">
             <div className="text-[11px] uppercase tracking-[0.22em] text-white/44">Latest response preview</div>
             <pre className="mt-3 overflow-x-auto rounded-2xl border border-white/10 bg-black/30 p-4 text-xs leading-6 text-white/70">
-              {responsePreview || "Ready for a live GoldRush/Dune query. Run the workbench to populate this reviewer packet with wallet intelligence before signing."}
+              {responsePreview || "Ready for a live Covalent GoldRush query. Run the workbench to populate this reviewer packet with wallet intelligence before signing."}
             </pre>
           </div>
 

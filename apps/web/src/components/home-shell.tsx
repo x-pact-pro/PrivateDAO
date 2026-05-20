@@ -295,7 +295,7 @@ export function HomeShell() {
     },
     {
       title: "Market Ops DAO",
-      description: "Review GoldRush/Dune context, policy limits, and treasury routes before the wallet signs.",
+      description: "Review Covalent GoldRush context, policy limits, and treasury routes before the wallet signs.",
       href: "/treasury",
       icon: Shield,
     },

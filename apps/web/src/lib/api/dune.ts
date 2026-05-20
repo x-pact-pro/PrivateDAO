@@ -10,7 +10,7 @@ export async function fetchBalances(walletAddress: string): Promise<DuneBalanceS
   const response = await fetch(`${endpoint}?wallet=${encodeURIComponent(walletAddress)}`);
   const body = await safeJson<DuneBalanceSnapshot & { error?: string }>(response);
   if (!response.ok) {
-    throw new Error((body as { error?: string } | null)?.error ?? `Dune balances failed (${response.status}).`);
+    throw new Error((body as { error?: string } | null)?.error ?? `Legacy analytics balances failed (${response.status}).`);
   }
   return body;
 }
@@ -20,7 +20,7 @@ export async function fetchTransactions(walletAddress: string): Promise<DuneTran
   const response = await fetch(`${endpoint}?wallet=${encodeURIComponent(walletAddress)}`);
   const body = await safeJson<DuneTransactionSnapshot & { error?: string }>(response);
   if (!response.ok) {
-    throw new Error((body as { error?: string } | null)?.error ?? `Dune transactions failed (${response.status}).`);
+    throw new Error((body as { error?: string } | null)?.error ?? `Legacy analytics transactions failed (${response.status}).`);
   }
   return body;
 }

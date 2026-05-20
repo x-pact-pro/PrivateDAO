@@ -482,7 +482,7 @@ const curatedDocuments: CuratedDocument[] = [
     title: "Testnet Integration Runtime Closure 2026-05-07",
     category: "Reviewer core",
     summary:
-      "Fresh Solana Testnet lifecycle proof plus live AWS read-node checks for Dune SIM, GoldRush, Zerion, Umbra relayer, MagicBlock, QVAC, and private-settlement receipt paths.",
+      "Fresh Solana Testnet lifecycle proof plus live AWS read-node checks for Covalent GoldRush, Zerion, Umbra relayer, MagicBlock, QVAC, and private-settlement receipt paths.",
     audience: "Judges, privacy reviewers, infrastructure reviewers, operators",
     boundary:
       "Fresh runtime packet only. It distinguishes real Testnet execution from vendor intent receipts and does not claim full Umbra claim execution, Cloak relay execution, or on-chain ZK verifier CPI where those are still separate integration boundaries.",
