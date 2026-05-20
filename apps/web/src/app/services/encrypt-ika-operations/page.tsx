@@ -3,6 +3,7 @@ import Link from "next/link";
 
 import { EncryptedOperationsWorkbench } from "@/components/encrypted-operations-workbench";
 import { ConfidentialPaymentsSystemSurface } from "@/components/confidential-payments-system-surface";
+import { IkaDwalletCustodyWorkbench } from "@/components/ika-dwallet-custody-workbench";
 import { IkaUserShareOpsGuardrail } from "@/components/ika-user-share-ops-guardrail";
 import { LocalizedRouteBrief } from "@/components/localized-route-brief";
 import { LocalizedRouteSummary } from "@/components/localized-route-summary";
@@ -10,6 +11,7 @@ import { OperationStateLegend } from "@/components/operation-state-legend";
 import { OperationsShell } from "@/components/operations-shell";
 import { ProjectOperatingMap } from "@/components/project-operating-map";
 import { PrivatePayrollEncryptionWorkbench } from "@/components/private-payroll-encryption-workbench";
+import { RefhePayrollProofWorkbench } from "@/components/refhe-payroll-proof-workbench";
 import { buttonVariants } from "@/components/ui/button";
 import { buildRouteMetadata } from "@/lib/route-metadata";
 import { cn } from "@/lib/utils";
@@ -46,6 +48,9 @@ export default function EncryptIkaOperationsPage() {
           <Link href="/services/confidential-payments" className={cn(buttonVariants({ size: "sm" }))}>
             Open confidential payments
           </Link>
+          <Link href="/services/refhe-payroll-proof" className={cn(buttonVariants({ size: "sm", variant: "secondary" }))}>
+            Open REFHE payroll proof
+          </Link>
           <Link href="/services/magicblock-private-payments" className={cn(buttonVariants({ size: "sm", variant: "secondary" }))}>
             Open MagicBlock lane
           </Link>
@@ -65,6 +70,8 @@ export default function EncryptIkaOperationsPage() {
         title="How encrypted operations feed the rest of the product"
         description="Encrypt / IKA is the privacy preparation layer. It protects payroll instructions, sensitive treasury operations, and confidential governance payloads before Cloak, Umbra, or MagicBlock take over as execution rails. Intelligence still feeds this lane by narrowing what should be signed and what must remain encrypted."
       />
+      <RefhePayrollProofWorkbench />
+      <IkaDwalletCustodyWorkbench />
       <PrivatePayrollEncryptionWorkbench />
       <EncryptedOperationsWorkbench />
       <IkaUserShareOpsGuardrail />

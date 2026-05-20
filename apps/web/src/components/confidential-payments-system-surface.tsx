@@ -29,6 +29,11 @@ const rails = [
     body: "Client-side payload encryption and confidential execution commitments before any shared route receives metadata.",
     href: "/services/encrypt-ika-operations",
   },
+  {
+    title: "REFHE payroll proof",
+    body: "Encrypted payroll packet, computation commitment, and Ika custody readiness for confidential salary operations.",
+    href: "/services/refhe-payroll-proof",
+  },
 ] as const;
 
 const intelligenceLayers = [
@@ -43,7 +48,7 @@ const intelligenceLayers = [
     href: "/services/solrouter-encrypted-ai",
   },
   {
-    title: "GoldRush + Dune intelligence",
+    title: "Covalent GoldRush intelligence",
     body: "Counterparty, treasury, and wallet context to reduce operational blind spots before confidential settlement.",
     href: "/intelligence",
   },

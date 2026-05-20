@@ -99,6 +99,9 @@ export default function ServicesPage() {
           <Link href="/services/encrypt-ika-operations" className={cn(buttonVariants({ size: "sm", variant: "outline" }))}>
             Open Encrypt / IKA operations
           </Link>
+          <Link href="/services/refhe-payroll-proof" className={cn(buttonVariants({ size: "sm", variant: "secondary" }))}>
+            Open REFHE payroll proof
+          </Link>
         </div>
       </div>
       <ConfidentialPaymentsSystemSurface compact />

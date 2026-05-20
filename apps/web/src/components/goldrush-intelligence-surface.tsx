@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ArrowUpRight, DatabaseZap, Radar, WalletCards } from "lucide-react";
 
 import { buttonVariants } from "@/components/ui/button";
+import { WalletOrSnsInput } from "@/components/wallet-or-sns-input";
 import { runGoldRushQuery, type GoldRushQueryRequest } from "@/lib/api/goldrush";
 import { persistOperationReceipt } from "@/lib/supabase/operation-receipts";
 import { cn } from "@/lib/utils";
@@ -72,6 +73,7 @@ type GoldRushResponse = {
   sources?: {
     goldRush?: string;
     duneSim?: string;
+    covalentGoldRush?: string;
     zerion?: string;
     solanaRpc?: string;
   };
@@ -108,7 +110,8 @@ function buildGoldRushFallbackResponse(payload: GoldRushQueryRequest, reason: st
   return {
     sources: {
       goldRush: "degraded",
-      duneSim: "available-through-read-node",
+      duneSim: "covalent-goldrush-read-node",
+      covalentGoldRush: "covalent-goldrush-read-node",
       zerion: "fallback-pending",
       solanaRpc: "fallback-pending",
     },
@@ -250,12 +253,11 @@ export function GoldRushIntelligenceSurface() {
           </div>
 
           <div className="rounded-[24px] border border-white/10 bg-black/20 p-4">
-            <div className="text-[11px] uppercase tracking-[0.22em] text-white/44">Wallet under review</div>
-            <input
+            <WalletOrSnsInput
+              label="Wallet under review"
               value={walletAddress}
-              onChange={(event) => setWalletAddress(event.target.value)}
-              className="mt-3 w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-sm text-white outline-none"
-              placeholder="Solana wallet address"
+              onChange={setWalletAddress}
+              placeholder="wallet.sol or Solana wallet address"
             />
             <div className="mt-3 flex flex-wrap gap-2">
               <button type="button" className={cn(buttonVariants({ size: "sm" }))} onClick={() => void handleRun()} disabled={running}>
@@ -288,8 +290,8 @@ export function GoldRushIntelligenceSurface() {
                   <div className="mt-1 text-white">{responseData.sources.goldRush ?? "unknown"}</div>
                 </div>
                 <div className="rounded-2xl border border-white/10 bg-black/30 p-3 text-sm text-white/70">
-                  <div className="text-[11px] uppercase tracking-[0.18em] text-white/42">Dune Sim</div>
-                  <div className="mt-1 text-white">{responseData.sources.duneSim ?? "unknown"}</div>
+                  <div className="text-[11px] uppercase tracking-[0.18em] text-white/42">Covalent</div>
+                  <div className="mt-1 text-white">{responseData.sources.covalentGoldRush ?? responseData.sources.duneSim ?? "unknown"}</div>
                 </div>
                 <div className="rounded-2xl border border-white/10 bg-black/30 p-3 text-sm text-white/70">
                   <div className="text-[11px] uppercase tracking-[0.18em] text-white/42">Zerion</div>

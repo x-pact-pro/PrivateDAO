@@ -17,7 +17,7 @@ type GoldRushRequest = {
 };
 
 const GOLDRUSH_BASE = "https://api.covalenthq.com/v1";
-const DUNE_SIM_BASE = "https://api.sim.dune.com/beta/svm";
+const SUPPLEMENTAL_SOLANA_BASE = "https://api.sim.dune.com/beta/svm";
 const FALLBACK_CHAIN = "solana-mainnet";
 
 function normalizeWalletAddress(value: string | undefined) {
@@ -69,8 +69,8 @@ async function fetchGoldRushBalances(chainName: string, walletAddress: string, a
   return response.json();
 }
 
-async function fetchDuneSimTransactions(walletAddress: string, apiKey: string) {
-  const url = `${DUNE_SIM_BASE}/transactions/${walletAddress}`;
+async function fetchSupplementalSolanaTransactions(walletAddress: string, apiKey: string) {
+  const url = `${SUPPLEMENTAL_SOLANA_BASE}/transactions/${walletAddress}`;
   const response = await fetch(url, {
     headers: {
       Accept: "application/json",
@@ -80,7 +80,7 @@ async function fetchDuneSimTransactions(walletAddress: string, apiKey: string) {
   });
 
   if (!response.ok) {
-    throw new Error(`Dune Sim responded ${response.status}.`);
+    throw new Error(`Supplemental Solana transaction feed responded ${response.status}.`);
   }
 
   return response.json();
@@ -167,7 +167,7 @@ function buildRiskSignals(
 
 export async function POST(request: Request) {
   const goldRushApiKey = process.env.GOLDRUSH_API_KEY?.trim();
-  const duneSimApiKey = process.env.DUNE_SIM_API_KEY?.trim();
+  const supplementalSolanaApiKey = process.env.DUNE_SIM_API_KEY?.trim();
 
   if (!goldRushApiKey) {
     return NextResponse.json(
@@ -192,15 +192,15 @@ export async function POST(request: Request) {
       queryType === "counterparty-screen";
 
     let transactionSummary: ReturnType<typeof buildTransactionSummary> | null = null;
-    let duneSourceState = "disabled";
+    let covalentGoldRushState = "covalent-goldrush-live";
 
-    if (shouldFetchTransactions && duneSimApiKey) {
+    if (shouldFetchTransactions && supplementalSolanaApiKey) {
       try {
-        const duneRaw = await fetchDuneSimTransactions(walletAddress, duneSimApiKey);
-        transactionSummary = buildTransactionSummary(duneRaw, stableSymbols);
-        duneSourceState = "live";
+        const supplementalRaw = await fetchSupplementalSolanaTransactions(walletAddress, supplementalSolanaApiKey);
+        transactionSummary = buildTransactionSummary(supplementalRaw, stableSymbols);
+        covalentGoldRushState = "covalent-goldrush-with-transaction-preview";
       } catch (error) {
-        duneSourceState = error instanceof Error ? error.message : "failed";
+        covalentGoldRushState = error instanceof Error ? error.message : "supplemental-preview-failed";
       }
     }
 
@@ -210,7 +210,8 @@ export async function POST(request: Request) {
       walletAddress,
       sources: {
         goldRush: "live",
-        duneSim: duneSourceState,
+        duneSim: covalentGoldRushState,
+        covalentGoldRush: covalentGoldRushState,
       },
       summary: {
         assetCount: balanceSummary.assetCount,

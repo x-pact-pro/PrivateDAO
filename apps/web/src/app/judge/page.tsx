@@ -52,7 +52,7 @@ export default function JudgePage() {
     ["MagicBlock private payments", "Primary Frontier track lane with challenge/login auth, private balance boundary, and wallet-signed execution path.", "/services/magicblock-private-payments", "/proof"],
     ["Cloak private settlement", "Confidential treasury and payroll execution lane with receipt continuity.", "/services/cloak-private-settlement", "/proof"],
     ["Umbra confidential payout", "Recipient-private payout lane with claim-style flow, relayer visibility, and settlement continuity.", "/services/umbra-confidential-payout", "/proof"],
-    ["Intelligence evidence", "GoldRush + Dune Sim treasury and counterparty review surface.", "/intelligence", "/proof"],
+    ["Intelligence evidence", "Covalent GoldRush treasury and counterparty review surface with live fallback visibility.", "/intelligence", "/proof"],
     ["AUDD treasury mode", "AUD settlement, invoice, and merchant-facing stablecoin lane.", "/services/audd-stablecoin", "/documents/audd-stablecoin-treasury-layer"],
     ["PUSD treasury mode", "Stable reserve, grants, payroll, and reward-pool lane.", "/services/pusd-stablecoin", "/documents/pusd-stablecoin-treasury-layer"],
     ["Jupiter treasury route", "Governed route preview for rebalance and payout funding.", "/services/jupiter-treasury-route", "/documents/jupiter-treasury-route"],
@@ -88,7 +88,7 @@ export default function JudgePage() {
             </div>
             <p className="mt-3 max-w-3xl text-sm leading-7 text-white/66">
               Awards are shown here only as review context. The primary judge path remains the live product, Testnet
-              proof, runtime status, and integration map across QVAC, Cloak, Umbra, MagicBlock, GoldRush, Dune Sim,
+              proof, runtime status, and integration map across QVAC, Cloak, Umbra, MagicBlock, Covalent GoldRush,
               Jupiter, Zerion, Torque, Eitherway, Supabase, and the AWS read-node.
             </p>
           </div>

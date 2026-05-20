@@ -296,6 +296,8 @@
   },
   "dependencies": {
     "@coral-xyz/anchor": "^0.32.1",
+    "@ika.xyz/sdk": "^0.4.1",
+    "@mysten/sui": "^2.17.0",
     "@solana/spl-token": "^0.4.14",
     "@solana/web3.js": "^1.98.4",
     "dotenv": "^16.4.5"

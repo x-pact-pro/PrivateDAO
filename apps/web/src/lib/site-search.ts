@@ -106,6 +106,20 @@ export const siteSearchItems: SiteSearchItem[] = [
       "Policy-bound autonomous execution surface with Solana chain lock, spend caps, expiry windows, blocked actions, and approve-before-execute treasury controls.",
   },
   {
+    title: "REFHE Payroll Proof",
+    href: "/services/refhe-payroll-proof",
+    category: "Service",
+    summary:
+      "Encrypted payroll proof route with browser-side ciphertext generation, computation commitments, and live Ika SDK custody readiness.",
+  },
+  {
+    title: "Covalent GoldRush Intelligence",
+    href: "/intelligence",
+    category: "Service",
+    summary:
+      "Counterparty and wallet analysis lane using Covalent GoldRush status with Zerion and Solana RPC fallback when credits are exhausted.",
+  },
+  {
     title: "Torque Growth Loop",
     href: "/services/torque-growth-loop",
     category: "Service",

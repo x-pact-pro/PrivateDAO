@@ -10,7 +10,7 @@ const technologyLanes = [
   { key: "cloak", label: "Private settlement", summary: "Confidential payroll and treasury settlement rails.", href: "/services/cloak-private-settlement" },
   { key: "umbra", label: "Private payout UX", summary: "Confidential payout-first operating lane.", href: "/services/umbra-confidential-payout" },
   { key: "goldrush", label: "Onchain intelligence", summary: "Structured wallet, stablecoin, and counterparty review.", href: "/intelligence" },
-  { key: "dune", label: "Transaction preview", summary: "Supplemental Solana transaction visibility in the same review lane.", href: "/intelligence" },
+  { key: "covalent", label: "Covalent GoldRush", summary: "GoldRush wallet history and fallback-aware counterparty intelligence in the same review lane.", href: "/intelligence" },
   { key: "jupiter", label: "Treasury route preview", summary: "Quote-aware rebalance and payout-funding route checks.", href: "/services/jupiter-treasury-route" },
   { key: "zerion", label: "Bounded agent policy", summary: "Policy-scoped automation with wallet-safe controls.", href: "/services/zerion-agent-policy" },
   { key: "torque", label: "Growth event loop", summary: "Real custom events tied to real product actions.", href: "/services/torque-growth-loop" },
@@ -20,6 +20,7 @@ const technologyLanes = [
   { key: "consumer", label: "Consumer governance UX", summary: "Normal-user operation path across web and Android surfaces.", href: "/services/consumer-governance-ux" },
   { key: "magicblock", label: "Responsive execution", summary: "Challenge/login private payments and low-latency execution corridor.", href: "/services/magicblock-private-payments" },
   { key: "encrypt", label: "Encrypted ops layer", summary: "Confidential planning and policy-bound execution support.", href: "/services/encrypt-ika-operations" },
+  { key: "refhe", label: "REFHE payroll proof", summary: "Encrypted payroll computation receipts with Ika custody readiness.", href: "/services/refhe-payroll-proof" },
   { key: "solrouter", label: "Encrypted AI lane", summary: "Deterministic governance intelligence with encrypted brief export.", href: "/services/solrouter-encrypted-ai" },
   { key: "rpc", label: "Runtime infrastructure", summary: "Fast reads, diagnostics, and reviewer-facing runtime evidence.", href: "/services/runtime-infrastructure" },
   { key: "proof", label: "Proof continuity", summary: "One verification surface for feature, receipt, and trust checks.", href: "/proof" },
@@ -37,7 +38,7 @@ export function TrackTechnologyGrid() {
             Pick any card and jump directly to its live route. This keeps the product simple for users and fast for reviewers.
           </p>
         </div>
-        <Badge variant="cyan">17 active lanes</Badge>
+        <Badge variant="cyan">18 active lanes</Badge>
       </div>
 
       <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">

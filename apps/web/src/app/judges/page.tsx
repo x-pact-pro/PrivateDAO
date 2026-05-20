@@ -34,7 +34,7 @@ export default function JudgesPage() {
             </h1>
             <p className="mt-4 text-sm leading-7 text-white/66">
               This `/judges` URL is kept alive for older links, but the canonical reviewer route is now `/judge`.
-              It carries the fuller technical map: QVAC, Cloak, Umbra, MagicBlock, GoldRush, Dune Sim, Jupiter,
+              It carries the fuller technical map: QVAC, Cloak, Umbra, MagicBlock, Covalent GoldRush, Jupiter,
               Zerion, Torque, Eitherway, Supabase, AWS read-node, Testnet proof, and recognition context.
             </p>
             <div className="mt-6 flex flex-wrap gap-3">

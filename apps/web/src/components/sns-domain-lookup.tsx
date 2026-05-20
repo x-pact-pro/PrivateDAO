@@ -1,16 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { Connection, clusterApiUrl } from "@solana/web3.js";
 
 import { buttonVariants } from "@/components/ui/button";
+import { normalizeSnsDomain, resolveSnsName } from "@/components/wallet-or-sns-input";
 import { cn } from "@/lib/utils";
-
-function normalizeDomain(input: string) {
-  const trimmed = input.trim().toLowerCase();
-  if (!trimmed) return "";
-  return trimmed.endsWith(".sol") ? trimmed : `${trimmed}.sol`;
-}
 
 export function SnsDomainLookup() {
   const [domain, setDomain] = useState("bonfida.sol");
@@ -19,7 +13,7 @@ export function SnsDomainLookup() {
   const [running, setRunning] = useState(false);
 
   async function resolveDomainName() {
-    const normalizedDomain = normalizeDomain(domain);
+    const normalizedDomain = normalizeSnsDomain(domain);
     if (!normalizedDomain) {
       setStatus("Enter a .sol domain first.");
       return;
@@ -30,10 +24,7 @@ export function SnsDomainLookup() {
     setStatus(`Resolving ${normalizedDomain} through SNS on Solana mainnet...`);
 
     try {
-      const [{ resolve }] = await Promise.all([import("@bonfida/spl-name-service")]);
-      const connection = new Connection(process.env.NEXT_PUBLIC_SOLANA_MAINNET_RPC_URL?.trim() || clusterApiUrl("mainnet-beta"), "confirmed");
-      const publicKey = await resolve(connection, normalizedDomain);
-      const address = publicKey.toBase58();
+      const { address } = await resolveSnsName(normalizedDomain);
       setResolvedAddress(address);
       setStatus(`${normalizedDomain} resolved to a Solana wallet address. Use this address in Intelligence, Execute, or private settlement inputs.`);
     } catch (error) {

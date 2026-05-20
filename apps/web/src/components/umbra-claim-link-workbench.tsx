@@ -5,6 +5,7 @@ import Link from "next/link";
 
 import { persistOperationReceipt } from "@/lib/supabase/operation-receipts";
 import { buttonVariants } from "@/components/ui/button";
+import { WalletOrSnsInput } from "@/components/wallet-or-sns-input";
 import { cn } from "@/lib/utils";
 
 type ClaimAsset = "PUSD" | "AUDD" | "USDC" | "USDT" | "SOL";
@@ -140,10 +141,7 @@ export function UmbraClaimLinkWorkbench() {
               <div>Recipient hint</div>
               <input value={recipientHint} onChange={(event) => setRecipientHint(event.target.value)} className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-none" />
             </label>
-            <label className="space-y-2 text-sm text-white/70">
-              <div>Recipient wallet</div>
-              <input value={recipientWallet} onChange={(event) => setRecipientWallet(event.target.value)} className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-none" />
-            </label>
+            <WalletOrSnsInput label="Recipient wallet" value={recipientWallet} onChange={setRecipientWallet} />
           </div>
           <label className="mt-4 block space-y-2 text-sm text-white/70">
             <div>Memo</div>

@@ -6,6 +6,7 @@ import { ArrowUpRight, LockKeyhole, Send, ShieldCheck } from "lucide-react";
 
 import { persistCloakDeliveryState, persistOperationReceipt } from "@/lib/supabase/operation-receipts";
 import { buttonVariants } from "@/components/ui/button";
+import { WalletOrSnsInput } from "@/components/wallet-or-sns-input";
 import { cn } from "@/lib/utils";
 
 type PrivateRail = "cloak" | "umbra";
@@ -282,10 +283,7 @@ export function PrivateSettlementRailWorkbench({
                 <div>Amount</div>
                 <input value={amount} onChange={(event) => setAmount(event.target.value)} className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-none" />
               </label>
-              <label className="space-y-2 text-sm text-white/70">
-                <div>Recipient</div>
-                <input value={recipient} onChange={(event) => setRecipient(event.target.value)} className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-none" />
-              </label>
+              <WalletOrSnsInput label="Recipient" value={recipient} onChange={setRecipient} />
             </div>
             <label className="mt-4 block space-y-2 text-sm text-white/70">
               <div>Operator memo</div>

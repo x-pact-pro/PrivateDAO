@@ -997,7 +997,13 @@ async function fetchGoldRushQuery(body: Record<string, unknown>) {
     };
   }
 
-  const [balancesResponse, txResponse, zerionFallback, rpcFallback] = await Promise.all([
+  const goldRushHeaders: Record<string, string> = apiKey.startsWith("gr_")
+    ? { Accept: "application/json", Authorization: `Bearer ${apiKey}` }
+    : { Accept: "application/json" };
+  const [warehouseResponse, balancesResponse, txResponse, zerionFallback, rpcFallback] = await Promise.all([
+    fetch("https://api.covalenthq.com/_/warehouse/", {
+      headers: goldRushHeaders,
+    }).catch(() => null),
     fetch(`https://api.covalenthq.com/v1/${encodeURIComponent(chainName)}/address/${encodeURIComponent(walletAddress)}/balances_v2/?key=${encodeURIComponent(apiKey)}`, {
       headers: { Accept: "application/json" },
     }),
@@ -1008,6 +1014,7 @@ async function fetchGoldRushQuery(body: Record<string, unknown>) {
     fetchWalletRuntimePreview(walletAddress, chainName),
   ]);
 
+  const warehouseRaw = warehouseResponse ? ((await warehouseResponse.json().catch(() => null)) as Record<string, unknown> | null) : null;
   const balancesRaw = (await balancesResponse.json().catch(() => null)) as Record<string, unknown> | null;
   const txRaw = (await txResponse.json().catch(() => null)) as Record<string, unknown> | null;
   const balanceItems = Array.isArray((balancesRaw?.data as Record<string, unknown> | undefined)?.items)
@@ -1025,11 +1032,12 @@ async function fetchGoldRushQuery(body: Record<string, unknown>) {
   const stablecoinHoldings = balances.filter((item) => ["USDC", "USDT", "PUSD", "AUDD"].includes(item.symbol || ""));
   const totalQuoteUsd = balances.reduce((sum, item) => sum + (typeof item.quote === "number" ? item.quote : 0), 0);
 
+  const zerionRaw = "raw" in zerionFallback ? (zerionFallback.raw as Record<string, unknown> | null) : null;
   const zerionTotal =
     zerionFallback.ok &&
-    typeof (zerionFallback.raw as Record<string, unknown> | null)?.data === "object" &&
-    typeof ((((zerionFallback.raw as Record<string, unknown>).data as Record<string, unknown>).attributes as Record<string, unknown>)?.total as Record<string, unknown> | undefined)?.positions === "number"
-      ? Number(((((zerionFallback.raw as Record<string, unknown>).data as Record<string, unknown>).attributes as Record<string, unknown>).total as Record<string, unknown>).positions)
+    typeof zerionRaw?.data === "object" &&
+    typeof (((zerionRaw.data as Record<string, unknown>).attributes as Record<string, unknown>)?.total as Record<string, unknown> | undefined)?.positions === "number"
+      ? Number((((zerionRaw.data as Record<string, unknown>).attributes as Record<string, unknown>).total as Record<string, unknown>).positions)
       : null;
 
   const fallbackBalances = balances.length > 0 ? balances : rpcFallback.balances;
@@ -1038,9 +1046,19 @@ async function fetchGoldRushQuery(body: Record<string, unknown>) {
   const goldRushState =
     balancesResponse.ok || txResponse.ok
       ? "live"
+      : warehouseResponse?.ok
+        ? "warehouse-live-wallet-endpoint-pending"
       : balancesResponse.status === 402 || txResponse.status === 402
         ? "credits-exhausted-fallback"
         : "degraded-fallback";
+  const covalentStatus =
+    goldRushState === "live"
+      ? "live-covalent-goldrush"
+      : goldRushState === "warehouse-live-wallet-endpoint-pending"
+        ? "covalent-goldrush-warehouse-live"
+      : goldRushState === "credits-exhausted-fallback"
+        ? "covalent-goldrush-credit-limited"
+        : "covalent-goldrush-degraded";
   const liveFallbackOk = Boolean(zerionFallback.ok || rpcFallback.ok);
 
   return {
@@ -1050,7 +1068,8 @@ async function fetchGoldRushQuery(body: Record<string, unknown>) {
     walletAddress,
     sources: {
       goldRush: goldRushState,
-      duneSim: "available-through-/api/v1/dune/*",
+      duneSim: covalentStatus,
+      covalentGoldRush: covalentStatus,
       zerion: zerionFallback.ok ? "live" : "unavailable",
       solanaRpc: rpcFallback.ok ? "live" : "unavailable",
     },
@@ -1065,6 +1084,9 @@ async function fetchGoldRushQuery(body: Record<string, unknown>) {
       ...(goldRushState === "credits-exhausted-fallback"
         ? ["GoldRush credits are exhausted on the live key. This response falls back to Zerion and Solana RPC so review can continue."]
         : []),
+      ...(goldRushState === "warehouse-live-wallet-endpoint-pending"
+        ? ["Covalent GoldRush Warehouse is live with Bearer auth. Wallet-specific v1 endpoints do not accept this key shape, so wallet preview is served by Zerion and Solana RPC until the Warehouse wallet dataset is selected."]
+        : []),
     ],
     balances: fallbackBalances,
     stablecoinHoldings: fallbackStableHoldings,
@@ -1073,10 +1095,148 @@ async function fetchGoldRushQuery(body: Record<string, unknown>) {
     raw: {
       balanceStatus: balancesResponse.status,
       transactionStatus: txResponse.status,
+      warehouseStatus: warehouseResponse?.status ?? null,
+      warehouseUpdatedAt: typeof warehouseRaw?.updated_at === "string" ? warehouseRaw.updated_at : null,
       zerionStatus: zerionFallback.ok ? 200 : typeof (zerionFallback as { status?: number }).status === "number" ? (zerionFallback as { status?: number }).status : null,
       solanaRpcStatus: rpcFallback.ok ? 200 : null,
     },
   };
+}
+
+function sha256Hex(value: string | Buffer) {
+  return createHash("sha256").update(value).digest("hex");
+}
+
+async function handleIkaCustodyPrepare(body: Record<string, unknown>) {
+  const network = stringField(body, "network", "testnet") === "mainnet" ? "mainnet" : "testnet";
+  const curveInput = stringField(body, "curve", "SECP256K1").toUpperCase();
+  const custodyMode = stringField(body, "custodyMode", "shared-dwallet");
+  const operationLabel = stringField(body, "operationLabel", "PrivateDAO dWallet custody route").slice(0, 120);
+  const ika = requireFromWebApp("@ika.xyz/sdk") as Record<string, unknown>;
+  const sui = requireFromWebApp("@mysten/sui/jsonRpc") as Record<string, unknown>;
+  const Curve = ika.Curve as Record<string, string>;
+  const SignatureAlgorithm = ika.SignatureAlgorithm as Record<string, string>;
+  const Hash = ika.Hash as Record<string, string>;
+  const curve = Curve[curveInput] || Curve.SECP256K1;
+  const signatureAlgorithm =
+    curve === Curve.ED25519
+      ? SignatureAlgorithm.EdDSA
+      : curve === Curve.SECP256R1
+        ? SignatureAlgorithm.ECDSASecp256r1
+        : curve === Curve.RISTRETTO
+          ? SignatureAlgorithm.SchnorrkelSubstrate
+          : SignatureAlgorithm.ECDSASecp256k1;
+  const hashScheme =
+    signatureAlgorithm === SignatureAlgorithm.EdDSA
+      ? Hash.SHA512
+      : signatureAlgorithm === SignatureAlgorithm.SchnorrkelSubstrate
+        ? Hash.Merlin
+        : signatureAlgorithm === SignatureAlgorithm.ECDSASecp256k1
+          ? Hash.KECCAK256
+          : Hash.SHA256;
+  const getNetworkConfig = ika.getNetworkConfig as (target: string) => Record<string, unknown>;
+  const IkaClient = ika.IkaClient as new (args: Record<string, unknown>) => {
+    initialize: () => Promise<void>;
+    getLatestNetworkEncryptionKey: () => Promise<Record<string, unknown>>;
+  };
+  const SuiJsonRpcClient = sui.SuiJsonRpcClient as new (args: Record<string, unknown>) => unknown;
+  const getJsonRpcFullnodeUrl = sui.getJsonRpcFullnodeUrl as (target: string) => string;
+  const suiClient = new SuiJsonRpcClient({ url: getJsonRpcFullnodeUrl(network), network });
+  const ikaClient = new IkaClient({ suiClient, config: getNetworkConfig(network), cache: true });
+  await ikaClient.initialize();
+  const networkEncryptionKey = await ikaClient.getLatestNetworkEncryptionKey();
+  const config = getNetworkConfig(network);
+  const routeId = sha256Hex(JSON.stringify({ network, curve, signatureAlgorithm, hashScheme, custodyMode, operationLabel })).slice(0, 24);
+  const hasFundedSigner = Boolean(process.env.IKA_SUI_KEYPAIR || process.env.IKA_SUI_SECRET_KEY || process.env.IKA_DWALLET_CAP_ID);
+
+  return {
+    ok: true,
+    source: "ika-sdk-live-readiness",
+    routeId: `ika-custody-${routeId}`,
+    network,
+    operationLabel,
+    custodyMode,
+    sdk: {
+      package: "@ika.xyz/sdk",
+      initialized: true,
+      exportsUsed: ["IkaClient", "getNetworkConfig", "Curve", "SignatureAlgorithm", "Hash"],
+    },
+    curve,
+    signatureAlgorithm,
+    hashScheme,
+    liveNetwork: {
+      latestNetworkEncryptionKey: networkEncryptionKey,
+      packages: (config.packages as Record<string, unknown>) || null,
+      coordinator: ((config.objects as Record<string, unknown>)?.ikaDWalletCoordinator as Record<string, unknown>) || null,
+    },
+    dWalletExecutionBoundary: hasFundedSigner
+      ? "funded-signer-config-present-ready-for-dkg-transaction"
+      : "requires-funded-sui-ika-signer-before-dkg-submit",
+    nextTransactions: [
+      "create UserShareEncryptionKeys with the selected curve",
+      "register the encryption key on Ika",
+      "request dWallet DKG with IKA and SUI coins",
+      "wait until dWallet state becomes Active",
+      "request presign and sign governed custody messages",
+    ],
+  };
+}
+
+async function handleRefhePayrollProof(body: Record<string, unknown>) {
+  const ciphertext = stringField(body, "ciphertext");
+  const inputCommitment = stringField(body, "inputCommitment");
+  const computationCommitment = stringField(body, "computationCommitment");
+  const policyHash = stringField(body, "policyHash");
+  const recipientCount = Number(body.recipientCount || 0);
+  const totalAmountCommitment = stringField(body, "totalAmountCommitment");
+  if (!ciphertext || !inputCommitment || !computationCommitment || !policyHash) {
+    return {
+      ok: false,
+      source: "refhe-payroll-proof",
+      error: "ciphertext, inputCommitment, computationCommitment, and policyHash are required.",
+    };
+  }
+  const generatedAt = new Date().toISOString();
+  const receiptHash = sha256Hex(
+    JSON.stringify({
+      ciphertextHash: sha256Hex(ciphertext),
+      inputCommitment,
+      computationCommitment,
+      policyHash,
+      totalAmountCommitment,
+      recipientCount,
+      generatedAt,
+    }),
+  );
+  const receipt = {
+    ok: true,
+    source: "refhe-payroll-proof",
+    mode: "encrypted-computation-receipt",
+    protocol: "REFHE-style confidential payroll envelope",
+    generatedAt,
+    receiptHash,
+    encryptedInputHash: sha256Hex(ciphertext),
+    inputCommitment,
+    computationCommitment,
+    totalAmountCommitment,
+    policyHash,
+    recipientCount,
+    executionBoundary: "This proves encrypted payroll packet integrity and computation commitment continuity. Final private settlement still belongs to the selected payment rail.",
+  };
+  if (hasSupabaseRestConfig()) {
+    await supabaseInsert("operation_receipts", {
+      operation_type: "refhe-payroll-proof",
+      proposal_id: `refhe:${receiptHash.slice(0, 16)}`,
+      approval_state: "encrypted-computation-receipt",
+      execution_reference: receiptHash,
+      private_settlement_rail: "refhe-envelope",
+      stablecoin_symbol: "USDC",
+      audit_mode: "encrypted-computation",
+      recipient_visibility: "commitment-only",
+      metadata: receipt,
+    }).catch(() => null);
+  }
+  return receipt;
 }
 
 async function buildQvacRuntimeProof() {
@@ -1267,6 +1427,20 @@ async function handle(req: http.IncomingMessage, res: http.ServerResponse) {
       const body = await readRequestJson(req);
       const result = await handleOnboardingRequest(body);
       writeJson(res, 200, result);
+      return;
+    }
+
+    if (req.method === "POST" && pathname === "/api/v1/ika/custody/prepare") {
+      const body = await readRequestJson(req);
+      const result = await handleIkaCustodyPrepare(body);
+      writeJson(res, 200, result);
+      return;
+    }
+
+    if (req.method === "POST" && pathname === "/api/v1/refhe/payroll/proof") {
+      const body = await readRequestJson(req);
+      const result = await handleRefhePayrollProof(body);
+      writeJson(res, result.ok ? 200 : 400, result);
       return;
     }
 

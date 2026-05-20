@@ -5,6 +5,7 @@ import Link from "next/link";
 
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
+import { WalletOrSnsInput } from "@/components/wallet-or-sns-input";
 import { persistOperationReceipt } from "@/lib/supabase/operation-receipts";
 import { cn } from "@/lib/utils";
 
@@ -243,12 +244,14 @@ export function ZerionAgentPolicySurface() {
             <div className="mt-2 text-sm leading-7 text-white/64">
               Before treating the agent as operationally useful, review the live wallet portfolio that the policy is supposed to protect.
             </div>
-            <input
-              value={walletAddress}
-              onChange={(event) => setWalletAddress(event.target.value)}
-              className="mt-4 w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-sm text-white outline-none"
-              placeholder="Solana wallet address or leave empty to use project wallet"
-            />
+            <div className="mt-4">
+              <WalletOrSnsInput
+                label="Wallet protected by the policy"
+                value={walletAddress}
+                onChange={setWalletAddress}
+                placeholder="wallet.sol, EVM address, or leave empty to use project wallet"
+              />
+            </div>
             <div className="mt-4 flex flex-wrap gap-3">
               <button type="button" onClick={() => void handleLoadPortfolio()} className={cn(buttonVariants({ size: "sm" }))} disabled={loadingPortfolio}>
                 {loadingPortfolio ? "Loading..." : "Load Zerion portfolio"}

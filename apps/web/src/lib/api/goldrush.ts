@@ -20,6 +20,7 @@ export type GoldRushQueryResponse = {
   sources: {
     goldRush: string;
     duneSim: string;
+    covalentGoldRush?: string;
     zerion?: string;
     solanaRpc?: string;
   };
