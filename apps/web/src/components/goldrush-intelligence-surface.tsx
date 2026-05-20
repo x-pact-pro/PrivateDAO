@@ -68,9 +68,12 @@ const goldRushTemplates: {
 ];
 
 type GoldRushResponse = {
+  ok?: boolean;
   sources?: {
     goldRush?: string;
     duneSim?: string;
+    zerion?: string;
+    solanaRpc?: string;
   };
   summary?: {
     assetCount?: number;
@@ -106,6 +109,8 @@ function buildGoldRushFallbackResponse(payload: GoldRushQueryRequest, reason: st
     sources: {
       goldRush: "degraded",
       duneSim: "available-through-read-node",
+      zerion: "fallback-pending",
+      solanaRpc: "fallback-pending",
     },
     summary: {
       assetCount: 0,
@@ -187,6 +192,12 @@ export function GoldRushIntelligenceSurface() {
   const topHoldings = (responseData?.balances ?? []).slice(0, 4);
   const stablecoinHoldings = (responseData?.stablecoinHoldings ?? []).slice(0, 4);
   const riskSignals = (responseData?.riskSignals ?? []).slice(0, 4);
+  const runtimeMode =
+    responseData?.sources?.goldRush === "live"
+      ? "Live vendor intelligence"
+      : responseData?.sources?.goldRush === "credits-exhausted-fallback"
+        ? "Live fallback"
+        : "Degraded fallback";
 
   return (
     <section className="rounded-[28px] border border-amber-300/16 bg-amber-300/[0.08] p-6">
@@ -200,6 +211,19 @@ export function GoldRushIntelligenceSurface() {
         counterparty trust, and holdings queries into a pre-execution review lane for normal users and a live evidence lane
         for judges.
       </p>
+      <div className="mt-4 grid gap-3 md:grid-cols-4">
+        {[
+          ["Live execution", "This page does not move funds. It prepares signer context only."],
+          ["Health / status", "Vendor, fallback, and runtime source states stay visible per request."],
+          ["Intent receipt", "Every run can persist a reviewer-visible receipt without claiming settlement."],
+          ["Full settlement", "Settlement belongs to Umbra, Cloak, and MagicBlock lanes after review."],
+        ].map(([title, body]) => (
+          <div key={title} className="rounded-2xl border border-white/10 bg-black/20 p-4">
+            <div className="text-sm font-medium text-white">{title}</div>
+            <div className="mt-2 text-sm leading-6 text-white/60">{body}</div>
+          </div>
+        ))}
+      </div>
 
       <div className="mt-5 grid gap-4 xl:grid-cols-[0.95fr_1.05fr]">
         <div className="space-y-4">
@@ -254,8 +278,11 @@ export function GoldRushIntelligenceSurface() {
               Delivery state
             </div>
             <div className="mt-3 text-sm leading-7 text-white/72">{deliveryState}</div>
+            <div className="mt-3 rounded-2xl border border-cyan-300/16 bg-cyan-300/[0.08] px-3 py-2 text-sm text-cyan-50">
+              {runtimeMode}
+            </div>
             {responseData?.sources ? (
-              <div className="mt-4 grid gap-3 sm:grid-cols-2">
+              <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
                 <div className="rounded-2xl border border-white/10 bg-black/30 p-3 text-sm text-white/70">
                   <div className="text-[11px] uppercase tracking-[0.18em] text-white/42">GoldRush</div>
                   <div className="mt-1 text-white">{responseData.sources.goldRush ?? "unknown"}</div>
@@ -263,6 +290,14 @@ export function GoldRushIntelligenceSurface() {
                 <div className="rounded-2xl border border-white/10 bg-black/30 p-3 text-sm text-white/70">
                   <div className="text-[11px] uppercase tracking-[0.18em] text-white/42">Dune Sim</div>
                   <div className="mt-1 text-white">{responseData.sources.duneSim ?? "unknown"}</div>
+                </div>
+                <div className="rounded-2xl border border-white/10 bg-black/30 p-3 text-sm text-white/70">
+                  <div className="text-[11px] uppercase tracking-[0.18em] text-white/42">Zerion</div>
+                  <div className="mt-1 text-white">{responseData.sources.zerion ?? "not-used"}</div>
+                </div>
+                <div className="rounded-2xl border border-white/10 bg-black/30 p-3 text-sm text-white/70">
+                  <div className="text-[11px] uppercase tracking-[0.18em] text-white/42">Solana RPC</div>
+                  <div className="mt-1 text-white">{responseData.sources.solanaRpc ?? "not-used"}</div>
                 </div>
               </div>
             ) : null}

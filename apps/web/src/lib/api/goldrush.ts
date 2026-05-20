@@ -13,12 +13,15 @@ export type GoldRushQueryRequest = {
 };
 
 export type GoldRushQueryResponse = {
+  ok?: boolean;
   queryType: GoldRushQueryType;
   chainName: string;
   walletAddress: string;
   sources: {
     goldRush: string;
     duneSim: string;
+    zerion?: string;
+    solanaRpc?: string;
   };
   summary: {
     assetCount: number;
@@ -41,8 +44,10 @@ export type GoldRushQueryResponse = {
   transactions: unknown[];
   stablecoinFlowPreview: unknown[];
   raw: {
-    include: string[];
-    assets: string[];
+    balanceStatus?: number;
+    transactionStatus?: number;
+    zerionStatus?: number | null;
+    solanaRpcStatus?: number | null;
   };
 };
 

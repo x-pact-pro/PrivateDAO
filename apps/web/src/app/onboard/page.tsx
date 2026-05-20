@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 
 import { Button, buttonVariants } from "@/components/ui/button";
+import { buildOnboardEnvelope } from "@/lib/security/onboard-intake";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
@@ -97,7 +98,7 @@ function OnboardForm() {
   const router = useRouter();
   const initialTier = params.get("tier") || "collective";
   const [step, setStep] = useState(1);
-  const [status, setStatus] = useState<"idle" | "submitting" | "error">("idle");
+  const [status, setStatus] = useState<"idle" | "encrypting" | "submitting" | "error">("idle");
   const [error, setError] = useState("");
   const [form, setForm] = useState<FormState>({
     tier: tiers.includes(initialTier as (typeof tiers)[number]) ? initialTier : "collective",
@@ -132,12 +133,22 @@ function OnboardForm() {
       setError("Name and email are required before sending the brief.");
       return;
     }
+    setStatus("encrypting");
+    const envelope = await buildOnboardEnvelope({
+      ...form,
+      utmSource: params.get("utm_source") || params.get("source") || "direct",
+    }).catch(() => null);
+    if (!envelope) {
+      setStatus("error");
+      setError("The encrypted intake key is unavailable right now. Try again in a moment.");
+      return;
+    }
     setStatus("submitting");
     const response = await fetch(`${API_BASE}/api/v1/onboard/request`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        ...form,
+        envelope,
         utmSource: params.get("utm_source") || params.get("source") || "direct",
       }),
     }).catch(() => null);
@@ -163,6 +174,10 @@ function OnboardForm() {
                 Five minutes is enough to map the right path: DAO setup, confidential payroll, gaming rewards,
                 treasury intelligence, API access, or a managed enterprise package.
               </p>
+              <div className="mt-5 rounded-3xl border border-emerald-300/16 bg-emerald-300/[0.08] px-4 py-4 text-sm leading-7 text-white/72">
+                This brief is encrypted in your browser before submission. The API stores a ciphertext envelope only,
+                then routes you into the right live execution and proof surfaces.
+              </div>
               <div className="mt-6 flex flex-wrap gap-3">
                 <Link href="/pricing/" className={cn(buttonVariants({ variant: "outline" }))}>Back to pricing</Link>
                 <Link href="/proof/" className={cn(buttonVariants({ variant: "secondary" }))}>Review proof first</Link>
@@ -358,8 +373,8 @@ function OnboardForm() {
                     <ArrowRight className="h-4 w-4" />
                   </Button>
                 ) : (
-                  <Button type="submit" disabled={status === "submitting"}>
-                    {status === "submitting" ? "Sending..." : "Send My Governance Brief"}
+                  <Button type="submit" disabled={status === "encrypting" || status === "submitting"}>
+                    {status === "encrypting" ? "Encrypting..." : status === "submitting" ? "Sending..." : "Send My Governance Brief"}
                     <ArrowRight className="h-4 w-4" />
                   </Button>
                 )}

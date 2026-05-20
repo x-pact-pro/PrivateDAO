@@ -7,6 +7,7 @@ import { IkaUserShareOpsGuardrail } from "@/components/ika-user-share-ops-guardr
 import { LocalizedRouteSummary } from "@/components/localized-route-summary";
 import { MagicBlockPrivatePaymentsStatus } from "@/components/magicblock-private-payments-status";
 import { OperationsShell } from "@/components/operations-shell";
+import { OperationStateLegend } from "@/components/operation-state-legend";
 import { UmbraSdkIntegrationStatus } from "@/components/umbra-sdk-integration-status";
 import { buttonVariants } from "@/components/ui/button";
 import { buildRouteMetadata } from "@/lib/route-metadata";
@@ -33,6 +34,7 @@ export default function ConfidentialPaymentsPage() {
       ]}
     >
       <LocalizedRouteSummary routeKey="services" />
+      <OperationStateLegend description="This section combines multiple rails. Some cards execute live flows, others expose health or receipt continuity. The boundaries stay explicit so visitors know what has already moved on-chain and what is still a review or readiness step." />
       <ConfidentialPaymentsSystemSurface />
       <IkaUserShareOpsGuardrail />
       <MagicBlockPrivatePaymentsStatus />
@@ -47,6 +49,10 @@ export default function ConfidentialPaymentsPage() {
           <li className="rounded-2xl border border-white/8 bg-black/20 p-4">3. Route settlement through Cloak/Umbra/MagicBlock rails based on confidentiality and speed requirements.</li>
           <li className="rounded-2xl border border-white/8 bg-black/20 p-4">4. Publish commitment-safe receipts to proof and judge surfaces for verifiable operational continuity.</li>
         </ol>
+      </div>
+      <div className="rounded-[28px] border border-white/10 bg-black/20 p-5 text-sm leading-7 text-white/66">
+        Chain verification stays simple here: first inspect the rail status, then generate the encrypted intent or receipt,
+        then open Proof for the explorer link, transaction anchor, or relayer reference that belongs to that exact flow.
       </div>
 
       <div className="rounded-[28px] border border-cyan-300/16 bg-cyan-300/[0.07] p-5">

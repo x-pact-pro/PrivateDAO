@@ -6,6 +6,7 @@ import { ConfidentialPaymentsSystemSurface } from "@/components/confidential-pay
 import { IkaUserShareOpsGuardrail } from "@/components/ika-user-share-ops-guardrail";
 import { LocalizedRouteBrief } from "@/components/localized-route-brief";
 import { LocalizedRouteSummary } from "@/components/localized-route-summary";
+import { OperationStateLegend } from "@/components/operation-state-legend";
 import { OperationsShell } from "@/components/operations-shell";
 import { ProjectOperatingMap } from "@/components/project-operating-map";
 import { PrivatePayrollEncryptionWorkbench } from "@/components/private-payroll-encryption-workbench";
@@ -35,6 +36,9 @@ export default function EncryptIkaOperationsPage() {
     >
       <LocalizedRouteSummary routeKey="services" />
       <LocalizedRouteBrief routeKey="servicesCore" />
+      <OperationStateLegend
+        description="This route is the encryption preparation lane. It makes clear what is encrypted locally, what becomes a receipt, and which downstream rail is responsible for final private settlement."
+      />
       <div className="rounded-[28px] border border-white/10 bg-white/[0.04] p-5 text-sm leading-7 text-white/68">
         The product value here is simple: operations become encrypted before execution, and only commitment-safe
         artifacts move into shared review lanes. This keeps privacy load-bearing while preserving audit continuity.

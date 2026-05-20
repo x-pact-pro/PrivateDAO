@@ -52,8 +52,30 @@ const metrics = {
   routeHits: new Map<string, number>(),
 };
 const requireFromWebApp = createRequire(join(process.cwd(), "apps/web/package.json"));
+const onboardingIntakeKeyId = "pd-intake-rsa-2026-05-20";
+const onboardingIntakePublicKeyPem = `-----BEGIN PUBLIC KEY-----
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEArctJeM7icbCOBF3j+QpL
+T4BOHMAGzmqd6ux4f5tBkD7h9sVRrKtGP2SKlbK7UlES9yOUWtjUscpgIBureIpc
+Kg5+Obl1Pgh6sclVxTKoLAoF8//4KeaIkLqvQEz58gQLnlLOFjejp/eL8z0kr6b9
+5/kw/bfyvBqXA4Mr8XDga6ix0DQl+n+9cfEuenykHqaTby6HHeF9Y9uHK6vfmiTo
+0lSeVHVT5gFownY5e55WtP1PWOZu909AcRO2lAGl8DxiH2jE7Om1T2Ti6XeBhdCX
+XUlHP+ocPBRQn/icAldPq+Xkc5cpxSOLcfnehYPjZ26xUQcHqBtSQyVMgb8aaSJr
+sQIDAQAB
+-----END PUBLIC KEY-----`;
+const onboardingIntakePublicKeyFingerprint = "a4cb6e4ab4a729245104b7d25e3cd753349d749cbb52384e2094fdbad393ac08";
 
 type SupabaseRow = Record<string, string | number | boolean | null | Record<string, unknown> | unknown[]>;
+type OnboardingEnvelope = {
+  version: string;
+  algorithm: string;
+  keyId: string;
+  publicKeyFingerprint: string;
+  encryptedAt: string;
+  iv: string;
+  encryptedKey: string;
+  ciphertext: string;
+  digest: string;
+};
 
 type FreshnessPingRow = {
   tx_signature: string;
@@ -428,7 +450,170 @@ function stringArrayField(body: Record<string, unknown>, key: string) {
   return value.filter((item): item is string => typeof item === "string" && item.trim().length > 0).map((item) => item.trim().slice(0, 120));
 }
 
+function isOnboardingEnvelope(value: unknown): value is OnboardingEnvelope {
+  if (!value || typeof value !== "object") return false;
+  const candidate = value as Record<string, unknown>;
+  return [
+    "version",
+    "algorithm",
+    "keyId",
+    "publicKeyFingerprint",
+    "encryptedAt",
+    "iv",
+    "encryptedKey",
+    "ciphertext",
+    "digest",
+  ].every((key) => typeof candidate[key] === "string" && String(candidate[key]).trim().length > 0);
+}
+
+function normalizeCipherField(value: string, max = 12_000) {
+  return value.trim().replace(/\s+/g, "");
+}
+
+function getRuntimeConnection(chainName: string) {
+  const normalized = chainName.trim().toLowerCase();
+  if (normalized.includes("mainnet")) {
+    return new Connection(process.env.SOLANA_MAINNET_RPC_URL || "https://api.mainnet-beta.solana.com", "confirmed");
+  }
+  if (normalized.includes("devnet")) {
+    return new Connection(process.env.SOLANA_DEVNET_RPC_URL || "https://api.devnet.solana.com", "confirmed");
+  }
+  return new Connection(process.env.SOLANA_RPC_URL || "https://api.testnet.solana.com", "confirmed");
+}
+
+async function fetchWalletRuntimePreview(walletAddress: string, chainName: string) {
+  try {
+    const connection = getRuntimeConnection(chainName);
+    const owner = new PublicKey(walletAddress);
+    const [balanceLamports, signatures, tokenAccounts] = await Promise.all([
+      connection.getBalance(owner, "confirmed"),
+      connection.getSignaturesForAddress(owner, { limit: 8 }, "confirmed"),
+      connection.getParsedTokenAccountsByOwner(
+        owner,
+        { programId: new PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA") },
+        "confirmed",
+      ),
+    ]);
+    const balances = [
+      {
+        symbol: "SOL",
+        name: chainName.includes("mainnet") ? "Solana" : "Solana (preview)",
+        quote: null,
+        prettyBalance: `${(balanceLamports / 1_000_000_000).toFixed(4)} SOL`,
+      },
+      ...tokenAccounts.value
+        .filter((account) => {
+          const amount = account.account.data.parsed?.info?.tokenAmount?.uiAmount;
+          return typeof amount === "number" && Number.isFinite(amount) && amount > 0;
+        })
+        .slice(0, 10)
+        .map((account) => {
+          const info = account.account.data.parsed?.info;
+          const tokenAmount = info?.tokenAmount?.uiAmountString || info?.tokenAmount?.uiAmount || "0";
+          const mint = typeof info?.mint === "string" ? info.mint : "unknown-mint";
+          return {
+            symbol: mint.slice(0, 4).toUpperCase(),
+            name: mint,
+            quote: null,
+            prettyBalance: String(tokenAmount),
+          };
+        }),
+    ];
+
+    return {
+      ok: true,
+      source: "solana-rpc",
+      assetCount: balances.length,
+      stableAssetCount: 0,
+      balances,
+      transactions: signatures.map((item) => ({
+        signature: item.signature,
+        slot: item.slot,
+        time: item.blockTime ? new Date(item.blockTime * 1000).toISOString() : null,
+        err: item.err,
+        explorer: `https://explorer.solana.com/tx/${item.signature}?cluster=${chainName.includes("mainnet") ? "" : chainName.includes("devnet") ? "devnet" : "testnet"}`,
+      })),
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      source: "solana-rpc",
+      error: error instanceof Error ? error.message : "wallet runtime preview failed",
+      assetCount: 0,
+      stableAssetCount: 0,
+      balances: [] as Array<{ symbol?: string; name?: string; quote?: number | null; prettyBalance?: string | null }>,
+      transactions: [] as Array<Record<string, unknown>>,
+    };
+  }
+}
+
 async function handleOnboardingRequest(body: Record<string, unknown>) {
+  if (isOnboardingEnvelope(body.envelope)) {
+    const envelope = body.envelope;
+    const encryptedKey = normalizeCipherField(envelope.encryptedKey, 8_000);
+    const ciphertext = normalizeCipherField(envelope.ciphertext, 32_000);
+    const iv = normalizeCipherField(envelope.iv, 1_024);
+    const digest = normalizeCipherField(envelope.digest, 512);
+    if (encryptedKey.length < 64 || ciphertext.length < 64 || iv.length < 16 || digest.length < 32) {
+      throw new Error("Encrypted onboarding envelope is incomplete.");
+    }
+
+    const row = {
+      tier: "sealed-intake",
+      profile: "sealed-intake",
+      challenges: [] as string[],
+      other_challenge: null,
+      treasury_size: "sealed-intake",
+      voting_members: "sealed-intake",
+      monthly_decisions: "sealed-intake",
+      current_setup: [] as string[],
+      preferred_chain: "sealed-intake",
+      developer_context: "sealed-intake",
+      name: `sealed:${envelope.keyId}`,
+      email: `sealed:${digest.slice(0, 24)}`,
+      organization: null,
+      website: null,
+      telegram: null,
+      timeline: "sealed-intake",
+      source: "client-envelope",
+      notes: JSON.stringify({
+        version: envelope.version,
+        algorithm: envelope.algorithm,
+        keyId: envelope.keyId,
+        publicKeyFingerprint: envelope.publicKeyFingerprint,
+        encryptedAt: envelope.encryptedAt,
+        iv,
+        encryptedKey,
+        ciphertext,
+        digest,
+      }),
+      utm_source: stringField(body, "utmSource").slice(0, 120) || null,
+      status: "sealed",
+    };
+    const stored = await supabaseInsert("onboarding_requests", row);
+    if (!stored.ok) {
+      throw new Error("Encrypted onboarding request could not be stored.");
+    }
+
+    void sendTelegramNotification(
+      [
+        "New PrivateDAO encrypted onboarding request",
+        `Mode: sealed client-side envelope`,
+        `Key: ${envelope.keyId}`,
+        `Digest: ${digest.slice(0, 24)}`,
+        `Encrypted at: ${envelope.encryptedAt}`,
+      ].join("\n"),
+    );
+
+    return {
+      ok: true,
+      source: "supabase-sealed",
+      mode: "client-encrypted-envelope",
+      next: "/onboard/confirmed/",
+      message: "Your brief was encrypted in-browser and stored as ciphertext only.",
+    };
+  }
+
   const tier = stringField(body, "tier", "open").slice(0, 40);
   const profile = stringField(body, "profile").slice(0, 80);
   const name = stringField(body, "name").slice(0, 120);
@@ -483,6 +668,7 @@ async function handleOnboardingRequest(body: Record<string, unknown>) {
   return {
     ok: true,
     source: "supabase",
+    mode: "legacy-plaintext",
     tier,
     next: "/onboard/confirmed/",
     message: "We received your governance brief. Expect a response within 24 hours.",
@@ -811,13 +997,15 @@ async function fetchGoldRushQuery(body: Record<string, unknown>) {
     };
   }
 
-  const [balancesResponse, txResponse] = await Promise.all([
+  const [balancesResponse, txResponse, zerionFallback, rpcFallback] = await Promise.all([
     fetch(`https://api.covalenthq.com/v1/${encodeURIComponent(chainName)}/address/${encodeURIComponent(walletAddress)}/balances_v2/?key=${encodeURIComponent(apiKey)}`, {
       headers: { Accept: "application/json" },
     }),
     fetch(`https://api.covalenthq.com/v1/${encodeURIComponent(chainName)}/address/${encodeURIComponent(walletAddress)}/transactions_v3/?key=${encodeURIComponent(apiKey)}`, {
       headers: { Accept: "application/json" },
     }),
+    fetchZerionPortfolio(walletAddress).catch(() => ({ ok: false, source: "zerion" })),
+    fetchWalletRuntimePreview(walletAddress, chainName),
   ]);
 
   const balancesRaw = (await balancesResponse.json().catch(() => null)) as Record<string, unknown> | null;
@@ -837,29 +1025,56 @@ async function fetchGoldRushQuery(body: Record<string, unknown>) {
   const stablecoinHoldings = balances.filter((item) => ["USDC", "USDT", "PUSD", "AUDD"].includes(item.symbol || ""));
   const totalQuoteUsd = balances.reduce((sum, item) => sum + (typeof item.quote === "number" ? item.quote : 0), 0);
 
+  const zerionTotal =
+    zerionFallback.ok &&
+    typeof (zerionFallback.raw as Record<string, unknown> | null)?.data === "object" &&
+    typeof ((((zerionFallback.raw as Record<string, unknown>).data as Record<string, unknown>).attributes as Record<string, unknown>)?.total as Record<string, unknown> | undefined)?.positions === "number"
+      ? Number(((((zerionFallback.raw as Record<string, unknown>).data as Record<string, unknown>).attributes as Record<string, unknown>).total as Record<string, unknown>).positions)
+      : null;
+
+  const fallbackBalances = balances.length > 0 ? balances : rpcFallback.balances;
+  const fallbackTransactions = txItems.length > 0 ? txItems.slice(0, 8) : rpcFallback.transactions.slice(0, 8);
+  const fallbackStableHoldings = stablecoinHoldings.length > 0 ? stablecoinHoldings : [];
+  const goldRushState =
+    balancesResponse.ok || txResponse.ok
+      ? "live"
+      : balancesResponse.status === 402 || txResponse.status === 402
+        ? "credits-exhausted-fallback"
+        : "degraded-fallback";
+  const liveFallbackOk = Boolean(zerionFallback.ok || rpcFallback.ok);
+
   return {
-    ok: balancesResponse.ok || txResponse.ok,
+    ok: balancesResponse.ok || txResponse.ok || liveFallbackOk,
     queryType,
     chainName,
     walletAddress,
     sources: {
-      goldRush: balancesResponse.ok || txResponse.ok ? "live" : "degraded",
+      goldRush: goldRushState,
       duneSim: "available-through-/api/v1/dune/*",
+      zerion: zerionFallback.ok ? "live" : "unavailable",
+      solanaRpc: rpcFallback.ok ? "live" : "unavailable",
     },
     summary: {
-      assetCount: balances.length,
-      stableAssetCount: stablecoinHoldings.length,
-      totalQuoteUsd,
-      previewTransactionCount: txItems.length,
+      assetCount: balances.length > 0 ? balances.length : rpcFallback.assetCount,
+      stableAssetCount: stablecoinHoldings.length > 0 ? stablecoinHoldings.length : rpcFallback.stableAssetCount,
+      totalQuoteUsd: totalQuoteUsd > 0 ? totalQuoteUsd : zerionTotal || 0,
+      previewTransactionCount: txItems.length > 0 ? txItems.length : rpcFallback.transactions.length,
     },
-    riskSignals: txItems.length === 0 ? ["No recent transaction preview returned by GoldRush for this wallet."] : [],
-    balances,
-    stablecoinHoldings,
-    transactions: txItems.slice(0, 8),
-    stablecoinFlowPreview: txItems.slice(0, 8),
+    riskSignals: [
+      ...(txItems.length === 0 ? ["No recent transaction preview returned by GoldRush for this wallet."] : []),
+      ...(goldRushState === "credits-exhausted-fallback"
+        ? ["GoldRush credits are exhausted on the live key. This response falls back to Zerion and Solana RPC so review can continue."]
+        : []),
+    ],
+    balances: fallbackBalances,
+    stablecoinHoldings: fallbackStableHoldings,
+    transactions: fallbackTransactions,
+    stablecoinFlowPreview: fallbackTransactions,
     raw: {
       balanceStatus: balancesResponse.status,
       transactionStatus: txResponse.status,
+      zerionStatus: zerionFallback.ok ? 200 : typeof (zerionFallback as { status?: number }).status === "number" ? (zerionFallback as { status?: number }).status : null,
+      solanaRpcStatus: rpcFallback.ok ? 200 : null,
     },
   };
 }
@@ -1052,6 +1267,18 @@ async function handle(req: http.IncomingMessage, res: http.ServerResponse) {
       const body = await readRequestJson(req);
       const result = await handleOnboardingRequest(body);
       writeJson(res, 200, result);
+      return;
+    }
+
+    if (req.method === "GET" && pathname === "/api/v1/onboard/key") {
+      writeJson(res, 200, {
+        ok: true,
+        mode: "client-encrypted-envelope",
+        algorithm: "RSA-OAEP-256/AES-256-GCM",
+        keyId: onboardingIntakeKeyId,
+        publicKeyFingerprint: onboardingIntakePublicKeyFingerprint,
+        publicKeyPem: onboardingIntakePublicKeyPem,
+      });
       return;
     }
 

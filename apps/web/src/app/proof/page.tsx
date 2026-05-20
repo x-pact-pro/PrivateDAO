@@ -11,6 +11,7 @@ import { LiveSiteActivityPanel } from "@/components/live-site-activity-panel";
 import { GuidedOperationRail } from "@/components/guided-operation-rail";
 import { NormalUserOperationPath } from "@/components/normal-user-operation-path";
 import { OperatingJourneyStrip } from "@/components/operating-journey-strip";
+import { OperationStateLegend } from "@/components/operation-state-legend";
 import { OperationReceiptLedger } from "@/components/operation-receipt-ledger";
 import { OperationsShell } from "@/components/operations-shell";
 import { PrivacyPolicySelector } from "@/components/privacy-policy-selector";
@@ -171,6 +172,9 @@ export default function ProofPage() {
         pendingNote="Proof continuity stays explicit across governance, intelligence, execution, and receipt export lanes."
       />
       <LocalizedRouteSummary routeKey="proof" />
+      <OperationStateLegend
+        description="Proof is the truth boundary for the product. It separates executed on-chain activity, live service health, encrypted intent receipts, and final private settlement evidence so judges and users do not confuse one for another."
+      />
       <LocalizedProofPrimer />
       <LiveSiteActivityPanel />
       <VideoCenter compact />

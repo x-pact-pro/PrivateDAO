@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { LocalizedRouteSummary } from "@/components/localized-route-summary";
+import { OperationStateLegend } from "@/components/operation-state-legend";
 import { OperationsShell } from "@/components/operations-shell";
 import { ProjectOperatingMap } from "@/components/project-operating-map";
 import { ConfidentialPaymentsSystemSurface } from "@/components/confidential-payments-system-surface";
@@ -33,6 +34,9 @@ export default function UmbraConfidentialPayoutPage() {
       ]}
     >
       <LocalizedRouteSummary routeKey="services" />
+      <OperationStateLegend
+        description="On this Umbra lane, relayer health and intent receipts are visible before any claim is treated as a completed private payout. The page keeps that boundary explicit for visitors and reviewers."
+      />
 
       <div className="rounded-[28px] border border-emerald-300/16 bg-emerald-300/[0.08] p-6">
         <div className="text-[11px] uppercase tracking-[0.28em] text-emerald-100/78">Execution model</div>
