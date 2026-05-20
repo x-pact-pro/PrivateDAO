@@ -32,14 +32,14 @@ export async function GET(request: Request) {
     const body = await response.json().catch(() => null);
     if (!response.ok) {
       return NextResponse.json(
-        { error: `Dune Sim transactions responded ${response.status}.`, details: body },
+        { error: `Legacy analytics transactions proxy responded ${response.status}.`, details: body },
         { status: response.status },
       );
     }
     return NextResponse.json(body, { status: 200 });
   } catch (error) {
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : "Dune Sim transactions proxy failed." },
+      { error: error instanceof Error ? error.message : "Legacy analytics transactions proxy failed." },
       { status: 400 },
     );
   }
