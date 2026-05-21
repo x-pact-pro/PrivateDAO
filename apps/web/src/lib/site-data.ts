@@ -1852,7 +1852,7 @@ export const securitySurfaces = [
   },
   {
     title: "Release readiness register",
-    body: "The app keeps launch boundaries clear: what is live now, what still needs external evidence, and what still needs custody or audit work.",
+    body: "The app keeps launch states clear: live execution, external evidence, custody posture, and audit readiness are shown as separate proof surfaces.",
     href: "/documents/mainnet-blockers",
   },
 ];
@@ -2210,7 +2210,7 @@ export const trustLinks = [
   },
   {
     title: "Release readiness register",
-    summary: "Clear list of what still needs custody, audit, and runtime evidence before real-funds launch.",
+    summary: "Clear launch-state view for custody, audit, and runtime evidence before real-funds expansion.",
     href: "/documents/mainnet-blockers",
   },
   {

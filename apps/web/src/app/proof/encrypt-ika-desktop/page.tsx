@@ -18,7 +18,7 @@ export default function EncryptIkaDesktopProofPage() {
     <OperationsShell
       eyebrow="Desktop proof"
       title="Encrypt / Ika / 2PC-MPC / REFHE proof without mobile ambiguity"
-      description="A desktop-only verification path that shows what is live, what is an intent, and what still needs full Ika dWallet and external REFHE execution."
+      description="A desktop-only verification path that separates live execution, readiness checks, intent receipts, and private settlement lanes with clear proof signals."
       badges={[
         { label: "Desktop only", variant: "cyan" },
         { label: "Ika readiness", variant: "violet" },
