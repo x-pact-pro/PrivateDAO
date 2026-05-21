@@ -304,6 +304,18 @@ function devnetExplorerTx(signature: string) {
 }
 
 
+function redactRpcEndpoint(endpoint: string) {
+  try {
+    const url = new URL(endpoint);
+    for (const key of Array.from(url.searchParams.keys())) {
+      if (/api[_-]?key|token|secret/i.test(key)) url.searchParams.set(key, "[redacted]");
+    }
+    return url.toString();
+  } catch {
+    return endpoint.replace(/(api[_-]?key=)[^&]+/gi, "$1[redacted]");
+  }
+}
+
 type RuntimeCluster = "devnet" | "testnet";
 
 function resolveRuntimeCluster(): RuntimeCluster {
@@ -1076,8 +1088,12 @@ export class PrivateDaoReadNode {
             ),
           ]),
         ]);
-        chain = { endpoint, statuses: statusResponse.value, corridorInfo };
-        break;
+        const candidate = { endpoint, statuses: statusResponse.value, corridorInfo };
+        chain = candidate;
+        const finalizedCount = candidate.statuses.filter((status) =>
+          Boolean(status && !status.err && (status.confirmationStatus === "finalized" || status.confirmations === null)),
+        ).length;
+        if (finalizedCount === signatures.length && Boolean(corridorInfo)) break;
       } catch (error) {
         lastError = error;
       }
@@ -1102,7 +1118,7 @@ export class PrivateDaoReadNode {
     const proof: MagicBlockOnchainProofView = {
       generatedAt: new Date().toISOString(),
       network: evidence.network || "devnet",
-      rpcEndpoint: chain.endpoint,
+      rpcEndpoint: redactRpcEndpoint(chain.endpoint),
       proposal: confidential.proposal,
       corridorPda: confidential.magicblockCorridor,
       corridorAccount: {
