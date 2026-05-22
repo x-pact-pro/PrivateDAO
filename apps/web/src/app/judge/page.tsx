@@ -180,17 +180,16 @@ export default function JudgePage() {
       <div className="rounded-[26px] border border-fuchsia-300/16 bg-[linear-gradient(135deg,rgba(217,70,239,0.10),rgba(56,189,248,0.07),rgba(8,13,28,0.92))] p-5">
         <div className="flex items-center gap-2 text-fuchsia-100">
           <BarChart3 className="h-4 w-4" />
-          <div className="text-[11px] uppercase tracking-[0.24em]">Frontier competitive read</div>
+          <div className="text-[11px] uppercase tracking-[0.24em]">Frontier completion map</div>
         </div>
         <div className="mt-2 max-w-4xl text-sm leading-7 text-white/68">
-          I parsed the Frontier project directory as judging intelligence: 2,857 entries, with AI agents, consumer apps,
-          DeFi, payments, and infrastructure heavily crowded. PrivateDAO is positioned as an integrated encrypted
-          operating layer: governance, treasury, payroll, payments, intelligence, Android access, Testnet proof, and a
-          buyer-readable pilot path in one product surface.
+          The judge path shows how large adjacent product types are completed inside one operating layer: governed
+          intelligence, confidential treasury, payroll, payments, Android access, Testnet proof, and a buyer-readable
+          pilot path in one product surface.
         </div>
         <div className="mt-4 flex flex-wrap gap-3">
-          <Link href="/documents/frontier-competitor-intelligence-2026-05-22" className={cn(buttonVariants({ size: "sm" }))}>
-            Open competitive intelligence
+          <Link href="/documents/frontier-adjacent-project-completion-map-2026-05-22" className={cn(buttonVariants({ size: "sm" }))}>
+            Open completion map
           </Link>
           <Link href="/android" className={cn(buttonVariants({ size: "sm", variant: "secondary" }))}>
             Open Android parity
