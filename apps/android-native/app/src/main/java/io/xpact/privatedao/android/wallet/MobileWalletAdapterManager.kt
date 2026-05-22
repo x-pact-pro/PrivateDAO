@@ -44,8 +44,8 @@ class MobileWalletAdapterManager(
     private val semaphore = Semaphore(1)
 
     private val identity = DappIdentity(
-        uri = Uri.parse("https://privatedao.org/"),
-        iconRelativeUri = Uri.parse("/assets/private-dao-investor-pitch-poster.png"),
+        uri = Uri.parse(PrivateDaoConfig.liveSiteUrl),
+        iconRelativeUri = Uri.parse("/opengraph-image.png"),
         name = "PrivateDAO",
     )
 
@@ -148,8 +148,8 @@ class MobileWalletAdapterManager(
                         identity.iconRelativeUri,
                         identity.name,
                         chain,
-                        features,
                         null,
+                        features,
                         authorizedAccounts?.toTypedArray(),
                         null,
                     ).get()!!

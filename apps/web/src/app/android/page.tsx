@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { buttonVariants } from "@/components/ui/button";
 import {
   androidApkDownloadUrl,
+  androidApkRepositoryUrl,
   androidApkSha256,
   androidApkSizeLabel,
   androidBranchName,
@@ -28,7 +29,7 @@ export const metadata: Metadata = buildRouteMetadata({
 const parityItems = [
   "The Android APK now promotes the live web product as the primary mobile route, while native screens keep wallet-signed governance actions available on Solana Testnet.",
   "The APK points judges and users into the same multilingual live web routes while Mobile Wallet Adapter-compatible native screens keep wallet connection and signing available for Solana Testnet actions.",
-  "Create DAO, deposit treasury, create proposal, commit, reveal, finalize, execute, cancel, and veto are available from Android.",
+  "Create DAO, deposit treasury, create proposal, commit, reveal, finalize, execute, and Testnet billing rehearsals are available from Android.",
   "Wallet-first mobile operations run on the same Solana Testnet program and verification path used by the web surface.",
   "Proof, runtime logs, monitoring, and reviewer routes stay linked so mobile execution remains auditable and easy to validate.",
 ];
@@ -142,6 +143,10 @@ export default function AndroidPage() {
               <a href={androidApkDownloadUrl} target="_blank" rel="noreferrer" className={cn(buttonVariants(), "justify-between")}>
                 Download Android APK
                 <Download className="h-4 w-4" />
+              </a>
+              <a href={androidApkRepositoryUrl} target="_blank" rel="noreferrer" className={cn(buttonVariants({ variant: "outline" }), "justify-between")}>
+                Verify APK in repo
+                <Github className="h-4 w-4" />
               </a>
               <a href={androidGuideUrl} target="_blank" rel="noreferrer" className={cn(buttonVariants({ variant: "secondary" }), "justify-between")}>
                 Open Android guide

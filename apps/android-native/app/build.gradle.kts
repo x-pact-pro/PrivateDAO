@@ -13,8 +13,8 @@ android {
         applicationId = "io.xpact.privatedao.android"
         minSdk = 26
         targetSdk = 36
-        versionCode = 1
-        versionName = "1.0.0"
+        versionCode = 2
+        versionName = "1.1.0-testnet"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
@@ -73,7 +73,7 @@ dependencies {
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
     implementation("org.bouncycastle:bcprov-jdk18on:1.83")
 
-    implementation("com.solanamobile:mobile-wallet-adapter-clientlib-ktx:2.0.7")
+    implementation("com.solanamobile:mobile-wallet-adapter-clientlib-ktx:2.1.0")
 
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")

@@ -6,13 +6,21 @@ import io.xpact.privatedao.android.model.PrivacyPolicyOption
 
 object PrivateDaoConfig {
     const val appName = "PrivateDAO"
-    const val tagline = "Vote Without Fear"
+    const val tagline = "Encrypted Solana Operations"
     const val programId = "EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva"
     const val rpcUrl = "https://api.testnet.solana.com"
     const val chain = "solana:testnet"
     const val walletCluster = "testnet"
     const val clusterLabel = "Testnet"
     const val billingReceiveAddress = "AZUroiNeGAjNdD84eEHnAKHHFwqAFmkjr2g1eoF7Ek5c"
+    const val liveSiteUrl = "https://privatedao.org"
+    const val androidPageUrl = "$liveSiteUrl/android"
+    const val youtubeUrl = "https://www.youtube.com/@privatedao"
+    const val discordUrl = "https://discord.gg/PbM8BC2A"
+    const val xUrl = "https://x.com/FahdX369"
+    const val telegramUrl = "https://t.me/privatedao"
+    const val phantomAndroidUrl = "https://phantom.app/download"
+    const val solflareAndroidUrl = "https://solflare.com/download"
 
     const val systemProgramId = "11111111111111111111111111111111"
     const val memoProgramId = "MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr"
@@ -76,6 +84,31 @@ object PrivateDaoConfig {
             memoLabel = "CONFIDENTIAL_PAYOUT",
             summary = "A larger Testnet rehearsal for the confidential treasury path before later contractized billing rails are introduced.",
         ),
+    )
+
+    val webSurfaceLinks = listOf(
+        "Start" to "$liveSiteUrl/start",
+        "Govern" to "$liveSiteUrl/govern",
+        "Intelligence" to "$liveSiteUrl/intelligence",
+        "Treasury" to "$liveSiteUrl/treasury",
+        "Payroll" to "$liveSiteUrl/payroll",
+        "Execute" to "$liveSiteUrl/execute",
+        "Proof" to "$liveSiteUrl/proof",
+        "Services" to "$liveSiteUrl/services",
+        "Security" to "$liveSiteUrl/security",
+        "Documents" to "$liveSiteUrl/documents",
+    )
+
+    val socialLinks = listOf(
+        "YouTube" to youtubeUrl,
+        "Discord" to discordUrl,
+        "X" to xUrl,
+        "Telegram" to telegramUrl,
+    )
+
+    val walletInstallLinks = listOf(
+        "Install Phantom" to phantomAndroidUrl,
+        "Install Solflare" to solflareAndroidUrl,
     )
 
     fun accountExplorer(address: String): String = "https://solscan.io/account/$address?cluster=testnet"

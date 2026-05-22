@@ -65,6 +65,7 @@ import io.xpact.privatedao.android.model.PrivacyPolicyOption
 import io.xpact.privatedao.android.model.ProposalPhase
 import io.xpact.privatedao.android.model.ProposalSummary
 import io.xpact.privatedao.android.model.RevealVoteForm
+import io.xpact.privatedao.android.model.SubmissionState
 import io.xpact.privatedao.android.model.TreasuryActionType
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -76,7 +77,7 @@ private enum class Destination(val route: String, val label: String) {
     Home("home", "Home"),
     Proposals("proposals", "Proposals"),
     Create("create", "Create"),
-    Awards("awards", "Awards"),
+    Intelligence("intelligence", "Intel"),
     Settings("settings", "Settings"),
 }
 
@@ -117,7 +118,7 @@ fun PrivateDaoApp(
                 val current = backStack?.destination?.route
                 if (current != Destination.Splash.route) {
                     NavigationBar(containerColor = Color(0xFF0B0F18)) {
-                        listOf(Destination.Home, Destination.Proposals, Destination.Create, Destination.Awards, Destination.Settings).forEach { item ->
+                        listOf(Destination.Home, Destination.Proposals, Destination.Create, Destination.Intelligence, Destination.Settings).forEach { item ->
                             NavigationBarItem(
                                 selected = current == item.route,
                                 onClick = { navController.navigate(item.route) },
@@ -233,8 +234,8 @@ private fun AppNavHost(
                 modifier = Modifier.padding(padding),
             )
         }
-        composable(Destination.Awards.route) {
-            AwardsScreen(uiState = uiState, modifier = Modifier.padding(padding))
+        composable(Destination.Intelligence.route) {
+            IntelligenceScreen(uiState = uiState, modifier = Modifier.padding(padding))
         }
         composable(Destination.Settings.route) {
             SettingsScreen(uiState = uiState, modifier = Modifier.padding(padding))
@@ -255,7 +256,7 @@ private fun SplashScreen(onDone: () -> Unit) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text("PrivateDAO", color = Color.White, style = MaterialTheme.typography.headlineLarge, fontWeight = FontWeight.Bold)
             Spacer(Modifier.height(8.dp))
-            Text("Vote Without Fear", color = Color(0xFFFFD76B), style = MaterialTheme.typography.titleMedium)
+            Text(PrivateDaoConfig.tagline, color = Color(0xFFFFD76B), style = MaterialTheme.typography.titleMedium)
         }
     }
 }
@@ -276,17 +277,20 @@ private fun WalletScreen(uiState: UiState, onConnect: () -> Unit, onContinue: ()
             verticalArrangement = Arrangement.spacedBy(18.dp),
         ) {
             HeroCard(
-                title = "Android-first by design",
-                body = "PrivateDAO uses Kotlin native + Solana Mobile Wallet Adapter because Android is the official mobile dApp path for Solana wallets today.",
+                title = "Same Testnet program as the web app",
+                body = "This APK is aligned to ${PrivateDaoConfig.clusterLabel} program ${PrivateDaoConfig.programId}. Connect a mobile wallet, sign from Android, then verify through the same web proof routes.",
             )
             HeroCard(
                 title = "Wallet state",
                 body = when {
                     uiState.wallet != null -> "Connected to ${uiState.wallet.publicKeyBase58}"
-                    !uiState.isWalletAvailable -> "No compatible Mobile Wallet Adapter wallet was detected on this Android device."
-                    else -> "Phantom / Solflare-style Android wallet connection is ready through MWA."
+                    !uiState.isWalletAvailable -> "No compatible Mobile Wallet Adapter wallet was detected. Install a Solana Mobile wallet, return here, then connect."
+                    else -> "A Mobile Wallet Adapter-compatible wallet is detected. PrivateDAO can request authorization and send Testnet transactions from this device."
                 },
             )
+            if (!uiState.isWalletAvailable) {
+                LinkGrid(PrivateDaoConfig.walletInstallLinks)
+            }
             Button(onClick = onConnect, enabled = uiState.isWalletAvailable && !uiState.walletBusy, modifier = Modifier.fillMaxWidth()) {
                 Text(if (uiState.wallet == null) "Connect wallet" else "Reconnect wallet")
             }
@@ -334,7 +338,7 @@ private fun HomeScreen(
         item {
             HeroCard(
                 title = "Testnet governance surface",
-                body = "The Android app mirrors the current web product: live DAO/proposal reads, commit-reveal voting, finalize, execute, tx signatures, and explorer links.",
+                body = "The Android app mirrors the current web product: live DAO/proposal reads, commit-reveal voting, finalize, execute, wallet signatures, billing rehearsals, and explorer links on ${PrivateDaoConfig.clusterLabel}.",
                 actions = {
                     Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                         Button(onClick = onRefresh) { Text("Refresh") }
@@ -359,6 +363,15 @@ private fun HomeScreen(
                     "Selected proposal ${it.proposalId} is in ${uiState.proposalPhase(it)} phase with ${it.commitCount} commits and ${it.revealCount} reveals."
                 } ?: "Select a proposal to see phase-specific governance actions and transaction proofs.",
             )
+        }
+        item {
+            HeroCard(
+                title = "Open the full web product from mobile",
+                body = "Use these routes when you want the exact web sections from the Android device: Intelligence, services, proof, documents, and the reviewer path.",
+            )
+        }
+        item {
+            LinkGrid(PrivateDaoConfig.webSurfaceLinks.take(8))
         }
         item {
             HeroCard(
@@ -571,12 +584,30 @@ private fun CreateProposalScreen(
 }
 
 @Composable
-private fun AwardsScreen(uiState: UiState, modifier: Modifier = Modifier) {
+private fun IntelligenceScreen(uiState: UiState, modifier: Modifier = Modifier) {
     LazyColumn(
         modifier = modifier.fillMaxSize(),
         contentPadding = PaddingValues(20.dp),
         verticalArrangement = Arrangement.spacedBy(14.dp),
     ) {
+        item {
+            HeroCard(
+                title = "Intelligence, services, and proof parity",
+                body = "This screen is the Android entry point for the same product map exposed on the website: Intelligence, treasury, payroll, confidential payments, gaming rewards, proof, and reviewer documentation.",
+            )
+        }
+        item {
+            LinkGrid(PrivateDaoConfig.webSurfaceLinks)
+        }
+        item {
+            HeroCard(
+                title = "Community and demo channels",
+                body = "Judges and users can move from the APK to the same public channels linked by the website.",
+            )
+        }
+        item {
+            LinkGrid(PrivateDaoConfig.socialLinks)
+        }
         item {
             HeroCard(
                 title = "Awards & credibility",
@@ -613,12 +644,37 @@ private fun SettingsScreen(uiState: UiState, modifier: Modifier = Modifier) {
         }
         item { SettingsRow("Program ID", PrivateDaoConfig.programId) }
         item { SettingsRow("RPC", PrivateDaoConfig.rpcUrl) }
+        item { SettingsRow("Version", "1.1.0-testnet") }
         item { SettingsRow("Explorer", "Solscan Testnet links") }
+        item { SettingsRow("Live web", PrivateDaoConfig.liveSiteUrl) }
         item { SettingsRow("Wallet", uiState.wallet?.publicKeyBase58 ?: "Not connected") }
         item { SettingsRow("Billing receive", PrivateDaoConfig.billingReceiveAddress) }
         item { SettingsRow("Privacy policies", uiState.privacyPolicies.size.toString()) }
         item { SettingsRow("Billing SKUs", uiState.billingSkus.size.toString()) }
         item { BillingProofCard(uiState.billingSubmissionState) }
+    }
+}
+
+@Composable
+private fun LinkGrid(links: List<Pair<String, String>>) {
+    val uriHandler = LocalUriHandler.current
+
+    Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+        links.chunked(2).forEach { row ->
+            Row(horizontalArrangement = Arrangement.spacedBy(10.dp), modifier = Modifier.fillMaxWidth()) {
+                row.forEach { (label, url) ->
+                    OutlinedButton(
+                        onClick = { uriHandler.openUri(url) },
+                        modifier = Modifier.weight(1f),
+                    ) {
+                        Text(label, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                    }
+                }
+                if (row.size == 1) {
+                    Spacer(Modifier.weight(1f))
+                }
+            }
+        }
     }
 }
 

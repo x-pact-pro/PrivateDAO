@@ -12,6 +12,9 @@ PrivateDAO is Android-first on mobile because Solana Mobile Wallet Adapter is th
 - Jetpack Compose
 - Solana Mobile Wallet Adapter
 - Testnet by default
+- app version `1.1.0-testnet`
+- downloadable artifact `artifacts/android/PrivateDAO-android-testnet-debug.apk`
+- site download URL `https://privatedao.org/downloads/PrivateDAO-android-testnet-debug.apk`
 
 Seed Vault is intentionally not used for the dApp transaction flow. Seed Vault is the wallet-app path; PrivateDAO is implemented here as a mobile dApp.
 
@@ -73,7 +76,7 @@ High-level layers:
   - dashboard
   - proposals
   - proposal detail action surface
-  - awards
+  - intelligence, services, proof, and social link surface
   - settings
 
 ## Android System Diagram
