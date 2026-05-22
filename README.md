@@ -120,6 +120,19 @@ PrivateDAO is a wallet-first Solana Testnet financial OS for organizations that 
 
 The core product narrative is simple: PrivateDAO turns operations that used to require developers, command lines, custom scripts, and cryptography specialists into guided interface workflows. A user can learn the idea in `/learn`, connect a wallet, review the action in normal product language, sign the exact request, and verify the receipt from the web app or Android surface.
 
+## Business Model In One Minute
+
+PrivateDAO is not only a technical privacy system. It has a buyer-readable commercial path tied to the live Testnet product:
+
+| Layer | Buyer motion | Why it matters |
+| --- | --- | --- |
+| Open protocol | Free Testnet product access, source inspection, and proof review | Builds trust, adoption, and ecosystem review without hiding the protocol. |
+| Fixed pilot | `$2,500 setup` for a four-week pilot around one governance, payout, payroll, or treasury workflow | Creates the first paid conversion with a measurable proof packet instead of a vague enterprise promise. |
+| Managed operations | `$750/month` starting point after pilot validation | Turns repeated governance, payroll, payout, telemetry, hosted-read, and proof-export work into recurring revenue. |
+| Sovereign deployment | Custom pricing for customer-cloud installs, dedicated controls, white-label posture, custom retention, and support | Captures high-value organizations that need dedicated infrastructure and stronger control boundaries. |
+
+The commercial claim stays evidence-bound: the Testnet billing rehearsal proves wallet-signed payment logic and receipt continuity today; mainnet revenue, card subscription automation, and production custody remain release-stage targets rather than claimed facts.
+
 The release discipline is also part of the product. Remaining external gates are not hidden as footnotes; they are exposed as operating lanes with routes, schemas, commands, and reviewer-readable boundaries. The current closure map is published in [`docs/excellence-closure-matrix-2026-05-06.md`](docs/excellence-closure-matrix-2026-05-06.md).
 
 It combines:
