@@ -23,6 +23,9 @@
   <a href="docs/security-hardening-v2.md"><img src="https://img.shields.io/badge/Security-Strict%20V2%20Hardening-1d4ed8" alt="Strict V2 security hardening" /></a>
   <a href="docs/operational-evidence.generated.md"><img src="https://img.shields.io/badge/Devnet-50%20Wallet%20Rehearsal-7c3aed" alt="Devnet rehearsal" /></a>
   <a href="docs/testnet-lifecycle-rehearsal-2026-05-07.md"><img src="https://img.shields.io/badge/Testnet-Lifecycle%20Rehearsal%202026--05--07-0ea5e9" alt="Fresh Testnet lifecycle rehearsal" /></a>
+  <a href="docs/squads-testnet-custody-transfer-2026-05-22.md"><img src="https://img.shields.io/badge/Squads-Testnet%202--of--3%20Upgrade%20Authority-14f195" alt="Squads Testnet upgrade authority" /></a>
+  <a href="docs/dao-treasury-authority-handoff-2026-05-23.md"><img src="https://img.shields.io/badge/DAO%20Authority-Handoff%20Code--Ready-f59e0b" alt="DAO authority handoff code ready" /></a>
+  <a href="docs/solana-anonymous-governance-primitive.md"><img src="https://img.shields.io/badge/ZK-Anonymous%20Governance%20Primitive-0ea5e9" alt="Solana anonymous governance primitive" /></a>
   <a href="docs/magicblock/private-payments.md"><img src="https://img.shields.io/badge/MagicBlock-Private%20Payments-06b6d4" alt="MagicBlock private payments" /></a>
   <a href="docs/rpc-architecture.md"><img src="https://img.shields.io/badge/RPC%20Fast-Read%20Node%20Ready-f97316" alt="RPC Fast ready" /></a>
   <a href="https://api.privatedao.org/healthz"><img src="https://img.shields.io/badge/AWS%20Read--Node-Live-232f3e?logo=amazonaws" alt="AWS read-node live" /></a>
@@ -74,6 +77,12 @@ PrivateDAO preserves both the old Devnet proof path and the current Anchor 1.0.1
 | Current Anchor 1.0.1 Testnet | `EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva` | [`docs/anchor-1-migration-evidence-2026-04-30.md`](docs/anchor-1-migration-evidence-2026-04-30.md), [`docs/testnet-lifecycle-rehearsal-2026-05-07.md`](docs/testnet-lifecycle-rehearsal-2026-05-07.md) |
 
 The program ID change is part of the documented Anchor 1.0.1 migration and clean Testnet deployment. It is preserved as provenance for reviewers, not treated as a loss of continuity.
+
+## Custody And Anonymous Governance Update
+
+- Testnet program upgrade authority is now controlled by a Squads 2-of-3 vault: [`docs/squads-testnet-custody-transfer-2026-05-22.md`](docs/squads-testnet-custody-transfer-2026-05-22.md).
+- DAO operating authority handoff is implemented in code through `transfer_dao_authority`; live activation requires a Squads-governed program upgrade before any Testnet transfer signature is claimed: [`docs/dao-treasury-authority-handoff-2026-05-23.md`](docs/dao-treasury-authority-handoff-2026-05-23.md).
+- The ZK layer is now packaged as a Solana-native anonymous governance primitive with frozen membership snapshots, proposal-scoped nullifiers, and explicit tally modes: [`docs/solana-anonymous-governance-primitive.md`](docs/solana-anonymous-governance-primitive.md).
 
 ## Winner Signal
 

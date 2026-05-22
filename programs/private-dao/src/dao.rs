@@ -88,6 +88,27 @@ pub fn migrate_from_realms(
     Ok(())
 }
 
+pub fn transfer_dao_authority(
+    ctx: Context<TransferDaoAuthority>,
+    new_authority: Pubkey,
+) -> Result<()> {
+    require!(
+        new_authority != Pubkey::default() && new_authority != ctx.accounts.dao.authority,
+        Error::InvalidDaoAuthorityTransfer
+    );
+
+    let dao = &mut ctx.accounts.dao;
+    let previous_authority = dao.authority;
+    dao.authority = new_authority;
+
+    emit!(DaoAuthorityTransferred {
+        dao: dao.key(),
+        previous_authority,
+        new_authority,
+    });
+    Ok(())
+}
+
 pub fn initialize_dao_security_policy(
     ctx: Context<InitializeDaoSecurityPolicy>,
     mode: EnforcementMode,

@@ -1222,6 +1222,69 @@ describe("PrivateDAO", () => {
     console.log("  ✓ DAO initialized");
   });
 
+  it("transfers DAO operating authority without breaking proposal PDA continuity", async () => {
+    const transferDaoName = uniqueDaoName("AuthorityHandoff");
+    const [transferDaoPda] = PublicKey.findProgramAddressSync(
+      [Buffer.from("dao"), authority.publicKey.toBuffer(), Buffer.from(transferDaoName)],
+      program.programId,
+    );
+    const newAuthority = Keypair.generate();
+
+    await program.methods
+      .initializeDao(
+        transferDaoName,
+        51,
+        new BN(0),
+        new BN(3600),
+        new BN(86400),
+        { tokenWeighted: {} },
+      )
+      .accounts({
+        dao: transferDaoPda,
+        governanceToken: governanceMint,
+        authority: authority.publicKey,
+        systemProgram: SystemProgram.programId,
+      })
+      .rpc();
+
+    await program.methods
+      .transferDaoAuthority(newAuthority.publicKey)
+      .accounts({
+        dao: transferDaoPda,
+        authority: authority.publicKey,
+      })
+      .rpc();
+
+    const transferredDao = await program.account["dao"].fetch(transferDaoPda);
+    assert.equal(transferredDao.authority.toBase58(), newAuthority.publicKey.toBase58());
+
+    const [handoffProposalPda] = PublicKey.findProgramAddressSync(
+      [Buffer.from("proposal"), transferDaoPda.toBuffer(), transferredDao.proposalCount.toArrayLike(Buffer, "le", 8)],
+      program.programId,
+    );
+
+    await program.methods
+      .createProposal(
+        "Post-handoff proposal",
+        "Proposal creation must keep working after DAO operating authority moves to a new custody path.",
+        new BN(3600),
+        null,
+      )
+      .accounts({
+        dao: transferDaoPda,
+        proposal: handoffProposalPda,
+        proposerTokenAccount: v1Ata,
+        proposer: voter1.publicKey,
+        systemProgram: SystemProgram.programId,
+      })
+      .signers([voter1])
+      .rpc();
+
+    const handoffProposal = await program.account["proposal"].fetch(handoffProposalPda);
+    assert.equal(handoffProposal.dao.toBase58(), transferDaoPda.toBase58());
+    assert.equal(handoffProposal.proposalId.toString(), "0");
+  });
+
   it("allows a governance token holder to create a proposal", async () => {
     const dao = await program.account["dao"].fetch(daoPda);
 

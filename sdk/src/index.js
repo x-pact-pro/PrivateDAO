@@ -11,6 +11,11 @@ exports.poseidonHash = poseidonHash;
 exports.computeVoteOverlaySignals = computeVoteOverlaySignals;
 exports.computeDelegationOverlaySignals = computeDelegationOverlaySignals;
 exports.computeTallyOverlaySignals = computeTallyOverlaySignals;
+exports.deriveAnonymousIdentityCommitment = deriveAnonymousIdentityCommitment;
+exports.deriveProposalNullifier = deriveProposalNullifier;
+exports.createMembershipSnapshot = createMembershipSnapshot;
+exports.assertSnapshotUsable = assertSnapshotUsable;
+exports.createAnonymousVoteEnvelope = createAnonymousVoteEnvelope;
 const crypto_1 = require("crypto");
 const circomlibjs_1 = require("circomlibjs");
 let poseidonPromise = null;
@@ -119,6 +124,73 @@ async function computeTallyOverlaySignals(input) {
         yesWeightTotal: vote0 * weight0 + vote1 * weight1,
         noWeightTotal: (1n - vote0) * weight0 + (1n - vote1) * weight1,
         nullifierAccumulator: await poseidonHash(nullifier0, nullifier1),
+    };
+}
+async function deriveAnonymousIdentityCommitment(input) {
+    return poseidonHash(input.identitySecret, input.recoveryNonce, input.daoKey);
+}
+async function deriveProposalNullifier(input) {
+    return poseidonHash(input.identitySecret, input.proposalId, input.daoKey);
+}
+function createMembershipSnapshot(input) {
+    const frozenAtSlot = toBigInt(input.frozenAtSlot);
+    const votingWindowSlots = toBigInt(input.votingWindowSlots);
+    if (input.memberCount < 0) {
+        throw new Error("memberCount cannot be negative");
+    }
+    if (votingWindowSlots <= 0n) {
+        throw new Error("votingWindowSlots must be positive");
+    }
+    return {
+        dao: input.dao,
+        proposal: input.proposal,
+        epoch: toBigInt(input.epoch),
+        merkleRoot: toBigInt(input.merkleRoot),
+        frozenAtSlot,
+        expiresAtSlot: frozenAtSlot + votingWindowSlots,
+        memberCount: input.memberCount,
+        eligibleWeight: toBigInt(input.eligibleWeight),
+    };
+}
+function assertSnapshotUsable(snapshot, currentSlot) {
+    const slot = toBigInt(currentSlot);
+    if (slot < snapshot.frozenAtSlot) {
+        throw new Error("membership snapshot is not active yet");
+    }
+    if (slot > snapshot.expiresAtSlot) {
+        throw new Error("membership snapshot is stale");
+    }
+}
+async function createAnonymousVoteEnvelope(input) {
+    assertSnapshotUsable(input.snapshot, input.currentSlot);
+    if (input.vote !== 0 && input.vote !== 1) {
+        throw new Error("anonymous vote must be 0 or 1");
+    }
+    const signals = await computeVoteOverlaySignals({
+        proposalId: input.proposalId,
+        daoKey: input.daoKey,
+        minWeight: input.minWeight,
+        vote: input.vote,
+        salt: input.voteSalt,
+        voterKey: input.voterKey,
+        weight: input.weight,
+    });
+    return {
+        proposalId: signals.proposalId,
+        daoKey: signals.daoKey,
+        snapshotRoot: input.snapshot.merkleRoot,
+        snapshotEpoch: input.snapshot.epoch,
+        nullifier: await deriveProposalNullifier({
+            identitySecret: input.identitySecret,
+            proposalId: input.proposalId,
+            daoKey: input.daoKey,
+        }),
+        voteCommitment: signals.commitment,
+        eligibilityHash: signals.eligibilityHash,
+        tallyMode: input.tallyMode ?? "commitment-only",
+        resultState: (input.tallyMode ?? "commitment-only") === "zk-result-proof"
+            ? "ready-for-zk-result-proof"
+            : "pending-encrypted-tally",
     };
 }
 async function getPoseidonRuntime() {

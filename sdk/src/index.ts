@@ -8,6 +8,33 @@ export type ZkCircuitName =
   | "private_dao_vote_overlay"
   | "private_dao_delegation_overlay"
   | "private_dao_tally_overlay";
+export type AnonymousTallyMode =
+  | "commitment-only"
+  | "threshold-decryption"
+  | "zk-result-proof";
+
+export interface AnonymousMembershipSnapshot {
+  dao: string;
+  proposal: string;
+  epoch: bigint;
+  merkleRoot: bigint;
+  frozenAtSlot: bigint;
+  expiresAtSlot: bigint;
+  memberCount: number;
+  eligibleWeight: bigint;
+}
+
+export interface AnonymousVoteEnvelope {
+  proposalId: bigint;
+  daoKey: bigint;
+  snapshotRoot: bigint;
+  snapshotEpoch: bigint;
+  nullifier: bigint;
+  voteCommitment: bigint;
+  eligibilityHash: bigint;
+  tallyMode: AnonymousTallyMode;
+  resultState: "pending-encrypted-tally" | "ready-for-zk-result-proof";
+}
 
 type PoseidonRuntime = {
   hash: (...items: bigint[]) => bigint;
@@ -163,6 +190,114 @@ export async function computeTallyOverlaySignals(input: {
     yesWeightTotal: vote0 * weight0 + vote1 * weight1,
     noWeightTotal: (1n - vote0) * weight0 + (1n - vote1) * weight1,
     nullifierAccumulator: await poseidonHash(nullifier0, nullifier1),
+  };
+}
+
+export async function deriveAnonymousIdentityCommitment(input: {
+  identitySecret: bigint | number | string;
+  recoveryNonce: bigint | number | string;
+  daoKey: bigint | number | string;
+}) {
+  return poseidonHash(input.identitySecret, input.recoveryNonce, input.daoKey);
+}
+
+export async function deriveProposalNullifier(input: {
+  identitySecret: bigint | number | string;
+  proposalId: bigint | number | string;
+  daoKey: bigint | number | string;
+}) {
+  return poseidonHash(input.identitySecret, input.proposalId, input.daoKey);
+}
+
+export function createMembershipSnapshot(input: {
+  dao: string;
+  proposal: string;
+  epoch: bigint | number | string;
+  merkleRoot: bigint | number | string;
+  frozenAtSlot: bigint | number | string;
+  votingWindowSlots: bigint | number | string;
+  memberCount: number;
+  eligibleWeight: bigint | number | string;
+}): AnonymousMembershipSnapshot {
+  const frozenAtSlot = toBigInt(input.frozenAtSlot);
+  const votingWindowSlots = toBigInt(input.votingWindowSlots);
+  if (input.memberCount < 0) {
+    throw new Error("memberCount cannot be negative");
+  }
+  if (votingWindowSlots <= 0n) {
+    throw new Error("votingWindowSlots must be positive");
+  }
+
+  return {
+    dao: input.dao,
+    proposal: input.proposal,
+    epoch: toBigInt(input.epoch),
+    merkleRoot: toBigInt(input.merkleRoot),
+    frozenAtSlot,
+    expiresAtSlot: frozenAtSlot + votingWindowSlots,
+    memberCount: input.memberCount,
+    eligibleWeight: toBigInt(input.eligibleWeight),
+  };
+}
+
+export function assertSnapshotUsable(
+  snapshot: AnonymousMembershipSnapshot,
+  currentSlot: bigint | number | string,
+) {
+  const slot = toBigInt(currentSlot);
+  if (slot < snapshot.frozenAtSlot) {
+    throw new Error("membership snapshot is not active yet");
+  }
+  if (slot > snapshot.expiresAtSlot) {
+    throw new Error("membership snapshot is stale");
+  }
+}
+
+export async function createAnonymousVoteEnvelope(input: {
+  identitySecret: bigint | number | string;
+  proposalId: bigint | number | string;
+  daoKey: bigint | number | string;
+  vote: 0 | 1;
+  voteSalt: bigint | number | string;
+  voterKey: bigint | number | string;
+  weight: bigint | number | string;
+  minWeight: bigint | number | string;
+  snapshot: AnonymousMembershipSnapshot;
+  currentSlot: bigint | number | string;
+  tallyMode?: AnonymousTallyMode;
+}): Promise<AnonymousVoteEnvelope> {
+  assertSnapshotUsable(input.snapshot, input.currentSlot);
+  if (input.vote !== 0 && input.vote !== 1) {
+    throw new Error("anonymous vote must be 0 or 1");
+  }
+
+  const signals = await computeVoteOverlaySignals({
+    proposalId: input.proposalId,
+    daoKey: input.daoKey,
+    minWeight: input.minWeight,
+    vote: input.vote,
+    salt: input.voteSalt,
+    voterKey: input.voterKey,
+    weight: input.weight,
+  });
+
+  return {
+    proposalId: signals.proposalId,
+    daoKey: signals.daoKey,
+    snapshotRoot: input.snapshot.merkleRoot,
+    snapshotEpoch: input.snapshot.epoch,
+    nullifier: await deriveProposalNullifier({
+      identitySecret: input.identitySecret,
+      proposalId: input.proposalId,
+      daoKey: input.daoKey,
+    }),
+    voteCommitment: signals.commitment,
+    eligibilityHash: signals.eligibilityHash,
+    tallyMode: input.tallyMode ?? "commitment-only",
+    resultState:
+      (input.tallyMode ?? "commitment-only") === "zk-result-proof"
+        ? "ready-for-zk-result-proof"
+        : "pending-encrypted-tally",
   };
 }
 

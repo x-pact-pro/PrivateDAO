@@ -42,6 +42,30 @@ export function getIndexableCuratedDocuments() {
 
 const curatedDocuments: CuratedDocument[] = [
   {
+    slug: "dao-treasury-authority-handoff-2026-05-23",
+    title: "DAO And Treasury Authority Handoff",
+    category: "Custody",
+    summary:
+      "Reviewer-safe custody packet showing the live Squads upgrade-authority transfer, the latest Testnet DAO readout, the derived treasury PDA, and the code-ready DAO authority handoff path.",
+    audience: "Judges, security reviewers, operators, ecosystem partners",
+    boundary:
+      "Custody evidence packet only; it states that DAO operating authority transfer is code-ready and requires a Squads-governed program upgrade before a live Testnet transfer can be claimed.",
+    docPath: "docs/dao-treasury-authority-handoff-2026-05-23.md",
+    rawHref: `${repositoryBlobBase}/docs/dao-treasury-authority-handoff-2026-05-23.md`,
+  },
+  {
+    slug: "solana-anonymous-governance-primitive",
+    title: "Solana Anonymous Governance Primitive",
+    category: "ZK",
+    summary:
+      "Productized ZK primitive brief for frozen membership roots, anonymous vote envelopes, proposal-scoped nullifiers, tally closure modes, identity recovery, and Solana performance gates.",
+    audience: "Judges, Solana builders, DAO operators, privacy reviewers",
+    boundary:
+      "Primitive packaging brief only; it distinguishes anonymous submission from final encrypted tally and keeps verifier/audit assumptions explicit.",
+    docPath: "docs/solana-anonymous-governance-primitive.md",
+    rawHref: `${repositoryBlobBase}/docs/solana-anonymous-governance-primitive.md`,
+  },
+  {
     slug: "agentic-treasury-micropayment-rail",
     title: "Agentic Treasury Micropayment Rail",
     category: "Strategy",

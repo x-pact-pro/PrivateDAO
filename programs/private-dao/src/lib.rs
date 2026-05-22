@@ -121,6 +121,20 @@ pub mod private_dao {
         )
     }
 
+    // ── Authority handoff ───────────────────────────────────────────────────
+    //
+    // Transfers the DAO operating authority that gates policy, ZK-enforced
+    // mode, confidential payout, REFHE, and MagicBlock settlement operations.
+    // Treasury SOL/SPL execution remains proposal/PDA-bound; this authority
+    // controls the operator-only surfaces around that treasury lane.
+
+    pub fn transfer_dao_authority(
+        ctx: Context<TransferDaoAuthority>,
+        new_authority: Pubkey,
+    ) -> Result<()> {
+        dao::transfer_dao_authority(ctx, new_authority)
+    }
+
     // ── Additive V2 security policy ──────────────────────────────────────────
     //
     // This companion account keeps legacy DAOs and existing proposal/payout
@@ -712,6 +726,16 @@ pub struct MigrateFromRealms<'info> {
 }
 
 #[derive(Accounts)]
+pub struct TransferDaoAuthority<'info> {
+    #[account(
+        mut,
+        constraint = dao.authority == authority.key() @ Error::UnauthorizedDaoAuthorityTransfer
+    )]
+    pub dao: Account<'info, Dao>,
+    pub authority: Signer<'info>,
+}
+
+#[derive(Accounts)]
 pub struct InitializeDaoSecurityPolicy<'info> {
     #[account(has_one = authority)]
     pub dao: Account<'info, Dao>,
@@ -810,11 +834,7 @@ pub struct UpdateDaoSettlementPolicyV3<'info> {
 #[derive(Accounts)]
 #[instruction(title: String)]
 pub struct CreateProposal<'info> {
-    #[account(
-        mut,
-        seeds = [b"dao", dao.authority.as_ref(), dao.dao_name.as_bytes()],
-        bump = dao.bump
-    )]
+    #[account(mut)]
     pub dao: Account<'info, Dao>,
     #[account(
         init, payer = proposer, space = Proposal::LEN,
@@ -2525,6 +2545,13 @@ pub struct DaoMigratedFromRealms {
     pub name: String,
     pub realms_governance: Pubkey,
     pub governance_token: Pubkey,
+}
+
+#[event]
+pub struct DaoAuthorityTransferred {
+    pub dao: Pubkey,
+    pub previous_authority: Pubkey,
+    pub new_authority: Pubkey,
 }
 
 #[event]
