@@ -99,6 +99,52 @@ private enum class CreatePanel {
     Proposal,
 }
 
+private data class MobileServiceLane(
+    val title: String,
+    val problem: String,
+    val action: String,
+    val url: String,
+)
+
+private val mobileServiceLanes = listOf(
+    MobileServiceLane(
+        title = "Confidential governance",
+        problem = "Private proposals, commit/reveal votes, finalize, execute, cancel, and veto stay one wallet action away.",
+        action = "Govern",
+        url = PrivateDaoConfig.governanceUrl,
+    ),
+    MobileServiceLane(
+        title = "Private polls and committee signals",
+        problem = "Sensitive review signals can stay private while proof, route, and final accountability remain inspectable.",
+        action = "Intelligence",
+        url = PrivateDaoConfig.intelligenceUrl,
+    ),
+    MobileServiceLane(
+        title = "Confidential payroll",
+        problem = "Contributor pay, bonuses, and salary operations need governance without exposing the full compensation graph.",
+        action = "Payroll",
+        url = PrivateDaoConfig.confidentialPayrollUrl,
+    ),
+    MobileServiceLane(
+        title = "Encrypted payments",
+        problem = "Cloak, Umbra, MagicBlock, and Encrypt/IKA payment corridors become a normal mobile operator flow.",
+        action = "Payments",
+        url = PrivateDaoConfig.confidentialPaymentsUrl,
+    ),
+    MobileServiceLane(
+        title = "Rewards and gaming treasuries",
+        problem = "Tournaments, guilds, and reward pools need fast Solana execution with policy and proof attached.",
+        action = "Gaming",
+        url = PrivateDaoConfig.gamingUrl,
+    ),
+    MobileServiceLane(
+        title = "Read API and live counters",
+        problem = "Judges and operators can inspect runtime state, diagnostics, and proof continuity after mobile execution.",
+        action = "Diagnostics",
+        url = PrivateDaoConfig.diagnosticsUrl,
+    ),
+)
+
 @Composable
 fun PrivateDaoApp(
     uiState: UiState,
@@ -371,6 +417,9 @@ private fun HomeScreen(uiState: UiState, onRefresh: () -> Unit, onWalletAction: 
             )
         }
         item {
+            MobileServiceConstellationCard()
+        }
+        item {
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.fillMaxWidth()) {
                 MetricCard("DAOs", uiState.daos.size.toString(), Modifier.weight(1f))
                 MetricCard("Votes", uiState.proposals.size.toString(), Modifier.weight(1f))
@@ -396,6 +445,31 @@ private fun HomeScreen(uiState: UiState, onRefresh: () -> Unit, onWalletAction: 
         }
         item {
             SubmissionStateCard(uiState = uiState)
+        }
+    }
+}
+
+@Composable
+private fun MobileServiceConstellationCard() {
+    HeroCard(
+        title = "PrivateDAO services in your pocket",
+        body = "This APK is the ordinary-user path into the same Solana service constellation: private governance, polls, payroll, encrypted payments, gaming rewards, automations, and proof.",
+        actions = {
+            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                mobileServiceLanes.chunked(2).forEach { row ->
+                    ReviewLinkRow(*row.map { it.action to it.url }.toTypedArray())
+                }
+            }
+        },
+    )
+    Column(verticalArrangement = Arrangement.spacedBy(10.dp), modifier = Modifier.padding(top = 10.dp)) {
+        mobileServiceLanes.forEach { lane ->
+            Card(shape = RoundedCornerShape(20.dp), colors = CardDefaults.cardColors(containerColor = SurfaceTertiary)) {
+                Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                    Text(lane.title, color = SolanaGreen, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+                    Text(lane.problem, color = BodyMuted)
+                }
+            }
         }
     }
 }

@@ -27,6 +27,13 @@ object PrivateDaoConfig {
     const val mainnetReadinessUrl = "$webBaseUrl/documents/mainnet-readiness"
     const val realDeviceRuntimeUrl = "$webBaseUrl/documents/real-device-runtime"
     const val androidSurfaceUrl = "$webBaseUrl/android"
+    const val servicesUrl = "$webBaseUrl/services"
+    const val governanceUrl = "$webBaseUrl/govern"
+    const val confidentialPaymentsUrl = "$webBaseUrl/services/confidential-payments"
+    const val confidentialPayrollUrl = "$webBaseUrl/services/refhe-payroll-proof"
+    const val gamingUrl = "$webBaseUrl/gaming"
+    const val intelligenceUrl = "$webBaseUrl/intelligence"
+    const val diagnosticsUrl = "$webBaseUrl/diagnostics"
 
     const val systemProgramId = "11111111111111111111111111111111"
     const val tokenProgramId = "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"

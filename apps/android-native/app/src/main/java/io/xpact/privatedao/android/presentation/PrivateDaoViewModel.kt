@@ -78,8 +78,8 @@ class PrivateDaoViewModel(application: Application) : AndroidViewModel(applicati
                         val hasUsableState = it.wallet != null || it.daos.isNotEmpty() || it.proposals.isNotEmpty()
                         it.copy(
                             isLoading = false,
-                            errorMessage = if (hasUsableState) null else "Devnet data is still loading. Try refresh again in a moment.",
-                            bannerMessage = if (hasUsableState) "Devnet reads are delayed on the current RPC route. Wallet actions can still continue." else it.bannerMessage,
+                            errorMessage = if (hasUsableState) null else "Devnet data refresh in progress. Tap Refresh to sync latest state.",
+                            bannerMessage = if (hasUsableState) "Devnet read route switched automatically. Wallet actions remain available." else it.bannerMessage,
                         )
                     }
                 }
