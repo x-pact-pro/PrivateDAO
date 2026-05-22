@@ -247,6 +247,7 @@
     "verify:production-mainnet-closure": "ts-node scripts/verify-production-mainnet-closure-checklist.ts",
     "verify:launch-ops": "ts-node scripts/verify-launch-ops-checklist.ts",
     "verify:monitoring-alerts": "ts-node scripts/verify-monitoring-alert-rules.ts",
+    "verify:security-boundaries:2026-05-22": "ts-node scripts/verify-security-boundaries-2026-05-22.ts",
     "verify:mainnet-blockers": "ts-node scripts/verify-mainnet-blockers.ts",
     "verify:mainnet-readiness-report": "ts-node scripts/verify-mainnet-readiness-report.ts",
     "verify:deployment-attestation": "ts-node scripts/verify-deployment-attestation.ts",

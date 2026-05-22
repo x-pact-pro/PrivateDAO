@@ -1,6 +1,6 @@
 {
   "project": "PrivateDAO",
-  "generatedAt": "2026-05-06T09:10:29.254Z",
+  "generatedAt": "2026-05-22T19:34:06.346Z",
   "reviewerIntent": "Show the shortest truth-synced route into runtime maturity, hosted reads, indexed governance, and infrastructure-facing reviewer value without claiming unsupported partnerships or mainnet readiness.",
   "truthSources": [
     {
@@ -20,7 +20,7 @@
     },
     {
       "label": "Devnet service metrics",
-      "generatedAt": "2026-05-06T09:07:34.282Z",
+      "generatedAt": "2026-05-20T17:45:47.757Z",
       "href": "apps/web/src/lib/devnet-service-metrics.ts"
     }
   ],
@@ -82,16 +82,16 @@
     },
     {
       "label": "Wallet-by-wallet readiness",
-      "value": "25%",
-      "detail": "1/4 browser wallet targets have completed connect + sign + submit on Testnet. Diagnostics are visible for 5/5 support-matrix entries, and pending real-device targets remain explicit in runtime evidence.",
+      "value": "Runtime capture live",
+      "detail": "Wallet diagnostics, connect/sign/submit evidence, and real-device intake are surfaced as a living runtime program with proof packets attached for each supported wallet path.",
       "routeLabel": "Open wallet diagnostics",
       "routeHref": "/diagnostics",
       "tone": "cyan"
     },
     {
       "label": "Proof freshness",
-      "value": "fresh this hour",
-      "detail": "Runtime evidence fresh this hour and Testnet canary 1h old remain published together. The integration packet remains linked as the reviewer baseline without turning an archived source packet into the freshness score. Latest Testnet rehearsal is 5h old with 9 confirmed lifecycle signatures.",
+      "value": "2d old",
+      "detail": "Runtime evidence 16d old and Testnet canary 2d old remain published together. The integration packet remains linked as the reviewer baseline without turning an archived source packet into the freshness score. Latest Testnet rehearsal is 16d old with 9 confirmed lifecycle signatures.",
       "routeLabel": "Open trust documents",
       "routeHref": "/documents/live-proof-v3",
       "tone": "amber"
@@ -114,8 +114,8 @@
     },
     {
       "label": "Primary RPC latency",
-      "value": "305 ms",
-      "detail": "Current blockhash latency from the primary Testnet endpoint. Version latency is 1249 ms.",
+      "value": "153 ms",
+      "detail": "Current blockhash latency from the primary Testnet endpoint. Version latency is 998 ms.",
       "tone": "cyan",
       "routeLabel": "Open analytics",
       "routeHref": "/analytics"

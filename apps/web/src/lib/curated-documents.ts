@@ -504,6 +504,18 @@ const curatedDocuments: CuratedDocument[] = [
     rawHref: `${repositoryBlobBase}/docs/provider-to-encrypted-execution-spine-2026-05-22.md`,
   },
   {
+    slug: "security-remediation-2026-05-22",
+    title: "Security Remediation 2026-05-22",
+    category: "Security",
+    summary:
+      "Security remediation packet covering browser vote salt redaction, ZK claim boundaries, live API verification, Supabase receipt boundaries, monitoring delivery evidence, and REFHE/FHE wording discipline.",
+    audience: "Judges, security reviewers, operators, technical diligence teams",
+    boundary:
+      "Remediation packet only; it records implemented browser and documentation fixes plus verification commands without claiming monitoring delivery or mainnet real-funds readiness.",
+    docPath: "docs/security-remediation-2026-05-22.md",
+    rawHref: `${repositoryBlobBase}/docs/security-remediation-2026-05-22.md`,
+  },
+  {
     slug: "reviewer-fast-path-2026-05-06",
     title: "Reviewer Fast Path 2026-05-06",
     category: "Reviewer core",

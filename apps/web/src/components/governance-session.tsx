@@ -57,7 +57,7 @@ type LiveVoteRuntime = {
   finalizeSignature?: string;
   proposalAddress: string;
   revealSignature?: string;
-  saltHex: string;
+  saltHex?: string;
   voteChoice: VoteChoice;
 };
 
@@ -203,6 +203,32 @@ const defaultState: GovernanceSessionState = {
 
 const GovernanceSessionContext = createContext<GovernanceSessionContextValue | null>(null);
 
+function redactLiveVoteRuntimeForStorage(runtime: LiveVoteRuntime | null): LiveVoteRuntime | null {
+  if (!runtime) return null;
+
+  return {
+    commitmentHex: runtime.commitmentHex,
+    commitSignature: runtime.commitSignature,
+    executeSignature: runtime.executeSignature,
+    finalizeSignature: runtime.finalizeSignature,
+    proposalAddress: runtime.proposalAddress,
+    revealSignature: runtime.revealSignature,
+    voteChoice: runtime.revealSignature ? runtime.voteChoice : "Approve",
+  };
+}
+
+function redactGovernanceStateForStorage(state: GovernanceSessionState): GovernanceSessionState {
+  return {
+    ...state,
+    voteChoice: state.liveVoteRuntime?.revealSignature ? state.voteChoice : "Approve",
+    liveVoteRuntime: redactLiveVoteRuntimeForStorage(state.liveVoteRuntime),
+  };
+}
+
+function mergePersistedGovernanceStateSafely(parsed: Partial<GovernanceSessionState>): GovernanceSessionState {
+  return redactGovernanceStateForStorage(mergePersistedGovernanceState(parsed));
+}
+
 export function GovernanceSessionProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<GovernanceSessionState>(() => {
     if (typeof window === "undefined") return defaultState;
@@ -211,7 +237,7 @@ export function GovernanceSessionProvider({ children }: { children: ReactNode })
 
     try {
       const parsed = JSON.parse(raw) as Partial<GovernanceSessionState>;
-      return mergePersistedGovernanceState(parsed);
+      return mergePersistedGovernanceStateSafely(parsed);
     } catch {
       window.localStorage.removeItem(STORAGE_KEY);
       return defaultState;
@@ -220,7 +246,7 @@ export function GovernanceSessionProvider({ children }: { children: ReactNode })
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(redactGovernanceStateForStorage(state)));
   }, [state]);
 
   function withLog(current: GovernanceSessionState, label: string, value: string): GovernanceSessionState {

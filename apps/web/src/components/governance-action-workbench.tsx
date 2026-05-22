@@ -1328,7 +1328,7 @@ export function GovernanceActionWorkbench() {
 
       setCommitVoteRuntime({
         status: "success",
-        message: `Commit submitted live on ${SOLANA_NETWORK_LABEL}. Preserve the reveal salt before moving to reveal.`,
+        message: `Commit submitted live on ${SOLANA_NETWORK_LABEL}. The reveal preimage is kept only in this active browser session and is never written to localStorage.`,
         commitmentHex: toHex(commitment),
         saltHex: toHex(salt),
         signature,
@@ -1361,7 +1361,7 @@ export function GovernanceActionWorkbench() {
     if (!publicKey || !liveVoteRuntime?.saltHex || !activeLiveProposalAddress) {
       setRevealVoteRuntime({
         status: "error",
-        message: "Commit live first so reveal has the stored salt and proposal address.",
+        message: "Commit live first in this active tab so reveal has an in-memory preimage. Private vote salts are not persisted to browser storage.",
       });
       return;
     }
@@ -2362,7 +2362,7 @@ export function GovernanceActionWorkbench() {
                     signature={commitVoteRuntime.signature}
                     lines={[
                       commitVoteRuntime.commitmentHex ? `Commitment: ${commitVoteRuntime.commitmentHex}` : "",
-                      commitVoteRuntime.saltHex ? `Reveal salt: ${commitVoteRuntime.saltHex}` : "",
+                      commitVoteRuntime.saltHex ? "Reveal preimage sealed in memory only; not shown or persisted." : "",
                     ].filter(Boolean)}
                     reviewHref="/proof"
                     reviewLabel="Open proof"
@@ -2373,7 +2373,11 @@ export function GovernanceActionWorkbench() {
                   <div className="mt-4 rounded-2xl border border-emerald-300/18 bg-emerald-300/[0.08] p-3 text-sm leading-7 text-emerald-100/82">
                     <div>Last live commit is preserved in the session for the reveal lane.</div>
                     <div className="mt-2 break-all text-white/70">Commitment {liveVoteRuntime.commitmentHex}</div>
-                    <div className="mt-1 break-all text-white/60">Salt {liveVoteRuntime.saltHex}</div>
+                    {liveVoteRuntime.saltHex ? (
+                      <div className="mt-1 text-white/60">Reveal preimage sealed in memory only.</div>
+                    ) : (
+                      <div className="mt-1 text-amber-100/70">Reveal preimage is not available after reload because salts are no longer persisted.</div>
+                    )}
                     {liveVoteRuntime.commitSignature ? (
                       <div className="mt-1 break-all text-white/60">Signature {liveVoteRuntime.commitSignature}</div>
                     ) : null}
@@ -2388,7 +2392,7 @@ export function GovernanceActionWorkbench() {
                       {
                         href: "/govern#reveal-vote-action",
                         label: "Go to reveal vote",
-                        helper: "Return here when the reveal window opens and continue the cycle with the stored salt.",
+                        helper: "Keep this tab open until reveal. The salt is held in memory only and is not written to browser storage.",
                         variant: "secondary",
                       },
                       {
@@ -2420,13 +2424,13 @@ export function GovernanceActionWorkbench() {
                 </div>
                 {!liveVoteRuntime?.saltHex ? (
                   <p className="mt-4 text-sm leading-7 text-amber-100/70">
-                    Reveal uses the stored live commit salt. Until a live commit succeeds, reveal stays locked instead of pretending it can proceed.
+                    Reveal uses an in-memory preimage from the active commit session. If the tab was reloaded, the salt was intentionally discarded instead of being stored in localStorage.
                   </p>
                 ) : (
                   <div className="mt-4 rounded-2xl border border-emerald-300/18 bg-emerald-300/[0.08] p-3 text-sm text-white/72">
-                    <div className="text-[11px] uppercase tracking-[0.2em] text-emerald-100/72">Stored reveal preimage</div>
+                    <div className="text-[11px] uppercase tracking-[0.2em] text-emerald-100/72">In-memory reveal preimage</div>
                     <div className="mt-2 break-all text-white">Proposal {liveVoteRuntime.proposalAddress}</div>
-                    <div className="mt-1 break-all text-white/62">Salt {liveVoteRuntime.saltHex}</div>
+                    <div className="mt-1 text-white/62">Salt sealed in memory only; not displayed and not persisted.</div>
                     {liveProposalWindow ? (
                       <>
                         <div className="mt-2 text-white/72">

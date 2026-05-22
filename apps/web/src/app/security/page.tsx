@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 
 import { MetricsStrip } from "@/components/metrics-strip";
 import { LocalizedRouteBrief } from "@/components/localized-route-brief";
@@ -24,6 +25,8 @@ import { ZkMatrixSurface } from "@/components/zk-matrix-surface";
 import { ConfidentialPayoutEvidenceStrip } from "@/components/confidential-payout-evidence-strip";
 import { SettlementReceiptSurface } from "@/components/settlement-receipt-surface";
 import { buildRouteMetadata } from "@/lib/route-metadata";
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = buildRouteMetadata({
   title: "Security",
@@ -50,6 +53,25 @@ export default function SecurityPage() {
       </div>
       <div>
         <LocalizedRouteBrief routeKey="security" />
+      </div>
+      <div className="rounded-[28px] border border-rose-300/18 bg-rose-300/[0.08] p-5">
+        <div className="text-[11px] uppercase tracking-[0.28em] text-rose-100/76">Security remediation</div>
+        <h2 className="mt-3 text-2xl font-semibold text-white">Browser vote salts are no longer persisted</h2>
+        <p className="mt-3 max-w-4xl text-sm leading-7 text-white/66">
+          The web commit/reveal lane now redacts persisted governance state, keeps reveal preimages in memory only,
+          removes salt rendering from the DOM, and documents the ZK, API, monitoring, and REFHE/FHE claim boundaries.
+        </p>
+        <div className="mt-4 flex flex-wrap gap-3">
+          <Link href="/documents/security-remediation-2026-05-22" className={cn(buttonVariants({ size: "sm" }))}>
+            Open remediation packet
+          </Link>
+          <Link href="/documents/zk-capability-matrix" className={cn(buttonVariants({ size: "sm", variant: "outline" }))}>
+            Open ZK matrix
+          </Link>
+          <Link href="/api-status" className={cn(buttonVariants({ size: "sm", variant: "secondary" }))}>
+            Open API status
+          </Link>
+        </div>
       </div>
       <div>
         <CustodyReadinessStrip context="security" />
