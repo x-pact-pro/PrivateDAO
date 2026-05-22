@@ -209,6 +209,7 @@
     "verify:weekly-updates": "ts-node scripts/verify-weekly-update-videos.ts",
     "verify:weekly-youtube-ready": "ts-node scripts/verify-weekly-youtube-ready.ts",
     "verify:investor-pitch-deck": "ts-node scripts/verify-investor-pitch-deck.ts",
+    "verify:android-testnet-parity": "node scripts/verify-android-testnet-parity.mjs",
     "verify:submission-registry": "ts-node scripts/verify-submission-registry.ts",
     "verify:registry-consistency": "ts-node scripts/verify-registry-consistency.ts",
     "verify:generated-artifacts": "ts-node scripts/verify-generated-artifacts.ts",

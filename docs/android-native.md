@@ -15,6 +15,8 @@ PrivateDAO is Android-first on mobile because Solana Mobile Wallet Adapter is th
 - app version `1.1.0-testnet`
 - downloadable artifact `artifacts/android/PrivateDAO-android-testnet-debug.apk`
 - site download URL `https://privatedao.org/downloads/PrivateDAO-android-testnet-debug.apk`
+- parity manifest `apps/web/public/android-testnet-parity-manifest.json`
+- APK SHA-256 `bcd7d3b0007eb5906cef4aaee3926c9d78798d67d93852e85d4e1794cb2426f8`
 
 Seed Vault is intentionally not used for the dApp transaction flow. Seed Vault is the wallet-app path; PrivateDAO is implemented here as a mobile dApp.
 
@@ -90,7 +92,7 @@ Android user
      - proposal list / detail
      - create DAO / deposit / create proposal
      - commit / reveal / finalize / execute
-     - awards / settings
+     - intelligence / services / proof / social links / settings
 
 Compose + ViewModel layer
   -> PrivateDaoViewModel
@@ -157,7 +159,7 @@ This means the Android app is designed to work with compatible Android wallets s
 - reveal vote
 - finalize flow
 - execute flow
-- awards / recognition
+- intelligence, services, proof, and social links
 - settings / network info
 
 ## Real On-Chain Coverage In Android
@@ -188,9 +190,26 @@ These are real limitations, not hidden gaps:
 
 - `SendToken` execution is now wired in the Android client, but it still depends on the recipient associated token account existing on-chain for the configured mint
 - the Android app currently prioritizes the governance lifecycle and treasury/operator essentials; the broader browser-only proof center and judge-mode surfaces still live primarily in the web product
-- full local build verification was limited in this session by missing local Android SDK / Gradle execution environment in the workspace shell
+- the published APK is a debug-signed Testnet reviewer build, not a Play Store production-signed release
 
 None of these change the protocol or on-chain behavior. They only define the current mobile surface area.
+
+## Build And Artifact Verification
+
+The current artifact was built and verified locally with the Android SDK and Java 17:
+
+```bash
+cd apps/android-native
+JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64 ANDROID_HOME=/home/x-pact/Android/Sdk ./gradlew :app:assembleDebug
+```
+
+Verification checks performed for the current published artifact:
+
+- Gradle APK build completed successfully
+- `apksigner verify --verbose` confirmed the APK signature verifies
+- package metadata confirms package `io.xpact.privatedao.android`, version code `2`, version name `1.1.0-testnet`, min SDK `26`, and target SDK `36`
+- SHA-256 matches the site and repository artifact checksum
+- `npm run verify:android-testnet-parity` checks the Android config, web constants, public manifest, repository APK, and site APK copy against the same Testnet values
 
 ## Build
 

@@ -1,0 +1,36 @@
+{
+  "project": "PrivateDAO",
+  "manifestVersion": "2026-05-22.android-testnet-parity.v1",
+  "network": "Solana Testnet",
+  "programId": "EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva",
+  "webSurface": {
+    "liveUrl": "https://privatedao.org",
+    "androidPageUrl": "https://privatedao.org/android",
+    "proofUrl": "https://privatedao.org/proof",
+    "intelligenceUrl": "https://privatedao.org/intelligence",
+    "servicesUrl": "https://privatedao.org/services"
+  },
+  "android": {
+    "packageName": "io.xpact.privatedao.android",
+    "versionName": "1.1.0-testnet",
+    "versionCode": 2,
+    "mobileWalletAdapter": "2.1.0",
+    "apkFile": "PrivateDAO-android-testnet-debug.apk",
+    "siteDownloadUrl": "https://privatedao.org/downloads/PrivateDAO-android-testnet-debug.apk",
+    "repositoryDownloadUrl": "https://github.com/X-PACT/PrivateDAO/raw/main/artifacts/android/PrivateDAO-android-testnet-debug.apk",
+    "sha256": "bcd7d3b0007eb5906cef4aaee3926c9d78798d67d93852e85d4e1794cb2426f8",
+    "size": "17 MB",
+    "signingChannel": "debug-signed Testnet reviewer build"
+  },
+  "nativeTransactionCoverage": [
+    "create DAO",
+    "deposit treasury",
+    "create proposal",
+    "commit vote",
+    "reveal vote",
+    "finalize proposal",
+    "execute proposal",
+    "Testnet billing rehearsal"
+  ],
+  "reviewerBoundary": "This manifest binds the live web route and downloadable Android APK to the same Testnet program, checksum, and wallet-first review path. It does not claim Play Store production signing or mainnet custody completion."
+}

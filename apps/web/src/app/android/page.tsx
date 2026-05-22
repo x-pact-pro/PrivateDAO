@@ -10,10 +10,16 @@ import {
   androidApkRepositoryUrl,
   androidApkSha256,
   androidApkSizeLabel,
+  androidAppVersion,
   androidBranchName,
   androidGuideUrl,
+  androidNetworkLabel,
+  androidParityManifestUrl,
+  androidProgramId,
   androidRepositoryBaseUrl,
   androidReviewerRunbookUrl,
+  androidVersionCode,
+  androidWalletAdapterVersion,
 } from "@/lib/android-surface";
 import { buildRouteMetadata } from "@/lib/route-metadata";
 import { cn } from "@/lib/utils";
@@ -123,6 +129,7 @@ export default function AndroidPage() {
                 </div>
                 <div className="mt-3 space-y-2 text-sm leading-7 text-white/68">
                   <div>Artifact: <span className="text-white">PrivateDAO Android debug APK</span></div>
+                  <div>Version: <span className="text-white">{androidAppVersion}</span> / code <span className="text-white">{androidVersionCode}</span></div>
                   <div>Size: <span className="text-white">{androidApkSizeLabel}</span></div>
                   <div>SHA-256: <span className="break-all text-white">{androidApkSha256}</span></div>
                 </div>
@@ -134,7 +141,9 @@ export default function AndroidPage() {
                 </div>
                 <div className="mt-3 space-y-2 text-sm leading-7 text-white/68">
                   <div>Working branch: <span className="text-white">{androidBranchName}</span></div>
-                  <div>Channel: <span className="text-white">Android-native Testnet surface</span></div>
+                  <div>Network: <span className="text-white">{androidNetworkLabel}</span></div>
+                  <div>Program ID: <span className="break-all text-white">{androidProgramId}</span></div>
+                  <div>Mobile wallet layer: <span className="text-white">Solana Mobile Wallet Adapter {androidWalletAdapterVersion}</span></div>
                   <div>Product scope: <span className="text-white">multilingual live web parity, native wallet signing, services, proof-linked verification</span></div>
                 </div>
               </div>
@@ -154,6 +163,10 @@ export default function AndroidPage() {
               </a>
               <a href={androidReviewerRunbookUrl} target="_blank" rel="noreferrer" className={cn(buttonVariants({ variant: "outline" }), "justify-between")}>
                 Open reviewer runbook
+                <ShieldCheck className="h-4 w-4" />
+              </a>
+              <a href={androidParityManifestUrl} target="_blank" rel="noreferrer" className={cn(buttonVariants({ variant: "outline" }), "justify-between")}>
+                Open parity manifest
                 <ShieldCheck className="h-4 w-4" />
               </a>
               <a href={androidRepositoryBaseUrl} target="_blank" rel="noreferrer" className={cn(buttonVariants({ variant: "outline" }), "justify-between")}>
@@ -181,7 +194,7 @@ export default function AndroidPage() {
               Privacy, service value, cryptographic guarantees, and verification stay visible to operators, partners, and reviewers.
             </div>
             <div className="rounded-3xl border border-amber-300/16 bg-amber-300/[0.08] p-4 text-sm leading-7 text-white/72">
-              Android capture expansion for the full reveal, finalize, and execute evidence lane is <span className="text-white">actively scaling</span>. The product surface and build are live now with continuous runtime evidence expansion.
+              The APK is a <span className="text-white">debug-signed Testnet reviewer build</span>. It is intended for judging, wallet-path validation, and public product review before Play Store production signing.
             </div>
           </CardContent>
         </Card>

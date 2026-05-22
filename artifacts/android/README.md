@@ -11,5 +11,9 @@ Current downloadable APK:
 - Size: `17 MB`
 - Build source: `apps/android-native`
 - Site download URL: `https://privatedao.org/downloads/PrivateDAO-android-testnet-debug.apk`
+- Public parity manifest: `https://privatedao.org/android-testnet-parity-manifest.json`
+- Repository parity manifest: `artifacts/android/private-dao-android-testnet-parity-manifest.json`
 
 This is a debug-signed Testnet build for judges and live product review. It is not a Play Store production-signed release.
+
+Run `npm run verify:android-testnet-parity` from the repository root to confirm the Android config, web constants, public manifest, repository APK, and site APK copy still point to the same Testnet program and checksum.
