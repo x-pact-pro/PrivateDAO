@@ -2320,7 +2320,7 @@ export const commercialCompare = [
   {
     name: "Pilot Package",
     fit: "Best for teams validating private governance and treasury operations before a longer rollout.",
-    deliverable: "Week-by-week onboarding, trust packet, readiness framing, and guided operating plan.",
+    deliverable: "$2,500 four-week pilot with one Testnet workflow, wallet onboarding, proof packet, operator handoff, and conversion recommendation.",
     cta: "Open pilot program",
     href: "/documents/pilot-program",
   },
@@ -2341,7 +2341,7 @@ export const commercialCompare = [
   {
     name: "Enterprise Governance Retainer",
     fit: "Best for organizations that want longer-term support across launch, controls, and operator workflows.",
-    deliverable: "SLA framing, trust package, release-gate review, and governance operations guidance.",
+    deliverable: "$750/month managed operations start after pilot validation, with custom sovereign deployments for dedicated infrastructure and controls.",
     cta: "Open SLA",
     href: "/documents/service-level-agreement",
   },

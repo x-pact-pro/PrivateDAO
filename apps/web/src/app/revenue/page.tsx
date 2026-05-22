@@ -18,26 +18,33 @@ export const metadata: Metadata = buildRouteMetadata({
 
 const tiers = [
   {
-    name: "SELF-HOSTED",
+    name: "OPEN PROTOCOL",
     price: "Free",
     icon: Server,
-    points: ["Open source protocol", "Devnet/Testnet access", "Community support"],
+    points: ["Open source protocol", "Testnet product access", "Community learning and proof inspection"],
     tone: "border-white/10 bg-white/[0.035]",
   },
   {
-    name: "MANAGED",
-    price: "$500/month per DAO",
+    name: "PILOT",
+    price: "$2,500 setup",
     icon: CheckCircle2,
-    points: ["Guaranteed uptime", "Priority RPC access", "Audit credits"],
+    points: ["Four-week guided operating pilot", "One selected governance or payout workflow", "Buyer-readable proof and success report"],
     tone: "border-cyan-300/20 bg-cyan-300/[0.07]",
   },
   {
-    name: "ENTERPRISE",
-    price: "Custom pricing",
+    name: "MANAGED + ENTERPRISE",
+    price: "$750/month then custom",
     icon: Building2,
-    points: ["Dedicated infrastructure", "Compliance reporting", "Legal filing prep through the LEGAL folder"],
+    points: ["Hosted reads, telemetry, and operator support", "Monthly proof packets and readiness review", "Dedicated infrastructure for sovereign deployments"],
     tone: "border-emerald-300/20 bg-emerald-300/[0.07]",
   },
+] as const;
+
+const buyerMotions = [
+  ["Who pays first", "Grant committees, gaming guilds, funds, DAO operators, and Web3 teams with sensitive treasury approvals."],
+  ["Why they pay", "They need private coordination, clean wallet signing, proof packets, and operator support without building protocol infrastructure themselves."],
+  ["What converts", "A fixed pilot converts into managed operations when the team repeats the workflow or needs hosted reads, payroll, payouts, or proof exports every month."],
+  ["Why this can scale", "The open protocol creates adoption, the pilot creates trust, the managed plan creates recurring revenue, and sovereign deployments create high-value enterprise upside."],
 ] as const;
 
 export default function RevenuePage() {
@@ -56,10 +63,10 @@ export default function RevenuePage() {
         <div className="grid gap-6 lg:grid-cols-[1fr_0.75fr] lg:items-center">
           <div>
             <h2 className="max-w-4xl text-3xl font-semibold tracking-[-0.04em] text-white sm:text-5xl">
-              A commercial layer for DAOs that cannot run payroll, vendor payouts, and audits in public.
+              A business model judges can understand in one minute: open adoption, paid pilots, managed operations, sovereign deployments.
             </h2>
             <p className="mt-4 max-w-3xl text-sm leading-7 text-white/64 sm:text-base sm:leading-8">
-              Users can learn and test for free. Operating teams pay when they need managed reliability, priority infrastructure, audit support, and compliance-ready reporting.
+              Users can learn and test for free. Operating teams pay when privacy, proof, payroll, payout, or treasury workflows need guided rollout, hosted reads, operator support, and buyer-readable evidence.
             </p>
           </div>
           <Card className="border-amber-300/18 bg-amber-300/[0.07]">
@@ -70,11 +77,22 @@ export default function RevenuePage() {
               </CardTitle>
             </CardHeader>
             <CardContent className="text-2xl font-semibold leading-tight text-white">
-              1,847 active DAOs on Solana, avg treasury $2.3M — privacy is not optional.
+              First revenue does not require mainnet overclaiming: sell a measured Testnet pilot, then convert repeat workflows into managed infrastructure.
             </CardContent>
           </Card>
         </div>
       </section>
+
+      <div className="grid gap-4 lg:grid-cols-4">
+        {buyerMotions.map(([title, body]) => (
+          <Card key={title} className="border-white/10 bg-white/[0.035]">
+            <CardHeader>
+              <CardTitle className="text-lg">{title}</CardTitle>
+            </CardHeader>
+            <CardContent className="text-sm leading-7 text-white/64">{body}</CardContent>
+          </Card>
+        ))}
+      </div>
 
       <div className="grid gap-5 lg:grid-cols-3">
         {tiers.map((tier) => {
@@ -108,8 +126,8 @@ export default function RevenuePage() {
       <Card className="border-cyan-300/16 bg-cyan-300/[0.055]">
         <CardContent className="flex flex-col gap-4 p-6 text-sm leading-7 text-white/66 lg:flex-row lg:items-center lg:justify-between">
           <div className="max-w-3xl">
-            Revenue aligns with the product boundary: the protocol remains inspectable, while hosted reads, SLA operations,
-            compliance packets, and audit support become the paid operational layer.
+            Revenue aligns with the product boundary: the protocol remains inspectable, while pilot delivery, hosted reads,
+            monthly proof packets, operator support, and sovereign deployment work become the paid operational layer.
           </div>
           <div className="flex flex-wrap gap-3">
             <Link href="/services" className={cn(buttonVariants({ size: "lg" }))}>

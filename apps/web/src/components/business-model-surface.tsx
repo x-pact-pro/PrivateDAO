@@ -7,20 +7,27 @@ import { cn } from "@/lib/utils";
 
 const revenueStreams = [
   {
-    title: "Usage-priced privacy operations",
+    title: "Fixed pilot activation",
     summary:
-      "Charge per confidential payout, reviewer-grade proof packet, or privacy-heavy treasury action when the user is consuming expensive execution or verification rails.",
+      "A four-week paid pilot gives buyers a clear first purchase: configure one DAO workflow, run one privacy-sensitive operation, and leave with a proof packet and success report.",
   },
   {
-    title: "Organization operating plans",
+    title: "Managed operating plans",
     summary:
-      "Package browser governance, hosted reads, operator support, selective disclosure, and rollout help into pilot, professional, and institutional lanes.",
+      "Recurring revenue comes from hosted reads, operator support, proof exports, payroll and payout playbooks, telemetry, and readiness reviews for teams that keep using the workflow.",
   },
   {
-    title: "PDAO access and treasury alignment",
+    title: "Developer and sovereign deployments",
     summary:
-      "Use PDAO for governance rights, discount posture, and accountability layers without pretending it is already the sole billing token for every action.",
+      "API access, integration kits, white-label deployments, customer-cloud installs, and custom controls create the high-value route without forcing every buyer into the same plan.",
   },
+] as const;
+
+const buyerPath = [
+  "Free Testnet product builds trust and developer adoption.",
+  "Paid pilot proves one buyer workflow with founder-guided support.",
+  "Managed plan monetizes repeated governance, payroll, payout, and proof operations.",
+  "Sovereign deployment captures enterprise teams that need dedicated infrastructure and controls.",
 ] as const;
 
 const internalModules = [
@@ -54,9 +61,9 @@ export function BusinessModelSurface() {
         Turn the live Testnet product into a sustainable infrastructure business without faking mainnet maturity
       </h2>
       <p className="mt-4 max-w-4xl text-sm leading-7 text-white/66">
-        The commercial model stays simple and defensible: charge for privacy-heavy execution, sell organization-grade
-        operating plans, and keep the wallet-first browser experience strong enough that a normal user can understand
-        the value before any enterprise conversation starts.
+        The commercial model stays simple and defensible: open-source adoption creates trust, a fixed pilot creates the
+        first paid conversion, managed plans create recurring revenue, and sovereign deployments capture teams that need
+        dedicated controls.
       </p>
 
       <div className="mt-6 grid gap-4 xl:grid-cols-3">
@@ -73,6 +80,18 @@ export function BusinessModelSurface() {
         a visitor with Testnet SOL can pay a small on-chain amount from the same wallet-first product, then inspect the
         signature and logs in the explorer. That proves the business logic on-chain without pretending there is already
         a finished mainnet checkout stack.
+      </div>
+
+      <div className="mt-6 rounded-[24px] border border-emerald-300/16 bg-emerald-300/[0.075] p-5">
+        <div className="text-sm font-semibold text-white">Buyer conversion ladder</div>
+        <div className="mt-4 grid gap-3 lg:grid-cols-4">
+          {buyerPath.map((item, index) => (
+            <div key={item} className="rounded-2xl border border-white/8 bg-black/18 p-4 text-sm leading-6 text-white/64">
+              <div className="mb-2 text-[11px] uppercase tracking-[0.24em] text-emerald-200/76">Step {index + 1}</div>
+              {item}
+            </div>
+          ))}
+        </div>
       </div>
 
       <div className="mt-6 grid gap-4 xl:grid-cols-2">

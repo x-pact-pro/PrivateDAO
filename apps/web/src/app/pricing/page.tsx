@@ -33,7 +33,7 @@ export const metadata: Metadata = buildRouteMetadata({
 
 const tiers = [
   {
-    name: "OPEN",
+    name: "OPEN PROTOCOL",
     price: "Free forever",
     target: "Developers, solo founders, researchers",
     badge: "No credit card. No wallet required to explore.",
@@ -52,51 +52,49 @@ const tiers = [
     ],
   },
   {
-    name: "COLLECTIVE",
-    price: "$299 / month",
-    target: "DAOs, gaming guilds, grant committees, investment clubs",
-    badge: "Less than one treasury mistake costs.",
-    cta: "Start 14-day Trial",
-    href: "/onboard/?tier=collective",
+    name: "PILOT",
+    price: "$2,500 setup",
+    target: "Grant committees, gaming guilds, DAO operators, pilot customers",
+    badge: "A fixed pilot is easier to buy, judge, and complete.",
+    cta: "Start Pilot Path",
+    href: "/engage?profile=pilot-funding",
     icon: UsersRound,
     highlighted: true,
     features: [
-      "Unlimited DAOs and proposals",
-      "Cloak confidential settlement lane",
-      "REFHE settlement corridor",
-      "GoldRush wallet intelligence",
-      "Priority RPC lane",
-      "1-year Supabase receipt archive",
-      "5 team seats",
-      "Basic compliance reports",
-      "99.5% uptime target",
+      "Four-week guided Testnet pilot",
+      "One DAO operating workspace",
+      "Governance lifecycle rehearsal",
+      "Confidential payout or payroll rehearsal",
+      "Reviewer-safe proof packet",
+      "Wallet and Android onboarding",
+      "Pilot success report",
+      "Conversion plan into managed operations",
     ],
   },
   {
-    name: "INSTITUTION",
-    price: "$1,499 / month",
+    name: "MANAGED",
+    price: "$750 / month",
     target: "Funds, Web3 companies, studios, serious treasury operators",
-    badge: "Built for teams managing high-value treasuries.",
-    cta: "Book a Demo",
-    href: "/onboard/?tier=institution",
+    badge: "Recurring revenue starts where reliability and support matter.",
+    cta: "Open Buyer Intake",
+    href: "/engage?profile=buyer",
     icon: Landmark,
     features: [
-      "Full confidential payroll module",
-      "ZK proof anchors across the workflow",
-      "MagicBlock gaming corridor",
-      "Jupiter treasury rebalancing",
-      "Dedicated QVAC governance assistant",
-      "Umbra + Cloak relay integration path",
-      "20 team seats",
-      "Advanced compliance reporting",
-      "99.9% uptime target",
+      "Managed governance workspace",
+      "Hosted reads and telemetry",
+      "Priority support lane",
+      "Proof packet exports",
+      "Treasury and payroll playbooks",
+      "Team onboarding sessions",
+      "Monthly readiness review",
+      "Production-release planning",
     ],
   },
   {
-    name: "SOVEREIGN",
+    name: "SOVEREIGN DEPLOYMENT",
     price: "Custom",
     target: "Large protocols, infrastructure teams, enterprise DAOs",
-    badge: "Dedicated infrastructure, custom controls, direct founder support.",
+    badge: "Dedicated controls for organizations that cannot share an operating plane.",
     cta: "Contact Founder Directly",
     href: "/onboard/?tier=sovereign",
     icon: Building2,
@@ -116,14 +114,14 @@ const tiers = [
 
 const developerProducts = [
   {
-    name: "API ACCESS",
-    price: "$99 / month",
+    name: "HOSTED READ API",
+    price: "$99 / month starter",
     icon: Code2,
     href: "/onboard/?tier=api",
     features: ["REST API at api.privatedao.org/api/v1", "10,000 calls per month", "Governance, treasury, proof, QVAC, analytics", "Webhook support", "Sandbox environment"],
   },
   {
-    name: "SDK LICENSE",
+    name: "INTEGRATION KIT",
     price: "$499 / month",
     icon: Cpu,
     href: "/onboard/?tier=sdk",
@@ -139,18 +137,19 @@ const developerProducts = [
 ] as const;
 
 const featureRows = [
-  ["Active DAOs", "3", "Unlimited", "Unlimited", "Unlimited"],
-  ["Proposals", "10 / month", "Unlimited", "Unlimited", "Unlimited"],
-  ["Private voting", "Commit-reveal", "Commit-reveal", "ZK anchored", "Custom ZK"],
-  ["Confidential payout", "Testnet demo", "Cloak lane", "Umbra + Cloak", "Dedicated relay"],
-  ["Confidential payroll", "Preview", "Basic", "Full", "Custom"],
-  ["Gaming DAO", "Preview", "Guild + rewards", "MagicBlock corridor", "White-label"],
-  ["QVAC AI", "Browser local", "Proposal briefs", "Dedicated assistant", "On-prem/local-first"],
+  ["Buyer goal", "Explore and build", "Prove one real operating workflow", "Run recurring private operations", "Dedicated operating plane"],
+  ["Commercial motion", "Open source adoption", "Fixed setup fee", "Monthly subscription", "Custom deployment + support"],
+  ["Active DAOs", "3", "1 pilot workspace", "3 managed workspaces", "Custom"],
+  ["Proposals", "10 / month", "Pilot-scoped", "Operational use", "Custom"],
+  ["Private voting", "Commit-reveal", "Commit-reveal pilot", "Commit-reveal + proof exports", "Custom ZK posture"],
+  ["Confidential payout", "Testnet rehearsal", "One selected payout lane", "Managed payout playbook", "Dedicated relay path"],
+  ["Confidential payroll", "Preview", "Pilot rehearsal", "Managed payroll workflow", "Custom controls"],
+  ["Gaming DAO", "Preview", "Guild pilot", "Guild + rewards playbook", "White-label"],
+  ["QVAC AI", "Browser local", "Pilot briefs", "Operating assistant", "On-prem/local-first"],
   ["GoldRush intelligence", "Basic", "Wallet checks", "Treasury intelligence", "Custom data packs"],
-  ["Receipt archive", "Local/basic", "1 year", "3 years", "Custom retention"],
-  ["Support", "Community", "Priority", "Dedicated", "24/7 critical path"],
-  ["Seats", "1", "5", "20", "Unlimited"],
-  ["SLA target", "Best effort", "99.5%", "99.9%", "Custom"],
+  ["Receipt archive", "Local/basic", "Pilot packet", "Managed archive", "Custom retention"],
+  ["Support", "Community", "Founder-guided pilot", "Priority", "Dedicated"],
+  ["Success proof", "Explorer link", "Pilot report", "Monthly proof packet", "Custom evidence pack"],
 ] as const;
 
 const techSignals = [
@@ -213,7 +212,7 @@ export default function PricingPage() {
       <div className="grid gap-5 xl:grid-cols-4">
         {tiers.map((tier) => {
           const Icon = tier.icon;
-          const isHighlighted = tier.name === "COLLECTIVE";
+          const isHighlighted = tier.name === "PILOT";
           return (
             <Card
               key={tier.name}
@@ -293,7 +292,7 @@ export default function PricingPage() {
 
       <section className="overflow-hidden rounded-[30px] border border-white/10 bg-black/22">
         <div className="grid grid-cols-[1.35fr_repeat(4,0.9fr)] border-b border-white/10 bg-white/[0.04] text-xs uppercase tracking-[0.18em] text-white/44">
-          {["Feature", "Open", "Collective", "Institution", "Sovereign"].map((head) => (
+          {["Feature", "Open", "Pilot", "Managed", "Sovereign"].map((head) => (
             <div key={head} className="px-4 py-4">{head}</div>
           ))}
         </div>
@@ -339,11 +338,11 @@ export default function PricingPage() {
           <div>
             <div className="text-xl font-semibold text-white">Need a full operating package?</div>
             <p className="mt-1 text-sm leading-6 text-white/62">
-              DAO setup, private payroll rehearsal, treasury intelligence, gaming rewards, compliance receipts, and API access can be bundled into one onboarding brief.
+              DAO setup, private payroll rehearsal, treasury intelligence, gaming rewards, compliance receipts, Android onboarding, and API access can be bundled into one pilot brief.
             </p>
           </div>
-          <Link href="/onboard/?tier=institution" className={cn(buttonVariants({ size: "lg" }))}>
-            Send Governance Brief
+          <Link href="/engage?profile=pilot-funding" className={cn(buttonVariants({ size: "lg" }))}>
+            Open Pilot Buyer Path
             <ArrowRight className="h-4 w-4" />
           </Link>
         </CardContent>

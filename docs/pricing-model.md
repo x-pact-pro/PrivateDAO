@@ -1,6 +1,6 @@
 # Pricing Model
 
-PrivateDAO is being packaged as public-good governance and treasury infrastructure with a commercial model that is now testable on Solana Testnet and can scale into institutional operations later.
+PrivateDAO is being packaged as public-good governance and treasury infrastructure with a commercial model that is testable on Solana Testnet and simple enough for judges, buyers, and grant reviewers to understand quickly.
 
 The rule is simple:
 
@@ -8,7 +8,46 @@ The rule is simple:
 - keep the first billing lane visible on-chain
 - do not pretend that a full mainnet subscription stack is already complete
 
+## 0. Commercial thesis
+
+PrivateDAO should not start by asking a buyer to understand every cryptographic rail. It should sell a clear operational outcome:
+
+- private governance approval without leaking intent early
+- confidential payroll, vendor payout, reward, or treasury operation rehearsal
+- proof packet that a non-builder stakeholder can inspect
+- hosted reads and operator support for teams that repeat the workflow
+
+The business model is therefore:
+
+1. **Open protocol** for trust, adoption, and developer inspection.
+2. **Fixed pilot** for first paid conversion.
+3. **Managed operations** for recurring revenue.
+4. **Sovereign deployment** for high-value customers that need dedicated infrastructure.
+
 ## 1. Revenue streams
+
+### Fixed pilot activation
+
+The first paid product should be a bounded pilot, not an open-ended enterprise promise.
+
+Initial posture:
+
+- price: `$2,500 setup`
+- length: four weeks
+- buyer: DAO, grant committee, gaming guild, fund, or Web3 operating team
+- deliverable: one configured workflow, one Testnet operating run, one proof packet, and one conversion recommendation
+
+This is the cleanest judging-stage business motion because it is specific, purchasable, and tied to the live product.
+
+### Managed operating plans
+
+Recurring revenue starts after the pilot when a team repeats the workflow.
+
+Initial posture:
+
+- price: `$750/month` starting point
+- includes hosted reads, telemetry, proof exports, operator support, monthly readiness review, and managed governance or payout playbooks
+- expands into payroll, confidential payout, gaming reward, API, or compliance-facing service lanes
 
 ### Usage-priced technical rails
 
@@ -73,12 +112,15 @@ This is not yet presented as:
 
 | Service lane | Model | Initial posture |
 | --- | --- | --- |
-| DAO onboarding and pilot activation | fixed setup | one-time onboarding fee or pilot grant-backed setup |
+| Open protocol access | free | public product, Testnet execution, source inspection, proof review |
+| DAO onboarding and pilot activation | fixed setup | `$2,500` four-week pilot or grant-backed setup |
+| Managed governance operations | monthly subscription | `$750/month` starting point after a successful pilot |
 | Hosted reads and telemetry | usage + support | free entry threshold, then usage-priced or bundled into plans |
 | Reviewer-safe privacy packet | per packet | charge when a team needs buyer, auditor, or committee-ready exports |
 | Confidential treasury or payout rail | per action or premium plan | charge when REFHE / MagicBlock-backed operation support is requested |
 | PUSD payroll, grants, and gaming rewards | per transfer lane or premium plan | use Palm USD as the institutional stablecoin corridor through the prepared SPL transfer lane once the official Solana mint and treasury receive address are set |
 | Operator support and launch coordination | monthly or milestone retainer | for teams that need higher-touch release help |
+| Sovereign deployment | custom | customer cloud, dedicated controls, white-label, custom retention, and support scope |
 
 ## 4. Internal commercial modules
 
@@ -121,6 +163,7 @@ PrivateDAO can already show:
 - a live proof and trust path
 - a live Testnet billing rehearsal with SOL and PUSD SPL transfer construction
 - a plausible pricing and services structure
+- a fixed pilot motion that can convert live Testnet proof into the first paid buyer conversation
 
 That is enough to argue that the project is not only technically interesting. It is a credible infrastructure company in formation.
 
