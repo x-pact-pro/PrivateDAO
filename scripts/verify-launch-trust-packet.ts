@@ -50,8 +50,9 @@ function main() {
   assert(packet.productionMainnetClaimAllowed === false, "launch trust packet must not allow production mainnet claims");
   assert(packet.custody.threshold === "2-of-3", "launch trust packet threshold mismatch");
   assert(packet.custody.minimumTimelockHours >= 48, "launch trust packet timelock floor is too low");
-  assert(packet.custody.pendingAuthorityTransfers.includes("program-upgrade-authority"), "launch trust packet missing program authority transfer");
-  assert(packet.custody.observedDevnetAuthority === "4Mm5YTRbJuyA8NcWM85wTnx6ZQMXNph2DSnzCCKLhsMD", "launch trust packet observed devnet authority mismatch");
+  assert(!packet.custody.pendingAuthorityTransfers.includes("program-upgrade-authority"), "launch trust packet must not keep completed program authority transfer pending");
+  assert(packet.custody.pendingAuthorityTransfers.includes("dao-authority"), "launch trust packet missing pending DAO authority transfer");
+  assert(packet.custody.pendingAuthorityTransfers.includes("treasury-operator-authority"), "launch trust packet missing pending treasury authority transfer");
   assert(packet.runtime.targetCount >= 5, "launch trust packet runtime target count is too low");
   assert(packet.runtime.pendingTargets.includes("Phantom"), "launch trust packet missing Phantom pending target");
   assert(packet.audit.status === "pending-external", "launch trust packet audit boundary must remain pending");
@@ -79,8 +80,8 @@ function main() {
     "docs/custody-proof-reviewer-packet.generated.md",
     "docs/external-audit-engagement.md",
     "docs/pilot-onboarding-playbook.md",
-    "3 production signer public keys",
-    "observed devnet authority",
+    "authority transfer signatures, explorer links, and readouts",
+    "Pending authority transfers",
     "Create DAO",
     "Submit proposal",
     "Private vote",

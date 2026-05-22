@@ -76,6 +76,26 @@ export default function SecurityPage() {
           </Link>
         </div>
       </div>
+      <div className="rounded-[28px] border border-emerald-300/18 bg-emerald-300/[0.08] p-5">
+        <div className="text-[11px] uppercase tracking-[0.28em] text-emerald-100/76">Custody hardening</div>
+        <h2 className="mt-3 text-2xl font-semibold text-white">Testnet program upgrades now route through Squads 2-of-3</h2>
+        <p className="mt-3 max-w-4xl text-sm leading-7 text-white/66">
+          The current Testnet program-upgrade authority moved from the deployer key to Squads vault authority
+          <span className="font-mono text-emerald-100"> CALHr...PqBv</span>. Judges can verify the multisig creation,
+          48-hour timelock, signer roster, and authority-transfer signature directly on Solana Explorer.
+        </p>
+        <div className="mt-4 flex flex-wrap gap-3">
+          <Link href="/documents/squads-testnet-custody-transfer-2026-05-22" className={cn(buttonVariants({ size: "sm" }))}>
+            Open custody transfer proof
+          </Link>
+          <Link href="/documents/multisig-setup-intake" className={cn(buttonVariants({ size: "sm", variant: "outline" }))}>
+            Open multisig intake
+          </Link>
+          <Link href="/custody" className={cn(buttonVariants({ size: "sm", variant: "secondary" }))}>
+            Open custody route
+          </Link>
+        </div>
+      </div>
       <div>
         <CustodyReadinessStrip context="security" />
       </div>

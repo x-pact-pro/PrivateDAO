@@ -39,14 +39,16 @@ function main() {
   const markdown = fs.readFileSync(mdPath, "utf8");
 
   assert(packet.project === "PrivateDAO", "reviewer packet project mismatch");
-  assert(packet.custodyStatus === "pending-external", "reviewer packet custody status drifted");
+  assert(packet.custodyStatus === "ready-for-transfer", "reviewer packet custody status drifted");
   assert(packet.productionMainnetClaimAllowed === false, "reviewer packet must not allow production mainnet claims");
   assert(packet.trustDecision === "blocked-external-steps", "reviewer packet trust decision mismatch");
   assert(packet.currentTruth.threshold === "2-of-3", "reviewer packet threshold mismatch");
   assert(packet.exactBlocker.id === "upgrade-authority-multisig", "reviewer packet exact blocker mismatch");
   assert(packet.exactBlocker.status === "pending-external", "reviewer packet blocker status mismatch");
-  assert(packet.exactPendingItems.includes("multisig public address"), "reviewer packet must keep multisig address pending");
-  assert(packet.exactPendingItems.includes("program upgrade authority transfer signature"), "reviewer packet must keep upgrade transfer pending");
+  assert(!packet.exactPendingItems.includes("multisig public address"), "reviewer packet must not keep completed multisig address pending");
+  assert(!packet.exactPendingItems.includes("program upgrade authority transfer signature"), "reviewer packet must not keep completed upgrade transfer pending");
+  assert(packet.exactPendingItems.includes("dao authority transfer signature"), "reviewer packet must keep DAO authority transfer pending");
+  assert(packet.exactPendingItems.includes("treasury operator authority transfer signature"), "reviewer packet must keep treasury operator transfer pending");
   assert(packet.strictIngestionRoute.includes("Run npm run apply:custody-evidence-intake"), "reviewer packet missing apply route");
   assert(packet.judgeFirstTrackOpenings.length === 3, "reviewer packet must include 3 judge-first track openings");
   assert(packet.linkedDocs.includes("docs/canonical-custody-proof.generated.md"), "reviewer packet missing canonical custody proof doc");

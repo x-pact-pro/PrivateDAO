@@ -3,11 +3,11 @@
 ## Overview
 
 - project: `PrivateDAO`
-- generated at: `2026-04-22T00:24:06.902Z`
-- status: `pending-external`
+- generated at: `2026-05-22T20:55:40.384Z`
+- status: `ready-for-transfer`
 - production mainnet claim allowed: `false`
-- network: `mainnet-beta`
-- completion: `2/25`
+- network: `testnet`
+- completion: `16/25`
 
 ## Existing Devnet Rehearsal
 
@@ -21,77 +21,77 @@
 ## Multisig And Timelock
 
 - implementation: `Squads Protocol`
-- multisig address: `pending`
+- multisig address: `thHmF7VYNtxE1MaDzYXbfPCiq13RF6JwuWnjvDZuSmF`
 - threshold: `2-of-3`
-- creation signature: `pending`
+- creation signature: `67S63JAUNvvCED3hE9h6bCXW9iJ3EYzJLARvj8Lki5x2dJEgLnrfES9mp6bAxfsH6vfmor2ocqNaEd68uVN68DNJ`
 - rehearsal signature: `pending`
 - minimum timelock hours: `48`
-- configured timelock hours: `pending`
-- timelock configuration signature: `pending`
-- timelock configuration reference url: `pending`
+- configured timelock hours: `48`
+- timelock configuration signature: `67S63JAUNvvCED3hE9h6bCXW9iJ3EYzJLARvj8Lki5x2dJEgLnrfES9mp6bAxfsH6vfmor2ocqNaEd68uVN68DNJ`
+- timelock configuration reference url: `https://explorer.solana.com/tx/67S63JAUNvvCED3hE9h6bCXW9iJ3EYzJLARvj8Lki5x2dJEgLnrfES9mp6bAxfsH6vfmor2ocqNaEd68uVN68DNJ?cluster=testnet`
 
 Explorer links:
 
-- multisig address explorer: pending
-- multisig creation explorer: pending
+- multisig address explorer: https://explorer.solana.com/address/thHmF7VYNtxE1MaDzYXbfPCiq13RF6JwuWnjvDZuSmF?cluster=testnet
+- multisig creation explorer: https://explorer.solana.com/tx/67S63JAUNvvCED3hE9h6bCXW9iJ3EYzJLARvj8Lki5x2dJEgLnrfES9mp6bAxfsH6vfmor2ocqNaEd68uVN68DNJ?cluster=testnet
 - rehearsal explorer: pending
-- timelock config explorer: pending
+- timelock config explorer: https://explorer.solana.com/tx/67S63JAUNvvCED3hE9h6bCXW9iJ3EYzJLARvj8Lki5x2dJEgLnrfES9mp6bAxfsH6vfmor2ocqNaEd68uVN68DNJ?cluster=testnet
 
 ## Signer Roster
 
 ### Slot 1 · founder-operator
 
-- public key: `pending`
+- public key: `4Mm5YTRbJuyA8NcWM85wTnx6ZQMXNph2DSnzCCKLhsMD`
 - storage class: `cold-or-hardware`
-- backup documented: `false`
-- explorer: `pending`
+- backup documented: `true`
+- explorer: `https://explorer.solana.com/address/4Mm5YTRbJuyA8NcWM85wTnx6ZQMXNph2DSnzCCKLhsMD?cluster=testnet`
 
 ### Slot 2 · independent-security-or-ops-signer
 
-- public key: `pending`
+- public key: `BBBPcpUnnBi3CWUhcv6vLTqaY9pugAGuhgw2Axjpvcr2`
 - storage class: `cold-or-hardware`
-- backup documented: `false`
-- explorer: `pending`
+- backup documented: `true`
+- explorer: `https://explorer.solana.com/address/BBBPcpUnnBi3CWUhcv6vLTqaY9pugAGuhgw2Axjpvcr2?cluster=testnet`
 
 ### Slot 3 · recovery-or-governance-signer
 
-- public key: `pending`
+- public key: `2KpA69UB55tfWUSkKj5j7Tvebd3eG22hEs9hjXUq7pf5`
 - storage class: `cold-or-hardware`
-- backup documented: `false`
-- explorer: `pending`
+- backup documented: `true`
+- explorer: `https://explorer.solana.com/address/2KpA69UB55tfWUSkKj5j7Tvebd3eG22hEs9hjXUq7pf5?cluster=testnet`
 
 
 ## Authority Transfer Proof
 
 ### program-upgrade-authority
 
-- program id: `5AhUsbQ4mJ8Xh7QJEomuS85qGgmK9iNvFqzF669Y7Psx`
-- destination authority: `pending`
-- transfer signature: `pending`
-- post-transfer readout: `pending`
-- program explorer: `https://explorer.solana.com/address/5AhUsbQ4mJ8Xh7QJEomuS85qGgmK9iNvFqzF669Y7Psx`
-- destination explorer: `pending`
-- transfer explorer: `pending`
-- post-transfer readout reference: `pending`
+- program id: `EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva`
+- destination authority: `CALHrBqx6jbzcPn2NVcinqSAHeod65v9LcDuTxsdPqBv`
+- transfer signature: `EzwLLrAchBpj3eLTUFuv1uo9rSLKgKNbQgp1DkCevJycT31Eou9TSJsJsEfMjLt4q87pKwXaZUTqCZ1NduNc1vy`
+- post-transfer readout: `Program Id: EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva; ProgramData Address: FKyt5DcmRQcCF8kzMGjCvfGb3ZPHMQnH1SqiG9Mi8xEc; Authority: CALHrBqx6jbzcPn2NVcinqSAHeod65v9LcDuTxsdPqBv; Last Deployed In Slot: 405189011`
+- program explorer: `https://explorer.solana.com/address/EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva?cluster=testnet`
+- destination explorer: `https://explorer.solana.com/address/CALHrBqx6jbzcPn2NVcinqSAHeod65v9LcDuTxsdPqBv?cluster=testnet`
+- transfer explorer: `https://explorer.solana.com/tx/EzwLLrAchBpj3eLTUFuv1uo9rSLKgKNbQgp1DkCevJycT31Eou9TSJsJsEfMjLt4q87pKwXaZUTqCZ1NduNc1vy?cluster=testnet`
+- post-transfer readout reference: `https://explorer.solana.com/tx/EzwLLrAchBpj3eLTUFuv1uo9rSLKgKNbQgp1DkCevJycT31Eou9TSJsJsEfMjLt4q87pKwXaZUTqCZ1NduNc1vy?cluster=testnet`
 
 ### dao-authority
 
-- program id: `5AhUsbQ4mJ8Xh7QJEomuS85qGgmK9iNvFqzF669Y7Psx`
+- program id: `EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva`
 - destination authority: `pending`
 - transfer signature: `pending`
 - post-transfer readout: `pending`
-- program explorer: `https://explorer.solana.com/address/5AhUsbQ4mJ8Xh7QJEomuS85qGgmK9iNvFqzF669Y7Psx`
+- program explorer: `https://explorer.solana.com/address/EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva?cluster=testnet`
 - destination explorer: `pending`
 - transfer explorer: `pending`
 - post-transfer readout reference: `pending`
 
 ### treasury-operator-authority
 
-- program id: `5AhUsbQ4mJ8Xh7QJEomuS85qGgmK9iNvFqzF669Y7Psx`
+- program id: `EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva`
 - destination authority: `pending`
 - transfer signature: `pending`
 - post-transfer readout: `pending`
-- program explorer: `https://explorer.solana.com/address/5AhUsbQ4mJ8Xh7QJEomuS85qGgmK9iNvFqzF669Y7Psx`
+- program explorer: `https://explorer.solana.com/address/EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva?cluster=testnet`
 - destination explorer: `pending`
 - transfer explorer: `pending`
 - post-transfer readout reference: `pending`
@@ -99,21 +99,21 @@ Explorer links:
 
 ## Observed Chain Readouts
 
-### Current deployed program readout
+### Current Testnet deployed program readout after Squads transfer
 
-- cluster: `devnet`
+- cluster: `testnet`
 - status: `observed`
-- address: `5AhUsbQ4mJ8Xh7QJEomuS85qGgmK9iNvFqzF669Y7Psx`
-- authority: `4Mm5YTRbJuyA8NcWM85wTnx6ZQMXNph2DSnzCCKLhsMD`
+- address: `EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva`
+- authority: `CALHrBqx6jbzcPn2NVcinqSAHeod65v9LcDuTxsdPqBv`
 - owner: `BPFLoaderUpgradeab1e11111111111111111111111`
-- program data address: `CeggEn3sNVbiuJHLKDaCPMH4uLczu1Dr3ZGKKcaKBqeN`
-- last deploy slot: `454368825`
-- balance sol: `9.82850136`
-- explorer: `https://explorer.solana.com/address/5AhUsbQ4mJ8Xh7QJEomuS85qGgmK9iNvFqzF669Y7Psx?cluster=devnet`
-- observed at: `2026-04-22T00:23:38.922Z`
-- command: `solana program show 5AhUsbQ4mJ8Xh7QJEomuS85qGgmK9iNvFqzF669Y7Psx --url devnet`
+- program data address: `FKyt5DcmRQcCF8kzMGjCvfGb3ZPHMQnH1SqiG9Mi8xEc`
+- last deploy slot: `405189011`
+- balance sol: `9.44107992`
+- explorer: `https://explorer.solana.com/address/EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva?cluster=testnet`
+- observed at: `2026-05-22T23:47:42+03:00`
+- command: `solana program show EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva --url https://api.testnet.solana.com`
 - error: `pending`
-- note: `This is the currently observed live deployment readout. It is external chain evidence, but it is not mainnet custody proof by itself.`
+- note: `This is the reviewer-facing Testnet deployment after transferring program-upgrade authority to the Squads vault PDA.`
 
 ### Current DAO anchor readout
 
@@ -182,21 +182,7 @@ Explorer links:
 
 ## Exact Pending Items
 
-- multisig public address
-- multisig creation signature
 - rehearsal signature
-- timelock configuration of at least 48 hours
-- timelock configuration signature or readout
-- signer slot 1 public key
-- backup procedure for signer slot 1
-- signer slot 2 public key
-- backup procedure for signer slot 2
-- signer slot 3 public key
-- backup procedure for signer slot 3
-- program upgrade authority destination authority
-- program upgrade authority transfer signature
-- program upgrade authority post-transfer readout
-- program upgrade authority post-transfer readout reference
 - dao authority destination authority
 - dao authority transfer signature
 - dao authority post-transfer readout

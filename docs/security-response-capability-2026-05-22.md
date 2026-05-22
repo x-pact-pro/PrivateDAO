@@ -69,15 +69,24 @@ What is not claimed by this packet:
 
 ## Custody Follow-Up
 
-The current Testnet program authority remains a separate custody hardening lane.
+The Testnet program-upgrade authority has now moved from the single deployer key to a Squads vault PDA.
 
-Observed readout on `2026-05-22`:
+Observed readout after transfer on `2026-05-22`:
 
 ```text
 Program Id: EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva
 ProgramData Address: FKyt5DcmRQcCF8kzMGjCvfGb3ZPHMQnH1SqiG9Mi8xEc
-Authority: 4Mm5YTRbJuyA8NcWM85wTnx6ZQMXNph2DSnzCCKLhsMD
+Authority: CALHrBqx6jbzcPn2NVcinqSAHeod65v9LcDuTxsdPqBv
 Last Deployed In Slot: 405189011
 ```
 
-This confirms the single-authority gap is still real until the Squads 2-of-3 ceremony, timelock, transfer signature, and post-transfer readout are recorded in `docs/multisig-setup-intake.json`.
+Transfer evidence:
+
+- Squads multisig: `thHmF7VYNtxE1MaDzYXbfPCiq13RF6JwuWnjvDZuSmF`
+- Squads vault authority: `CALHrBqx6jbzcPn2NVcinqSAHeod65v9LcDuTxsdPqBv`
+- threshold: `2-of-3`
+- timelock: `48 hours`
+- creation signature: `67S63JAUNvvCED3hE9h6bCXW9iJ3EYzJLARvj8Lki5x2dJEgLnrfES9mp6bAxfsH6vfmor2ocqNaEd68uVN68DNJ`
+- upgrade transfer signature: `EzwLLrAchBpj3eLTUFuv1uo9rSLKgKNbQgp1DkCevJycT31Eou9TSJsJsEfMjLt4q87pKwXaZUTqCZ1NduNc1vy`
+
+This closes the Testnet program-upgrade single-key authority gap. DAO authority, treasury-operator authority, external audit, and mainnet real-funds readiness remain separate gated items.

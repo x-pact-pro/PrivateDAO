@@ -528,6 +528,18 @@ const curatedDocuments: CuratedDocument[] = [
     rawHref: `${repositoryBlobBase}/docs/security-response-capability-2026-05-22.md`,
   },
   {
+    slug: "squads-testnet-custody-transfer-2026-05-22",
+    title: "Squads Testnet Custody Transfer 2026-05-22",
+    category: "Security",
+    summary:
+      "Explorer-verifiable packet for the Testnet Squads 2-of-3 multisig creation, 48-hour timelock, vault authority PDA, and program-upgrade authority transfer.",
+    audience: "Judges, security reviewers, Solana operators, technical diligence teams",
+    boundary:
+      "Testnet custody-transfer packet only; it proves program-upgrade authority hardening on Testnet without claiming DAO authority, treasury authority, external audit, or mainnet real-funds readiness.",
+    docPath: "docs/squads-testnet-custody-transfer-2026-05-22.md",
+    rawHref: `${repositoryBlobBase}/docs/squads-testnet-custody-transfer-2026-05-22.md`,
+  },
+  {
     slug: "reviewer-fast-path-2026-05-06",
     title: "Reviewer Fast Path 2026-05-06",
     category: "Reviewer core",

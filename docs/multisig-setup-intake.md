@@ -30,15 +30,15 @@ Supporting operator docs:
 
 ## Required Target
 
-- Network: `mainnet-beta`
+- Network: `testnet` for the reviewer-facing custody transfer; `mainnet-beta` remains blocked until real-funds cutover.
 - Threshold: `2-of-3`
 - Timelock: `48+ hours`
 - Custody target: program upgrade authority and production operational authorities
 - Secret handling: no seed phrases, no private keys, no hot-wallet exports in Git
 
-## Current Testnet Authority Precheck
+## Current Testnet Authority Transfer
 
-Read-only command run on `2026-05-22`:
+Read-only command run after transfer on `2026-05-22`:
 
 ```bash
 solana program show EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva --url https://api.testnet.solana.com
@@ -49,22 +49,39 @@ Observed output:
 ```text
 Program Id: EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva
 ProgramData Address: FKyt5DcmRQcCF8kzMGjCvfGb3ZPHMQnH1SqiG9Mi8xEc
-Authority: 4Mm5YTRbJuyA8NcWM85wTnx6ZQMXNph2DSnzCCKLhsMD
+Authority: CALHrBqx6jbzcPn2NVcinqSAHeod65v9LcDuTxsdPqBv
 Last Deployed In Slot: 405189011
 ```
 
-This is the authority gap the Squads ceremony must close. It is not yet a completed transfer.
+The previous single-key authority `4Mm5YTRbJuyA8NcWM85wTnx6ZQMXNph2DSnzCCKLhsMD` has been replaced by the Squads vault authority PDA `CALHrBqx6jbzcPn2NVcinqSAHeod65v9LcDuTxsdPqBv` on Testnet.
 
-Once the Squads address exists, the transfer command must target the current Testnet program:
+Squads creation:
+
+- multisig PDA: `thHmF7VYNtxE1MaDzYXbfPCiq13RF6JwuWnjvDZuSmF`
+- vault authority PDA: `CALHrBqx6jbzcPn2NVcinqSAHeod65v9LcDuTxsdPqBv`
+- threshold: `2-of-3`
+- timelock: `48+ hours`
+- creation signature: `67S63JAUNvvCED3hE9h6bCXW9iJ3EYzJLARvj8Lki5x2dJEgLnrfES9mp6bAxfsH6vfmor2ocqNaEd68uVN68DNJ`
+
+Transfer command:
 
 ```bash
 solana program set-upgrade-authority EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva \
-  --new-upgrade-authority <SQUADS_MULTISIG_ADDRESS> \
-  --keypair <current-upgrade-authority-keypair.json> \
-  --url https://api.testnet.solana.com
+  --new-upgrade-authority CALHrBqx6jbzcPn2NVcinqSAHeod65v9LcDuTxsdPqBv \
+  --keypair /home/x-pact/.config/solana/id.json \
+  --url https://api.testnet.solana.com \
+  --skip-new-upgrade-authority-signer-check
 ```
 
-The resulting signature and post-transfer readout belong in `docs/multisig-setup-intake.json`. Do not mark this packet `complete` until the new authority appears in a fresh `solana program show` readout.
+Transfer signature:
+
+- `EzwLLrAchBpj3eLTUFuv1uo9rSLKgKNbQgp1DkCevJycT31Eou9TSJsJsEfMjLt4q87pKwXaZUTqCZ1NduNc1vy`
+
+Full transfer packet:
+
+- `docs/squads-testnet-custody-transfer-2026-05-22.md`
+
+The packet remains `ready-for-transfer`, not `complete`, until DAO authority, treasury-operator authority, and any required production cutover evidence are recorded.
 
 ## Live Rehearsal Source
 
@@ -124,9 +141,9 @@ These are the current rehearsal wallets and may be promoted only if they are mov
 
 ## Current Status
 
-`pending-external`
+`ready-for-transfer`
 
-This is correct until real public signer keys, multisig address, timelock configuration, transfer signatures, and authority readouts exist.
+This is correct after the Testnet program-upgrade authority transfer. The remaining closure work is DAO authority, treasury-operator authority, and production cutover evidence. Historical `pending-external` language remains in this document only as a boundary for unclosed production/mainnet claims.
 
 Canonical reviewer-safe packet:
 

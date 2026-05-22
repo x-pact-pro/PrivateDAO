@@ -1,9 +1,9 @@
 {
   "project": "PrivateDAO",
-  "generatedAt": "2026-04-22T00:24:06.902Z",
-  "status": "pending-external",
+  "generatedAt": "2026-05-22T20:55:40.384Z",
+  "status": "ready-for-transfer",
   "productionMainnetClaimAllowed": false,
-  "network": "mainnet-beta",
+  "network": "testnet",
   "summary": "PrivateDAO is devnet-proven and internally hardened, but real-funds mainnet production remains blocked until external audit, custody, monitoring, runtime, settlement-receipt, and release-ceremony items are closed with evidence.",
   "multisig": {
     "rehearsalSource": {
@@ -15,100 +15,100 @@
       "creationExplorerUrl": "https://explorer.solana.com/tx/4KSyTYQTzeNpBDWou7GFLmvUpAhLgmNKkNdd4PZqndLpCWmUnArffYRQUwe6zrTmQD5uCbBfBR6pakf9Gz8dviRp?cluster=devnet"
     },
     "implementation": "Squads Protocol",
-    "address": null,
-    "addressExplorerUrl": null,
+    "address": "thHmF7VYNtxE1MaDzYXbfPCiq13RF6JwuWnjvDZuSmF",
+    "addressExplorerUrl": "https://explorer.solana.com/address/thHmF7VYNtxE1MaDzYXbfPCiq13RF6JwuWnjvDZuSmF?cluster=testnet",
     "threshold": "2-of-3",
-    "creationSignature": null,
-    "creationExplorerUrl": null,
+    "creationSignature": "67S63JAUNvvCED3hE9h6bCXW9iJ3EYzJLARvj8Lki5x2dJEgLnrfES9mp6bAxfsH6vfmor2ocqNaEd68uVN68DNJ",
+    "creationExplorerUrl": "https://explorer.solana.com/tx/67S63JAUNvvCED3hE9h6bCXW9iJ3EYzJLARvj8Lki5x2dJEgLnrfES9mp6bAxfsH6vfmor2ocqNaEd68uVN68DNJ?cluster=testnet",
     "rehearsalSignature": null,
     "rehearsalExplorerUrl": null
   },
   "timelock": {
     "minimumHours": 48,
-    "configuredHours": null,
-    "configurationSignature": null,
-    "configurationExplorerUrl": null,
-    "configurationReferenceUrl": null
+    "configuredHours": 48,
+    "configurationSignature": "67S63JAUNvvCED3hE9h6bCXW9iJ3EYzJLARvj8Lki5x2dJEgLnrfES9mp6bAxfsH6vfmor2ocqNaEd68uVN68DNJ",
+    "configurationExplorerUrl": "https://explorer.solana.com/tx/67S63JAUNvvCED3hE9h6bCXW9iJ3EYzJLARvj8Lki5x2dJEgLnrfES9mp6bAxfsH6vfmor2ocqNaEd68uVN68DNJ?cluster=testnet",
+    "configurationReferenceUrl": "https://explorer.solana.com/tx/67S63JAUNvvCED3hE9h6bCXW9iJ3EYzJLARvj8Lki5x2dJEgLnrfES9mp6bAxfsH6vfmor2ocqNaEd68uVN68DNJ?cluster=testnet"
   },
   "signers": [
     {
       "slot": 1,
       "role": "founder-operator",
-      "publicKey": null,
+      "publicKey": "4Mm5YTRbJuyA8NcWM85wTnx6ZQMXNph2DSnzCCKLhsMD",
       "storageClass": "cold-or-hardware",
-      "backupProcedureDocumented": false,
-      "publicKeyExplorerUrl": null
+      "backupProcedureDocumented": true,
+      "publicKeyExplorerUrl": "https://explorer.solana.com/address/4Mm5YTRbJuyA8NcWM85wTnx6ZQMXNph2DSnzCCKLhsMD?cluster=testnet"
     },
     {
       "slot": 2,
       "role": "independent-security-or-ops-signer",
-      "publicKey": null,
+      "publicKey": "BBBPcpUnnBi3CWUhcv6vLTqaY9pugAGuhgw2Axjpvcr2",
       "storageClass": "cold-or-hardware",
-      "backupProcedureDocumented": false,
-      "publicKeyExplorerUrl": null
+      "backupProcedureDocumented": true,
+      "publicKeyExplorerUrl": "https://explorer.solana.com/address/BBBPcpUnnBi3CWUhcv6vLTqaY9pugAGuhgw2Axjpvcr2?cluster=testnet"
     },
     {
       "slot": 3,
       "role": "recovery-or-governance-signer",
-      "publicKey": null,
+      "publicKey": "2KpA69UB55tfWUSkKj5j7Tvebd3eG22hEs9hjXUq7pf5",
       "storageClass": "cold-or-hardware",
-      "backupProcedureDocumented": false,
-      "publicKeyExplorerUrl": null
+      "backupProcedureDocumented": true,
+      "publicKeyExplorerUrl": "https://explorer.solana.com/address/2KpA69UB55tfWUSkKj5j7Tvebd3eG22hEs9hjXUq7pf5?cluster=testnet"
     }
   ],
   "authorityTransfers": [
     {
       "surface": "program-upgrade-authority",
-      "programId": "5AhUsbQ4mJ8Xh7QJEomuS85qGgmK9iNvFqzF669Y7Psx",
-      "destinationAuthority": null,
-      "transferSignature": null,
-      "postTransferReadout": null,
-      "postTransferReadoutReferenceUrl": null,
-      "programExplorerUrl": "https://explorer.solana.com/address/5AhUsbQ4mJ8Xh7QJEomuS85qGgmK9iNvFqzF669Y7Psx",
-      "destinationExplorerUrl": null,
-      "transferExplorerUrl": null
+      "programId": "EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva",
+      "destinationAuthority": "CALHrBqx6jbzcPn2NVcinqSAHeod65v9LcDuTxsdPqBv",
+      "transferSignature": "EzwLLrAchBpj3eLTUFuv1uo9rSLKgKNbQgp1DkCevJycT31Eou9TSJsJsEfMjLt4q87pKwXaZUTqCZ1NduNc1vy",
+      "postTransferReadout": "Program Id: EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva; ProgramData Address: FKyt5DcmRQcCF8kzMGjCvfGb3ZPHMQnH1SqiG9Mi8xEc; Authority: CALHrBqx6jbzcPn2NVcinqSAHeod65v9LcDuTxsdPqBv; Last Deployed In Slot: 405189011",
+      "postTransferReadoutReferenceUrl": "https://explorer.solana.com/tx/EzwLLrAchBpj3eLTUFuv1uo9rSLKgKNbQgp1DkCevJycT31Eou9TSJsJsEfMjLt4q87pKwXaZUTqCZ1NduNc1vy?cluster=testnet",
+      "programExplorerUrl": "https://explorer.solana.com/address/EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva?cluster=testnet",
+      "destinationExplorerUrl": "https://explorer.solana.com/address/CALHrBqx6jbzcPn2NVcinqSAHeod65v9LcDuTxsdPqBv?cluster=testnet",
+      "transferExplorerUrl": "https://explorer.solana.com/tx/EzwLLrAchBpj3eLTUFuv1uo9rSLKgKNbQgp1DkCevJycT31Eou9TSJsJsEfMjLt4q87pKwXaZUTqCZ1NduNc1vy?cluster=testnet"
     },
     {
       "surface": "dao-authority",
-      "programId": "5AhUsbQ4mJ8Xh7QJEomuS85qGgmK9iNvFqzF669Y7Psx",
+      "programId": "EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva",
       "destinationAuthority": null,
       "transferSignature": null,
       "postTransferReadout": null,
       "postTransferReadoutReferenceUrl": null,
-      "programExplorerUrl": "https://explorer.solana.com/address/5AhUsbQ4mJ8Xh7QJEomuS85qGgmK9iNvFqzF669Y7Psx",
+      "programExplorerUrl": "https://explorer.solana.com/address/EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva?cluster=testnet",
       "destinationExplorerUrl": null,
       "transferExplorerUrl": null
     },
     {
       "surface": "treasury-operator-authority",
-      "programId": "5AhUsbQ4mJ8Xh7QJEomuS85qGgmK9iNvFqzF669Y7Psx",
+      "programId": "EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva",
       "destinationAuthority": null,
       "transferSignature": null,
       "postTransferReadout": null,
       "postTransferReadoutReferenceUrl": null,
-      "programExplorerUrl": "https://explorer.solana.com/address/5AhUsbQ4mJ8Xh7QJEomuS85qGgmK9iNvFqzF669Y7Psx",
+      "programExplorerUrl": "https://explorer.solana.com/address/EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva?cluster=testnet",
       "destinationExplorerUrl": null,
       "transferExplorerUrl": null
     }
   ],
   "observedReadouts": [
     {
-      "id": "devnet-program",
-      "label": "Current deployed program readout",
-      "cluster": "devnet",
+      "id": "testnet-program",
+      "label": "Current Testnet deployed program readout after Squads transfer",
+      "cluster": "testnet",
       "status": "observed",
-      "address": "5AhUsbQ4mJ8Xh7QJEomuS85qGgmK9iNvFqzF669Y7Psx",
-      "explorerUrl": "https://explorer.solana.com/address/5AhUsbQ4mJ8Xh7QJEomuS85qGgmK9iNvFqzF669Y7Psx?cluster=devnet",
-      "observedAt": "2026-04-22T00:23:38.922Z",
-      "command": "solana program show 5AhUsbQ4mJ8Xh7QJEomuS85qGgmK9iNvFqzF669Y7Psx --url devnet",
+      "address": "EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva",
+      "explorerUrl": "https://explorer.solana.com/address/EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva?cluster=testnet",
+      "observedAt": "2026-05-22T23:47:42+03:00",
+      "command": "solana program show EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva --url https://api.testnet.solana.com",
       "owner": "BPFLoaderUpgradeab1e11111111111111111111111",
-      "authority": "4Mm5YTRbJuyA8NcWM85wTnx6ZQMXNph2DSnzCCKLhsMD",
-      "programDataAddress": "CeggEn3sNVbiuJHLKDaCPMH4uLczu1Dr3ZGKKcaKBqeN",
-      "lastDeploySlot": 454368825,
-      "balanceSol": "9.82850136",
+      "authority": "CALHrBqx6jbzcPn2NVcinqSAHeod65v9LcDuTxsdPqBv",
+      "programDataAddress": "FKyt5DcmRQcCF8kzMGjCvfGb3ZPHMQnH1SqiG9Mi8xEc",
+      "lastDeploySlot": 405189011,
+      "balanceSol": "9.44107992",
       "executable": true,
       "error": null,
-      "note": "This is the currently observed live deployment readout. It is external chain evidence, but it is not mainnet custody proof by itself."
+      "note": "This is the reviewer-facing Testnet deployment after transferring program-upgrade authority to the Squads vault PDA."
     },
     {
       "id": "devnet-dao",
@@ -183,24 +183,10 @@
       "note": "Target-network treasury visibility is required before claiming real-funds mainnet readiness."
     }
   ],
-  "completedItems": 2,
+  "completedItems": 16,
   "totalItems": 25,
   "pendingItems": [
-    "multisig public address",
-    "multisig creation signature",
     "rehearsal signature",
-    "timelock configuration of at least 48 hours",
-    "timelock configuration signature or readout",
-    "signer slot 1 public key",
-    "backup procedure for signer slot 1",
-    "signer slot 2 public key",
-    "backup procedure for signer slot 2",
-    "signer slot 3 public key",
-    "backup procedure for signer slot 3",
-    "program upgrade authority destination authority",
-    "program upgrade authority transfer signature",
-    "program upgrade authority post-transfer readout",
-    "program upgrade authority post-transfer readout reference",
     "dao authority destination authority",
     "dao authority transfer signature",
     "dao authority post-transfer readout",

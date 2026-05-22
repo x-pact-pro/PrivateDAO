@@ -3,29 +3,28 @@
 ## Overview
 
 - project: `PrivateDAO`
-- generated at: `2026-04-22T00:26:35.342Z`
+- generated at: `2026-05-22T20:56:15.690Z`
 - current decision: `blocked-external-steps`
 - production mainnet claim allowed: `false`
 
 ## Custody Snapshot
 
-- custody status: `pending-external`
+- custody status: `ready-for-transfer`
 - multisig implementation: `Squads Protocol`
 - rehearsal implementation: `spl-token-2022-multisig`
 - rehearsal network: `devnet`
 - rehearsal multisig address: `EqbW1xQRABPNmPM4TMkdygp6j94i7A3DSbgFKTpqXvJE`
 - rehearsal creation signature: `4KSyTYQTzeNpBDWou7GFLmvUpAhLgmNKkNdd4PZqndLpCWmUnArffYRQUwe6zrTmQD5uCbBfBR6pakf9Gz8dviRp`
 - threshold target: `2-of-3`
-- multisig address: `pending`
-- signer slots configured: `0`
+- multisig address: `thHmF7VYNtxE1MaDzYXbfPCiq13RF6JwuWnjvDZuSmF`
+- signer slots configured: `3`
 - minimum timelock hours: `48`
-- configured timelock hours: `pending`
-- observed devnet authority: `4Mm5YTRbJuyA8NcWM85wTnx6ZQMXNph2DSnzCCKLhsMD`
+- configured timelock hours: `48`
+- observed devnet authority: `pending`
 - observed target-network program status: `not-found`
 
 Pending authority transfers:
 
-- `program-upgrade-authority`
 - `dao-authority`
 - `treasury-operator-authority`
 

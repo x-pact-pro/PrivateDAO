@@ -3,30 +3,30 @@
 ## Overview
 
 - project: `PrivateDAO`
-- generated at: `2026-04-22T00:25:15.345Z`
+- generated at: `2026-05-22T20:55:57.359Z`
 - reviewer intent: Explain the current custody truth, show what is externally proven now, and make the missing external ceremony evidence explicit without narrative drift.
-- custody status: `pending-external`
+- custody status: `ready-for-transfer`
 - trust decision: `blocked-external-steps`
 - production mainnet claim allowed: `false`
-- custody completion: `2/25`
+- custody completion: `16/25`
 
 ## Current Truth
 
 - summary: PrivateDAO is devnet-proven and internally hardened, but real-funds mainnet production remains blocked until external audit, custody, monitoring, runtime, settlement-receipt, and release-ceremony items are closed with evidence.
 - multisig implementation: `Squads Protocol`
-- multisig address: `pending`
+- multisig address: `thHmF7VYNtxE1MaDzYXbfPCiq13RF6JwuWnjvDZuSmF`
 - threshold: `2-of-3`
-- configured timelock hours: `pending`
+- configured timelock hours: `48`
 - minimum timelock hours: `48`
 
 ## What Is Externally Proven Now
 
-- Current deployed program readout (devnet)
-  - address: `5AhUsbQ4mJ8Xh7QJEomuS85qGgmK9iNvFqzF669Y7Psx`
-  - explorer: https://explorer.solana.com/address/5AhUsbQ4mJ8Xh7QJEomuS85qGgmK9iNvFqzF669Y7Psx?cluster=devnet
-  - authority: `4Mm5YTRbJuyA8NcWM85wTnx6ZQMXNph2DSnzCCKLhsMD`
-  - program data: `CeggEn3sNVbiuJHLKDaCPMH4uLczu1Dr3ZGKKcaKBqeN`
-  - last deploy slot: `454368825`
+- Current Testnet deployed program readout after Squads transfer (testnet)
+  - address: `EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva`
+  - explorer: https://explorer.solana.com/address/EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva?cluster=testnet
+  - authority: `CALHrBqx6jbzcPn2NVcinqSAHeod65v9LcDuTxsdPqBv`
+  - program data: `FKyt5DcmRQcCF8kzMGjCvfGb3ZPHMQnH1SqiG9Mi8xEc`
+  - last deploy slot: `405189011`
 - Current DAO anchor readout (devnet)
   - address: `FZV9KmpeY1B31XvszQypp5T6nQN5C44JDLM4QWBEDvhx`
   - explorer: https://explorer.solana.com/address/FZV9KmpeY1B31XvszQypp5T6nQN5C44JDLM4QWBEDvhx?cluster=devnet
@@ -42,25 +42,13 @@
 
 Explorer-linked artifacts:
 
-- No custody ceremony signatures are recorded yet.
+- Program creation signature: `67S63JAUNvvCED3hE9h6bCXW9iJ3EYzJLARvj8Lki5x2dJEgLnrfES9mp6bAxfsH6vfmor2ocqNaEd68uVN68DNJ` -> https://explorer.solana.com/tx/67S63JAUNvvCED3hE9h6bCXW9iJ3EYzJLARvj8Lki5x2dJEgLnrfES9mp6bAxfsH6vfmor2ocqNaEd68uVN68DNJ?cluster=testnet
+- Timelock configuration signature: `67S63JAUNvvCED3hE9h6bCXW9iJ3EYzJLARvj8Lki5x2dJEgLnrfES9mp6bAxfsH6vfmor2ocqNaEd68uVN68DNJ` -> https://explorer.solana.com/tx/67S63JAUNvvCED3hE9h6bCXW9iJ3EYzJLARvj8Lki5x2dJEgLnrfES9mp6bAxfsH6vfmor2ocqNaEd68uVN68DNJ?cluster=testnet
+- program-upgrade-authority transfer signature: `EzwLLrAchBpj3eLTUFuv1uo9rSLKgKNbQgp1DkCevJycT31Eou9TSJsJsEfMjLt4q87pKwXaZUTqCZ1NduNc1vy` -> https://explorer.solana.com/tx/EzwLLrAchBpj3eLTUFuv1uo9rSLKgKNbQgp1DkCevJycT31Eou9TSJsJsEfMjLt4q87pKwXaZUTqCZ1NduNc1vy?cluster=testnet
 
 ## Exact Pending Items
 
-- multisig public address
-- multisig creation signature
 - rehearsal signature
-- timelock configuration of at least 48 hours
-- timelock configuration signature or readout
-- signer slot 1 public key
-- backup procedure for signer slot 1
-- signer slot 2 public key
-- backup procedure for signer slot 2
-- signer slot 3 public key
-- backup procedure for signer slot 3
-- program upgrade authority destination authority
-- program upgrade authority transfer signature
-- program upgrade authority post-transfer readout
-- program upgrade authority post-transfer readout reference
 - dao authority destination authority
 - dao authority transfer signature
 - dao authority post-transfer readout

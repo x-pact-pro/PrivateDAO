@@ -32,21 +32,28 @@ function main() {
   const markdown = fs.readFileSync(mdPath, "utf8");
 
   assert(packet.project === "PrivateDAO", "canonical custody proof project mismatch");
-  assert(packet.status === "pending-external", "canonical custody proof must preserve pending-external until real custody evidence exists");
+  assert(packet.status === "ready-for-transfer", "canonical custody proof must reflect the recorded Testnet custody transfer");
   assert(packet.productionMainnetClaimAllowed === false, "canonical custody proof must not allow production mainnet claims");
-  assert(packet.network === "mainnet-beta", "canonical custody proof must target mainnet-beta");
+  assert(packet.network === "testnet", "canonical custody proof must target the current reviewer-facing Testnet custody transfer");
   assert(packet.multisig.threshold === "2-of-3", "canonical custody proof threshold mismatch");
   assert(
     packet.multisig.implementation === "pending-selection" || packet.multisig.implementation === "Squads Protocol",
     "canonical custody proof implementation boundary drifted",
   );
-  assert(packet.pendingItems.includes("multisig public address"), "canonical custody proof must keep multisig address pending");
-  assert(packet.pendingItems.includes("program upgrade authority transfer signature"), "canonical custody proof must keep upgrade transfer pending");
-  assert(packet.pendingItems.includes("program upgrade authority post-transfer readout reference"), "canonical custody proof must require readout reference");
+  assert(!packet.pendingItems.includes("multisig public address"), "canonical custody proof must not keep completed multisig address pending");
+  assert(!packet.pendingItems.includes("program upgrade authority transfer signature"), "canonical custody proof must not keep completed upgrade transfer pending");
+  assert(
+    packet.pendingItems.includes("dao authority transfer signature"),
+    "canonical custody proof must keep DAO authority transfer pending",
+  );
+  assert(
+    packet.pendingItems.includes("treasury operator authority transfer signature"),
+    "canonical custody proof must keep treasury operator transfer pending",
+  );
 
-  const devnetProgram = packet.observedReadouts.find((entry) => entry.id === "devnet-program");
+  const devnetProgram = packet.observedReadouts.find((entry) => entry.id === "testnet-program");
   const mainnetProgram = packet.observedReadouts.find((entry) => entry.id === "mainnet-program");
-  assert(devnetProgram?.cluster === "devnet" && devnetProgram.status === "observed", "canonical custody proof missing observed devnet program readout");
+  assert(devnetProgram?.cluster === "testnet" && devnetProgram.status === "observed", "canonical custody proof missing observed Testnet program readout");
   assert(mainnetProgram?.cluster === "mainnet-beta", "canonical custody proof missing target-network program readout");
 
   assert(
@@ -57,11 +64,11 @@ function main() {
   for (const token of [
     "# Canonical Custody Proof",
     "Observed Chain Readouts",
-    "Current deployed program readout",
+    "Current Testnet deployed program readout after Squads transfer",
     "Target network program readout",
     "Exact Pending Items",
     "Exact Blocker",
-    "multisig public address",
+    "dao authority transfer signature",
   ]) {
     assert(markdown.includes(token), `canonical custody proof markdown is missing: ${token}`);
   }

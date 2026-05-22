@@ -1,11 +1,11 @@
 {
   "project": "PrivateDAO",
-  "generatedAt": "2026-04-22T00:25:15.345Z",
+  "generatedAt": "2026-05-22T20:55:57.359Z",
   "reviewerIntent": "Explain the current custody truth, show what is externally proven now, and make the missing external ceremony evidence explicit without narrative drift.",
-  "custodyStatus": "pending-external",
+  "custodyStatus": "ready-for-transfer",
   "productionMainnetClaimAllowed": false,
   "trustDecision": "blocked-external-steps",
-  "custodyCompletion": "2/25",
+  "custodyCompletion": "16/25",
   "exactBlocker": {
     "id": "upgrade-authority-multisig",
     "severity": "critical",
@@ -26,21 +26,21 @@
   "currentTruth": {
     "summary": "PrivateDAO is devnet-proven and internally hardened, but real-funds mainnet production remains blocked until external audit, custody, monitoring, runtime, settlement-receipt, and release-ceremony items are closed with evidence.",
     "multisigImplementation": "Squads Protocol",
-    "multisigAddress": null,
+    "multisigAddress": "thHmF7VYNtxE1MaDzYXbfPCiq13RF6JwuWnjvDZuSmF",
     "threshold": "2-of-3",
-    "configuredTimelockHours": null,
+    "configuredTimelockHours": 48,
     "minimumTimelockHours": 48
   },
   "externallyProvenNow": {
     "observedReadouts": [
       {
-        "label": "Current deployed program readout",
-        "cluster": "devnet",
-        "address": "5AhUsbQ4mJ8Xh7QJEomuS85qGgmK9iNvFqzF669Y7Psx",
-        "explorerUrl": "https://explorer.solana.com/address/5AhUsbQ4mJ8Xh7QJEomuS85qGgmK9iNvFqzF669Y7Psx?cluster=devnet",
-        "authority": "4Mm5YTRbJuyA8NcWM85wTnx6ZQMXNph2DSnzCCKLhsMD",
-        "programDataAddress": "CeggEn3sNVbiuJHLKDaCPMH4uLczu1Dr3ZGKKcaKBqeN",
-        "lastDeploySlot": 454368825
+        "label": "Current Testnet deployed program readout after Squads transfer",
+        "cluster": "testnet",
+        "address": "EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva",
+        "explorerUrl": "https://explorer.solana.com/address/EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva?cluster=testnet",
+        "authority": "CALHrBqx6jbzcPn2NVcinqSAHeod65v9LcDuTxsdPqBv",
+        "programDataAddress": "FKyt5DcmRQcCF8kzMGjCvfGb3ZPHMQnH1SqiG9Mi8xEc",
+        "lastDeploySlot": 405189011
       },
       {
         "label": "Current DAO anchor readout",
@@ -61,24 +61,26 @@
         "lastDeploySlot": null
       }
     ],
-    "explorerLinkedArtifacts": []
+    "explorerLinkedArtifacts": [
+      {
+        "label": "Program creation signature",
+        "signature": "67S63JAUNvvCED3hE9h6bCXW9iJ3EYzJLARvj8Lki5x2dJEgLnrfES9mp6bAxfsH6vfmor2ocqNaEd68uVN68DNJ",
+        "href": "https://explorer.solana.com/tx/67S63JAUNvvCED3hE9h6bCXW9iJ3EYzJLARvj8Lki5x2dJEgLnrfES9mp6bAxfsH6vfmor2ocqNaEd68uVN68DNJ?cluster=testnet"
+      },
+      {
+        "label": "Timelock configuration signature",
+        "signature": "67S63JAUNvvCED3hE9h6bCXW9iJ3EYzJLARvj8Lki5x2dJEgLnrfES9mp6bAxfsH6vfmor2ocqNaEd68uVN68DNJ",
+        "href": "https://explorer.solana.com/tx/67S63JAUNvvCED3hE9h6bCXW9iJ3EYzJLARvj8Lki5x2dJEgLnrfES9mp6bAxfsH6vfmor2ocqNaEd68uVN68DNJ?cluster=testnet"
+      },
+      {
+        "label": "program-upgrade-authority transfer signature",
+        "signature": "EzwLLrAchBpj3eLTUFuv1uo9rSLKgKNbQgp1DkCevJycT31Eou9TSJsJsEfMjLt4q87pKwXaZUTqCZ1NduNc1vy",
+        "href": "https://explorer.solana.com/tx/EzwLLrAchBpj3eLTUFuv1uo9rSLKgKNbQgp1DkCevJycT31Eou9TSJsJsEfMjLt4q87pKwXaZUTqCZ1NduNc1vy?cluster=testnet"
+      }
+    ]
   },
   "exactPendingItems": [
-    "multisig public address",
-    "multisig creation signature",
     "rehearsal signature",
-    "timelock configuration of at least 48 hours",
-    "timelock configuration signature or readout",
-    "signer slot 1 public key",
-    "backup procedure for signer slot 1",
-    "signer slot 2 public key",
-    "backup procedure for signer slot 2",
-    "signer slot 3 public key",
-    "backup procedure for signer slot 3",
-    "program upgrade authority destination authority",
-    "program upgrade authority transfer signature",
-    "program upgrade authority post-transfer readout",
-    "program upgrade authority post-transfer readout reference",
     "dao authority destination authority",
     "dao authority transfer signature",
     "dao authority post-transfer readout",
@@ -126,7 +128,7 @@
         {
           "label": "Reviewer telemetry packet",
           "href": "/documents/reviewer-telemetry-packet",
-          "summary": "Generated telemetry truth packet that binds runtime evidence, integration evidence, read-node snapshot, and devnet service metrics into one reviewer-safe route."
+          "summary": "Generated telemetry truth packet that binds runtime evidence, integration evidence, read-node snapshot, and testnet service metrics into one reviewer-safe route."
         }
       ],
       "exactBlocker": "upgrade-authority-multisig",
@@ -172,7 +174,7 @@
         {
           "label": "Reviewer telemetry packet",
           "href": "/documents/reviewer-telemetry-packet",
-          "summary": "Generated telemetry truth packet that binds runtime evidence, integration evidence, read-node snapshot, and devnet service metrics into one reviewer-safe route."
+          "summary": "Generated telemetry truth packet that binds runtime evidence, integration evidence, read-node snapshot, and testnet service metrics into one reviewer-safe route."
         }
       ],
       "exactBlocker": "magicblock-refhe-source-receipts",
@@ -218,7 +220,7 @@
         {
           "label": "Reviewer telemetry packet",
           "href": "/documents/reviewer-telemetry-packet",
-          "summary": "Generated telemetry truth packet that binds runtime evidence, integration evidence, read-node snapshot, and devnet service metrics into one reviewer-safe route."
+          "summary": "Generated telemetry truth packet that binds runtime evidence, integration evidence, read-node snapshot, and testnet service metrics into one reviewer-safe route."
         }
       ],
       "exactBlocker": "production-monitoring-alerts",

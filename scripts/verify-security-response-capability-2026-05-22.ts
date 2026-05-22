@@ -27,23 +27,27 @@ function main() {
   assertIncludes(response, "npm run verify:security-boundaries:2026-05-22", "response verification gate");
   assertIncludes(response, "Browser-persisted governance state is redacted", "response remediation control");
   assertIncludes(response, "What is not claimed by this packet", "response claim boundary");
-  assertIncludes(response, "Authority: 4Mm5YTRbJuyA8NcWM85wTnx6ZQMXNph2DSnzCCKLhsMD", "response authority readout");
+  assertIncludes(response, "Authority: CALHrBqx6jbzcPn2NVcinqSAHeod65v9LcDuTxsdPqBv", "response authority readout");
+  assertIncludes(response, "EzwLLrAchBpj3eLTUFuv1uo9rSLKgKNbQgp1DkCevJycT31Eou9TSJsJsEfMjLt4q87pKwXaZUTqCZ1NduNc1vy", "response transfer signature");
   assertIncludes(remediation, "# Security Remediation 2026-05-22", "remediation packet title");
   assertIncludes(curated, "security-response-capability-2026-05-22", "curated document route");
   assertIncludes(securityPage, "/documents/security-response-capability-2026-05-22", "security page link");
 
-  assert(multisig.status === "pending-external", "multisig status must remain pending-external until transfer evidence exists");
+  assert(
+    multisig.status === "ready-for-transfer",
+    "multisig status must reflect the recorded Testnet transfer evidence",
+  );
   assert(
     multisig.testnetAuthorityPrecheck?.programId === "EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva",
     "multisig precheck must target the current Testnet program",
   );
   assert(
-    multisig.testnetAuthorityPrecheck?.observedAuthority === "4Mm5YTRbJuyA8NcWM85wTnx6ZQMXNph2DSnzCCKLhsMD",
-    "multisig precheck must preserve the observed single authority",
+    multisig.testnetAuthorityPrecheck?.observedAuthority === "CALHrBqx6jbzcPn2NVcinqSAHeod65v9LcDuTxsdPqBv",
+    "multisig precheck must preserve the observed Squads vault authority",
   );
   assert(
-    multisig.testnetAuthorityPrecheck?.closureStatus === "single-authority-observed",
-    "multisig precheck must not claim closure",
+    multisig.testnetAuthorityPrecheck?.closureStatus === "program-upgrade-authority-transferred-to-squads-vault",
+    "multisig precheck must record the Testnet program-upgrade authority transfer",
   );
 
   const upgradeTransfer = multisig.authorityTransfers?.find((transfer) => transfer.surface === "program-upgrade-authority");
@@ -51,7 +55,10 @@ function main() {
     upgradeTransfer?.programId === "EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva",
     "upgrade transfer must target current Testnet program",
   );
-  assert(upgradeTransfer.transferSignature === null, "upgrade transfer signature must stay null until a real transaction exists");
+  assert(
+    upgradeTransfer.transferSignature === "EzwLLrAchBpj3eLTUFuv1uo9rSLKgKNbQgp1DkCevJycT31Eou9TSJsJsEfMjLt4q87pKwXaZUTqCZ1NduNc1vy",
+    "upgrade transfer signature must match the real Testnet authority transfer",
+  );
 
   console.log("Security response capability verification: PASS");
 }

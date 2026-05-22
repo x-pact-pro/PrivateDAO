@@ -1,26 +1,25 @@
 {
   "project": "PrivateDAO",
-  "generatedAt": "2026-04-22T00:26:35.342Z",
+  "generatedAt": "2026-05-22T20:56:15.690Z",
   "decision": "blocked-external-steps",
   "productionMainnetClaimAllowed": false,
   "custody": {
-    "status": "pending-external",
+    "status": "ready-for-transfer",
     "implementation": "Squads Protocol",
     "rehearsalImplementation": "spl-token-2022-multisig",
     "rehearsalNetwork": "devnet",
     "rehearsalMultisigAddress": "EqbW1xQRABPNmPM4TMkdygp6j94i7A3DSbgFKTpqXvJE",
     "rehearsalCreationSignature": "4KSyTYQTzeNpBDWou7GFLmvUpAhLgmNKkNdd4PZqndLpCWmUnArffYRQUwe6zrTmQD5uCbBfBR6pakf9Gz8dviRp",
     "threshold": "2-of-3",
-    "multisigAddress": null,
-    "signerSlotsConfigured": 0,
+    "multisigAddress": "thHmF7VYNtxE1MaDzYXbfPCiq13RF6JwuWnjvDZuSmF",
+    "signerSlotsConfigured": 3,
     "pendingAuthorityTransfers": [
-      "program-upgrade-authority",
       "dao-authority",
       "treasury-operator-authority"
     ],
     "minimumTimelockHours": 48,
-    "configuredTimelockHours": null,
-    "observedDevnetAuthority": "4Mm5YTRbJuyA8NcWM85wTnx6ZQMXNph2DSnzCCKLhsMD",
+    "configuredTimelockHours": 48,
+    "observedDevnetAuthority": null,
     "observedMainnetProgramStatus": "not-found"
   },
   "runtime": {

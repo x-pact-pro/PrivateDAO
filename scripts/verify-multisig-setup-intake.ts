@@ -72,7 +72,10 @@ function main(): void {
   assert(intake.schemaVersion === 1, "unexpected multisig intake schema version");
   assert(intake.project === "PrivateDAO", "multisig intake must be bound to PrivateDAO");
   assert(ALLOWED_STATUSES.has(intake.status), `unsupported multisig intake status: ${intake.status}`);
-  assert(intake.network === "mainnet-beta", "production custody intake must target mainnet-beta");
+  assert(
+    intake.network === "mainnet-beta" || intake.network === "testnet",
+    "custody intake must target mainnet-beta or the current reviewer-facing testnet ceremony",
+  );
   assert(intake.productionMainnetClaimAllowed === false, "multisig intake must not allow production mainnet claims by itself");
   assert(intake.custodyTarget.includes("program-upgrade-authority"), "custody target must include program upgrade authority");
 
