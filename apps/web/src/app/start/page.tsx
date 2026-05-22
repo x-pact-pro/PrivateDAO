@@ -16,9 +16,9 @@ import { cn } from "@/lib/utils";
 export const metadata: Metadata = buildRouteMetadata({
   title: "Get Started",
   description:
-    "The easiest first-run path into PrivateDAO: connect a wallet, create a DAO, submit a proposal, and move through the live Testnet flow.",
+    "The easiest first-run path into PrivateDAO: connect a Testnet wallet, get test SOL, try the web or Android flow, sign a governed action, and verify the receipt.",
   path: "/start",
-  keywords: ["getting started", "wallet onboarding", "consumer path", "service corridor"],
+  keywords: ["getting started", "wallet onboarding", "testnet faucet", "android app", "proof path"],
 });
 
 export default function StartPage() {
