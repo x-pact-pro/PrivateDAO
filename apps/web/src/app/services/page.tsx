@@ -35,6 +35,7 @@ import { SectionHeader } from "@/components/section-header";
 import { SettlementReceiptSurface } from "@/components/settlement-receipt-surface";
 import { SettlementReceiptClosurePanel } from "@/components/settlement-receipt-closure-panel";
 import { ServiceOperationalCards } from "@/components/service-operational-cards";
+import { ServiceConstellationSurface } from "@/components/service-constellation-surface";
 import { ServiceReadinessLadder } from "@/components/service-readiness-ladder";
 import { ServiceHandoffStrip } from "@/components/service-handoff-strip";
 import { ServicesSurface } from "@/components/services-surface";
@@ -84,6 +85,7 @@ export default function ServicesPage() {
       <div>
         <ServicesSurface />
       </div>
+      <ServiceConstellationSurface />
       <LocalizedServicesPrimer />
       <div className="rounded-[28px] border border-emerald-300/16 bg-emerald-300/[0.07] p-5">
         <div className="text-[11px] uppercase tracking-[0.24em] text-emerald-100/76">New section</div>

@@ -467,6 +467,97 @@ export const commercialServices = [
   },
 ];
 
+export const privateDaoServiceConstellation = [
+  {
+    title: "Confidential governance",
+    audience: "DAOs, grant committees, funds, ecosystem programs",
+    problem: "Important decisions leak strategy when every draft, vote, and treasury path is public too early.",
+    service:
+      "Private proposal intake, commit/reveal voting, reviewer-readable execution state, and proof-linked governance history.",
+    execution: "Wallet signs the action, Testnet records the lifecycle, and the product keeps the proof path visible.",
+    proof: "Governance lifecycle proof",
+    href: "/govern",
+    proofHref: "/proof/?judge=1",
+  },
+  {
+    title: "Private polls and committee signals",
+    audience: "Grant reviewers, councils, juries, internal committees",
+    problem: "Teams need honest signal before public execution without turning private review into an opaque black box.",
+    service:
+      "Encrypted signal collection, proposal review summaries, evidence packets, and public accountability after a decision is ready.",
+    execution: "Signal stays private while the decision route, rationale, and final proof remain inspectable.",
+    proof: "Reviewer packet",
+    href: "/intelligence",
+    proofHref: "/documents/reviewer-fast-path",
+  },
+  {
+    title: "Confidential payroll",
+    audience: "Startups, contributor networks, foundations, operators",
+    problem: "Payroll and contributor compensation are high-sensitivity flows that still need governance and audit discipline.",
+    service:
+      "REFHE payroll packet, encrypted payout intent, treasury approval, and role-safe proof for salary and bonus operations.",
+    execution: "Operators prepare the confidential packet, reviewers approve the route, and settlement evidence stays attached.",
+    proof: "REFHE payroll proof",
+    href: "/services/refhe-payroll-proof",
+    proofHref: "/documents/confidential-payroll-flow",
+  },
+  {
+    title: "Encrypted payments and private payouts",
+    audience: "Treasury teams, vendors, payroll operators, grant programs",
+    problem: "Normal payment rails expose too much context around recipients, timing, and operating intent.",
+    service:
+      "Cloak, Umbra, MagicBlock, Encrypt/IKA, and treasury-route surfaces composed into one confidential payments corridor.",
+    execution: "A governed request becomes an encrypted or recipient-private payout path with proof continuity.",
+    proof: "Confidential payout packet",
+    href: "/services/confidential-payments",
+    proofHref: "/documents/confidential-payout-evidence-packet",
+  },
+  {
+    title: "Rewards and gaming treasuries",
+    audience: "Games, guilds, tournaments, creator economies",
+    problem: "Reward programs need fast distribution without losing policy, treasury limits, or visible fairness.",
+    service:
+      "Gaming reward pools, MagicBlock execution framing, tournament payout logic, and proposal-scoped settlement boundaries.",
+    execution: "Game or tournament intent routes through governance and lands as a controlled reward distribution packet.",
+    proof: "Gaming reward corridor",
+    href: "/gaming",
+    proofHref: "/services/magicblock-private-payments",
+  },
+  {
+    title: "Stablecoin treasury rails",
+    audience: "Merchants, foundations, regional operators, service buyers",
+    problem: "Teams need stable-value operating rails that remain governed instead of becoming disconnected payment widgets.",
+    service:
+      "PUSD, AUDD, USDC, and treasury request flows for invoices, grant distribution, merchant settlement, and treasury top-ups.",
+    execution: "The visitor selects the asset, purpose, and route; the packet can move into governed delivery and proof.",
+    proof: "Treasury request packet",
+    href: "/services/testnet-billing-rehearsal",
+    proofHref: "/services#treasury-payment-request",
+  },
+  {
+    title: "AI-assisted private operations",
+    audience: "Operators, reviewers, treasury analysts, founders",
+    problem: "Sensitive governance needs interpretation, but external AI tools can leak operational context.",
+    service:
+      "Local-first QVAC review, deterministic proposal summaries, treasury route analysis, and encrypted brief generation.",
+    execution: "AI helps explain risk and next action before the wallet signs; the signer remains the execution boundary.",
+    proof: "Intelligence route",
+    href: "/intelligence",
+    proofHref: "/services/qvac-sovereign-ai",
+  },
+  {
+    title: "Read API, automations, and live counters",
+    audience: "Apps, dashboards, infrastructure buyers, judges",
+    problem: "Private governance is hard to trust if state, counters, and proof are scattered across logs and docs.",
+    service:
+      "Hosted reads, visitor transaction capture, runtime metrics, proof freshness, and buyer-safe operational telemetry.",
+    execution: "The read node and UI expose live state while wallet signatures and proof packets carry the authority boundary.",
+    proof: "Runtime telemetry",
+    href: "/network",
+    proofHref: "/diagnostics",
+  },
+] as const;
+
 export const platformServiceLayers = [
   {
     layer: "Layer 1",
