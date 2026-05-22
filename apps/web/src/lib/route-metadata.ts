@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import { defaultOgImage, siteDescription, siteKeywords, siteName } from "@/lib/site-brand";
+import { defaultOgImage, siteDescription, siteKeywords, siteName, siteTitle } from "@/lib/site-brand";
 
 type BuildRouteMetadataInput = {
   title: string;
@@ -68,7 +68,7 @@ export function buildRouteMetadata({
 
 export function buildBrandHomeMetadata(): Metadata {
   return {
-    title: siteName,
+    title: siteTitle,
     description: siteDescription,
     keywords: siteKeywords,
     alternates: {
@@ -79,7 +79,7 @@ export function buildBrandHomeMetadata(): Metadata {
       follow: true,
     },
     openGraph: {
-      title: siteName,
+      title: siteTitle,
       description: siteDescription,
       siteName,
       type: "website",
@@ -89,13 +89,13 @@ export function buildBrandHomeMetadata(): Metadata {
           url: defaultOgImage,
           width: 1200,
           height: 630,
-          alt: siteName,
+          alt: siteTitle,
         },
       ],
     },
     twitter: {
       card: "summary_large_image",
-      title: siteName,
+      title: siteTitle,
       description: siteDescription,
       images: [defaultOgImage],
     },

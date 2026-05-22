@@ -56,11 +56,11 @@ const homeCopyByLocale: Record<
 > = {
   en: {
     eyebrow: "PrivateDAO OS",
-    title: "The private financial OS for Solana organizations.",
+    title: "Sovereign encrypted intelligence and operational infrastructure for Solana.",
     body:
-      "PrivateDAO turns DAO governance, payroll, B2B settlement, gaming rewards, compliance, local-first AI, and proof into one wallet-first operating path: connect, review, sign, execute, and verify from the same product shell.",
-    launch: "Launch OS",
-    android: "Android App",
+      "A live web and Android product where normal users connect a Testnet wallet, fund it, govern, run confidential payroll, encrypt payments, route rewards, use online/offline intelligence, and verify every receipt on-chain without code or terminal work.",
+    launch: "Start live Testnet",
+    android: "Install Android APK",
     verify: "Open verification view",
     judge: "Open Judge",
     workflow: "View Workflow",
@@ -82,11 +82,11 @@ const homeCopyByLocale: Record<
   },
   ar: {
     eyebrow: "نظام PrivateDAO",
-    title: "نظام تشغيل مالي خاص لمؤسسات سولانا.",
+    title: "بنية تشغيلية سيادية مشفرة وذكية على سولانا.",
     body:
-      "يجمع PrivateDAO الحوكمة والرواتب والتسويات ومكافآت الألعاب والامتثال والذكاء المحلي والإثبات في مسار واحد يبدأ بالمحفظة: اتصال، مراجعة، توقيع، تنفيذ، ثم تحقق.",
-    launch: "افتح النظام",
-    android: "تطبيق أندرويد",
+      "منتج ويب وأندرويد حي: صل محفظة Testnet، اشحنها، احكم، ادفع راتباً سرياً، شفّر مدفوعة، نفّذ مكافآت، واستخدم الذكاء online/offline ثم عاين كل إيصال على السلسلة بدون كود أو ترمينال.",
+    launch: "ابدأ تجربة Testnet",
+    android: "ثبّت تطبيق أندرويد",
     verify: "افتح التحقق",
     judge: "افتح مسار الحكام",
     workflow: "شاهد المسار",
@@ -108,11 +108,11 @@ const homeCopyByLocale: Record<
   },
   ru: {
     eyebrow: "PrivateDAO OS",
-    title: "Приватная финансовая ОС для организаций Solana.",
+    title: "Суверенная зашифрованная intelligence и операционная инфраструктура для Solana.",
     body:
-      "PrivateDAO объединяет DAO-управление, payroll, B2B settlement, gaming rewards, compliance, local-first AI и proof в один wallet-first путь: connect, review, sign, execute, verify.",
-    launch: "Запустить ОС",
-    android: "Android",
+      "Живой web и Android продукт: подключите Testnet wallet, пополните его, управляйте DAO, запускайте confidential payroll, encrypt payments, rewards, online/offline intelligence и проверяйте каждый receipt on-chain без кода и терминала.",
+    launch: "Start live Testnet",
+    android: "Install Android APK",
     verify: "Открыть proof",
     judge: "Открыть Judge",
     workflow: "Смотреть workflow",
@@ -133,11 +133,11 @@ const homeCopyByLocale: Record<
   },
   uk: {
     eyebrow: "PrivateDAO OS",
-    title: "Приватна фінансова ОС для організацій Solana.",
+    title: "Суверенна зашифрована intelligence та операційна інфраструктура для Solana.",
     body:
-      "PrivateDAO поєднує DAO-управління, payroll, B2B settlement, gaming rewards, compliance, local-first AI і proof в один wallet-first шлях: connect, review, sign, execute, verify.",
-    launch: "Запустити ОС",
-    android: "Android",
+      "Живий web і Android продукт: підключіть Testnet wallet, поповніть його, керуйте DAO, запускайте confidential payroll, encrypt payments, rewards, online/offline intelligence і перевіряйте кожен receipt on-chain без коду чи термінала.",
+    launch: "Start live Testnet",
+    android: "Install Android APK",
     verify: "Відкрити proof",
     judge: "Відкрити Judge",
     workflow: "Переглянути workflow",
@@ -158,11 +158,11 @@ const homeCopyByLocale: Record<
   },
   pl: {
     eyebrow: "PrivateDAO OS",
-    title: "Prywatny finansowy OS dla organizacji Solana.",
+    title: "Suwerenna, szyfrowana intelligence i infrastruktura operacyjna dla Solany.",
     body:
-      "PrivateDAO łączy DAO governance, payroll, B2B settlement, gaming rewards, compliance, local-first AI i proof w jedną ścieżkę wallet-first: connect, review, sign, execute, verify.",
-    launch: "Uruchom OS",
-    android: "Android",
+      "Live web i Android product: connect Testnet wallet, fund it, govern, run confidential payroll, encrypt payments, route rewards, use online/offline intelligence i verify every receipt on-chain bez kodu ani terminala.",
+    launch: "Start live Testnet",
+    android: "Install Android APK",
     verify: "Otwórz proof",
     judge: "Otwórz Judge",
     workflow: "Zobacz workflow",
@@ -183,11 +183,11 @@ const homeCopyByLocale: Record<
   },
   hi: {
     eyebrow: "PrivateDAO OS",
-    title: "Solana organizations के लिए private financial OS.",
+    title: "Solana के लिए sovereign encrypted intelligence और operational infrastructure.",
     body:
-      "PrivateDAO DAO governance, payroll, B2B settlement, gaming rewards, compliance, local-first AI और proof को एक wallet-first path में जोड़ता है: connect, review, sign, execute, verify.",
-    launch: "OS खोलें",
-    android: "Android",
+      "Live web और Android product: Testnet wallet connect करें, fund करें, govern करें, confidential payroll चलाएं, payments encrypt करें, rewards route करें, online/offline intelligence use करें और हर receipt को on-chain verify करें, बिना code या terminal.",
+    launch: "Live Testnet शुरू करें",
+    android: "Android APK install करें",
     verify: "Proof खोलें",
     judge: "Judge खोलें",
     workflow: "Workflow देखें",
@@ -208,11 +208,11 @@ const homeCopyByLocale: Record<
   },
   ko: {
     eyebrow: "PrivateDAO OS",
-    title: "Solana 조직을 위한 private financial OS.",
+    title: "Solana를 위한 sovereign encrypted intelligence 및 operational infrastructure.",
     body:
-      "PrivateDAO는 DAO governance, payroll, B2B settlement, gaming rewards, compliance, local-first AI, proof를 하나의 wallet-first 경로로 묶습니다: connect, review, sign, execute, verify.",
-    launch: "OS 실행",
-    android: "Android",
+      "Live web 및 Android product: Testnet wallet 연결, funding, governance, confidential payroll, encrypted payments, rewards, online/offline intelligence를 실행하고 모든 receipt를 code나 terminal 없이 on-chain으로 verify합니다.",
+    launch: "Start live Testnet",
+    android: "Install Android APK",
     verify: "Proof 열기",
     judge: "Judge 열기",
     workflow: "Workflow 보기",
@@ -233,11 +233,11 @@ const homeCopyByLocale: Record<
   },
   es: {
     eyebrow: "PrivateDAO OS",
-    title: "El sistema financiero privado para organizaciones de Solana.",
+    title: "Infraestructura operativa e inteligencia cifrada soberana para Solana.",
     body:
-      "PrivateDAO une gobernanza DAO, nómina, pagos B2B, recompensas gaming, cumplimiento, IA local-first y proof en una ruta wallet-first: connect, review, sign, execute, verify.",
-    launch: "Abrir OS",
-    android: "Android",
+      "Producto web y Android en vivo: conecta una wallet Testnet, fúndala, gobierna, ejecuta confidential payroll, cifra pagos, enruta recompensas, usa inteligencia online/offline y verifica cada receipt on-chain sin código ni terminal.",
+    launch: "Iniciar Testnet vivo",
+    android: "Instalar Android APK",
     verify: "Abrir proof",
     judge: "Abrir Judge",
     workflow: "Ver workflow",
@@ -258,11 +258,11 @@ const homeCopyByLocale: Record<
   },
   it: {
     eyebrow: "PrivateDAO OS",
-    title: "Il sistema finanziario privato per organizzazioni Solana.",
+    title: "Infrastruttura operativa e intelligence cifrata sovrana per Solana.",
     body:
-      "PrivateDAO unisce governance DAO, payroll, B2B settlement, gaming rewards, compliance, AI local-first e proof in un percorso wallet-first: connect, review, sign, execute, verify.",
-    launch: "Apri OS",
-    android: "Android",
+      "Prodotto web e Android live: collega un wallet Testnet, finanzialo, governa, esegui confidential payroll, cifra pagamenti, instrada rewards, usa intelligence online/offline e verifica ogni receipt on-chain senza codice o terminale.",
+    launch: "Avvia Testnet live",
+    android: "Installa Android APK",
     verify: "Apri proof",
     judge: "Apri Judge",
     workflow: "Vedi workflow",
@@ -545,6 +545,7 @@ export function HomeShell() {
               <Badge variant="violet">Anchor 1 Testnet</Badge>
               <Badge variant="violet">QVAC local AI</Badge>
               <Badge variant="success">Private by design</Badge>
+              <Badge variant="success">Try it now: web + Android</Badge>
             </div>
             <div className="space-y-4 sm:space-y-5">
               <div className="text-[11px] uppercase tracking-[0.34em] text-emerald-300/80">{homeCopy.eyebrow}</div>
@@ -560,13 +561,48 @@ export function HomeShell() {
               <div className="max-w-3xl rounded-[26px] border border-emerald-300/18 bg-emerald-300/[0.08] p-5 text-sm leading-7 text-white/72">
                 <div className="text-[11px] uppercase tracking-[0.28em] text-emerald-100/80">No code operating layer</div>
                 <div className="mt-2 text-lg font-semibold text-white">
-                  Complex DAO, privacy, treasury, payroll, compliance, gaming, and AI workflows now run from the interface.
+                  Connect a Testnet wallet, fund it, act, and verify. No code. No terminal. No broken handoff.
                 </div>
                 <p className="mt-2">
-                  A normal user does not need a terminal, SDK setup, or deep cryptography background. They can learn the concepts in
+                  A normal user can learn the concepts in
                   <Link href="/learn" className="px-1 font-semibold text-cyan-100 underline decoration-cyan-300/50 underline-offset-4">Learn</Link>,
-                  connect a wallet, review the plain-English action, sign the exact request, and verify the receipt from web or mobile.
+                  connect a wallet, review the plain-English action, sign the exact request, then inspect when intent became visible, where the salary moved, and how encrypted IKA / REFHE-style payment evidence stays linked to proof.
                 </p>
+              </div>
+              <div className="max-w-3xl rounded-[26px] border border-violet-300/18 bg-[radial-gradient(circle_at_top_right,rgba(153,69,255,0.20),transparent_36%),rgba(153,69,255,0.08)] p-5 text-sm leading-7 text-white/72">
+                <div className="flex flex-wrap items-start justify-between gap-4">
+                  <div>
+                    <div className="text-[11px] uppercase tracking-[0.28em] text-violet-100/80">Live mobile proof</div>
+                    <div className="mt-2 text-lg font-semibold text-white">The Android APK turns the same web product into a mobile Solana operating app.</div>
+                    <p className="mt-2">
+                      Judges can install the APK, open the live product routes, connect a Testnet wallet, and participate on-chain from mobile while proof, diagnostics, payroll, encrypted payments, and gaming reward paths stay one tap away.
+                    </p>
+                  </div>
+                  <Link className={cn(buttonVariants({ size: "sm" }))} href="/android">
+                    Try Android now
+                    <ArrowRight className="h-4 w-4" />
+                  </Link>
+                </div>
+                <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                  <div className="rounded-2xl border border-white/10 bg-black/20 p-3">
+                    <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-emerald-100/82">
+                      <Trophy className="h-4 w-4" />
+                      Innovation one
+                    </div>
+                    <p className="mt-2 text-xs leading-6 text-white/64">
+                      A no-terminal Solana operating system for governance, payroll, payments, rewards, intelligence, and proof.
+                    </p>
+                  </div>
+                  <div className="rounded-2xl border border-white/10 bg-black/20 p-3">
+                    <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-cyan-100/82">
+                      <PlayCircle className="h-4 w-4" />
+                      Innovation two
+                    </div>
+                    <p className="mt-2 text-xs leading-6 text-white/64">
+                      The same Testnet product is promoted as an Android APK path so a normal user can try the live stack immediately.
+                    </p>
+                  </div>
+                </div>
               </div>
               <div className="max-w-3xl rounded-[26px] border border-cyan-300/18 bg-cyan-300/[0.08] p-5 text-sm leading-7 text-white/72">
                 <div className="text-[11px] uppercase tracking-[0.28em] text-cyan-100/80">Governance OS thesis</div>
@@ -595,6 +631,7 @@ export function HomeShell() {
               </Link>
               <Link className={cn(buttonVariants({ size: "lg", variant: "secondary" }))} href="/android">
                 {homeCopy.android}
+                <ArrowRight className="h-4 w-4" />
               </Link>
               <Link className={cn(buttonVariants({ size: "lg", variant: "secondary" }))} href="/proof">
                 {homeCopy.verify}

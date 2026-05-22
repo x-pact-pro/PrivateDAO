@@ -122,7 +122,7 @@ export function SiteHeader() {
   return (
     <header className="sticky top-0 z-40 border-b border-white/8 bg-[#050816]/75 backdrop-blur-xl">
       <div className="mx-auto flex w-full max-w-7xl flex-col gap-4 px-4 py-4 sm:px-6 lg:px-8">
-        <div className="flex items-start justify-between gap-4 sm:items-center">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4 lg:items-center">
           <div className="group flex min-w-0 flex-col gap-0">
             <Link href="/" className="min-w-0">
               <div className="flex flex-nowrap items-center gap-0.5 whitespace-nowrap text-lg font-semibold tracking-tight text-white sm:text-2xl">
@@ -155,18 +155,18 @@ export function SiteHeader() {
             </div>
           </div>
 
-          <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
+          <div className="flex w-full shrink-0 flex-wrap items-center gap-1.5 sm:w-auto sm:flex-nowrap sm:gap-2">
             <LanguageSwitcher />
             <Link
               href="/search"
-              className={cn(buttonVariants({ size: "sm", variant: "ghost" }), "h-10 w-10 rounded-full p-0 text-white/72")}
+              className={cn(buttonVariants({ size: "sm", variant: "ghost" }), "hidden h-10 w-10 rounded-full p-0 text-white/72 sm:inline-flex")}
               aria-label={copy.chrome.search}
             >
               <Search className="h-4 w-4" />
             </Link>
             <Link
               href="/assistant"
-              className={cn(buttonVariants({ size: "sm", variant: "ghost" }), "h-10 w-10 rounded-full p-0 text-white/72")}
+              className={cn(buttonVariants({ size: "sm", variant: "ghost" }), "hidden h-10 w-10 rounded-full p-0 text-white/72 sm:inline-flex")}
               aria-label={copy.chrome.help}
             >
               <Sparkles className="h-4 w-4" />
@@ -179,7 +179,7 @@ export function SiteHeader() {
             >
               {copy.chrome.openApp}
             </a>
-            <WalletConnectButton />
+            <WalletConnectButton className="max-w-full flex-1 px-3 sm:flex-none" />
           </div>
         </div>
 

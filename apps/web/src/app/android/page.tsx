@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowUpRight, CheckCircle2, Download, Github, QrCode, ShieldCheck, Smartphone, Wallet } from "lucide-react";
+import { ArrowUpRight, CheckCircle2, Download, Github, PlayCircle, QrCode, ShieldCheck, Smartphone, Trophy, Wallet } from "lucide-react";
 
 import { OperationsShell } from "@/components/operations-shell";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -20,13 +20,14 @@ import { cn } from "@/lib/utils";
 export const metadata: Metadata = buildRouteMetadata({
   title: "Android App",
   description:
-    "Download the PrivateDAO Android APK and run wallet-first DAO governance, private execution lanes, and proof-linked on-chain verification from mobile.",
+    "Download the PrivateDAO Android APK and try a mobile Solana operating path for wallet-first DAO governance, private execution lanes, and proof-linked on-chain verification.",
   path: "/android",
   keywords: ["android app", "apk", "mobile wallet adapter", "android governance app", "privatedao mobile"],
 });
 
 const parityItems = [
   "The Android APK now promotes the live web product as the primary mobile route, while native screens keep wallet-signed governance actions available on Solana Testnet.",
+  "The APK points judges and users into the same multilingual live web routes while Mobile Wallet Adapter-compatible native screens keep wallet connection and signing available for Solana Testnet actions.",
   "Create DAO, deposit treasury, create proposal, commit, reveal, finalize, execute, cancel, and veto are available from Android.",
   "Wallet-first mobile operations run on the same Solana Testnet program and verification path used by the web surface.",
   "Proof, runtime logs, monitoring, and reviewer routes stay linked so mobile execution remains auditable and easy to validate.",
@@ -63,10 +64,45 @@ export default function AndroidPage() {
       description="This APK turns PrivateDAO from a web app into a mobile Solana product: ordinary users can open the same live web experience, then continue into native wallet-signed governance, confidential operations, service lanes, and on-chain proof without terminal complexity."
       badges={[
         { label: "Updated APK live", variant: "success" },
+        { label: "Try it now", variant: "success" },
         { label: "Mobile-first execution", variant: "cyan" },
         { label: "Live web + native signing", variant: "violet" },
       ]}
     >
+      <Card className="border-emerald-300/16 bg-[radial-gradient(circle_at_top_left,rgba(20,241,149,0.16),transparent_34%),rgba(255,255,255,0.04)]">
+        <CardContent className="grid gap-5 p-5 lg:grid-cols-[0.75fr_1.25fr_auto] lg:items-center">
+          <div className="flex items-center gap-3">
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-emerald-300/20 bg-emerald-300/10 text-emerald-100">
+              <PlayCircle className="h-6 w-6" />
+            </div>
+            <div>
+              <div className="text-[11px] uppercase tracking-[0.28em] text-emerald-100/78">Try it now</div>
+              <div className="mt-1 text-xl font-semibold text-white">A live mobile Solana operating path, not a screenshot.</div>
+            </div>
+          </div>
+          <div className="grid gap-3 text-sm leading-7 text-white/68 sm:grid-cols-2">
+            <div className="rounded-2xl border border-white/8 bg-black/18 p-4">
+              <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-violet-100/82">
+                <Trophy className="h-4 w-4" />
+                Innovation one
+              </div>
+              <p className="mt-2">A sovereign encrypted web operating system for governance, payroll, payments, rewards, intelligence, and proof.</p>
+            </div>
+            <div className="rounded-2xl border border-white/8 bg-black/18 p-4">
+              <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-cyan-100/82">
+                <Smartphone className="h-4 w-4" />
+                Innovation two
+              </div>
+              <p className="mt-2">An Android APK path that lets judges and users enter the same live Testnet product from mobile.</p>
+            </div>
+          </div>
+          <a href={androidApkDownloadUrl} target="_blank" rel="noreferrer" className={cn(buttonVariants(), "w-full justify-between lg:w-auto")}>
+            Download APK
+            <Download className="h-4 w-4" />
+          </a>
+        </CardContent>
+      </Card>
+
       <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
         <Card>
           <CardHeader>
@@ -76,7 +112,7 @@ export default function AndroidPage() {
             <div className="rounded-3xl border border-emerald-300/16 bg-emerald-300/[0.08] p-4 text-sm leading-7 text-white/72">
               Android is now the mobile proof of the full PrivateDAO thesis: the same live web product for normal users,
               plus native Solana Testnet execution for governance, services, confidential payroll, encrypted payments,
-              gaming rewards, diagnostics, and proof continuity.
+              gaming rewards, diagnostics, multilingual routing, wallet connection, and proof continuity.
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="rounded-3xl border border-white/8 bg-white/4 p-4">
@@ -98,7 +134,7 @@ export default function AndroidPage() {
                 <div className="mt-3 space-y-2 text-sm leading-7 text-white/68">
                   <div>Working branch: <span className="text-white">{androidBranchName}</span></div>
                   <div>Channel: <span className="text-white">Android-native Testnet surface</span></div>
-                  <div>Product scope: <span className="text-white">live web parity, native governance, services, proof-linked verification</span></div>
+                  <div>Product scope: <span className="text-white">multilingual live web parity, native wallet signing, services, proof-linked verification</span></div>
                 </div>
               </div>
             </div>
