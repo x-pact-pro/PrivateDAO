@@ -516,6 +516,18 @@ const curatedDocuments: CuratedDocument[] = [
     rawHref: `${repositoryBlobBase}/docs/security-remediation-2026-05-22.md`,
   },
   {
+    slug: "security-response-capability-2026-05-22",
+    title: "Security Response Capability 2026-05-22",
+    category: "Security",
+    summary:
+      "Judging-stage response packet showing how a vote-salt privacy finding was identified, fixed in code, tied to a repeatable verification gate, and separated from the remaining custody authority gap.",
+    audience: "Judges, security reviewers, operators, technical diligence teams",
+    boundary:
+      "Response-capability packet only; it proves the browser storage remediation workflow and explicitly leaves production multisig custody, external audit, and mainnet real-funds readiness gated on separate evidence.",
+    docPath: "docs/security-response-capability-2026-05-22.md",
+    rawHref: `${repositoryBlobBase}/docs/security-response-capability-2026-05-22.md`,
+  },
+  {
     slug: "reviewer-fast-path-2026-05-06",
     title: "Reviewer Fast Path 2026-05-06",
     category: "Reviewer core",

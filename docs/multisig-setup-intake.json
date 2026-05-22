@@ -5,6 +5,16 @@
   "productionMainnetClaimAllowed": false,
   "network": "mainnet-beta",
   "custodyTarget": "program-upgrade-authority-and-production-ops-authorities",
+  "testnetAuthorityPrecheck": {
+    "checkedAt": "2026-05-22T22:59:00+03:00",
+    "cluster": "testnet",
+    "programId": "EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva",
+    "programDataAddress": "FKyt5DcmRQcCF8kzMGjCvfGb3ZPHMQnH1SqiG9Mi8xEc",
+    "observedAuthority": "4Mm5YTRbJuyA8NcWM85wTnx6ZQMXNph2DSnzCCKLhsMD",
+    "lastDeployedSlot": 405189011,
+    "readCommand": "solana program show EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva --url https://api.testnet.solana.com",
+    "closureStatus": "single-authority-observed"
+  },
   "rehearsalSource": {
     "network": "devnet",
     "implementation": "spl-token-2022-multisig",
@@ -80,7 +90,7 @@
   "authorityTransfers": [
     {
       "surface": "program-upgrade-authority",
-      "programId": "5AhUsbQ4mJ8Xh7QJEomuS85qGgmK9iNvFqzF669Y7Psx",
+      "programId": "EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva",
       "destinationAuthority": null,
       "transferSignature": null,
       "postTransferReadout": null,
@@ -88,7 +98,7 @@
     },
     {
       "surface": "dao-authority",
-      "programId": "5AhUsbQ4mJ8Xh7QJEomuS85qGgmK9iNvFqzF669Y7Psx",
+      "programId": "EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva",
       "destinationAuthority": null,
       "transferSignature": null,
       "postTransferReadout": null,
@@ -96,7 +106,7 @@
     },
     {
       "surface": "treasury-operator-authority",
-      "programId": "5AhUsbQ4mJ8Xh7QJEomuS85qGgmK9iNvFqzF669Y7Psx",
+      "programId": "EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva",
       "destinationAuthority": null,
       "transferSignature": null,
       "postTransferReadout": null,

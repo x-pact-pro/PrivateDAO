@@ -65,10 +65,13 @@ export default function SecurityPage() {
           <Link href="/documents/security-remediation-2026-05-22" className={cn(buttonVariants({ size: "sm" }))}>
             Open remediation packet
           </Link>
+          <Link href="/documents/security-response-capability-2026-05-22" className={cn(buttonVariants({ size: "sm", variant: "secondary" }))}>
+            Open response capability
+          </Link>
           <Link href="/documents/zk-capability-matrix" className={cn(buttonVariants({ size: "sm", variant: "outline" }))}>
             Open ZK matrix
           </Link>
-          <Link href="/api-status" className={cn(buttonVariants({ size: "sm", variant: "secondary" }))}>
+          <Link href="/api-status" className={cn(buttonVariants({ size: "sm", variant: "outline" }))}>
             Open API status
           </Link>
         </div>

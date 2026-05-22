@@ -36,6 +36,36 @@ Supporting operator docs:
 - Custody target: program upgrade authority and production operational authorities
 - Secret handling: no seed phrases, no private keys, no hot-wallet exports in Git
 
+## Current Testnet Authority Precheck
+
+Read-only command run on `2026-05-22`:
+
+```bash
+solana program show EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva --url https://api.testnet.solana.com
+```
+
+Observed output:
+
+```text
+Program Id: EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva
+ProgramData Address: FKyt5DcmRQcCF8kzMGjCvfGb3ZPHMQnH1SqiG9Mi8xEc
+Authority: 4Mm5YTRbJuyA8NcWM85wTnx6ZQMXNph2DSnzCCKLhsMD
+Last Deployed In Slot: 405189011
+```
+
+This is the authority gap the Squads ceremony must close. It is not yet a completed transfer.
+
+Once the Squads address exists, the transfer command must target the current Testnet program:
+
+```bash
+solana program set-upgrade-authority EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva \
+  --new-upgrade-authority <SQUADS_MULTISIG_ADDRESS> \
+  --keypair <current-upgrade-authority-keypair.json> \
+  --url https://api.testnet.solana.com
+```
+
+The resulting signature and post-transfer readout belong in `docs/multisig-setup-intake.json`. Do not mark this packet `complete` until the new authority appears in a fresh `solana program show` readout.
+
 ## Live Rehearsal Source
 
 - Devnet rehearsal multisig:
