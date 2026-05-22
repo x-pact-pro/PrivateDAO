@@ -238,6 +238,7 @@ The first product view exposes the highest-value lanes immediately so a judge, i
 | Lane | Route | Why it matters |
 | --- | --- | --- |
 | Intelligence | `https://privatedao.org/intelligence/` | QVAC, Covalent GoldRush, SNS, Zerion policy context, counterparty trust, proposal context, and RPC quality before signing. |
+| Decision Intelligence | `https://privatedao.org/services/goldrush-decision-intelligence/` | Direct provider-to-execution corridor: GoldRush wallet context, QVAC decision support, Encrypt/IKA handoff, wallet execution, and proof continuity. |
 | Governance | `https://privatedao.org/govern/` | DAO creation, proposal creation, voting, reveal, finalize, and execution path. |
 | Treasury | `https://privatedao.org/treasury/` | Treasury health, policy, solvency posture, and agent context. |
 | Payroll | `https://privatedao.org/payroll/` | Private CSV payroll, stablecoin selection, Umbra/Cloak posture, and audit receipts. |
@@ -278,6 +279,22 @@ PrivateDAO keeps each integration tied to a user-facing job. The product does no
 | ☁️ | AWS read node | `api.privatedao.org`, `/rpc-services` | Hosted read-node and relayer health surface for indexed evidence, QVAC runtime proof, and infrastructure checks. |
 | 🔎 | SNS `.sol` lookup | `/execute`, `/services`, wallet helpers | Lets users resolve readable `.sol` names instead of pasting raw wallet addresses where supported. |
 | 📱 | Android | `/android`, mobile docs | Mobile parity for the same wallet-first operating story: learn, review, sign, and verify without terminal workflows. |
+
+## Provider To Encrypted Execution Spine
+
+PrivateDAO now has a direct route for the highest-value operating question: how does provider intelligence become a protected on-chain action?
+
+Route: `https://privatedao.org/services/goldrush-decision-intelligence/`
+
+| Stage | Route | User job |
+| --- | --- | --- |
+| Provider | `/services/goldrush-decision-intelligence` | Run GoldRush-style wallet, stablecoin, counterparty, and source-health review. |
+| Decide | `/intelligence` | Use QVAC and deterministic analysis to classify risk before signing. |
+| Encrypt | `/services/encrypt-ika-operations` | Prepare REFHE packets, encrypted manifests, IKA custody routes, and commitment-safe artifacts. |
+| Execute | `/execute` | Sign only after the decision and privacy boundary are clear. |
+| Verify | `/proof` | Inspect receipts, logs, documents, and chain evidence without exposing confidential payloads. |
+
+This is not a sponsor-logo collage. It is the product architecture: analyze the counterparty, decide what risk exists, encrypt what must stay private, sign only from the wallet, and verify the outcome.
 
 ## Anchor 1.0.1 Toolchain Status
 

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
+import { CryptographicExecutionSpine } from "@/components/cryptographic-execution-spine";
 import { TestnetBillingRehearsal } from "@/components/devnet-billing-rehearsal";
 import { ExecuteCurrentOperationPanel } from "@/components/execute-current-operation-panel";
 import { ExecuteGrowthPanel } from "@/components/execute-growth-panel";
@@ -113,6 +114,7 @@ export default function ExecutePage() {
       <div className="grid items-start gap-5 xl:grid-cols-[minmax(0,1fr)_360px]">
         <div className="space-y-5">
           <ExecutionSpineSurface context="execute" compact />
+          <CryptographicExecutionSpine compact context="execute" />
           <QvacSovereignAiSurface compact />
           <ProjectOperatingMap
             compact

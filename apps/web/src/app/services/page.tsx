@@ -6,6 +6,7 @@ import { AnalystGradeDataCorridor } from "@/components/analyst-grade-data-corrid
 import { BusinessModelSurface } from "@/components/business-model-surface";
 import { CommercialCompareSurface } from "@/components/commercial-compare-surface";
 import { CustodyReadinessStrip } from "@/components/custody-readiness-strip";
+import { CryptographicExecutionSpine } from "@/components/cryptographic-execution-spine";
 import { DataCorridorQuickLinks } from "@/components/data-corridor-quick-links";
 import { DevnetServiceMetricsPanel } from "@/components/devnet-service-metrics-panel";
 import { EcosystemFocusAlignmentStrip } from "@/components/ecosystem-focus-alignment-strip";
@@ -82,6 +83,7 @@ export default function ServicesPage() {
         description="Commercial packaging stays grounded only when it reflects the live wallet-first cycle: connect, review, sign, and verify with the same Testnet evidence and proof continuity."
       />
       <ExecutionSpineSurface context="services" compact />
+      <CryptographicExecutionSpine compact context="services" />
       <div>
         <ServicesSurface />
       </div>

@@ -492,6 +492,18 @@ const curatedDocuments: CuratedDocument[] = [
     rawHref: `${repositoryBlobBase}/docs/grand-champion-10-level-improvement-map-2026-05-22.md`,
   },
   {
+    slug: "provider-to-encrypted-execution-spine-2026-05-22",
+    title: "Provider To Encrypted Execution Spine",
+    category: "Architecture",
+    summary:
+      "Architecture brief for the GoldRush decision-intelligence corridor that connects provider data, QVAC analysis, REFHE / Encrypt / IKA preparation, wallet-first execution, and proof continuity.",
+    audience: "Judges, operators, reviewers, builders",
+    boundary:
+      "Architecture brief only; it documents the product spine and Testnet routing without claiming Mainnet custody closure, external audit completion, or unrestricted autonomous execution.",
+    docPath: "docs/provider-to-encrypted-execution-spine-2026-05-22.md",
+    rawHref: `${repositoryBlobBase}/docs/provider-to-encrypted-execution-spine-2026-05-22.md`,
+  },
+  {
     slug: "reviewer-fast-path-2026-05-06",
     title: "Reviewer Fast Path 2026-05-06",
     category: "Reviewer core",

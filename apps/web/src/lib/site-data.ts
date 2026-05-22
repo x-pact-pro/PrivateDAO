@@ -539,10 +539,10 @@ export const privateDaoServiceConstellation = [
     audience: "Operators, reviewers, treasury analysts, founders",
     problem: "Sensitive governance needs interpretation, but external AI tools can leak operational context.",
     service:
-      "Local-first QVAC review, deterministic proposal summaries, treasury route analysis, and encrypted brief generation.",
-    execution: "AI helps explain risk and next action before the wallet signs; the signer remains the execution boundary.",
-    proof: "Intelligence route",
-    href: "/intelligence",
+      "GoldRush wallet intelligence, local-first QVAC review, deterministic proposal summaries, treasury route analysis, and encrypted brief generation.",
+    execution: "Provider data and AI explain risk before the wallet signs; sensitive intent routes through Encrypt / IKA when privacy is required.",
+    proof: "Decision intelligence",
+    href: "/services/goldrush-decision-intelligence",
     proofHref: "/services/qvac-sovereign-ai",
   },
   {

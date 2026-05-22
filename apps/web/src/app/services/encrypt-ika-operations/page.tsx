@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
+import { CryptographicExecutionSpine } from "@/components/cryptographic-execution-spine";
 import { EncryptedOperationsWorkbench } from "@/components/encrypted-operations-workbench";
 import { ConfidentialPaymentsSystemSurface } from "@/components/confidential-payments-system-surface";
 import { IkaDwalletCustodyWorkbench } from "@/components/ika-dwallet-custody-workbench";
@@ -73,6 +74,7 @@ export default function EncryptIkaOperationsPage() {
         title="How encrypted operations feed the rest of the product"
         description="Encrypt / IKA is the privacy preparation layer. It protects payroll instructions, sensitive treasury operations, and confidential governance payloads before Cloak, Umbra, or MagicBlock take over as execution rails. Intelligence still feeds this lane by narrowing what should be signed and what must remain encrypted."
       />
+      <CryptographicExecutionSpine compact context="encrypt-ika" />
       <RefhePayrollProofWorkbench />
       <IkaDwalletCustodyWorkbench />
       <PrivatePayrollEncryptionWorkbench />

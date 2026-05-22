@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
+import { CryptographicExecutionSpine } from "@/components/cryptographic-execution-spine";
 import { GuidedOperationRail } from "@/components/guided-operation-rail";
 import { GoldRushIntelligenceSurface } from "@/components/goldrush-intelligence-surface";
 import { IntelligenceLayerSurface } from "@/components/intelligence-layer-surface";
@@ -81,6 +82,7 @@ export default function IntelligencePage() {
       <div>
         <MetricsStrip />
       </div>
+      <CryptographicExecutionSpine compact context="intelligence" />
       <div>
         <SectionHeader
           eyebrow="Not a chatbot"
