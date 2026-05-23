@@ -33,7 +33,13 @@ chain = json.loads(chain_json)
 
 assert health["ok"] is True and health["health"] == "healthy", "remote /healthz failed"
 assert health["runtime"]["programId"] == expected_program_id, f"remote /healthz program drift: {health['runtime']['programId']} != {expected_program_id}"
-assert health["runtime"]["rpcEndpoint"] == "https://api.testnet.solana.com", f"remote /healthz RPC drift: {health['runtime']['rpcEndpoint']}"
+rpc_endpoint = health["runtime"]["rpcEndpoint"]
+assert (
+    rpc_endpoint == "https://api.testnet.solana.com"
+    or "solana-testnet.quiknode.pro/[redacted]" in rpc_endpoint
+), f"remote /healthz RPC drift or leaked secret: {rpc_endpoint}"
+for endpoint in config["config"].get("rpcEndpoints", []):
+    assert "/[redacted]" in endpoint or endpoint == "https://api.testnet.solana.com", f"remote /api/v1/config leaked or drifted RPC endpoint: {endpoint}"
 assert health["runtime"]["programExecutable"] is True, "remote /healthz program is not executable on Testnet"
 assert config["ok"] is True and config["config"]["readPath"] == "backend-indexer", "remote /api/v1/config is not backend-indexer"
 assert config["config"]["programId"] == expected_program_id, f"remote /api/v1/config program drift: {config['config']['programId']} != {expected_program_id}"

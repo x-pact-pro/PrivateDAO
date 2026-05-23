@@ -310,9 +310,14 @@ function redactRpcEndpoint(endpoint: string) {
     for (const key of Array.from(url.searchParams.keys())) {
       if (/api[_-]?key|token|secret/i.test(key)) url.searchParams.set(key, "[redacted]");
     }
-    return url.toString();
+    if (/quiknode\.pro$/i.test(url.hostname) || /quicknode/i.test(url.hostname)) {
+      url.pathname = url.pathname.replace(/\/[A-Za-z0-9_-]{24,}(?=\/?$)/g, "/[redacted]");
+    }
+    return url.toString().replace(/\/$/, "");
   } catch {
-    return endpoint.replace(/(api[_-]?key=)[^&]+/gi, "$1[redacted]");
+    return endpoint
+      .replace(/(api[_-]?key=)[^&]+/gi, "$1[redacted]")
+      .replace(/(quiknode\.pro\/)[A-Za-z0-9_-]{24,}/gi, "$1[redacted]");
   }
 }
 
@@ -827,7 +832,7 @@ export class PrivateDaoReadNode {
     const snapshot: RuntimeView = {
       generatedAt: new Date().toISOString(),
       readPath: "backend-indexer",
-      rpcEndpoint: this.currentRpcEndpoint(),
+      rpcEndpoint: redactRpcEndpoint(this.currentRpcEndpoint()),
       rpcPoolSize: this.rpcEndpoints.length,
       commitment: this.commitment,
       programId: this.programId.toBase58(),
@@ -1202,6 +1207,7 @@ export const __testables = {
   isPlaceholderValue,
   isValidRpcUrl,
   rpcTimeoutMs,
+  redactRpcEndpoint,
   buildAlchemyDevnetRpc,
   buildHeliusDevnetRpc,
   actionTypeLabel,

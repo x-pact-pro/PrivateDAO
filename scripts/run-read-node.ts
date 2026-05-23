@@ -236,9 +236,20 @@ function routeNotFound(res: http.ServerResponse, pathname: string) {
 }
 
 function redactUrlSecret(value: string) {
-  return value
+  let redacted = value
     .replace(/([?&](?:api[_-]?key|key|token|secret)=)[^&]+/gi, "$1[redacted]")
+    .replace(/(quiknode\.pro\/)[A-Za-z0-9_-]{24,}/gi, "$1[redacted]")
     .replace(/(Bearer\s+)[A-Za-z0-9._~+/=-]+/gi, "$1[redacted]");
+  try {
+    const url = new URL(redacted);
+    if (/quiknode\.pro$/i.test(url.hostname) || /quicknode/i.test(url.hostname)) {
+      url.pathname = url.pathname.replace(/\/[A-Za-z0-9_-]{24,}(?=\/?$)/g, "/[redacted]");
+      redacted = url.toString().replace(/\/$/, "");
+    }
+  } catch {
+    // Keep the regex-redacted value for non-URL strings such as Authorization headers.
+  }
+  return redacted;
 }
 
 function getQuickNodeAuthToken(req: http.IncomingMessage) {

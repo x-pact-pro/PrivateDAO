@@ -266,6 +266,17 @@ describe("read node unit coverage", () => {
     assert.equal(node.currentRpcEndpoint(), "https://rpc-b.example");
   });
 
+  it("redacts QuickNode RPC path secrets before exposing runtime evidence", () => {
+    const redacted = __testables.redactRpcEndpoint(
+      "https://cosmological-hidden-water.solana-testnet.quiknode.pro/a15cf3772672a4ecb986d52659a108a3e6efe160/",
+    );
+
+    assert.equal(
+      redacted,
+      "https://cosmological-hidden-water.solana-testnet.quiknode.pro/[redacted]",
+    );
+  });
+
   it("reports label helpers and profile summaries consistently", () => {
     assert.equal(__testables.actionTypeLabel({ SendSpl2022: {} }), "Send SPL-2022");
     assert.equal(__testables.statusLabel({ Passed: {} }), "Passed");
