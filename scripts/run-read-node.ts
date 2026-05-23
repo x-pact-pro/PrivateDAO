@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 import * as http from "http";
-import { createHash } from "crypto";
+import { createHash, timingSafeEqual } from "crypto";
 import { createRequire } from "module";
 import { readFile } from "fs/promises";
 import { join, resolve } from "path";
@@ -126,6 +126,41 @@ type LiveTransactionRow = {
   wallet_type: string;
 };
 
+type QuickNodeProgramInvocation = {
+  programId?: string;
+  instruction?: unknown;
+};
+
+type QuickNodeStreamTransaction = {
+  signature?: string;
+  slot?: number;
+  meta?: {
+    err?: unknown;
+    computeUnitsConsumed?: number;
+    logMessages?: string[];
+  };
+  transaction?: {
+    signatures?: string[];
+    message?: {
+      accountKeys?: Array<{ pubkey?: string } | string>;
+      instructions?: Array<{ programId?: string; parsed?: unknown }>;
+    };
+  };
+  programInvocations?: QuickNodeProgramInvocation[];
+};
+
+type QuickNodeStreamBlock = {
+  blockHeight?: number;
+  blockTime?: number;
+  blockhash?: string;
+  parentSlot?: number;
+  transactions?: QuickNodeStreamTransaction[];
+};
+
+type QuickNodeStreamPayload = {
+  data?: unknown;
+};
+
 const suspiciousPathPatterns = [
   /^\/\.env(?:$|[/?#])/,
   /^\/\.git(?:$|[/?#])/,
@@ -206,12 +241,131 @@ function redactUrlSecret(value: string) {
     .replace(/(Bearer\s+)[A-Za-z0-9._~+/=-]+/gi, "$1[redacted]");
 }
 
-function readRequestJson(req: http.IncomingMessage): Promise<Record<string, unknown>> {
+function getQuickNodeAuthToken(req: http.IncomingMessage) {
+  const headerToken =
+    String(req.headers["x-quicknode-security-token"] || "") ||
+    String(req.headers["x-private-dao-stream-token"] || "");
+  const authorization = String(req.headers.authorization || "");
+  const bearerToken = authorization.toLowerCase().startsWith("bearer ")
+    ? authorization.slice("bearer ".length)
+    : "";
+  return (bearerToken || headerToken).trim();
+}
+
+function safeTokenEquals(received: string, expected: string) {
+  const receivedBuffer = Buffer.from(received);
+  const expectedBuffer = Buffer.from(expected);
+  return receivedBuffer.length === expectedBuffer.length && timingSafeEqual(receivedBuffer, expectedBuffer);
+}
+
+function requireQuickNodeStreamAuth(req: http.IncomingMessage) {
+  const expectedToken = process.env.QUICKNODE_STREAM_TOKEN?.trim();
+  if (!expectedToken) {
+    return { ok: false as const, status: 503, error: "QUICKNODE_STREAM_TOKEN is not configured on the read node." };
+  }
+
+  const receivedToken = getQuickNodeAuthToken(req);
+  if (!receivedToken || !safeTokenEquals(receivedToken, expectedToken)) {
+    return { ok: false as const, status: 401, error: "Unauthorized QuickNode stream payload." };
+  }
+
+  return { ok: true as const };
+}
+
+function asArray(value: unknown): unknown[] {
+  return Array.isArray(value) ? value : [];
+}
+
+function asObject(value: unknown): Record<string, unknown> {
+  return value !== null && typeof value === "object" ? (value as Record<string, unknown>) : {};
+}
+
+function getQuickNodeTransactionSignature(transaction: QuickNodeStreamTransaction) {
+  return transaction.signature ?? transaction.transaction?.signatures?.[0] ?? "unknown-signature";
+}
+
+function extractQuickNodeTransactions(entry: unknown): QuickNodeStreamTransaction[] {
+  if (Array.isArray(entry)) {
+    return entry.flatMap(extractQuickNodeTransactions);
+  }
+
+  const object = asObject(entry);
+  if (Array.isArray(object.transactions)) {
+    return object.transactions as QuickNodeStreamTransaction[];
+  }
+
+  if ("signature" in object || "transaction" in object || "programInvocations" in object) {
+    return [object as QuickNodeStreamTransaction];
+  }
+
+  return [];
+}
+
+function getQuickNodeProgramIds(transaction: QuickNodeStreamTransaction) {
+  const ids = new Set<string>();
+  for (const invocation of transaction.programInvocations ?? []) {
+    if (invocation.programId) ids.add(invocation.programId);
+  }
+  for (const instruction of transaction.transaction?.message?.instructions ?? []) {
+    if (instruction.programId) ids.add(instruction.programId);
+  }
+  for (const log of transaction.meta?.logMessages ?? []) {
+    const match = log.match(/^Program\s+([1-9A-HJ-NP-Za-km-z]{32,44})\s+/);
+    if (match?.[1]) ids.add(match[1]);
+  }
+  return Array.from(ids);
+}
+
+function summarizeQuickNodeStreamPayload(payload: QuickNodeStreamPayload) {
+  const entries = asArray(payload.data);
+  const blocks = entries.filter((entry) => !Array.isArray(entry) && "blockhash" in asObject(entry)) as QuickNodeStreamBlock[];
+  const transactions = entries.flatMap(extractQuickNodeTransactions);
+  const privateDaoProgramId =
+    process.env.NEXT_PUBLIC_PRIVATE_DAO_PROGRAM_ID?.trim() ||
+    process.env.PRIVATE_DAO_PROGRAM_ID?.trim() ||
+    "EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva";
+  const programMatches = transactions.filter((transaction) => getQuickNodeProgramIds(transaction).includes(privateDaoProgramId));
+  const failedTransactions = transactions.filter((transaction) => transaction.meta?.err);
+  const computeUnits = transactions
+    .map((transaction) => transaction.meta?.computeUnitsConsumed)
+    .filter((value): value is number => typeof value === "number");
+  const computeUnitsConsumed = computeUnits.reduce((sum, value) => sum + value, 0);
+  const firstBlock = blocks[0];
+  const latestSlot =
+    transactions.reduce<number | null>(
+      (latest, transaction) =>
+        typeof transaction.slot === "number" ? Math.max(latest ?? 0, transaction.slot) : latest,
+      null,
+    ) ?? firstBlock?.parentSlot ?? null;
+
+  return {
+    acceptedAt: new Date().toISOString(),
+    network: "solana-testnet",
+    dataset: "quicknode-stream",
+    blockCount: blocks.length,
+    transactionCount: transactions.length,
+    failedTransactionCount: failedTransactions.length,
+    privateDaoProgramId,
+    privateDaoTransactionCount: programMatches.length,
+    computeUnitsConsumed,
+    latestSlot,
+    latestBlockHeight: firstBlock?.blockHeight ?? null,
+    latestBlockTime: firstBlock?.blockTime ?? null,
+    sampleSignatures: transactions.slice(0, 8).map(getQuickNodeTransactionSignature),
+    privateDaoSignatures: programMatches.slice(0, 8).map(getQuickNodeTransactionSignature),
+    dataUse:
+      "QuickNode Streams feed PrivateDAO runtime intelligence, proof freshness, and reviewer-visible operational telemetry. Raw payloads are not persisted by this endpoint.",
+  };
+}
+
+function readRequestJsonWithLimit(req: http.IncomingMessage, maxBytes: number): Promise<unknown> {
   return new Promise((resolve, reject) => {
     const chunks: Buffer[] = [];
+    let bytes = 0;
     req.on("data", (chunk: Buffer) => {
+      bytes += chunk.byteLength;
       chunks.push(chunk);
-      if (Buffer.concat(chunks).byteLength > 32_768) {
+      if (bytes > maxBytes) {
         req.destroy(new Error("Request body too large"));
       }
     });
@@ -223,13 +377,30 @@ function readRequestJson(req: http.IncomingMessage): Promise<Record<string, unkn
           reject(new Error("JSON body must be an object"));
           return;
         }
-        resolve(parsed as Record<string, unknown>);
+        resolve(parsed);
       } catch (error) {
         reject(error);
       }
     });
     req.on("error", reject);
   });
+}
+
+async function readRequestJson(req: http.IncomingMessage): Promise<Record<string, unknown>> {
+  const parsed = await readRequestJsonWithLimit(req, 32_768);
+  if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
+    throw new Error("JSON body must be an object");
+  }
+  return parsed as Record<string, unknown>;
+}
+
+async function readQuickNodeStreamJson(req: http.IncomingMessage): Promise<QuickNodeStreamPayload> {
+  const maxBytes = Number(process.env.QUICKNODE_STREAM_MAX_BYTES || 6_000_000);
+  const parsed = await readRequestJsonWithLimit(req, maxBytes);
+  if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
+    throw new Error("QuickNode stream payload must be a JSON object");
+  }
+  return parsed as QuickNodeStreamPayload;
 }
 
 function stringField(body: Record<string, unknown>, key: string, fallback = "") {
@@ -1833,6 +2004,18 @@ async function handle(req: http.IncomingMessage, res: http.ServerResponse) {
       return;
     }
 
+    if (req.method === "POST" && (pathname === "/api/quicknode/stream" || pathname === "/api/v1/quicknode/stream")) {
+      const auth = requireQuickNodeStreamAuth(req);
+      if (!auth.ok) {
+        writeJson(res, auth.status, { ok: false, error: auth.error });
+        return;
+      }
+      const body = await readQuickNodeStreamJson(req);
+      const summary = summarizeQuickNodeStreamPayload(body);
+      writeJson(res, 202, { ok: true, summary });
+      return;
+    }
+
     if (req.method === "GET" && pathname === "/api/v1/onboard/key") {
       writeJson(res, 200, {
         ok: true,
@@ -1905,7 +2088,21 @@ async function handle(req: http.IncomingMessage, res: http.ServerResponse) {
           executionEvent: "/api/v1/execution-events",
           executionStats: "/api/v1/execution-events/stats",
           onboardRequest: "/api/v1/onboard/request",
+          quickNodeStream: "/api/v1/quicknode/stream",
         },
+      });
+      return;
+    }
+
+    if (pathname === "/api/quicknode/stream" || pathname === "/api/v1/quicknode/stream") {
+      writeJson(res, 200, {
+        ok: true,
+        service: "PrivateDAO QuickNode Stream intake",
+        network: "solana-testnet",
+        dataset: "Programs + Logs / Block",
+        auth: process.env.QUICKNODE_STREAM_TOKEN ? "configured" : "missing-env",
+        destination: "/api/v1/quicknode/stream",
+        acceptedAuthHeaders: ["Authorization: Bearer <token>", "x-quicknode-security-token", "x-private-dao-stream-token"],
       });
       return;
     }

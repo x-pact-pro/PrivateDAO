@@ -15,8 +15,9 @@ This is not a public secret store and it is not a raw block archive. The product
 
 ## Webhook
 
-- destination: `https://privatedao.org/api/quicknode/stream`
-- local route: `apps/web/src/app/api/quicknode/stream/route.ts`
+- production destination: `https://api.privatedao.org/api/v1/quicknode/stream`
+- static-site advisory route: `apps/web/src/app/api/quicknode/stream/route.ts`
+- read-node route: `scripts/run-read-node.ts`
 - required secret: `QUICKNODE_STREAM_TOKEN`
 - accepted auth headers: `Authorization: Bearer <token>`, `x-quicknode-security-token`, or `x-private-dao-stream-token`
 
@@ -31,7 +32,7 @@ Never commit the token. Rotate any token that was pasted into chat, screenshots,
 - timeout: `30s`
 - retry delay: `1s`
 - terminate after: `3` retries
-- destination URL: `https://privatedao.org/api/quicknode/stream`
+- destination URL: `https://api.privatedao.org/api/v1/quicknode/stream`
 
 ## Why It Matters
 
@@ -57,5 +58,5 @@ npm run web:build
 Health check:
 
 ```bash
-curl https://privatedao.org/api/quicknode/stream
+curl https://api.privatedao.org/api/v1/quicknode/stream
 ```

@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 const streamFacts = [
   {
     label: "Stream endpoint",
-    value: "/api/quicknode/stream",
+    value: "api.privatedao.org/api/v1/quicknode/stream",
     detail: "Authenticated webhook for Solana Testnet Programs + Logs or Block datasets.",
   },
   {
