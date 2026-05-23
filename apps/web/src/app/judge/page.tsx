@@ -21,6 +21,42 @@ import { buildRouteMetadata } from "@/lib/route-metadata";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
+const ENCRYPTED_INTEGRATIONS_2026_05_23 = {
+  title: "Encrypted integrations activated — 2026-05-23",
+  description:
+    "REFHE envelope + MagicBlock corridor executed on-chain. Treasury: 60M -> 10M tokens. Recipient: 0 -> 50M tokens.",
+  txs: [
+    {
+      label: "REFHE configure",
+      sig: "3fygnmHzFpRQEbHq9q6u3djBnkTEcYz9y1TSwxDmbnuemshrMwLmy9CqpjifjRb7SmW3DbmXrkyq35cnjU7mMSPi",
+      status: "finalized" as const,
+    },
+    {
+      label: "MagicBlock configure",
+      sig: "4UiUumtuGeDciojDA26PkQby7RFiTNb12UG4ACcvGMGfQj24PUPxK5Apeno7EY8mbCvq8nR6h6nfxDcBpjPvGvPj",
+      status: "finalized" as const,
+    },
+    {
+      label: "REFHE settle",
+      sig: "5TmS2AcpAmifcoG97U63Unzy7wt7B2NfyhBRs8Z6C4r1eqcWthEqf3GLcZXQ33sVYHf9YwfvBNhZD8ZZdt4HRwEY",
+      status: "finalized" as const,
+    },
+    {
+      label: "MagicBlock settle",
+      sig: "22XW8XVhWwQtChNQK2aEqXv5BVBbckxUmu4NsisoZQW21KA5ii87gVNUTcNoZ9e1vYKnHmm62qP1girpzVXWN1WY",
+      status: "finalized" as const,
+    },
+    {
+      label: "executeConfidentialPayoutPlanV3 — token moved",
+      sig: "2a8sHWgiVCZkstybMff2M9R6DVU4Y96Rfsg8mqYs7K3xcYSEG1zMcq2iSTNwLD6FgfXvxxxWpwEP9Tbyin47RXvE",
+      status: "finalized" as const,
+      highlight: true,
+    },
+  ],
+  cluster: "testnet",
+  programId: "EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva",
+};
+
 export const metadata: Metadata = buildRouteMetadata({
   title: "Verification Route",
   description:
@@ -108,6 +144,54 @@ export default function JudgePage() {
       ]}
     >
       <LocalizedRouteSummary routeKey="judge" />
+      <section className="rounded-[30px] border border-cyan-300/24 bg-[radial-gradient(circle_at_top_left,rgba(34,211,238,0.20),transparent_34%),linear-gradient(135deg,rgba(14,165,233,0.12),rgba(20,241,149,0.09),rgba(8,13,28,0.95))] p-5 shadow-[0_24px_80px_rgba(0,0,0,0.30)]">
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <div className="text-[11px] uppercase tracking-[0.3em] text-cyan-100/78">Encrypted execution proof</div>
+            <h2 className="mt-3 max-w-4xl text-2xl font-semibold text-white">{ENCRYPTED_INTEGRATIONS_2026_05_23.title}</h2>
+            <p className="mt-3 max-w-4xl text-sm leading-7 text-white/66">{ENCRYPTED_INTEGRATIONS_2026_05_23.description}</p>
+            <div className="mt-3 break-all text-xs leading-6 text-white/48">
+              Program: <span className="font-mono text-cyan-100">{ENCRYPTED_INTEGRATIONS_2026_05_23.programId}</span> · Cluster:{" "}
+              <span className="font-mono text-emerald-100">{ENCRYPTED_INTEGRATIONS_2026_05_23.cluster}</span>
+            </div>
+          </div>
+          <Link href="/documents/testnet-encrypted-integrations-activation-2026-05-23" className={cn(buttonVariants({ variant: "secondary" }), "shrink-0")}>
+            Open activation packet
+            <ArrowUpRight className="h-4 w-4" />
+          </Link>
+        </div>
+        <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-5">
+          {ENCRYPTED_INTEGRATIONS_2026_05_23.txs.map((tx) => (
+            <a
+              key={tx.sig}
+              href={`https://solscan.io/tx/${tx.sig}?cluster=testnet`}
+              target="_blank"
+              rel="noreferrer"
+              className={cn(
+                "rounded-[22px] border bg-black/24 p-4 transition hover:bg-black/32",
+                tx.highlight
+                  ? "border-emerald-300/42 shadow-[0_0_34px_rgba(20,241,149,0.14)]"
+                  : "border-white/10 hover:border-cyan-300/28",
+              )}
+            >
+              <div className="flex items-center justify-between gap-2">
+                <div className="text-[10px] uppercase tracking-[0.22em] text-cyan-100/62">{tx.status}</div>
+                {tx.highlight ? (
+                  <span className="rounded-full border border-emerald-300/28 bg-emerald-300/[0.10] px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-emerald-100">
+                    token moved
+                  </span>
+                ) : null}
+              </div>
+              <div className="mt-3 text-sm font-semibold leading-6 text-white">{tx.label}</div>
+              <div className="mt-2 break-all font-mono text-[11px] leading-5 text-white/54">{tx.sig}</div>
+              <div className="mt-4 inline-flex items-center gap-2 text-xs font-medium text-cyan-100">
+                Open Solscan
+                <ArrowUpRight className="h-3.5 w-3.5" />
+              </div>
+            </a>
+          ))}
+        </div>
+      </section>
       <div className="rounded-[30px] border border-emerald-300/22 bg-[radial-gradient(circle_at_top_left,rgba(20,241,149,0.18),transparent_34%),linear-gradient(135deg,rgba(20,241,149,0.10),rgba(0,194,255,0.08),rgba(8,13,28,0.94))] p-5 shadow-[0_24px_80px_rgba(0,0,0,0.28)]">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>

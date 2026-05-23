@@ -28,6 +28,27 @@ import { buildRouteMetadata } from "@/lib/route-metadata";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
+const encryptedIntegrationStatus = [
+  {
+    label: "REFHE",
+    status: "On-chain active",
+    tx: "3fygnmHzFpRQEbHq9q6u3djBnkTEcYz9y1TSwxDmbnuemshrMwLmy9CqpjifjRb7SmW3DbmXrkyq35cnjU7mMSPi",
+    note: "envelope configured + settled on Testnet 2026-05-23",
+  },
+  {
+    label: "MagicBlock",
+    status: "On-chain active",
+    tx: "4UiUumtuGeDciojDA26PkQby7RFiTNb12UG4ACcvGMGfQj24PUPxK5Apeno7EY8mbCvq8nR6h6nfxDcBpjPvGvPj",
+    note: "corridor configured + settled on Testnet 2026-05-23",
+  },
+  {
+    label: "V3 token execution",
+    status: "Token moved",
+    tx: "2a8sHWgiVCZkstybMff2M9R6DVU4Y96Rfsg8mqYs7K3xcYSEG1zMcq2iSTNwLD6FgfXvxxxWpwEP9Tbyin47RXvE",
+    note: "treasury 60M -> 10M, recipient 0 -> 50M",
+  },
+];
+
 export const metadata: Metadata = buildRouteMetadata({
   title: "Security",
   description:
@@ -53,6 +74,45 @@ export default function SecurityPage() {
       </div>
       <div>
         <LocalizedRouteBrief routeKey="security" />
+      </div>
+      <div className="rounded-[28px] border border-cyan-300/22 bg-[linear-gradient(135deg,rgba(34,211,238,0.13),rgba(20,241,149,0.08),rgba(8,13,28,0.94))] p-5">
+        <div className="text-[11px] uppercase tracking-[0.28em] text-cyan-100/78">Encrypted integrations active</div>
+        <h2 className="mt-3 text-2xl font-semibold text-white">REFHE and MagicBlock are now on-chain settlement gates, not posture-only claims</h2>
+        <p className="mt-3 max-w-4xl text-sm leading-7 text-white/66">
+          The 2026-05-23 Testnet run configured and settled a REFHE envelope, configured and settled a MagicBlock
+          private payment corridor, consumed settlement evidence, and executed the V3 token payout. The IKA lane remains
+          truthfully scoped to SDK/Sui readiness and Solana pre-alpha approval preparation until a funded dWallet DKG is recorded.
+        </p>
+        <div className="mt-4 grid gap-3 lg:grid-cols-3">
+          {encryptedIntegrationStatus.map((item) => (
+            <a
+              key={item.label}
+              href={`https://solscan.io/tx/${item.tx}?cluster=testnet`}
+              target="_blank"
+              rel="noreferrer"
+              className={cn(
+                "rounded-2xl border bg-black/22 p-4 transition hover:bg-black/30",
+                item.status === "Token moved" ? "border-emerald-300/38" : "border-white/10 hover:border-cyan-300/28",
+              )}
+            >
+              <div className="text-[10px] uppercase tracking-[0.22em] text-cyan-100/66">{item.status}</div>
+              <div className="mt-2 text-base font-semibold text-white">{item.label}</div>
+              <div className="mt-2 text-sm leading-6 text-white/58">{item.note}</div>
+              <div className="mt-3 break-all font-mono text-[11px] leading-5 text-white/48">{item.tx}</div>
+            </a>
+          ))}
+        </div>
+        <div className="mt-4 flex flex-wrap gap-3">
+          <Link href="/documents/testnet-encrypted-integrations-activation-2026-05-23" className={cn(buttonVariants({ size: "sm" }))}>
+            Open activation packet
+          </Link>
+          <Link href="/documents/live-proof-v3" className={cn(buttonVariants({ size: "sm", variant: "secondary" }))}>
+            Open live proof V3
+          </Link>
+          <Link href="/judge" className={cn(buttonVariants({ size: "sm", variant: "outline" }))}>
+            Open judge proof panel
+          </Link>
+        </div>
       </div>
       <div className="rounded-[28px] border border-emerald-300/22 bg-[linear-gradient(135deg,rgba(20,241,149,0.12),rgba(0,194,255,0.07),rgba(8,13,28,0.94))] p-5">
         <div className="text-[11px] uppercase tracking-[0.28em] text-emerald-100/78">Custody evidence corrected</div>

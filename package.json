@@ -106,6 +106,7 @@
     "configure:zk-mode": "ts-node scripts/configure-zk-proposal-mode.ts",
     "inspect:zk-proposal": "ts-node scripts/inspect-zk-proposal.ts",
     "execute": "ts-node scripts/execute.ts",
+    "transfer:dao-authority": "ts-node scripts/transfer-dao-authority.ts",
     "run:agentic-micropayment-rail": "ts-node scripts/run-agentic-treasury-micropayment-rail.ts",
     "live-proof": "npm run live-proof:testnet",
     "live-proof:v3": "ts-node scripts/live-devnet-proof-v3.ts",
