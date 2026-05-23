@@ -233,6 +233,7 @@
     "verify:ecosystem-focus-alignment": "ts-node scripts/verify-ecosystem-focus-alignment.ts",
     "verify:operation-ledger": "test -s docs/operation-ledger.generated.json && test -s docs/operation-ledger.generated.md",
     "verify:zk-standalone-verifier": "ts-node scripts/verify-zk-standalone-verifier.ts",
+    "execute:squads-upgrade": "ts-node scripts/execute-squads-upgrade-after-timelock.ts",
     "verify:runtime-evidence": "ts-node scripts/verify-runtime-evidence.ts",
     "verify:real-device-runtime": "ts-node scripts/verify-real-device-runtime-evidence.ts",
     "verify:monitoring-delivery": "ts-node scripts/verify-monitoring-delivery-evidence.ts",

@@ -50,6 +50,7 @@ The proposal is intentionally not marked executed yet. Squads threshold is now s
 After the timelock releases, execute the vault transaction, then verify:
 
 ```bash
+npm run execute:squads-upgrade
 solana program show EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva --url https://api.testnet.solana.com
 ```
 
