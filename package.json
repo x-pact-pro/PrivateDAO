@@ -266,6 +266,7 @@
     "verify:pdao-surface": "ts-node scripts/verify-pdao-token-surface.ts",
     "verify:pdao-attestation": "ts-node scripts/verify-pdao-attestation.ts",
     "verify:pdao-live": "bash scripts/verify-pdao-live.sh",
+    "verify:timelock-enforcement": "node scripts/verify-timelock-enforcement.js",
     "verify:zk-consistency": "ts-node scripts/verify-zk-consistency.ts",
     "verify:zk-negative": "ts-node scripts/verify-zk-negative.ts",
     "zk:build": "bash scripts/zk/build-zk.sh",

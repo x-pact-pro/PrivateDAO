@@ -1,11 +1,35 @@
 import Link from "next/link";
-import { ArrowUpRight, CheckCircle2, Database, GraduationCap, KeyRound, LockKeyhole, ReceiptText, ShieldCheck } from "lucide-react";
+import { ArrowUpRight, CheckCircle2, Database, GraduationCap, KeyRound, LockKeyhole, ReceiptText, ShieldCheck, TimerReset } from "lucide-react";
 
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
 const proofRows = [
+  {
+    icon: ShieldCheck,
+    label: "ZK on-chain verification",
+    status: "Program deployed",
+    claim: "A standalone Anchor verifier program is live on Solana Testnet and emits a reviewer-visible Groth16 receipt through the native BN254 pairing syscall path.",
+    evidence: "Program 5H7Afy...AW1j · receipt tx zwqNsA3k...cdEah67 · upgrade authority moved to the Squads vault.",
+    href: "/documents/zk-standalone-verifier-testnet-2026-05-23",
+  },
+  {
+    icon: TimerReset,
+    label: "Squads multisig custody",
+    status: "2/2 approved",
+    claim: "The Testnet upgrade path reached threshold approval, and a timelock bypass attempt was rejected with TimeLockNotReleased / 6021.",
+    evidence: "Vault CALHr...PqBv · signer txs 4Y8a2c2eg... and 2VH24vs... · execution unlock 2026-05-25T00:31:05Z.",
+    href: "/documents/timelock-enforcement-proof-2026-05-23",
+  },
+  {
+    icon: KeyRound,
+    label: "PDAO Token-2022",
+    status: "Deployed and frozen",
+    claim: "The PDAO governance mint is live on Solana Testnet with fixed supply and disabled mint authority.",
+    evidence: "Mint DFYvBdiv...37Bie · 1,000,000 PDAO · Token-2022 metadata and fixed-supply attestation are published.",
+    href: "/documents/pdao-token-surface",
+  },
   {
     icon: CheckCircle2,
     label: "On-chain governance",

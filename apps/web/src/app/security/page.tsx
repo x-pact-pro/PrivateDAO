@@ -88,6 +88,9 @@ export default function SecurityPage() {
           <Link href="/documents/squads-testnet-custody-transfer-2026-05-22" className={cn(buttonVariants({ size: "sm" }))}>
             Open custody transfer proof
           </Link>
+          <Link href="/documents/timelock-enforcement-proof-2026-05-23" className={cn(buttonVariants({ size: "sm", variant: "secondary" }))}>
+            Open timelock enforcement proof
+          </Link>
           <Link href="/documents/multisig-setup-intake" className={cn(buttonVariants({ size: "sm", variant: "outline" }))}>
             Open multisig intake
           </Link>

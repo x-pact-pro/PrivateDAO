@@ -20,6 +20,7 @@ const navItems = [
   { href: "/payroll", label: "Payroll", rel: "nofollow" },
   { href: "/execute", label: "Execute", rel: "nofollow" },
   { href: "/proof", label: "Proof" },
+  { href: "/judge", label: "Judge" },
   { href: "/pricing", label: "Pricing" },
 ];
 
@@ -65,6 +66,8 @@ export function SiteHeader() {
         return "Execute";
       case "/proof":
         return "Proof";
+      case "/judge":
+        return "Judge";
       case "/pricing":
         return "Pricing";
       default:

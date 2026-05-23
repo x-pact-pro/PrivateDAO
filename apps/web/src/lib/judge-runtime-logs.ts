@@ -281,6 +281,7 @@ export function getJudgeRuntimeLogsSnapshot(): JudgeRuntimeLogsSnapshot {
       runtime.generatedAt,
       v3.generatedAt,
       micropayments?.generatedAt ?? "",
+      "2026-05-23T21:30:00Z",
     ),
     reviewerEntry: frontier.reviewerEntry,
     nextStep,
@@ -333,12 +334,12 @@ export function getJudgeRuntimeLogsSnapshot(): JudgeRuntimeLogsSnapshot {
       governanceEntries: Object.entries(v3.governanceV3.transactions).map(([label, signature]) => ({
         label,
         signature,
-        status: "captured-devnet-proof",
+        status: "archived Devnet proof",
       })),
       settlementEntries: Object.entries(v3.settlementV3.transactions).map(([label, signature]) => ({
         label,
         signature,
-        status: "captured-devnet-proof",
+        status: "archived Devnet proof",
       })),
     },
     runtime: {

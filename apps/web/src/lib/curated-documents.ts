@@ -588,6 +588,18 @@ const curatedDocuments: CuratedDocument[] = [
     rawHref: `${repositoryBlobBase}/docs/squads-testnet-upgrade-proposal-2026-05-23.md`,
   },
   {
+    slug: "timelock-enforcement-proof-2026-05-23",
+    title: "Timelock Enforcement Proof 2026-05-23",
+    category: "Reviewer core",
+    summary:
+      "Live Testnet custody evidence showing that even a 2-of-3 Squads threshold could not bypass the active timelock before release.",
+    audience: "Judges, Solana security reviewers, governance reviewers, operators",
+    boundary:
+      "Covers Squads Testnet timelock enforcement and the pending upgrade proposal. DAO and treasury authority handoffs remain post-unlock execution steps.",
+    docPath: "docs/timelock-enforcement-proof-2026-05-23.md",
+    rawHref: `${repositoryBlobBase}/docs/timelock-enforcement-proof-2026-05-23.md`,
+  },
+  {
     slug: "reviewer-fast-path-2026-05-06",
     title: "Reviewer Fast Path 2026-05-06",
     category: "Reviewer core",

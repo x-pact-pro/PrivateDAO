@@ -31,6 +31,36 @@ export const metadata: Metadata = buildRouteMetadata({
 
 export default function JudgePage() {
   const runtimeSnapshot = getJudgeRuntimeLogsSnapshot();
+  const liveEvidence = [
+    {
+      label: "ZK verifier deployed on-chain",
+      value: "Program 5H7Afy...AW1j",
+      detail: "Receipt tx zwqNsA3k...cdEah67 on Solana Testnet. Native BN254 pairing syscall path is live in a standalone verifier.",
+      href: "https://solscan.io/tx/zwqNsA3kNP1mgcaS6zNdR92LLdssFULXfsRdkMK3UxraKLM6wYDoPaWCwV3J9PqApK5xJJH8TpxsGyCRcdEah67?cluster=testnet",
+      cta: "Open receipt",
+    },
+    {
+      label: "Squads 2/2 approved",
+      value: "Vault CALHr...PqBv",
+      detail: "Upgrade proposal reached threshold. Config-bypass attempt also reached approval and was still blocked by timelock enforcement.",
+      href: "/documents/squads-testnet-upgrade-proposal-2026-05-23",
+      cta: "Open proposal proof",
+    },
+    {
+      label: "Timelock enforcement demonstrated",
+      value: "6021 TimeLockNotReleased",
+      detail: "Even valid multisig owners cannot bypass the active 48-hour delay. Execution unlocks 2026-05-25T00:31:05Z.",
+      href: "/documents/timelock-enforcement-proof-2026-05-23",
+      cta: "Open timelock proof",
+    },
+    {
+      label: "PDAO Token-2022 fixed supply",
+      value: "1,000,000 PDAO",
+      detail: "Mint DFYvBdiv...37Bie is live on Testnet with mint authority disabled and metadata published.",
+      href: "/documents/pdao-token-surface",
+      cta: "Open token proof",
+    },
+  ];
   const recognitionSignals = [
     {
       label: "1st Place",
@@ -78,6 +108,51 @@ export default function JudgePage() {
       ]}
     >
       <LocalizedRouteSummary routeKey="judge" />
+      <div className="rounded-[30px] border border-emerald-300/22 bg-[radial-gradient(circle_at_top_left,rgba(20,241,149,0.18),transparent_34%),linear-gradient(135deg,rgba(20,241,149,0.10),rgba(0,194,255,0.08),rgba(8,13,28,0.94))] p-5 shadow-[0_24px_80px_rgba(0,0,0,0.28)]">
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <div className="text-[11px] uppercase tracking-[0.3em] text-emerald-100/78">2026-05-23 live evidence</div>
+            <h2 className="mt-3 max-w-4xl text-2xl font-semibold text-white">
+              Fresh Testnet custody, ZK, timelock, and Token-2022 proof is visible before the archived judge logs.
+            </h2>
+            <p className="mt-3 max-w-4xl text-sm leading-7 text-white/64">
+              This panel is the current reviewer entry point. It separates live Testnet evidence from older Devnet
+              packets, and links every high-impact claim to a transaction, document, or proof surface.
+            </p>
+          </div>
+          <Link href="/security" className={cn(buttonVariants({ variant: "secondary" }), "shrink-0")}>
+            Open security route
+            <ArrowUpRight className="h-4 w-4" />
+          </Link>
+        </div>
+        <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+          {liveEvidence.map((item) => {
+            const isExternal = item.href.startsWith("http");
+            const className = "rounded-[24px] border border-white/10 bg-black/24 p-4 transition hover:border-emerald-300/28 hover:bg-black/30";
+            const content = (
+              <>
+                <div className="text-[10px] uppercase tracking-[0.24em] text-emerald-100/58">{item.label}</div>
+                <div className="mt-2 text-lg font-semibold text-white">{item.value}</div>
+                <p className="mt-2 text-sm leading-6 text-white/58">{item.detail}</p>
+                <div className="mt-4 inline-flex items-center gap-2 text-xs font-medium text-cyan-100">
+                  {item.cta}
+                  <ArrowUpRight className="h-3.5 w-3.5" />
+                </div>
+              </>
+            );
+
+            return isExternal ? (
+              <a key={item.label} href={item.href} target="_blank" rel="noreferrer" className={className}>
+                {content}
+              </a>
+            ) : (
+              <Link key={item.label} href={item.href} className={className}>
+                {content}
+              </Link>
+            );
+          })}
+        </div>
+      </div>
       <VideoCenter compact />
       <div className="rounded-[26px] border border-amber-300/18 bg-[linear-gradient(135deg,rgba(251,191,36,0.12),rgba(20,241,149,0.07),rgba(8,13,28,0.92))] p-5">
         <div className="flex flex-wrap items-center justify-between gap-4">
