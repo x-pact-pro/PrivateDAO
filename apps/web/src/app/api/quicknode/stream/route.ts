@@ -1,7 +1,7 @@
 import { timingSafeEqual } from "node:crypto";
 import { NextResponse } from "next/server";
 
-export const dynamic = "force-dynamic";
+export const dynamic = "force-static";
 
 type QuickNodeProgramInvocation = {
   programId?: string;
@@ -60,13 +60,16 @@ function safeTokenEquals(received: string, expected: string) {
 }
 
 function requireAuthorized(request: Request) {
-  const expectedToken = process.env.QUICKNODE_STREAM_TOKEN?.trim();
-  if (!expectedToken) {
+  const expectedTokens = String(process.env.QUICKNODE_STREAM_TOKEN || "")
+    .split(",")
+    .map((token) => token.trim())
+    .filter(Boolean);
+  if (expectedTokens.length === 0) {
     return { ok: false as const, status: 503, error: "QUICKNODE_STREAM_TOKEN is not configured." };
   }
 
   const receivedToken = getAuthToken(request);
-  if (!receivedToken || !safeTokenEquals(receivedToken, expectedToken)) {
+  if (!receivedToken || !expectedTokens.some((token) => safeTokenEquals(receivedToken, token))) {
     return { ok: false as const, status: 401, error: "Unauthorized QuickNode stream payload." };
   }
 
@@ -113,6 +116,10 @@ function getProgramIds(transaction: QuickNodeStreamTransaction) {
   }
   for (const instruction of transaction.transaction?.message?.instructions ?? []) {
     if (instruction.programId) ids.add(instruction.programId);
+  }
+  for (const account of transaction.transaction?.message?.accountKeys ?? []) {
+    if (typeof account === "string") ids.add(account);
+    else if (account.pubkey) ids.add(account.pubkey);
   }
   for (const log of transaction.meta?.logMessages ?? []) {
     const match = log.match(/^Program\s+([1-9A-HJ-NP-Za-km-z]{32,44})\s+/);
