@@ -20,8 +20,24 @@ This is not a public secret store and it is not a raw block archive. The product
 - read-node route: `scripts/run-read-node.ts`
 - required secret: `QUICKNODE_STREAM_TOKEN`
 - accepted auth headers: `Authorization: Bearer <token>`, `x-quicknode-security-token`, or `x-private-dao-stream-token`
+- token mode: single token or comma-separated rotation list
+- RPC evidence redaction: `healthz` and `/api/v1/config` expose QuickNode as `https://*.solana-testnet.quiknode.pro/[redacted]`
 
 Never commit the token. Rotate any token that was pasted into chat, screenshots, issue bodies, build logs, or public notes.
+
+## Production Activation — 2026-05-23
+
+The hosted read-node was redeployed with QuickNode Testnet as the first RPC provider and the public Solana Testnet endpoint as fallback.
+
+- live health: `https://api.privatedao.org/healthz`
+- live config: `https://api.privatedao.org/api/v1/config`
+- live stream intake: `https://api.privatedao.org/api/v1/quicknode/stream`
+- RPC pool: `QuickNode Testnet [redacted]` -> `https://api.testnet.solana.com`
+- stream auth: configured
+- smoke result: POST accepted with `privateDaoTransactionCount=1`, `blockCount=1`, and `computeUnitsConsumed=8888`
+- raw payload storage: disabled; only reviewer-safe summaries are returned
+
+This closes the previous zero-metrics condition: production API traffic now exercises the QuickNode RPC endpoint, and QuickNode Streams can deliver authenticated Solana Testnet payloads to the read-node instead of the static site root.
 
 ## Recommended QuickNode Settings
 
