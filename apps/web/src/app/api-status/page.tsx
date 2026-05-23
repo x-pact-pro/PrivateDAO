@@ -26,6 +26,12 @@ const quickChecks = [
     icon: RadioTower,
   },
   {
+    title: "Readiness aggregate",
+    body: "One reviewer-safe JSON surface for runtime health, QuickNode telemetry, visitor counters, execution counters, and proof routes.",
+    href: "https://api.privatedao.org/api/v1/readiness",
+    icon: ShieldCheck,
+  },
+  {
     title: "Visitor stats",
     body: "Privacy-respecting live visitor and visitor-signed Testnet transaction counters.",
     href: "https://api.privatedao.org/api/v1/visitors/stats",
@@ -59,6 +65,7 @@ export default function ApiStatusPage() {
       description="This page is the plain operational status surface for normal users and judges. It avoids hidden diagnostics: every public check points to the exact endpoint or proof route that powers the product."
       badges={[
         { label: "Backend live", variant: "success" },
+        { label: "Readiness aggregate", variant: "success" },
         { label: "Visitor counters", variant: "cyan" },
         { label: "QuickNode stream-ready", variant: "cyan" },
         { label: "Proof freshness", variant: "violet" },
@@ -66,7 +73,7 @@ export default function ApiStatusPage() {
     >
       <LiveSiteActivityPanel variant="analytics" />
       <RpcServicesLivePanel />
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         {quickChecks.map((item) => {
           const Icon = item.icon;
           return (

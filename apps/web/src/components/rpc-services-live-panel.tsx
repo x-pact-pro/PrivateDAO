@@ -25,6 +25,13 @@ const initialEndpoints: EndpointState[] = [
     detail: "Checking same-domain API health...",
   },
   {
+    label: "Readiness aggregate",
+    href: "https://api.privatedao.org/api/v1/readiness",
+    purpose: "One JSON route for runtime health, QuickNode telemetry, visitor counters, execution counters, and public proof links.",
+    status: "checking",
+    detail: "Checking production-candidate readiness...",
+  },
+  {
     label: "Umbra relayer proxy",
     href: "https://api.privatedao.org/api/v1/umbra/relayer/health",
     purpose: "Verifies the private payout rail can reach the Umbra devnet relayer through the read node.",
@@ -101,7 +108,7 @@ export function RpcServicesLivePanel() {
           Umbra relayer reachability, and QVAC runtime proof from the public product surface.
         </p>
       </CardHeader>
-      <CardContent className="grid gap-4 lg:grid-cols-4">
+      <CardContent className="grid gap-4 lg:grid-cols-5">
         {endpoints.map((endpoint) => {
           const online = endpoint.status === "online";
           return (

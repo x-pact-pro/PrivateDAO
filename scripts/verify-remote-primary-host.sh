@@ -17,11 +17,13 @@ umbra_json="$(fetch_json /api/v1/umbra/relayer/health)"
 freshness_json="$(fetch_json /api/v1/freshness/latest)"
 visitors_json="$(fetch_json /api/v1/visitors/stats)"
 chain_json="$(fetch_json /api/v1/chain/latest)"
+quicknode_json="$(fetch_json /api/v1/quicknode/stream/stats)"
+readiness_json="$(fetch_json /api/v1/readiness)"
 
-python3 - <<'PY' "$EXPECTED_PROGRAM_ID" "$health_json" "$config_json" "$metrics_json" "$qvac_json" "$umbra_json" "$freshness_json" "$visitors_json" "$chain_json"
+python3 - <<'PY' "$EXPECTED_PROGRAM_ID" "$health_json" "$config_json" "$metrics_json" "$qvac_json" "$umbra_json" "$freshness_json" "$visitors_json" "$chain_json" "$quicknode_json" "$readiness_json"
 import json, sys
 
-expected_program_id, health_json, config_json, metrics_json, qvac_json, umbra_json, freshness_json, visitors_json, chain_json = sys.argv[1:]
+expected_program_id, health_json, config_json, metrics_json, qvac_json, umbra_json, freshness_json, visitors_json, chain_json, quicknode_json, readiness_json = sys.argv[1:]
 health = json.loads(health_json)
 config = json.loads(config_json)
 metrics = json.loads(metrics_json)
@@ -30,6 +32,8 @@ umbra = json.loads(umbra_json)
 freshness = json.loads(freshness_json)
 visitors = json.loads(visitors_json)
 chain = json.loads(chain_json)
+quicknode = json.loads(quicknode_json)
+readiness = json.loads(readiness_json)
 
 assert health["ok"] is True and health["health"] == "healthy", "remote /healthz failed"
 assert health["runtime"]["programId"] == expected_program_id, f"remote /healthz program drift: {health['runtime']['programId']} != {expected_program_id}"
@@ -58,5 +62,9 @@ assert umbra["health"].get("status") == "ok", f"remote Umbra relayer unhealthy: 
 assert freshness["ok"] is True and "latest" in freshness, "remote freshness endpoint failed"
 assert visitors["ok"] is True and "totalSessions" in visitors, "remote visitor stats endpoint failed"
 assert chain["ok"] is True and "transactions" in chain, "remote chain watcher endpoint failed"
+assert quicknode["ok"] is True and quicknode["stats"]["auth"] == "configured", "remote QuickNode stream stats failed"
+assert quicknode["stats"]["rawPayloadStorage"] == "disabled", "remote QuickNode stream raw payload storage boundary drifted"
+assert readiness["ok"] is True and readiness["posture"] == "solana-testnet-production-candidate", "remote readiness aggregate failed"
+assert readiness["quickNodeStream"]["statePersistence"] == "runtime-volume", "remote readiness missing persistent QuickNode telemetry"
 print("Remote primary host verification: PASS")
 PY
