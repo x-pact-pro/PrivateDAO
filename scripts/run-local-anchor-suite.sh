@@ -26,10 +26,12 @@ run_portable_core_checks() {
 
   if [[ "$suite_name" == "core" || "$suite_name" == "all" ]]; then
     ./node_modules/.bin/ts-node scripts/verify-frontend-surface.ts >/dev/null
-    if [[ -f "$ROOT_DIR/target/idl/private_dao.json" ]]; then
+    if [[ "${PRIVATE_DAO_RUN_NETWORK_CHECKS:-0}" == "1" && -f "$ROOT_DIR/target/idl/private_dao.json" ]]; then
       MAGICBLOCK_HTTP_TIMEOUT_MS="${MAGICBLOCK_HTTP_TIMEOUT_MS:-2500}" \
         PRIVATE_DAO_RPC_TIMEOUT_MS="${PRIVATE_DAO_RPC_TIMEOUT_MS:-12000}" \
         ./node_modules/.bin/ts-node scripts/verify-read-node.ts >/dev/null
+    elif [[ "${PRIVATE_DAO_RUN_NETWORK_CHECKS:-0}" != "1" ]]; then
+      echo "[local-anchor-suite] skipping read-node verification; set PRIVATE_DAO_RUN_NETWORK_CHECKS=1 for RPC-backed checks"
     else
       echo "[local-anchor-suite] skipping read-node verification; generated Anchor IDL is absent"
     fi

@@ -535,6 +535,29 @@ export function HomeShell() {
     "We keep the work verifiable, ship tranche by tranche, and raise the quality bar every cycle.",
     "With real community support, PrivateDAO can mature into infrastructure that helps protect the ecosystem.",
   ];
+  const threeMinuteProofPath = [
+    {
+      label: "Minute 1",
+      title: "Understand the problem",
+      body: "Public DAO votes, payroll, rewards, and treasury moves expose intent too early. PrivateDAO keeps the signer in control while reducing what the public sees before execution.",
+      href: "/learn",
+      cta: "Learn the problem",
+    },
+    {
+      label: "Minute 2",
+      title: "Try the product",
+      body: "Connect a Testnet wallet, fund it, open web or Android, review a plain-English action, and sign from the same operating shell.",
+      href: "/start",
+      cta: "Start now",
+    },
+    {
+      label: "Minute 3",
+      title: "Verify the proof",
+      body: "Open the judge route to inspect Testnet receipts: ZK verifier, encrypted integrations, Token-2022, Squads custody, and timelock enforcement.",
+      href: "/judge",
+      cta: "Verify evidence",
+    },
+  ];
   return (
     <main className="pb-20 sm:pb-24">
       <section className="mx-auto w-full max-w-7xl px-4 pt-8 sm:px-6 sm:pt-12 lg:px-8 lg:pt-18">
@@ -767,6 +790,32 @@ export function HomeShell() {
                 <div className="mt-2 text-2xl font-semibold text-white">Anchor 1 on Solana Testnet</div>
                 <div className="mt-2 text-sm leading-7 text-white/56">
                   Use it when a team, treasury council, on-chain community, or judge needs to see the current program, wallet flow, privacy posture, and proof routes line up in one operating surface.
+                </div>
+              </div>
+
+              <div className="rounded-[24px] border border-cyan-300/18 bg-[radial-gradient(circle_at_top_left,rgba(34,211,238,0.18),transparent_34%),rgba(34,211,238,0.07)] p-5">
+                <div className="text-[11px] uppercase tracking-[0.28em] text-cyan-100/78">3-minute product route</div>
+                <div className="mt-2 text-xl font-semibold tracking-[-0.03em] text-white">
+                  From zero context to a signed Solana operation and a verifiable receipt.
+                </div>
+                <div className="mt-4 grid gap-3">
+                  {threeMinuteProofPath.map((item) => (
+                    <Link
+                      key={item.label}
+                      href={item.href}
+                      className="group rounded-[20px] border border-white/9 bg-black/22 p-4 transition hover:-translate-y-0.5 hover:border-cyan-300/26 hover:bg-black/30"
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <div>
+                          <div className="text-[10px] uppercase tracking-[0.24em] text-cyan-100/68">{item.label}</div>
+                          <div className="mt-1 text-base font-semibold text-white">{item.title}</div>
+                        </div>
+                        <ArrowRight className="mt-1 h-4 w-4 text-white/35 transition group-hover:text-cyan-100" />
+                      </div>
+                      <p className="mt-2 text-sm leading-6 text-white/58">{item.body}</p>
+                      <div className="mt-3 text-[10px] uppercase tracking-[0.22em] text-emerald-100/72">{item.cta}</div>
+                    </Link>
+                  ))}
                 </div>
               </div>
 

@@ -42,6 +42,18 @@ export function getIndexableCuratedDocuments() {
 
 const curatedDocuments: CuratedDocument[] = [
   {
+    slug: "three-minute-product-entry-2026-05-23",
+    title: "Three-Minute Product Entry",
+    category: "Product",
+    summary:
+      "Homepage and reviewer-entry packet explaining how a first-time visitor reaches the problem, live product flow, Android path, and Testnet proof in three minutes.",
+    audience: "Judges, investors, first-time users, ecosystem partners",
+    boundary:
+      "Product-entry packet only; it explains the first-visit route and links to live Testnet proof while leaving release gates in security and custody documents.",
+    docPath: "docs/three-minute-product-entry-2026-05-23.md",
+    rawHref: `${repositoryBlobBase}/docs/three-minute-product-entry-2026-05-23.md`,
+  },
+  {
     slug: "dao-treasury-authority-handoff-2026-05-23",
     title: "DAO And Treasury Authority Handoff",
     category: "Custody",
