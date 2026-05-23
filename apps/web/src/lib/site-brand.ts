@@ -5,7 +5,7 @@ export const siteTitle = "PrivateDAO | Sovereign Encrypted Intelligence Infrastr
 export const siteDescription =
   "PrivateDAO is sovereign encrypted intelligence and operational infrastructure for Solana: live web and Android execution for private governance, confidential payroll, encrypted payments, treasury policy, GamingDAO rewards, local-first AI decision support, Testnet proof, and on-chain verification.";
 export const siteUrl = process.env.NEXT_PUBLIC_LIVE_SITE_URL?.replace(/\/+$/, "") ?? "https://privatedao.org";
-export const defaultOgImage = "/opengraph-image.png";
+export const defaultOgImage = `${siteUrl}/opengraph-image.png`;
 
 export const siteKeywords = [
   "PrivateDAO",
