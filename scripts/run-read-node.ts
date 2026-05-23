@@ -270,13 +270,16 @@ function safeTokenEquals(received: string, expected: string) {
 }
 
 function requireQuickNodeStreamAuth(req: http.IncomingMessage) {
-  const expectedToken = process.env.QUICKNODE_STREAM_TOKEN?.trim();
-  if (!expectedToken) {
+  const expectedTokens = String(process.env.QUICKNODE_STREAM_TOKEN || "")
+    .split(",")
+    .map((token) => token.trim())
+    .filter(Boolean);
+  if (expectedTokens.length === 0) {
     return { ok: false as const, status: 503, error: "QUICKNODE_STREAM_TOKEN is not configured on the read node." };
   }
 
   const receivedToken = getQuickNodeAuthToken(req);
-  if (!receivedToken || !safeTokenEquals(receivedToken, expectedToken)) {
+  if (!receivedToken || !expectedTokens.some((token) => safeTokenEquals(receivedToken, token))) {
     return { ok: false as const, status: 401, error: "Unauthorized QuickNode stream payload." };
   }
 
