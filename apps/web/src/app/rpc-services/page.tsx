@@ -12,9 +12,9 @@ import { cn } from "@/lib/utils";
 export const metadata: Metadata = buildRouteMetadata({
   title: "RPC Services",
   description:
-    "PrivateDAO RPC services, read-node health, Umbra relayer readiness, QVAC runtime proof, and backend evidence for Testnet operations.",
+    "PrivateDAO RPC services, read-node health, QuickNode stream intake, Umbra relayer readiness, QVAC runtime proof, and backend evidence for Testnet operations.",
   path: "/rpc-services",
-  keywords: ["RPC services", "read node", "Umbra relayer", "QVAC runtime proof", "Testnet operations"],
+  keywords: ["RPC services", "read node", "QuickNode streams", "Umbra relayer", "QVAC runtime proof", "Testnet operations"],
 });
 
 const serviceCards = [
@@ -37,6 +37,12 @@ const serviceCards = [
     href: "https://api.privatedao.org/api/v1/qvac/runtime-proof",
   },
   {
+    icon: RadioTower,
+    title: "QuickNode stream intake",
+    body: "A protected webhook converts Solana Testnet block and program-log streams into proof freshness and intelligence telemetry without exposing stream secrets.",
+    href: "/documents/quicknode-stream-intelligence",
+  },
+  {
     icon: Gauge,
     title: "Operator flow",
     body: "Use Command Center for the visual ops layer, Proof for receipts, and Execute for the wallet-signed actions.",
@@ -53,11 +59,12 @@ export default function RpcServicesPage() {
       badges={[
         { label: "Read-node live", variant: "success" },
         { label: "Testnet RPC", variant: "cyan" },
+        { label: "QuickNode stream", variant: "cyan" },
         { label: "Backend-only secrets", variant: "violet" },
       ]}
     >
       <RpcServicesLivePanel />
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
         {serviceCards.map((item) => {
           const Icon = item.icon;
           return (

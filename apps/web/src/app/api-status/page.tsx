@@ -13,9 +13,9 @@ import { cn } from "@/lib/utils";
 export const metadata: Metadata = buildRouteMetadata({
   title: "API Status",
   description:
-    "Live API, read-node, visitor freshness, Supabase receipt, Umbra relayer, and QVAC runtime status for PrivateDAO Testnet operations.",
+    "Live API, read-node, QuickNode stream intake, visitor freshness, Supabase receipt, Umbra relayer, and QVAC runtime status for PrivateDAO Testnet operations.",
   path: "/api-status",
-  keywords: ["api status", "read node", "Supabase receipts", "Umbra relayer", "QVAC", "Solana Testnet"],
+  keywords: ["api status", "read node", "QuickNode streams", "Supabase receipts", "Umbra relayer", "QVAC", "Solana Testnet"],
 });
 
 const quickChecks = [
@@ -38,6 +38,12 @@ const quickChecks = [
     icon: ShieldCheck,
   },
   {
+    title: "QuickNode stream intake",
+    body: "Authenticated Solana Testnet stream webhook that turns block and program-log payloads into runtime evidence summaries.",
+    href: "/api/quicknode/stream",
+    icon: RadioTower,
+  },
+  {
     title: "QVAC proof",
     body: "Runtime proof endpoint for the sovereign AI lane.",
     href: "https://api.privatedao.org/api/v1/qvac/runtime-proof",
@@ -54,12 +60,13 @@ export default function ApiStatusPage() {
       badges={[
         { label: "Backend live", variant: "success" },
         { label: "Visitor counters", variant: "cyan" },
+        { label: "QuickNode stream-ready", variant: "cyan" },
         { label: "Proof freshness", variant: "violet" },
       ]}
     >
       <LiveSiteActivityPanel variant="analytics" />
       <RpcServicesLivePanel />
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
         {quickChecks.map((item) => {
           const Icon = item.icon;
           return (
@@ -73,7 +80,7 @@ export default function ApiStatusPage() {
                 <Link
                   className={cn(buttonVariants({ variant: "outline", size: "sm" }), "mt-4 border-white/15 bg-white/5 text-white hover:bg-white/10")}
                   href={item.href}
-                  target="_blank"
+                  target={item.href.startsWith("http") ? "_blank" : undefined}
                   rel="noreferrer"
                 >
                   Open endpoint <ArrowUpRight className="ml-2 h-4 w-4" />
