@@ -3,7 +3,7 @@
 ## Overview
 
 - project: `PrivateDAO`
-- generated at: `2026-05-22T20:55:40.384Z`
+- generated at: `2026-05-23T04:56:42.383Z`
 - status: `ready-for-transfer`
 - production mainnet claim allowed: `false`
 - network: `testnet`

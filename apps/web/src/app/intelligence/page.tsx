@@ -9,6 +9,7 @@ import { MetricsStrip } from "@/components/metrics-strip";
 import { OperatingJourneyStrip } from "@/components/operating-journey-strip";
 import { OperationsShell } from "@/components/operations-shell";
 import { ProjectOperatingMap } from "@/components/project-operating-map";
+import { QuickNodeStreamIntelligenceSurface } from "@/components/quicknode-stream-intelligence-surface";
 import { QvacSovereignAiSurface } from "@/components/qvac-sovereign-ai-surface";
 import { SectionHeader } from "@/components/section-header";
 import { SnsDomainLookup } from "@/components/sns-domain-lookup";
@@ -101,6 +102,7 @@ export default function IntelligencePage() {
       <div>
         <GoldRushIntelligenceSurface />
       </div>
+      <QuickNodeStreamIntelligenceSurface />
       <div>
         <SnsDomainLookup />
       </div>

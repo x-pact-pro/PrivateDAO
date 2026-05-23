@@ -1,5 +1,4 @@
-import fs from "node:fs";
-import path from "node:path";
+import { readRepoJson } from "@/lib/repo-docs";
 
 export type ReadNodeHostReadinessContext = "services" | "command-center" | "proof" | "documents";
 
@@ -55,8 +54,7 @@ export type ReadNodeHostReadinessSnapshot = {
 };
 
 function readJson<T>(relativePath: string): T {
-  const filePath = path.resolve(process.cwd(), "..", "..", relativePath);
-  return JSON.parse(fs.readFileSync(filePath, "utf8")) as T;
+  return readRepoJson<T>(relativePath);
 }
 
 function getContextCopy(context: ReadNodeHostReadinessContext) {

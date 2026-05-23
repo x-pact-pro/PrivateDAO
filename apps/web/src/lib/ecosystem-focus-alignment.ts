@@ -1,5 +1,4 @@
-import fs from "node:fs";
-import path from "node:path";
+import { readRepoJson } from "@/lib/repo-docs";
 
 export type EcosystemFocusArea = {
   slug: string;
@@ -19,8 +18,7 @@ type EcosystemFocusPayload = {
 };
 
 function readJson<T>(relativePath: string): T {
-  const filePath = path.resolve(process.cwd(), "..", "..", relativePath);
-  return JSON.parse(fs.readFileSync(filePath, "utf8")) as T;
+  return readRepoJson<T>(relativePath);
 }
 
 export function getEcosystemFocusAlignment() {

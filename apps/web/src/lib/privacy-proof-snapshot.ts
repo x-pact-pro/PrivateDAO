@@ -1,7 +1,5 @@
-import fs from "node:fs";
-import path from "node:path";
-
 import { getJudgeRuntimeLogsSnapshot } from "@/lib/judge-runtime-logs";
+import { readRepoJson } from "@/lib/repo-docs";
 import { buildSolanaTxUrl } from "@/lib/solana-network";
 
 type ProofRegistryJson = {
@@ -16,13 +14,7 @@ type ProofRegistryJson = {
 };
 
 function readJson<T>(relativePath: string): T {
-  const filePath = path.resolve(
-    /* turbopackIgnore: true */ process.cwd(),
-    "..",
-    "..",
-    relativePath,
-  );
-  return JSON.parse(fs.readFileSync(filePath, "utf8")) as T;
+  return readRepoJson<T>(relativePath);
 }
 
 export type PrivacyProofSnapshot = {

@@ -1,5 +1,4 @@
-import fs from "node:fs";
-import path from "node:path";
+import { readRepoJson } from "@/lib/repo-docs";
 
 type MultisigSetupIntake = {
   status: string;
@@ -147,23 +146,8 @@ export type CanonicalCustodyProofSnapshot = {
   rawSources: CustodyProofLink[];
 };
 
-function resolveRepoRelativePath(relativePath: string) {
-  const candidates = [
-    path.resolve(process.cwd(), relativePath),
-    path.resolve(process.cwd(), "..", "..", relativePath),
-  ];
-
-  const match = candidates.find((candidate) => fs.existsSync(candidate));
-  if (!match) {
-    throw new Error(`Unable to resolve repo-relative path: ${relativePath}`);
-  }
-
-  return match;
-}
-
 function readJson<T>(relativePath: string): T {
-  const filePath = resolveRepoRelativePath(relativePath);
-  return JSON.parse(fs.readFileSync(filePath, "utf8")) as T;
+  return readRepoJson<T>(relativePath);
 }
 
 function getClusterSuffix(network: string) {

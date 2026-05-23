@@ -540,6 +540,18 @@ const curatedDocuments: CuratedDocument[] = [
     rawHref: `${repositoryBlobBase}/docs/grand-champion-10-level-improvement-map-2026-05-22.md`,
   },
   {
+    slug: "quicknode-stream-intelligence",
+    title: "QuickNode Stream Intelligence",
+    category: "Infrastructure",
+    summary:
+      "Runbook for the authenticated QuickNode Streams intake that converts Solana Testnet blocks and program logs into proof freshness, runtime telemetry, and pre-execution intelligence.",
+    audience: "Judges, operators, security reviewers, infrastructure partners",
+    boundary:
+      "Runbook only; it documents the protected webhook and data-to-decision lane without committing stream secrets, raw payload archives, or production mainnet claims.",
+    docPath: "docs/quicknode-stream-intelligence.md",
+    rawHref: `${repositoryBlobBase}/docs/quicknode-stream-intelligence.md`,
+  },
+  {
     slug: "provider-to-encrypted-execution-spine-2026-05-22",
     title: "Provider To Encrypted Execution Spine",
     category: "Architecture",

@@ -22,6 +22,7 @@ import { ProofCenter } from "@/components/proof-center";
 import { ReadNodeActivationStrip } from "@/components/read-node-activation-strip";
 import { ReadNodeHostReadinessStrip } from "@/components/read-node-host-readiness-strip";
 import { ProjectOperatingMap } from "@/components/project-operating-map";
+import { QuickNodeStreamIntelligenceSurface } from "@/components/quicknode-stream-intelligence-surface";
 import { RuntimeEvidenceContinuityPanel } from "@/components/runtime-evidence-continuity-panel";
 import { AuthoritativeExecutionTrail } from "@/components/authoritative-execution-trail";
 import { ExecutionOperationsStrip } from "@/components/execution-operations-strip";
@@ -291,6 +292,7 @@ export default function ProofPage() {
       <div>
         <ReadNodeHostReadinessStrip context="proof" />
       </div>
+      <QuickNodeStreamIntelligenceSurface compact />
       <div className="rounded-[26px] border border-emerald-300/16 bg-emerald-300/[0.08] p-5 text-sm leading-7 text-white/72">
         Supabase receipt continuity is browser-direct: confirmed operations write to
         <span className="font-semibold text-white"> governance_receipts</span>,

@@ -34,6 +34,7 @@
   <a href="https://privatedao.org/services/cloak-private-settlement/"><img src="https://img.shields.io/badge/Cloak-Private%20Settlement-8b5cf6" alt="Cloak private settlement" /></a>
   <a href="https://privatedao.org/services/umbra-private-payments/"><img src="https://img.shields.io/badge/Umbra-Private%20Payments-10b981" alt="Umbra private payments" /></a>
   <a href="https://privatedao.org/intelligence/"><img src="https://img.shields.io/badge/Covalent%20GoldRush-Intelligence-fbbf24" alt="Covalent GoldRush intelligence" /></a>
+  <a href="docs/quicknode-stream-intelligence.md"><img src="https://img.shields.io/badge/QuickNode-Stream%20Intelligence-06b6d4" alt="QuickNode stream intelligence" /></a>
   <a href="https://privatedao.org/services/zerion-agent-policy/"><img src="https://img.shields.io/badge/Zerion-Agent%20Policy-8b5cf6" alt="Zerion agent policy" /></a>
   <a href="https://privatedao.org/services/jupiter-treasury-route/"><img src="https://img.shields.io/badge/Jupiter-Treasury%20Route-f97316" alt="Jupiter treasury route" /></a>
   <a href="https://privatedao.org/services/torque-growth-loop/"><img src="https://img.shields.io/badge/Torque-Growth%20Loop-ef4444" alt="Torque growth loop" /></a>
@@ -81,7 +82,7 @@ The program ID change is part of the documented Anchor 1.0.1 migration and clean
 ## Custody And Anonymous Governance Update
 
 - Testnet program upgrade authority is now controlled by a Squads 2-of-3 vault: [`docs/squads-testnet-custody-transfer-2026-05-22.md`](docs/squads-testnet-custody-transfer-2026-05-22.md).
-- DAO operating authority handoff is implemented in code through `transfer_dao_authority`; live activation requires a Squads-governed program upgrade before any Testnet transfer signature is claimed: [`docs/dao-treasury-authority-handoff-2026-05-23.md`](docs/dao-treasury-authority-handoff-2026-05-23.md).
+- DAO operating authority and treasury operator authority handoffs are implemented in code through `transfer_dao_authority` and `transfer_treasury_operator_authority`; live activation requires the Squads-governed upgrade/timelock execution before any Testnet handoff signature is claimed: [`docs/dao-treasury-authority-handoff-2026-05-23.md`](docs/dao-treasury-authority-handoff-2026-05-23.md), [`scripts/execute-after-timelock.sh`](scripts/execute-after-timelock.sh).
 - The ZK layer is now packaged as a Solana-native anonymous governance primitive with frozen membership snapshots, proposal-scoped nullifiers, and explicit tally modes: [`docs/solana-anonymous-governance-primitive.md`](docs/solana-anonymous-governance-primitive.md).
 
 ## Winner Signal
@@ -281,6 +282,7 @@ PrivateDAO keeps each integration tied to a user-facing job. The product does no
 | 🌑 | Umbra / Cloak | `/services/cloak-private-settlement`, `/payroll`, `/proof` | Private settlement intent, relayer readiness, scoped viewing-key posture, and audit-friendly confidential payout flows. |
 | 🔁 | Jupiter | `/services/jupiter-treasury-route`, `/treasury` | No-key quote preview for governed treasury routes so operators can review output, slippage, and route rationale before execution. |
 | 📊 | GoldRush / Dune | `/intelligence`, `/treasury`, `/documents/testnet-integration-runtime-closure-2026-05-07` | Prominent financial intelligence before signing: wallet history, stablecoin flow, counterparty trust, suspicious flows, and proposal review. |
+| 📡 | QuickNode Streams | `/intelligence`, `/proof`, `/documents/quicknode-stream-intelligence` | Protected Solana Testnet stream intake for block/program-log telemetry, proof freshness, compute usage, and runtime evidence before QVAC turns it into signer-readable decision support. |
 | 🏆 | Torque | `/services/torque-growth-loop`, `/proof` | Governance participation and receipt events for growth loops, rewards, and reviewer-visible engagement telemetry. |
 | 🤖 | Zerion agent policy | `/services/zerion-agent-policy`, `/treasury` | Bounded treasury assistant policy: allowed pairs, spend caps, and governance-controlled rebalancing context. |
 | 🧾 | Supabase | `/proof`, `/live`, `/dashboard` | Browser-direct receipt timeline for confirmed operations, avoiding static-export API limitations while keeping proof visible. |
@@ -450,19 +452,19 @@ Strict operator ingestion path:
 
 Current official custody state from the canonical intake:
 
-- status: `pending-external`
+- status: `ready-for-transfer`
 - production mainnet claim allowed: `false`
-- network: `mainnet-beta`
+- network: `testnet`
 - threshold target: `2-of-3`
-- signer public keys recorded: `0/3`
-- multisig implementation: `pending-selection`
-- multisig address: `pending`
-- timelock configuration evidence: `pending`
-- rehearsal signature: `pending`
-- upgrade / DAO / treasury transfer signatures: `pending`
-- post-transfer authority readouts: `pending`
-- current deployed authority readout observed on `testnet`: `4Mm5YTRbJuyA8NcWM85wTnx6ZQMXNph2DSnzCCKLhsMD`
-- target-network program readout on `mainnet-beta`: `not found`
+- signer public keys recorded: `3/3`
+- multisig implementation: `Squads Protocol`
+- multisig address: `thHmF7VYNtxE1MaDzYXbfPCiq13RF6JwuWnjvDZuSmF`
+- vault authority: `CALHrBqx6jbzcPn2NVcinqSAHeod65v9LcDuTxsdPqBv`
+- timelock configuration evidence: `67S63JAUNvvCED3hE9h6bCXW9iJ3EYzJLARvj8Lki5x2dJEgLnrfES9mp6bAxfsH6vfmor2ocqNaEd68uVN68DNJ`
+- program-upgrade authority transfer: `EzwLLrAchBpj3eLTUFuv1uo9rSLKgKNbQgp1DkCevJycT31Eou9TSJsJsEfMjLt4q87pKwXaZUTqCZ1NduNc1vy`
+- current Testnet program authority readout: `CALHrBqx6jbzcPn2NVcinqSAHeod65v9LcDuTxsdPqBv`
+- DAO authority transfer: pending Squads-governed timelock execution of the upgraded instruction
+- treasury operator authority transfer: pending Squads-governed timelock execution of the upgraded instruction
 
 Live proof surface:
 

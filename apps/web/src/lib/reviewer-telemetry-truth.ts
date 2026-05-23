@@ -1,10 +1,8 @@
-import fs from "node:fs";
-import path from "node:path";
-
 import {
   getDevnetServiceMetrics,
   getOperationalValidationSnapshot,
 } from "@/lib/devnet-service-metrics";
+import { readRepoJson } from "@/lib/repo-docs";
 
 type ReviewerTelemetryPacket = {
   generatedAt: string;
@@ -30,8 +28,7 @@ export type ReviewerTelemetryTruthSnapshot = {
 };
 
 function readJson<T>(relativePath: string): T {
-  const filePath = path.resolve(process.cwd(), "..", "..", relativePath);
-  return JSON.parse(fs.readFileSync(filePath, "utf8")) as T;
+  return readRepoJson<T>(relativePath);
 }
 
 export function getReviewerTelemetryTruthSnapshot(): ReviewerTelemetryTruthSnapshot {

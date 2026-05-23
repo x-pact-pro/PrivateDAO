@@ -1127,15 +1127,15 @@ pub struct ExecuteProposal<'info> {
     pub executor: Signer<'info>,
     /// CHECK: recipient for SOL or CustomCPI actions — validated by transfer CPI
     #[account(mut)]
-    pub treasury_recipient: AccountInfo<'info>,
+    pub treasury_recipient: UncheckedAccount<'info>,
     /// CHECK: source token account for SendToken actions — validated by token CPI at runtime.
     ///        Pass any account (e.g. treasury PDA) for non-SendToken actions.
     #[account(mut)]
-    pub treasury_token_account: AccountInfo<'info>,
+    pub treasury_token_account: UncheckedAccount<'info>,
     /// CHECK: destination token account for SendToken actions — validated by token CPI at runtime.
     ///        Pass any account (e.g. treasury PDA) for non-SendToken actions.
     #[account(mut)]
-    pub recipient_token_account: AccountInfo<'info>,
+    pub recipient_token_account: UncheckedAccount<'info>,
     /// CHECK: if a confidential payout plan exists for this proposal, the standard execute path must reject.
     #[account(
         seeds = [b"payout-plan", proposal.key().as_ref()],
@@ -1190,13 +1190,13 @@ pub struct ExecuteConfidentialPayoutPlan<'info> {
     pub executor: Signer<'info>,
     /// CHECK: settlement wallet for the encrypted payout batch
     #[account(mut)]
-    pub settlement_recipient: AccountInfo<'info>,
+    pub settlement_recipient: UncheckedAccount<'info>,
     /// CHECK: source token ATA for token payout batches; ignored for SOL payout batches
     #[account(mut)]
-    pub treasury_token_account: AccountInfo<'info>,
+    pub treasury_token_account: UncheckedAccount<'info>,
     /// CHECK: destination token ATA for token payout batches; ignored for SOL payout batches
     #[account(mut)]
-    pub recipient_token_account: AccountInfo<'info>,
+    pub recipient_token_account: UncheckedAccount<'info>,
     /// CHECK: optional REFHE envelope for proposal-bound confidential execution
     #[account(
         seeds = [b"refhe-envelope", proposal.key().as_ref()],
@@ -1260,13 +1260,13 @@ pub struct ExecuteConfidentialPayoutPlanV2<'info> {
     pub executor: Signer<'info>,
     /// CHECK: settlement wallet for the encrypted payout batch
     #[account(mut)]
-    pub settlement_recipient: AccountInfo<'info>,
+    pub settlement_recipient: UncheckedAccount<'info>,
     /// CHECK: source token ATA for token payout batches; ignored for SOL payout batches
     #[account(mut)]
-    pub treasury_token_account: AccountInfo<'info>,
+    pub treasury_token_account: UncheckedAccount<'info>,
     /// CHECK: destination token ATA for token payout batches; ignored for SOL payout batches
     #[account(mut)]
-    pub recipient_token_account: AccountInfo<'info>,
+    pub recipient_token_account: UncheckedAccount<'info>,
     pub token_program: Interface<'info, TokenInterface>,
     pub system_program: Program<'info, System>,
 }
@@ -1320,13 +1320,13 @@ pub struct ExecuteConfidentialPayoutPlanV3<'info> {
     pub executor: Signer<'info>,
     /// CHECK: settlement wallet for the encrypted payout batch
     #[account(mut)]
-    pub settlement_recipient: AccountInfo<'info>,
+    pub settlement_recipient: UncheckedAccount<'info>,
     /// CHECK: source token ATA for token payout batches; ignored for SOL payout batches
     #[account(mut)]
-    pub treasury_token_account: AccountInfo<'info>,
+    pub treasury_token_account: UncheckedAccount<'info>,
     /// CHECK: destination token ATA for token payout batches; ignored for SOL payout batches
     #[account(mut)]
-    pub recipient_token_account: AccountInfo<'info>,
+    pub recipient_token_account: UncheckedAccount<'info>,
     /// CHECK: policy-checked REFHE envelope for proposal-bound confidential execution
     #[account(
         seeds = [b"refhe-envelope", proposal.key().as_ref()],
@@ -1459,7 +1459,7 @@ pub struct DepositTreasury<'info> {
 pub struct UpdateVoterWeightRecord<'info> {
     pub dao: Account<'info, Dao>,
     /// CHECK: Realms realm account — not owned by this program
-    pub realm: AccountInfo<'info>,
+    pub realm: UncheckedAccount<'info>,
     #[account(
         constraint = governing_token_mint.key() == dao.governance_token @ Error::GoverningMintMismatch
     )]
@@ -1490,7 +1490,7 @@ pub struct UpdateVoterWeightRecord<'info> {
 pub struct UpdateVoterWeightRecordV2<'info> {
     pub dao: Account<'info, Dao>,
     /// CHECK: Realms realm account — not owned by this program
-    pub realm: AccountInfo<'info>,
+    pub realm: UncheckedAccount<'info>,
     #[account(
         constraint = governing_token_mint.key() == dao.governance_token @ Error::GoverningMintMismatch
     )]
@@ -1537,7 +1537,7 @@ pub struct GetVoterWeightRecord<'info> {
     )]
     pub voter_record: Account<'info, VoterRecord>,
     /// CHECK: read-only, no mutation
-    pub voter: AccountInfo<'info>,
+    pub voter: UncheckedAccount<'info>,
 }
 
 #[derive(Accounts)]

@@ -1,5 +1,4 @@
-import fs from "node:fs";
-import path from "node:path";
+import { readOptionalRepoJson, readRepoJson } from "@/lib/repo-docs";
 
 import { proposalCards } from "@/lib/site-data";
 import { getRankedCompetitionTracks } from "@/lib/track-ranking";
@@ -172,14 +171,11 @@ type TestnetLifecycleRehearsalJson = {
 };
 
 function readJson<T>(relativePath: string): T {
-  const filePath = path.resolve(process.cwd(), "..", "..", relativePath);
-  return JSON.parse(fs.readFileSync(filePath, "utf8")) as T;
+  return readRepoJson<T>(relativePath);
 }
 
 function readOptionalJson<T>(relativePath: string): T | null {
-  const filePath = path.resolve(process.cwd(), "..", "..", relativePath);
-  if (!fs.existsSync(filePath)) return null;
-  return JSON.parse(fs.readFileSync(filePath, "utf8")) as T;
+  return readOptionalRepoJson<T>(relativePath);
 }
 
 function formatAgeLabel(isoTimestamp: string) {

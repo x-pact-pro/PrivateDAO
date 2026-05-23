@@ -1,5 +1,4 @@
-import fs from "node:fs";
-import path from "node:path";
+import { readRepoJson } from "@/lib/repo-docs";
 
 type FrontierIntegrationsJson = {
   generatedAt: string;
@@ -147,13 +146,7 @@ export type JudgeRuntimeLogsSnapshot = {
 };
 
 function readJson<T>(relativePath: string): T {
-  const filePath = path.resolve(
-    /* turbopackIgnore: true */ process.cwd(),
-    "..",
-    "..",
-    relativePath,
-  );
-  return JSON.parse(fs.readFileSync(filePath, "utf8")) as T;
+  return readRepoJson<T>(relativePath);
 }
 
 function readOptionalJson<T>(relativePath: string): T | null {

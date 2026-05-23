@@ -19,7 +19,7 @@ const legacyRedirects: Record<string, string> = {
   "/services/testnet-billing-rehearsal": "/pricing",
 };
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname.replace(/\/+$/, "") || "/";
   const destination = legacyRedirects[pathname];
   if (destination) {
