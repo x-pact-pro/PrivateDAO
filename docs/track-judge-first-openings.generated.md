@@ -3,7 +3,7 @@
 ## Overview
 
 - project: `PrivateDAO`
-- generated at: `2026-05-24T20:49:04.956Z`
+- generated at: `2026-05-24T22:30:11.833Z`
 - purpose: Canonical judge-first copy for track workspaces, reviewer packets, and the first 30 to 45 seconds of track videos.
 
 ## Core Reviewer Packet
@@ -65,18 +65,18 @@ What works now: Lead the first 90 seconds from /start into /govern with a real w
 
 ### Exact Blocker
 
-- magicblock-refhe-source-receipts: Privacy launch remains blocked until settlement receipts or verifier-grade source proof replace the current integration boundary.
+- magicblock-refhe-source-receipts: Testnet REFHE and MagicBlock receipts are closed; real-funds mainnet still requires verifier CPI or externally audited residual-trust acceptance.
 
 ### First 30 To 45 Seconds
 
 1. What works now: Use the comprehensive story video as the first-pass product walkthrough for judges. Lead the click path from /security to the ZK matrix, confidence engine, and V3 proof packet. Keep the pitch deck anchored around private governance, confidential payouts, and clear release boundaries.
 2. What is externally proven: Live Proof V3 via /documents/live-proof-v3 and ZK capability matrix via /documents/zk-capability-matrix and Treasury reviewer packet via /documents/treasury-reviewer-packet and Reviewer telemetry packet via /documents/reviewer-telemetry-packet.
-3. Exact blocker: magicblock-refhe-source-receipts. Privacy launch remains blocked until settlement receipts or verifier-grade source proof replace the current integration boundary.
+3. Exact blocker: magicblock-refhe-source-receipts. Testnet REFHE and MagicBlock receipts are closed; real-funds mainnet still requires verifier CPI or externally audited residual-trust acceptance.
 4. Best product route: open /story first. Lead with /story, then keep proof, custody truth, and the blocker in the same judge flow instead of splitting the product story across routes. Close the route by opening /documents/treasury-reviewer-packet and /documents/reviewer-telemetry-packet so payments readiness and the data corridor stay inside the same proof story.
 
 ### Voiceover Script
 
-What works now: Use the comprehensive story video as the first-pass product walkthrough for judges. Lead the click path from /security to the ZK matrix, confidence engine, and V3 proof packet. Keep the pitch deck anchored around private governance, confidential payouts, and clear release boundaries. What is externally proven: Live Proof V3 via /documents/live-proof-v3 and ZK capability matrix via /documents/zk-capability-matrix and Treasury reviewer packet via /documents/treasury-reviewer-packet and Reviewer telemetry packet via /documents/reviewer-telemetry-packet. Exact blocker: magicblock-refhe-source-receipts. Privacy launch remains blocked until settlement receipts or verifier-grade source proof replace the current integration boundary. Best product route: open /story first. Lead with /story, then keep proof, custody truth, and the blocker in the same judge flow instead of splitting the product story across routes. Close the route by opening /documents/treasury-reviewer-packet and /documents/reviewer-telemetry-packet so payments readiness and the data corridor stay inside the same proof story.
+What works now: Use the comprehensive story video as the first-pass product walkthrough for judges. Lead the click path from /security to the ZK matrix, confidence engine, and V3 proof packet. Keep the pitch deck anchored around private governance, confidential payouts, and clear release boundaries. What is externally proven: Live Proof V3 via /documents/live-proof-v3 and ZK capability matrix via /documents/zk-capability-matrix and Treasury reviewer packet via /documents/treasury-reviewer-packet and Reviewer telemetry packet via /documents/reviewer-telemetry-packet. Exact blocker: magicblock-refhe-source-receipts. Testnet REFHE and MagicBlock receipts are closed; real-funds mainnet still requires verifier CPI or externally audited residual-trust acceptance. Best product route: open /story first. Lead with /story, then keep proof, custody truth, and the blocker in the same judge flow instead of splitting the product story across routes. Close the route by opening /documents/treasury-reviewer-packet and /documents/reviewer-telemetry-packet so payments readiness and the data corridor stay inside the same proof story.
 
 ## Runtime Infrastructure Reviewer Packet
 

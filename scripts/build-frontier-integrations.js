@@ -132,7 +132,7 @@ async function main() {
         notes: [
             "This package verifies live Devnet transaction and account evidence for the current Frontier-facing integrations.",
             "ZK remains proof-anchored and threshold-attested rather than verifier-CPI complete.",
-            "MagicBlock and REFHE are proposal-bound and runtime-evidenced on Devnet; source-verifiable external receipts remain a mainnet blocker.",
+            "MagicBlock and REFHE are proposal-bound and runtime-evidenced on Testnet; the remaining mainnet work is verifier CPI or externally audited residual-trust acceptance, not missing Testnet activation.",
             "RPC Fast readiness is shown through backend-indexer mode, pooled RPC endpoints, and the current managed-provider classification when present.",
         ],
     };

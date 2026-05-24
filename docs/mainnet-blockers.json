@@ -3,7 +3,7 @@
   "project": "PrivateDAO",
   "decision": "blocked-external-steps",
   "productionMainnetClaimAllowed": false,
-  "summary": "PrivateDAO is devnet-proven and internally hardened, but real-funds mainnet production remains blocked until external audit, custody, monitoring, runtime, settlement-receipt, and release-ceremony items are closed with evidence.",
+  "summary": "PrivateDAO is Testnet-live and internally hardened; real-funds mainnet production remains gated on external audit, custody completion, monitoring, runtime wallet captures, verifier-CPI or audited residual-trust acceptance for privacy settlement, and the final release ceremony.",
   "blockers": [
     {
       "id": "external-audit-completion",
@@ -80,14 +80,23 @@
       "id": "magicblock-refhe-source-receipts",
       "category": "privacy-settlement",
       "severity": "high",
-      "status": "pending-integration",
+      "status": "testnet-receipts-closed-mainnet-verifier-required",
       "requiredBefore": "mainnet-real-funds",
       "owner": "protocol-and-integration",
-      "nextAction": "Replace or supplement threshold-attested REFHE/MagicBlock settlement with source-verifiable receipts, canonical settlement hashes, or verifier CPI where available.",
+      "nextAction": "Keep the current Testnet REFHE and MagicBlock receipt closure visible, then add verifier CPI or an externally audited residual-trust acceptance before real-funds mainnet.",
       "evidence": [
         "docs/magicblock/runtime-evidence.md",
         "docs/refhe-security-model.md",
-        "docs/canonical-verifier-boundary-decision.md"
+        "docs/canonical-verifier-boundary-decision.md",
+        "docs/testnet-encrypted-integrations-activation-2026-05-23.md",
+        "docs/frontier-integrations.generated.md"
+      ],
+      "completionEvidence": [
+        "docs/testnet-encrypted-integrations-activation-2026-05-23.md",
+        "docs/frontier-integrations.generated.md",
+        "npm run verify:encrypted-integrations-activation",
+        "npm run verify:frontier-integrations",
+        "npm run verify:magicblock-runtime"
       ]
     },
     {

@@ -24,7 +24,7 @@ Canonical machine-readable source:
 | `upgrade-authority-multisig` | custody | critical | pending-external | mainnet-real-funds |
 | `production-monitoring-alerts` | operations | high | pending-external | mainnet-real-funds |
 | `real-device-wallet-runtime` | runtime | high | pending-runtime-captures | mainnet-real-funds |
-| `magicblock-refhe-source-receipts` | privacy-settlement | high | pending-integration | mainnet-real-funds |
+| `magicblock-refhe-source-receipts` | privacy-settlement | high | testnet-receipts-closed-mainnet-verifier-required | mainnet-real-funds |
 | `mainnet-cutover-ceremony` | release | high | pending-external | mainnet-real-funds |
 
 ## Completion Standard
@@ -37,7 +37,7 @@ Minimum completion evidence:
 - `upgrade-authority-multisig`: multisig or governance-owned authority path, signer policy, and rotation rehearsal record.
 - `production-monitoring-alerts`: alert destinations, runtime monitors, incident owners, and tested failure signals.
 - `real-device-wallet-runtime`: wallet/device/browser captures for the supported production matrix.
-- `magicblock-refhe-source-receipts`: source-verifiable settlement receipt path or documented threshold-attested residual trust model.
+- `magicblock-refhe-source-receipts`: Testnet REFHE and MagicBlock receipt closure is recorded; real-funds mainnet still requires verifier CPI or externally audited residual-trust acceptance.
 - `mainnet-cutover-ceremony`: final deployment hash, authority state, monitoring links, audit result, and go/no-go record.
 
 ## Evidence Index
@@ -46,7 +46,7 @@ Minimum completion evidence:
 - `upgrade-authority-multisig`: `docs/authority-hardening.md`, `docs/authority-transfer-runbook.md`, `docs/production-custody-ceremony.md`, `docs/multisig-setup-intake.json`, `docs/multisig-setup-intake.md`, `docs/launch-ops-checklist.json`, `docs/launch-ops-checklist.md`, `docs/mainnet-cutover-runbook.md`, `docs/launch-trust-packet.generated.md`
 - `production-monitoring-alerts`: `docs/launch-ops-checklist.json`, `docs/launch-ops-checklist.md`, `docs/monitoring-alert-rules.json`, `docs/monitoring-alert-rules.md`, `docs/monitoring-alerts.md`, `docs/production-operations.md`, `docs/incident-response.md`
 - `real-device-wallet-runtime`: `docs/runtime/real-device.md`, `docs/runtime/real-device.generated.md`, `docs/wallet-e2e-test-plan.md`, `docs/launch-ops-checklist.json`, `docs/launch-ops-checklist.md`, `docs/launch-trust-packet.generated.md`
-- `magicblock-refhe-source-receipts`: `docs/magicblock/runtime-evidence.md`, `docs/refhe-security-model.md`, `docs/canonical-verifier-boundary-decision.md`
+- `magicblock-refhe-source-receipts`: `docs/magicblock/runtime-evidence.md`, `docs/refhe-security-model.md`, `docs/canonical-verifier-boundary-decision.md`, `docs/testnet-encrypted-integrations-activation-2026-05-23.md`, `docs/frontier-integrations.generated.md`
 - `mainnet-cutover-ceremony`: `docs/release-ceremony.md`, `docs/release-drill.generated.md`, `docs/launch-ops-checklist.json`, `docs/launch-ops-checklist.md`, `docs/mainnet-cutover-runbook.md`
 
 ## Verification

@@ -137,9 +137,9 @@ export function getSettlementReceiptClosureSnapshot(): SettlementReceiptClosureS
     blockerNextAction: blocker.nextAction,
     severity: blocker.severity,
     currentTruth: [
-      "Testnet confidential payout rehearsal exists inside the governed treasury corridor.",
-      "Settlement evidence and execution hardening are already part of the product and security surfaces.",
-      "Reviewer-safe payout evidence exists, but it is not yet a source-verifiable receipt closure.",
+      "Testnet confidential payout execution exists inside the governed treasury corridor.",
+      "REFHE and MagicBlock settlement evidence is already part of the product and security surfaces.",
+      "Reviewer-safe receipt closure exists for Testnet; real-funds mainnet still requires verifier CPI or externally audited residual-trust acceptance.",
     ],
     requiredClosure: intake.closureRequirements.map((item) => ({
       label: item.label,

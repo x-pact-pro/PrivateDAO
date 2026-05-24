@@ -1251,7 +1251,7 @@ const curatedDocuments: CuratedDocument[] = [
     category: "Reviewer core",
     summary: "Unified packet for ZK anchors, REFHE envelopes, MagicBlock corridor evidence, and Fast RPC-backed runtime surfaces.",
     audience: "Judges, reviewers, technical operators",
-    boundary: "Reviewer-facing integration surface only; source-verifiable external receipts remain a separate launch boundary.",
+    boundary: "Reviewer-facing Testnet integration surface; real-funds mainnet still requires verifier CPI or externally audited residual-trust acceptance.",
     docPath: "docs/frontier-integrations.generated.md",
     rawHref: `${repositoryBlobBase}/docs/frontier-integrations.generated.md`,
   },

@@ -9,11 +9,16 @@ type SubmissionRegistry = {
 };
 
 type ProofRegistry = {
+  programId?: string;
   deployTx: string;
   dao: string;
   governanceMint: string;
   treasury: string;
   proposal: string;
+  pdaoToken?: {
+    privateDaoProgramId?: string;
+    canonicalGovernanceDao?: string;
+  };
 };
 
 function main() {
@@ -25,14 +30,16 @@ function main() {
   const report = fs.readFileSync(reportPath, "utf8");
   const submission = readJson<SubmissionRegistry>("docs/submission-registry.json");
   const proof = readJson<ProofRegistry>("docs/proof-registry.json");
+  const currentProgramId = proof.pdaoToken?.privateDaoProgramId ?? submission.programId;
+  const currentDao = proof.pdaoToken?.canonicalGovernanceDao ?? proof.dao;
 
   for (const token of [
     "# Mainnet Readiness Report",
     submission.project,
-    submission.programId,
+    currentProgramId,
     submission.verificationWallet,
     proof.deployTx,
-    proof.dao,
+    currentDao,
     proof.governanceMint,
     proof.treasury,
     proof.proposal,

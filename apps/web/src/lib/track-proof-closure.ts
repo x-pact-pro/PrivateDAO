@@ -34,9 +34,9 @@ export function getTrackSpecificProofContext(workspace: CompetitionTrackWorkspac
       ],
       exactBlocker: "magicblock-refhe-source-receipts",
       exactBlockerSummary:
-        "Privacy launch remains blocked until settlement receipts or verifier-grade source proof replace the current integration boundary.",
+        "Testnet REFHE and MagicBlock receipts are closed; real-funds mainnet still requires verifier CPI or externally audited residual-trust acceptance.",
       pendingSummary:
-        "Custody evidence is still required, and the signer or transfer packet can now be ingested through /custody in a strict repo-safe shape. The exact privacy-side blocker still remains the source-verifiable receipt path, not generic wording.",
+        "Custody evidence is still required, and the signer or transfer packet can now be ingested through /custody in a strict repo-safe shape. The privacy-side work is now production hardening around verifier or audit acceptance, not missing Testnet activation.",
     };
   }
 

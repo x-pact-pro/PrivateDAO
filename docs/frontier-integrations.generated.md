@@ -3,7 +3,7 @@
 ## Overview
 
 - project: `PrivateDAO`
-- generated at: `2026-05-24T20:45:57.414Z`
+- generated at: `2026-05-24T22:30:23.649Z`
 - network: `testnet`
 - program id: `EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva`
 - verification wallet: `4Mm5YTRbJuyA8NcWM85wTnx6ZQMXNph2DSnzCCKLhsMD`
@@ -103,5 +103,5 @@
 
 - This package verifies live testnet transaction and account evidence for the current Frontier-facing integrations.
 - ZK remains proof-anchored and threshold-attested rather than verifier-CPI complete.
-- MagicBlock and REFHE are proposal-bound and runtime-evidenced on testnet; source-verifiable external receipts remain a mainnet blocker.
+- MagicBlock and REFHE are proposal-bound and runtime-evidenced on testnet; the remaining mainnet work is verifier CPI or externally audited residual-trust acceptance, not missing Testnet activation.
 - RPC Fast readiness is shown through backend-indexer mode, pooled RPC endpoints, and the current managed-provider classification when present.

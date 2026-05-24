@@ -3,7 +3,7 @@
 ## Overview
 
 - project: `PrivateDAO`
-- generated at: `2026-05-24T20:49:20.437Z`
+- generated at: `2026-05-24T22:31:32.887Z`
 - track slug: `privacy-track`
 - sponsor: `MagicBlock and privacy-aligned partners`
 - objective: Show PrivateDAO as the clearest privacy-native governance and confidential treasury product in the field.
@@ -12,12 +12,12 @@
 
 1. What works now: Use the comprehensive story video as the first-pass product walkthrough for judges. Lead the click path from /security to the ZK matrix, confidence engine, and V3 proof packet. Keep the pitch deck anchored around private governance, confidential payouts, and clear release boundaries.
 2. What is externally proven: Live Proof V3 via /documents/live-proof-v3 and ZK capability matrix via /documents/zk-capability-matrix and Treasury reviewer packet via /documents/treasury-reviewer-packet and Reviewer telemetry packet via /documents/reviewer-telemetry-packet.
-3. Exact blocker: magicblock-refhe-source-receipts. Privacy launch remains blocked until settlement receipts or verifier-grade source proof replace the current integration boundary.
+3. Exact blocker: magicblock-refhe-source-receipts. Testnet REFHE and MagicBlock receipts are closed; real-funds mainnet still requires verifier CPI or externally audited residual-trust acceptance.
 4. Best product route: open /story first. Lead with /story, then keep proof, custody truth, and the blocker in the same judge flow instead of splitting the product story across routes. Close the route by opening /documents/treasury-reviewer-packet and /documents/reviewer-telemetry-packet so payments readiness and the data corridor stay inside the same proof story.
 
 Voiceover script:
 
-What works now: Use the comprehensive story video as the first-pass product walkthrough for judges. Lead the click path from /security to the ZK matrix, confidence engine, and V3 proof packet. Keep the pitch deck anchored around private governance, confidential payouts, and clear release boundaries. What is externally proven: Live Proof V3 via /documents/live-proof-v3 and ZK capability matrix via /documents/zk-capability-matrix and Treasury reviewer packet via /documents/treasury-reviewer-packet and Reviewer telemetry packet via /documents/reviewer-telemetry-packet. Exact blocker: magicblock-refhe-source-receipts. Privacy launch remains blocked until settlement receipts or verifier-grade source proof replace the current integration boundary. Best product route: open /story first. Lead with /story, then keep proof, custody truth, and the blocker in the same judge flow instead of splitting the product story across routes. Close the route by opening /documents/treasury-reviewer-packet and /documents/reviewer-telemetry-packet so payments readiness and the data corridor stay inside the same proof story.
+What works now: Use the comprehensive story video as the first-pass product walkthrough for judges. Lead the click path from /security to the ZK matrix, confidence engine, and V3 proof packet. Keep the pitch deck anchored around private governance, confidential payouts, and clear release boundaries. What is externally proven: Live Proof V3 via /documents/live-proof-v3 and ZK capability matrix via /documents/zk-capability-matrix and Treasury reviewer packet via /documents/treasury-reviewer-packet and Reviewer telemetry packet via /documents/reviewer-telemetry-packet. Exact blocker: magicblock-refhe-source-receipts. Testnet REFHE and MagicBlock receipts are closed; real-funds mainnet still requires verifier CPI or externally audited residual-trust acceptance. Best product route: open /story first. Lead with /story, then keep proof, custody truth, and the blocker in the same judge flow instead of splitting the product story across routes. Close the route by opening /documents/treasury-reviewer-packet and /documents/reviewer-telemetry-packet so payments readiness and the data corridor stay inside the same proof story.
 
 ## Proof Closure
 
@@ -36,12 +36,12 @@ What works now: Use the comprehensive story video as the first-pass product walk
 
 ### What Is Still Pending
 
-Custody evidence is still required, and the signer or transfer packet can now be ingested through /custody in a strict repo-safe shape. The exact privacy-side blocker still remains the source-verifiable receipt path, not generic wording.
+Custody evidence is still required, and the signer or transfer packet can now be ingested through /custody in a strict repo-safe shape. The privacy-side work is now production hardening around verifier or audit acceptance, not missing Testnet activation.
 
 ## Exact Blocker
 
 - `magicblock-refhe-source-receipts`
-- Privacy launch remains blocked until settlement receipts or verifier-grade source proof replace the current integration boundary.
+- Testnet REFHE and MagicBlock receipts are closed; real-funds mainnet still requires verifier CPI or externally audited residual-trust acceptance.
 
 ## Best Demo Route
 

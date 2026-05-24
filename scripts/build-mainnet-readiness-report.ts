@@ -10,16 +10,19 @@ type SubmissionRegistry = {
 };
 
 type ProofRegistry = {
+  programId?: string;
   deployTx: string;
   dao: string;
   governanceMint: string;
   treasury: string;
   proposal: string;
   pdaoToken?: {
+    privateDaoProgramId?: string;
     mint: string;
     programId: string;
     tokenAccount: string;
     supplyUi: string;
+    canonicalGovernanceDao?: string;
   };
 };
 
@@ -66,6 +69,8 @@ function main() {
   const attestation = readJson<ReviewAttestation>("docs/review-attestation.generated.json");
   const blockers = readJson<MainnetBlockers>("docs/mainnet-blockers.json");
   const launchOps = readJson<LaunchOpsChecklist>("docs/launch-ops-checklist.json");
+  const currentProgramId = proof.pdaoToken?.privateDaoProgramId ?? submission.programId;
+  const currentDao = proof.pdaoToken?.canonicalGovernanceDao ?? proof.dao;
 
   const verified = Object.entries(submission.status)
     .filter(([, status]) => status === "verified")
@@ -81,10 +86,10 @@ This report is generated from the canonical PrivateDAO registries and reviewer a
 ## Current Identity
 
 - Project: \`${submission.project}\`
-- Program ID: \`${submission.programId}\`
+- Current Testnet Program ID: \`${currentProgramId}\`
 - Verification wallet: \`${submission.verificationWallet}\`
-- Deploy transaction: \`${proof.deployTx}\`
-- DAO PDA: \`${proof.dao}\`
+- Legacy proof deploy transaction: \`${proof.deployTx}\`
+- Current DAO PDA: \`${currentDao}\`
 - Governance mint: \`${proof.governanceMint}\`
 - Treasury PDA: \`${proof.treasury}\`
 - Proposal PDA: \`${proof.proposal}\`

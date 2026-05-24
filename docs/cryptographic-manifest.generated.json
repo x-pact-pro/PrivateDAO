@@ -1,9 +1,9 @@
 {
   "project": "PrivateDAO",
-  "generatedAt": "2026-05-24T22:02:16.518Z",
+  "generatedAt": "2026-05-24T22:41:21.593Z",
   "algorithm": "sha256",
   "entryCount": 145,
-  "aggregateSha256": "3f864fdbd5a3a4ad4f65c342dd69d823d10e40acc14f676484bbdb089d408f06",
+  "aggregateSha256": "fb103355e9e8092e1b9c5792d57065ba8d2a4e8c99df0b307e7cf9e6ad3bc868",
   "files": [
     {
       "path": "zk/circuits/private_dao_vote_overlay.circom",
@@ -517,12 +517,12 @@
     },
     {
       "path": "docs/supply-chain-attestation.generated.md",
-      "sha256": "66a9e9ab8e31393af9f8cae3b4f0e05354cef04c957ae0ea85b0774f3dc8ffd5",
+      "sha256": "2f05a40508e028566b6f5c2d46e39a03919b74946fe8410b58eb382914b336d3",
       "bytes": 1695
     },
     {
       "path": "docs/supply-chain-attestation.generated.json",
-      "sha256": "b510824055fce90155f7400aae177ad531ea64dedb712f49e95bfc8a90277207",
+      "sha256": "ee6498cbedfab554a725d0d52a558089bc5b2708c110af6a3f0620302cac58bc",
       "bytes": 2021
     },
     {
@@ -567,13 +567,13 @@
     },
     {
       "path": "docs/mainnet-blockers.json",
-      "sha256": "fffe6000f86885449736fb43165e9f9ab743641f8dd1e94b9a54cacd6bc92583",
-      "bytes": 4458
+      "sha256": "58147f311e72c1782f72745e8f3ff68eab466f415431ca5ca0774392389e833d",
+      "bytes": 4982
     },
     {
       "path": "docs/mainnet-blockers.md",
-      "sha256": "27b36f35b49cd2f8d8278793c9bb13447767185008cd254a0847e1ef094ec212",
-      "bytes": 4111
+      "sha256": "25340a5ef8bb7ea4fb5843ddd714ce85503fb52b2de2f0c596e9cc644bffcdac",
+      "bytes": 4305
     },
     {
       "path": "docs/launch-ops-checklist.json",
