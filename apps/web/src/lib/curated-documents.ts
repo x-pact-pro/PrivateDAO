@@ -552,6 +552,18 @@ const curatedDocuments: CuratedDocument[] = [
     rawHref: `${repositoryBlobBase}/docs/quicknode-stream-intelligence.md`,
   },
   {
+    slug: "readiness-aggregate",
+    title: "Readiness Aggregate",
+    category: "Infrastructure",
+    summary:
+      "Reviewer-safe live route that aggregates read-node health, QuickNode stream telemetry, visitor counters, execution counters, freshness, and public proof links.",
+    audience: "Judges, operators, security reviewers, infrastructure partners",
+    boundary:
+      "Testnet production-candidate readiness only; the route redacts secrets and does not expose raw QuickNode payloads, private keys, or Mainnet custody claims.",
+    docPath: "docs/readiness-aggregate.md",
+    rawHref: `${repositoryBlobBase}/docs/readiness-aggregate.md`,
+  },
+  {
     slug: "provider-to-encrypted-execution-spine-2026-05-22",
     title: "Provider To Encrypted Execution Spine",
     category: "Architecture",

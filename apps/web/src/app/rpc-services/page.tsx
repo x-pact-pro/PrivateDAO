@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowUpRight, DatabaseZap, Gauge, LockKeyhole, RadioTower } from "lucide-react";
+import { ArrowUpRight, DatabaseZap, Gauge, LockKeyhole, RadioTower, ShieldCheck } from "lucide-react";
 
 import { OperationsShell } from "@/components/operations-shell";
 import { RpcServicesLivePanel } from "@/components/rpc-services-live-panel";
@@ -23,6 +23,12 @@ const serviceCards = [
     title: "Testnet read-node",
     body: "A public backend surface for runtime health, indexed operation posture, and same-domain reviewer checks.",
     href: "https://api.privatedao.org/healthz",
+  },
+  {
+    icon: ShieldCheck,
+    title: "Readiness aggregate",
+    body: "One reviewer-safe JSON route combines API health, QuickNode stream telemetry, visitor counters, execution counters, freshness, and public proof links.",
+    href: "https://api.privatedao.org/api/v1/readiness",
   },
   {
     icon: LockKeyhole,
@@ -55,16 +61,17 @@ export default function RpcServicesPage() {
     <OperationsShell
       eyebrow="RPC SERVICES"
       title="Live read-node and backend services for PrivateDAO Testnet execution"
-      description="A reviewer-facing route that proves the product is not only static pages: the read-node, relay checks, and runtime proof endpoints are inspectable from the public surface."
+      description="A reviewer-facing route that proves the product is not only static pages: the read-node, readiness aggregate, relay checks, and runtime proof endpoints are inspectable from the public surface."
       badges={[
         { label: "Read-node live", variant: "success" },
+        { label: "Readiness aggregate", variant: "success" },
         { label: "Testnet RPC", variant: "cyan" },
         { label: "QuickNode stream", variant: "cyan" },
         { label: "Backend-only secrets", variant: "violet" },
       ]}
     >
       <RpcServicesLivePanel />
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         {serviceCards.map((item) => {
           const Icon = item.icon;
           return (

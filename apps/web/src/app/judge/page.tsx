@@ -96,6 +96,13 @@ export default function JudgePage() {
       href: "/documents/pdao-token-surface",
       cta: "Open token proof",
     },
+    {
+      label: "Production readiness aggregate",
+      value: "API + stream + proof",
+      detail: "One live JSON route summarizes read-node health, QuickNode stream stats, visitor counters, execution counters, freshness, and public verification links.",
+      href: "https://api.privatedao.org/api/v1/readiness",
+      cta: "Open readiness JSON",
+    },
   ];
   const recognitionSignals = [
     {
@@ -209,7 +216,7 @@ export default function JudgePage() {
             <ArrowUpRight className="h-4 w-4" />
           </Link>
         </div>
-        <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+        <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-5">
           {liveEvidence.map((item) => {
             const isExternal = item.href.startsWith("http");
             const className = "rounded-[24px] border border-white/10 bg-black/24 p-4 transition hover:border-emerald-300/28 hover:bg-black/30";
