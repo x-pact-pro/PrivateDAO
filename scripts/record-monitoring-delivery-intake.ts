@@ -32,8 +32,8 @@ function main() {
     throw new Error("monitoring delivery intake project mismatch");
   }
 
-  if (incoming.environment !== "mainnet-candidate") {
-    throw new Error("monitoring delivery intake must remain mainnet-candidate scoped");
+  if (incoming.environment !== "solana-testnet-production-candidate") {
+    throw new Error("monitoring delivery intake must remain solana-testnet-production-candidate scoped");
   }
 
   fs.writeFileSync(outputPath, JSON.stringify(incoming, null, 2) + "\n");

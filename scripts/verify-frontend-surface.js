@@ -39,11 +39,8 @@ function main() {
         [siteHeader, 'href: "/community"', "site header is missing the Community route"],
         [siteHeader, 'href: "/products"', "site header is missing the Products route"],
         [siteHeader, 'href: "/network"', "site header is missing the Network route"],
-        [homeShell, "Private governance on Solana", "home shell is missing the Solana product badge"],
         [homeShell, "Powered by the live stack", "home shell is missing the integrated tech section"],
-        [homeShell, "Open verification view", "home shell is missing the verification CTA"],
         [homeShell, "Public good", "home shell is missing the Solana-style value section"],
-        [homeShell, "The public story explains the product, cryptography, and commercial corridors in one watch surface.", "home shell is missing the hosted story video section"],
         [homeShell, "The shortest path from landing page to a real Testnet action", "home shell is missing the focused route-entry narrative"],
         [commandCenter, "Command Center", "command center surface is missing"],
         [proofCenter, "Proof center", "proof center surface is missing"],
@@ -65,8 +62,12 @@ function main() {
         [curatedDocuments, 'slug: "trust-package"', "curated documents are missing trust package"],
         [curatedDocuments, 'slug: "service-catalog"', "curated documents are missing service catalog"],
         [curatedDocuments, 'slug: "frontier-integrations"', "curated documents are missing frontier integrations"],
-        [siteFooter, "https://discord.gg/PbM8BC2A", "site footer is missing the Discord server link"],
-        [siteFooter, "https://www.youtube.com/@privatedao", "site footer is missing the YouTube channel"],
+        [siteData, "https://discord.gg/GjJykUtTTt", "site data is missing the Discord server link"],
+        [siteData, "https://arena.colosseum.org/projects/explore/praivatedao", "site data is missing the Colosseum project link"],
+        [siteData, "https://superteam.fun/earn/t/Private-dao-1", "site data is missing the Superteam Earn profile link"],
+        [siteData, "https://x.com/privateDAOOS", "site data is missing the X profile link"],
+        [siteData, "https://t.me/Fahdkotb", "site data is missing the Telegram contact link"],
+        [siteFooter, "communityLinks.map", "site footer is missing centralized community link rendering"],
     ];
     const hasGithubPagesPrefix = rootIndex.includes("/PrivateDAO/_next/");
     const hasRootDomainPrefix = rootIndex.includes("/_next/");
@@ -77,6 +78,19 @@ function main() {
         if (!body.includes(fragment)) {
             throw new Error(message);
         }
+    }
+    const includesAny = (body, fragments) => fragments.some((fragment) => body.includes(fragment));
+    if (!includesAny(homeShell, ["Private governance on Solana", "Governed"])) {
+        throw new Error("home shell is missing the primary product badge surface");
+    }
+    if (!includesAny(homeShell, ["Open verification view", "Review Proof"])) {
+        throw new Error("home shell is missing the verification CTA");
+    }
+    if (!includesAny(homeShell, [
+        "The public story explains the product, cryptography, and commercial corridors in one watch surface.",
+        "Proof and runtime surfaces remain open for judges, operators, and partners after every action.",
+    ])) {
+        throw new Error("home shell is missing the hosted story and verification narrative section");
     }
     console.log("Frontend surface verification: PASS");
 }

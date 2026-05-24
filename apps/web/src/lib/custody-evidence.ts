@@ -321,6 +321,42 @@ function normalizeCustodyEvidence(parsed?: RawCustodyEvidence) {
   return synchronizeEvidence(normalized);
 }
 
+function mergeCustodyEvidenceWithCurrent(parsed: RawCustodyEvidence) {
+  const parsedSigners = Array.isArray(parsed.signers) ? parsed.signers : [];
+  const parsedTransfers = Array.isArray(parsed.authorityTransfers) ? parsed.authorityTransfers : [];
+
+  return normalizeCustodyEvidence({
+    ...currentTestnetCustodyEvidence,
+    ...parsed,
+    signers: currentTestnetCustodyEvidence.signers.map((currentSigner) => {
+      const parsedSigner = parsedSigners.find((signer) => signer.slot === currentSigner.slot);
+      return {
+        ...currentSigner,
+        ...parsedSigner,
+        publicKey: parsedSigner?.publicKey?.trim() || currentSigner.publicKey,
+        backupProcedureDocumented:
+          parsedSigner?.backupProcedureDocumented ?? currentSigner.backupProcedureDocumented,
+      };
+    }),
+    authorityTransfers: currentTestnetCustodyEvidence.authorityTransfers.map((currentTransfer) => {
+      const parsedTransfer = parsedTransfers.find((transfer) => transfer.surface === currentTransfer.surface);
+      return {
+        ...currentTransfer,
+        ...parsedTransfer,
+        destinationAuthority:
+          parsedTransfer?.destinationAuthority?.trim() || currentTransfer.destinationAuthority,
+        transferSignature:
+          parsedTransfer?.transferSignature?.trim() || currentTransfer.transferSignature,
+        postTransferReadout:
+          parsedTransfer?.postTransferReadout?.trim() || currentTransfer.postTransferReadout,
+        postTransferReadoutReferenceUrl:
+          parsedTransfer?.postTransferReadoutReferenceUrl?.trim() ||
+          currentTransfer.postTransferReadoutReferenceUrl,
+      };
+    }),
+  });
+}
+
 export function readCustodyEvidence(): CustodyEvidence {
   if (typeof window === "undefined") {
     return currentTestnetCustodyEvidence;
@@ -329,7 +365,7 @@ export function readCustodyEvidence(): CustodyEvidence {
   try {
     const raw = window.localStorage.getItem(custodyEvidenceStorageKey);
     if (!raw) return currentTestnetCustodyEvidence;
-    return normalizeCustodyEvidence(JSON.parse(raw) as RawCustodyEvidence);
+    return mergeCustodyEvidenceWithCurrent(JSON.parse(raw) as RawCustodyEvidence);
   } catch {
     return currentTestnetCustodyEvidence;
   }
