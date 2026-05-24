@@ -59,15 +59,15 @@ Fix direction now encoded in review surfaces:
 
 ## 5. Monitoring
 
-Finding: alert rules exist, but production delivery evidence is not closed.
+Finding: alert rules exist, live Testnet backend probes now pass, but external alert routing transcripts are still the production-delivery closure item.
 
 Fix:
 
-- `docs/monitoring-alert-rules.json` keeps the explicit claim boundary: rules are defined in repo; production delivery is pending external setup.
-- `docs/monitoring-delivery.generated.md` keeps `pending-delivery-closure` with `0/6` delivery requirements closed.
-- `npm run verify:security-boundaries:2026-05-22` fails if monitoring is presented as delivered without evidence.
+- `docs/monitoring-alert-rules.json` keeps the explicit claim boundary: Testnet backend probes are live and verified; external alert routing and incident transcripts remain pending delivery setup.
+- `docs/monitoring-delivery.generated.md` now separates closed Testnet probe requirements from partial transcript-bound alert-delivery requirements.
+- `npm run verify:security-boundaries:2026-05-22` fails if monitoring is presented as fully production-delivered without external alert evidence.
 
-This is intentionally strict. Defined alert rules are not the same thing as deployed monitoring.
+This is intentionally strict. Live backend probes are evidence; defined alert rules are still not the same thing as completed external alert delivery.
 
 ## 6. REFHE / FHE Boundary
 

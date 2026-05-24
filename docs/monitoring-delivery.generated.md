@@ -3,11 +3,12 @@
 ## Overview
 
 - project: `PrivateDAO`
-- generated at: `2026-04-18T00:06:02.633Z`
-- environment: `mainnet-candidate`
-- status: `pending-delivery-closure`
+- generated at: `2026-05-24T16:59:31.503Z`
+- environment: `solana-testnet-production-candidate`
+- status: `testnet-probe-closure-alert-delivery-pending`
 - owner assignments: `3/3`
-- closed delivery requirements: `0/6`
+- closed delivery requirements: `2/6`
+- partial delivery requirements: `4/6`
 - transcript requirements: `5`
 - rule severity mix: `2` critical / `5` high
 
@@ -19,20 +20,20 @@
 
 ## Delivery Requirements
 
-- Alert destination ownership | pending | evidence: named destination and explicit owner
-- Primary and fallback RPC probes | pending | evidence: provider assignment documented; active primary path remains public Devnet until RPCFast passes devnet truth validation
-- Proposal lifecycle monitor | pending | evidence: test event and routed alert transcript
-- Treasury balance monitor | pending | evidence: balance anomaly alert transcript
-- Proof and settlement monitor | pending | evidence: strict proof or settlement failure transcript
-- Authority activity monitor | pending | evidence: upgrade-authority or deployment activity alert transcript
+- Alert destination ownership | partial | evidence: operations owner assigned; external alert destination delivery transcript remains the closure item
+- Primary and fallback RPC probes | closed | evidence: same-domain /healthz and /api/v1/readiness pass on https://api.privatedao.org with QuickNode Testnet RPC redacted in public payloads
+- Proposal lifecycle monitor | partial | evidence: Solana Testnet chain watcher endpoint returns latest indexed transactions; routed alert transcript still required
+- Treasury balance monitor | partial | evidence: Token and treasury evidence remains indexed in reviewer packets; balance anomaly delivery transcript still required
+- Proof and settlement monitor | closed | evidence: QuickNode stream stats, freshness endpoint, QVAC runtime proof, Umbra relayer health, and backend provider readiness packet all return HTTP 200
+- Authority activity monitor | partial | evidence: Squads custody evidence and timelock proof are recorded; external authority-activity alert transcript still required
 
 ## Provider Assignments
 
-- candidate primary RPC: `RPC_FAST_TESTNET_RPC` or `SOLANA_RPC_URL` host secret
-- active primary RPC: `https://api.devnet.solana.com`
-- fallback RPC: `RPC_FAST_TESTNET_FALLBACK_RPC` host secret
+- candidate primary RPC: `QUICKNODE_SOLANA_TESTNET_RPC host secret`
+- active primary RPC: `https://cosmological-hidden-water.solana-testnet.quiknode.pro/[redacted]`
+- fallback RPC: `https://api.testnet.solana.com`
 - read path: `backend-indexer`
-- status: `candidate-documented-awaiting-devnet-validation`
+- status: `testnet-provider-probes-live-alert-transcripts-pending`
 
 ## Transcript Requirements
 
@@ -44,7 +45,14 @@
 
 ## Claim Boundary
 
-alert rules are defined in-repo; production delivery is pending external setup
+Testnet backend probes are live and verified; external alert routing and incident transcripts remain pending delivery setup
+
+## Supporting Artifacts
+
+- `docs/backend-provider-readiness-2026-05-24.md`
+- `docs/readiness-aggregate.md`
+- `docs/quicknode-stream-intelligence.md`
+- `docs/timelock-enforcement-proof-2026-05-23.md`
 
 ## Commands
 

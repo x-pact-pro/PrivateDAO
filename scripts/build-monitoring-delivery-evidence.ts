@@ -40,6 +40,7 @@ function main() {
 
   const ownerAssignedCount = intake.owners.filter((item) => item.status !== "pending-assignment").length;
   const closedRequirementCount = intake.deliveryRequirements.filter((item) => item.status === "closed").length;
+  const partialRequirementCount = intake.deliveryRequirements.filter((item) => item.status === "partial").length;
   const payload = {
     project: intake.project,
     generatedAt: new Date().toISOString(),
@@ -50,6 +51,7 @@ function main() {
       ownerAssignedCount,
       deliveryRequirementCount: intake.deliveryRequirements.length,
       closedRequirementCount,
+      partialRequirementCount,
       transcriptRequirementCount: intake.transcriptRequirements.length,
       criticalRuleCount: rules.rules.filter((rule) => rule.severity === "critical").length,
       highRuleCount: rules.rules.filter((rule) => rule.severity === "high").length,
@@ -59,6 +61,12 @@ function main() {
     providerAssignments: intake.providerAssignments,
     transcriptRequirements: intake.transcriptRequirements,
     claimBoundary: rules.claimBoundary,
+    supportingArtifacts: [
+      "docs/backend-provider-readiness-2026-05-24.md",
+      "docs/readiness-aggregate.md",
+      "docs/quicknode-stream-intelligence.md",
+      "docs/timelock-enforcement-proof-2026-05-23.md",
+    ],
     commands: [
       "npm run record:monitoring-delivery -- /path/to/intake.json",
       "npm run build:monitoring-delivery",
@@ -81,6 +89,7 @@ function buildMarkdown(payload: {
     ownerAssignedCount: number;
     deliveryRequirementCount: number;
     closedRequirementCount: number;
+    partialRequirementCount: number;
     transcriptRequirementCount: number;
     criticalRuleCount: number;
     highRuleCount: number;
@@ -90,6 +99,7 @@ function buildMarkdown(payload: {
   providerAssignments?: MonitoringDeliveryIntake["providerAssignments"];
   transcriptRequirements: string[];
   claimBoundary: string;
+  supportingArtifacts: string[];
   commands: string[];
 }) {
   return `# Monitoring Delivery Evidence
@@ -102,6 +112,7 @@ function buildMarkdown(payload: {
 - status: \`${payload.status}\`
 - owner assignments: \`${payload.summary.ownerAssignedCount}/${payload.summary.ownerCount}\`
 - closed delivery requirements: \`${payload.summary.closedRequirementCount}/${payload.summary.deliveryRequirementCount}\`
+- partial delivery requirements: \`${payload.summary.partialRequirementCount}/${payload.summary.deliveryRequirementCount}\`
 - transcript requirements: \`${payload.summary.transcriptRequirementCount}\`
 - rule severity mix: \`${payload.summary.criticalRuleCount}\` critical / \`${payload.summary.highRuleCount}\` high
 
@@ -132,6 +143,10 @@ ${payload.transcriptRequirements.map((item) => `- ${item}`).join("\n")}
 ## Claim Boundary
 
 ${payload.claimBoundary}
+
+## Supporting Artifacts
+
+${payload.supportingArtifacts.map((item) => `- \`${item}\``).join("\n")}
 
 ## Commands
 

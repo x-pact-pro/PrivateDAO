@@ -1,12 +1,12 @@
 {
   "project": "PrivateDAO",
-  "generatedAt": "2026-05-06T09:11:31.631Z",
+  "generatedAt": "2026-05-24T17:02:47.483Z",
   "summary": {
     "realDeviceStatus": "pending-real-device-capture",
-    "monitoringStatus": "pending-delivery-closure",
+    "monitoringStatus": "testnet-probe-closure-alert-delivery-pending",
     "settlementStatus": "partial-source-receipt-closure",
     "realDeviceCompletion": "1/5",
-    "monitoringCompletion": "0/6",
+    "monitoringCompletion": "2/6",
     "settlementCompletion": "2/4"
   },
   "routes": [

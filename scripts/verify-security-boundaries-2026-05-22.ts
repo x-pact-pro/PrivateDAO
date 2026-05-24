@@ -19,6 +19,7 @@ function main() {
     summary?: {
       closedRequirementCount?: number;
       deliveryRequirementCount?: number;
+      partialRequirementCount?: number;
     };
     claimBoundary?: string;
   };
@@ -48,13 +49,21 @@ function main() {
   assert(zkMatrix.includes("On-chain verifier integration") && zkMatrix.includes("Not implemented"), "ZK matrix must state verifier CPI boundary");
   assert(zkMatrix.includes("Live off-chain"), "ZK matrix must distinguish live off-chain proofs");
 
-  assert(monitoringEvidence.status === "pending-delivery-closure", "monitoring must not be presented as production-delivered without evidence");
   assert(
-    monitoringEvidence.summary?.closedRequirementCount === 0,
-    "monitoring delivery evidence must not claim closed alert delivery without transcripts",
+    monitoringEvidence.status === "testnet-probe-closure-alert-delivery-pending",
+    "monitoring must not be presented as production-delivered without external alert evidence",
   );
   assert(
-    monitoringEvidence.claimBoundary?.includes("production delivery is pending"),
+    (monitoringEvidence.summary?.closedRequirementCount ?? 0) >= 2,
+    "monitoring delivery evidence should close live Testnet backend probe requirements",
+  );
+  assert(
+    (monitoringEvidence.summary?.partialRequirementCount ?? 0) >= 1,
+    "monitoring delivery evidence must keep transcript-bound requirements partial",
+  );
+  assert(
+    monitoringEvidence.claimBoundary?.includes("external alert routing") &&
+      monitoringEvidence.claimBoundary?.includes("pending"),
     "monitoring claim boundary must remain explicit until delivery evidence closes",
   );
   assert(Boolean(telemetryPacket.generatedAt), "reviewer telemetry packet must include generatedAt");

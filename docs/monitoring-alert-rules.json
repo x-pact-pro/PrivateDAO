@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
   "project": "PrivateDAO",
-  "environment": "mainnet-candidate",
-  "claimBoundary": "alert rules are defined in-repo; production delivery is pending external setup",
+  "environment": "solana-testnet-production-candidate",
+  "claimBoundary": "Testnet backend probes are live and verified; external alert routing and incident transcripts remain pending delivery setup",
   "rules": [
     {
       "id": "rpc-slot-staleness",

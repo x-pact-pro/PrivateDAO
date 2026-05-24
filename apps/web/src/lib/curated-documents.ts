@@ -1461,9 +1461,11 @@ const curatedDocuments: CuratedDocument[] = [
     slug: "monitoring-delivery-evidence",
     title: "Monitoring Delivery Evidence",
     category: "Operations",
-    summary: "Generated evidence package for monitoring delivery ownership, requirement closure, transcript expectations, and current claim boundary.",
+    summary:
+      "Generated evidence package for live Testnet backend probes, monitoring ownership, partial alert-delivery requirements, transcript expectations, and current claim boundary.",
     audience: "Funders, judges, operators, reviewers",
-    boundary: "Generated evidence only; it does not claim live alert routing or tested production transcripts are already complete.",
+    boundary:
+      "Generated evidence only; Testnet backend probes are live, while external alert routing and tested production transcripts remain separately gated.",
     docPath: "docs/monitoring-delivery.generated.md",
     rawHref: `${repositoryBlobBase}/docs/monitoring-delivery.generated.md`,
   },

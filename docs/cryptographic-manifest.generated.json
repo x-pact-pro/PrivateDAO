@@ -1,9 +1,9 @@
 {
   "project": "PrivateDAO",
-  "generatedAt": "2026-05-24T16:24:49.864Z",
+  "generatedAt": "2026-05-24T17:03:48.855Z",
   "algorithm": "sha256",
   "entryCount": 145,
-  "aggregateSha256": "ae1af87946207ec5966527f4353ea8948bcf5536ac7804f64b3e0a706e54f454",
+  "aggregateSha256": "b6e035466e78ac82356fd989a7d716a1eada9eb03b317204c870ad5bc20cc700",
   "files": [
     {
       "path": "zk/circuits/private_dao_vote_overlay.circom",
@@ -602,8 +602,8 @@
     },
     {
       "path": "docs/monitoring-alert-rules.json",
-      "sha256": "6d7e8d2e61eca5dfddc97f99ff2b30cacc071dc42252d9b7ed37cec38065b354",
-      "bytes": 3864
+      "sha256": "a5d41cf18ea6aa2fb67626feb9f9ba74ce4fc13dbd62d39193129b8a93d0ca5a",
+      "bytes": 3927
     },
     {
       "path": "docs/monitoring-alert-rules.md",

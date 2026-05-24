@@ -1,7 +1,7 @@
 {
   "project": "PrivateDAO",
-  "environment": "mainnet-candidate",
-  "status": "pending-delivery-closure",
+  "environment": "solana-testnet-production-candidate",
+  "status": "testnet-probe-closure-alert-delivery-pending",
   "owners": [
     {
       "role": "operations-lead",
@@ -23,46 +23,46 @@
     {
       "id": "alert-destination-ownership",
       "label": "Alert destination ownership",
-      "status": "pending",
-      "evidence": "named destination and explicit owner"
+      "status": "partial",
+      "evidence": "operations owner assigned; external alert destination delivery transcript remains the closure item"
     },
     {
       "id": "rpc-probe-routing",
       "label": "Primary and fallback RPC probes",
-      "status": "pending",
-      "evidence": "provider assignment documented; active primary path remains public Devnet until RPCFast passes devnet truth validation"
+      "status": "closed",
+      "evidence": "same-domain /healthz and /api/v1/readiness pass on https://api.privatedao.org with QuickNode Testnet RPC redacted in public payloads"
     },
     {
       "id": "proposal-lifecycle-monitor",
       "label": "Proposal lifecycle monitor",
-      "status": "pending",
-      "evidence": "test event and routed alert transcript"
+      "status": "partial",
+      "evidence": "Solana Testnet chain watcher endpoint returns latest indexed transactions; routed alert transcript still required"
     },
     {
       "id": "treasury-monitor",
       "label": "Treasury balance monitor",
-      "status": "pending",
-      "evidence": "balance anomaly alert transcript"
+      "status": "partial",
+      "evidence": "Token and treasury evidence remains indexed in reviewer packets; balance anomaly delivery transcript still required"
     },
     {
       "id": "proof-and-settlement-monitor",
       "label": "Proof and settlement monitor",
-      "status": "pending",
-      "evidence": "strict proof or settlement failure transcript"
+      "status": "closed",
+      "evidence": "QuickNode stream stats, freshness endpoint, QVAC runtime proof, Umbra relayer health, and backend provider readiness packet all return HTTP 200"
     },
     {
       "id": "authority-activity-monitor",
       "label": "Authority activity monitor",
-      "status": "pending",
-      "evidence": "upgrade-authority or deployment activity alert transcript"
+      "status": "partial",
+      "evidence": "Squads custody evidence and timelock proof are recorded; external authority-activity alert transcript still required"
     }
   ],
   "providerAssignments": {
-    "candidatePrimaryRpc": "https://solana-rpc.rpcfast.com?api_key=ejQYiCn3yUFJUYyG3yw6C72hZNDzxoSFLy7VX9ETQOJOSFwQK2eh0Dl0XXAdU2uv",
-    "activePrimaryRpc": "https://api.devnet.solana.com",
-    "fallbackRpc": "https://solana-rpc.rpcfast.com?api_key=ejQYiCn3yUFJUYyG3yw6C72hZNDzxoSFLy7VX9ETQOJOSFwQK2eh0Dl0XXAdU2uv",
+    "candidatePrimaryRpc": "QUICKNODE_SOLANA_TESTNET_RPC host secret",
+    "activePrimaryRpc": "https://cosmological-hidden-water.solana-testnet.quiknode.pro/[redacted]",
+    "fallbackRpc": "https://api.testnet.solana.com",
     "readPath": "backend-indexer",
-    "status": "candidate-documented-awaiting-devnet-validation"
+    "status": "testnet-provider-probes-live-alert-transcripts-pending"
   },
   "transcriptRequirements": [
     "trigger source and timestamp",

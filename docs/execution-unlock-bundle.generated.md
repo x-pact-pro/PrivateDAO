@@ -3,11 +3,11 @@
 ## Overview
 
 - project: `PrivateDAO`
-- generated at: `2026-05-06T09:11:31.631Z`
+- generated at: `2026-05-24T17:02:47.483Z`
 - real-device status: `pending-real-device-capture`
 - real-device completion: `1/5`
-- monitoring status: `pending-delivery-closure`
-- monitoring completion: `0/6`
+- monitoring status: `testnet-probe-closure-alert-delivery-pending`
+- monitoring completion: `2/6`
 - settlement receipt status: `partial-source-receipt-closure`
 - settlement receipt completion: `2/4`
 
