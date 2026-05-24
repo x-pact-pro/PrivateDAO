@@ -1,9 +1,9 @@
 {
   "project": "PrivateDAO",
-  "generatedAt": "2026-05-24T17:03:48.855Z",
+  "generatedAt": "2026-05-24T19:37:13.104Z",
   "algorithm": "sha256",
   "entryCount": 145,
-  "aggregateSha256": "b6e035466e78ac82356fd989a7d716a1eada9eb03b317204c870ad5bc20cc700",
+  "aggregateSha256": "29b835dbf030bf12315a3ddb51636ff7872631b03771b58f96e0b85dc84577a7",
   "files": [
     {
       "path": "zk/circuits/private_dao_vote_overlay.circom",
@@ -172,13 +172,13 @@
     },
     {
       "path": "docs/read-node/snapshot.generated.md",
-      "sha256": "56abfdd02a94e1549d2134ace24cab9721254f4a9243a60341ab86ed5167779f",
-      "bytes": 3697
+      "sha256": "682bbcf755eaf87af597b76a0f3138bd3fa8bfe75f9e9cd8961df0461e2279e3",
+      "bytes": 3802
     },
     {
       "path": "docs/read-node/snapshot.generated.json",
-      "sha256": "d096ae8dfe0c5d87a1f834e33a66f590355e2b0923abdac211aced1b4292d02b",
-      "bytes": 152244
+      "sha256": "51d3e13bb76c15af92b47847d2ce426716581b242eae0a75fd4ef7dab3129891",
+      "bytes": 63402
     },
     {
       "path": "docs/backend-provider-readiness-2026-05-24.md",
@@ -277,8 +277,8 @@
     },
     {
       "path": "docs/investor-pitch-deck.md",
-      "sha256": "40c09858c982b75d9f46ae78562b0f895ef03395cbd69723f18c4f1b15930b75",
-      "bytes": 14253
+      "sha256": "61b05f01b3b0551331d8b7da7b1304e1d07fb3b30253e71996986a11da29451f",
+      "bytes": 14255
     },
     {
       "path": "docs/independent-verification.md",

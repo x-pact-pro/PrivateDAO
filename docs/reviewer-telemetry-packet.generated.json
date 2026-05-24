@@ -1,6 +1,6 @@
 {
   "project": "PrivateDAO",
-  "generatedAt": "2026-05-24T15:29:38.106Z",
+  "generatedAt": "2026-05-24T19:37:22.799Z",
   "reviewerIntent": "Show the shortest truth-synced route into runtime maturity, hosted reads, indexed governance, and infrastructure-facing reviewer value without claiming unsupported partnerships or mainnet readiness.",
   "truthSources": [
     {
@@ -10,31 +10,31 @@
     },
     {
       "label": "Frontier integrations",
-      "generatedAt": "2026-04-22T00:19:16.435Z",
+      "generatedAt": "2026-05-24T19:28:57.869Z",
       "href": "docs/frontier-integrations.generated.md"
     },
     {
       "label": "Read-node snapshot",
-      "generatedAt": "2026-04-28T23:33:45.971Z",
+      "generatedAt": "2026-05-24T19:36:28.563Z",
       "href": "docs/read-node/snapshot.generated.md"
     },
     {
       "label": "Devnet service metrics",
-      "generatedAt": "2026-05-20T17:45:47.757Z",
+      "generatedAt": "2026-05-24T16:15:19.945Z",
       "href": "apps/web/src/lib/devnet-service-metrics.ts"
     }
   ],
   "whatWorksNow": [
-    "Hosted reads expose 48 indexed proposals across 28 DAOs through the backend-indexer path.",
+    "Hosted reads expose 17 indexed proposals across 16 DAOs through the backend-indexer path.",
     "Diagnostics, analytics, and services remain live reviewer-visible routes starting from https://privatedao.org/diagnostics/.",
-    "7/7 canonical governance lifecycle transactions are finalized in the current integrations package.",
-    "5/5 confidential settlement corridor transactions are finalized in the current integrations package.",
-    "4 REFHE-settled and 3 MagicBlock-settled proposal paths are already reflected in the indexed source."
+    "0/7 canonical governance lifecycle transactions are finalized in the current integrations package.",
+    "0/5 confidential settlement corridor transactions are finalized in the current integrations package.",
+    "2 REFHE-settled and 1 MagicBlock-settled proposal paths are already reflected in the indexed source."
   ],
   "externallyProvenNow": [
     "Runtime evidence package generated at 2026-05-06T09:07:34.282Z and published as docs/runtime-evidence.generated.md.",
-    "Frontier integrations package generated at 2026-04-22T00:19:16.435Z with reviewer entry https://privatedao.org/proof/?judge=1.",
-    "Read-node snapshot generated at 2026-04-28T23:33:45.971Z on slot 458767709 against https://api.devnet.solana.com.",
+    "Frontier integrations package generated at 2026-05-24T19:28:57.869Z with reviewer entry https://privatedao.org/proof/?judge=1.",
+    "Read-node snapshot generated at 2026-05-24T19:36:28.563Z on slot 410642172 against https://cosmological-hidden-water.solana-testnet.quiknode.pro/[redacted].",
     "Proposal flow health, wallet readiness, and proof freshness summaries are taken from the same devnet service metrics module used by the live app.",
     "Unexpected runtime failures remain 0 and unexpected adversarial successes remain 0."
   ],
@@ -46,13 +46,13 @@
   ],
   "hostedReadProof": {
     "readPath": "backend-indexer",
-    "rpcEndpoint": "https://api.devnet.solana.com",
-    "slot": 458767709,
+    "rpcEndpoint": "https://cosmological-hidden-water.solana-testnet.quiknode.pro/[redacted]",
+    "slot": 410642172,
     "currentTestnetProgramId": "EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva",
-    "programId": "5AhUsbQ4mJ8Xh7QJEomuS85qGgmK9iNvFqzF669Y7Psx",
+    "programId": "EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva",
     "commitment": "confirmed",
-    "proposals": 48,
-    "uniqueDaos": 28
+    "proposals": 17,
+    "uniqueDaos": 16
   },
   "runtimeSnapshot": {
     "diagnosticsPage": "https://privatedao.org/diagnostics/",
@@ -63,20 +63,20 @@
     "pendingRealDeviceTargets": 4
   },
   "integrationsSnapshot": {
-    "governanceStatus": "verified-devnet-governance-path",
-    "confidentialStatus": "verified-devnet-confidential-path",
-    "governanceFinalizedCount": 7,
+    "governanceStatus": "degraded-testnet-governance-path",
+    "confidentialStatus": "degraded-testnet-confidential-path",
+    "governanceFinalizedCount": 0,
     "governanceTotalCount": 7,
-    "confidentialFinalizedCount": 5,
+    "confidentialFinalizedCount": 0,
     "confidentialTotalCount": 5,
-    "zkAnchorsConfirmed": 3,
+    "zkAnchorsConfirmed": 0,
     "zkAnchorsTotal": 3
   },
   "exportReadySummaries": [
     {
       "label": "Proposal flow health",
-      "value": "37.5%",
-      "detail": "7/7 governance proof steps are finalized. 0 proposal is already executed on Testnet, 0 proposal is still in commit mode, and 5 proposal is still waiting on settlement evidence.",
+      "value": "50%",
+      "detail": "0/7 governance proof steps are finalized. 1 proposal is already executed on Testnet, 0 proposal is still in commit mode, and 2 proposal is still waiting on settlement evidence.",
       "routeLabel": "Open proof and execution",
       "routeHref": "/proof/?judge=1",
       "tone": "emerald"
@@ -91,32 +91,32 @@
     },
     {
       "label": "Proof freshness",
-      "value": "4d old",
-      "detail": "Runtime evidence 18d old and Testnet canary 4d old remain published together. The integration packet remains linked as the reviewer baseline without turning an archived source packet into the freshness score. Latest Testnet rehearsal is 18d old with 9 confirmed lifecycle signatures.",
+      "value": "3h old",
+      "detail": "Runtime evidence 18d old and Testnet canary 3h old remain published together. The integration packet remains linked as the reviewer baseline without turning an archived source packet into the freshness score. Latest Testnet rehearsal is 18d old with 9 confirmed lifecycle signatures.",
       "routeLabel": "Open trust documents",
       "routeHref": "/documents/live-proof-v3",
       "tone": "amber"
     },
     {
       "label": "Hosted read coverage",
-      "value": "48",
-      "detail": "The backend-indexer read path currently exposes 48 indexed proposals across 28 DAOs.",
+      "value": "17",
+      "detail": "The backend-indexer read path currently exposes 17 indexed proposals across 16 DAOs.",
       "tone": "cyan",
       "routeLabel": "Open services",
       "routeHref": "/services"
     },
     {
       "label": "MagicBlock settlement completion",
-      "value": "100%",
-      "detail": "5/5 confidential corridor transactions finalized in the current integration evidence package.",
+      "value": "0%",
+      "detail": "0/5 confidential corridor transactions finalized in the current integration evidence package.",
       "tone": "amber",
       "routeLabel": "Open diagnostics",
       "routeHref": "/diagnostics"
     },
     {
       "label": "Primary RPC latency",
-      "value": "153 ms",
-      "detail": "Current blockhash latency from the primary Testnet endpoint. Version latency is 998 ms.",
+      "value": "177 ms",
+      "detail": "Current blockhash latency from the primary Testnet endpoint. Version latency is 1173 ms.",
       "tone": "cyan",
       "routeLabel": "Open analytics",
       "routeHref": "/analytics"

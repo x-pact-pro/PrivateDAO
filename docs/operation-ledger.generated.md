@@ -1,7 +1,7 @@
 # Operation Ledger
 
 - project: `PrivateDAO`
-- generated at: `2026-05-23T01:08:50.732Z`
+- generated at: `2026-05-24T19:37:12.554Z`
 - purpose: Machine-readable operation ledger for custody, ZK, and REFHE/FHE evidence surfaced on the reviewer site.
 
 ## Entries

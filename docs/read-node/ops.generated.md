@@ -1,8 +1,8 @@
 # Read Node Ops Snapshot
 
-- Generated at: `2026-05-07T03:21:40.872Z`
+- Generated at: `2026-05-24T19:36:28.400Z`
 - Read path: `backend-indexer`
-- RPC endpoint: `https://api.devnet.solana.com`
+- RPC endpoint: `https://cosmological-hidden-water.solana-testnet.quiknode.pro/[redacted]`
 - RPC pool size: `2`
 - Program ID: `EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva`
 - Same-domain recommended: `true`
@@ -10,13 +10,13 @@
 
 ## Backend Coverage
 
-- proposals: `0`
-- unique DAOs: `0`
+- proposals: `17`
+- unique DAOs: `16`
 - zk-enforced proposals: `0`
-- confidential payout proposals: `0`
-- REFHE configured: `0`
-- REFHE settled: `0`
-- REFHE with verifier binding: `0`
+- confidential payout proposals: `3`
+- REFHE configured: `3`
+- REFHE settled: `2`
+- REFHE with verifier binding: `2`
 - executable confidential proposals: `0`
 
 ## Supported Devnet Profiles

@@ -705,7 +705,10 @@ async function fetchMany(
   keys: PublicKey[],
   commitment: Commitment,
 ): Promise<(import("@solana/web3.js").AccountInfo<Buffer> | null)[]> {
-  const chunkSize = 100;
+  const configuredChunkSize = Number(process.env.PRIVATE_DAO_GET_MULTIPLE_ACCOUNTS_CHUNK_SIZE || 100);
+  const chunkSize = Number.isFinite(configuredChunkSize)
+    ? Math.max(1, Math.min(100, Math.floor(configuredChunkSize)))
+    : 100;
   const results: (import("@solana/web3.js").AccountInfo<Buffer> | null)[] = [];
   for (let i = 0; i < keys.length; i += chunkSize) {
     const chunk = keys.slice(i, i + chunkSize);

@@ -1,63 +1,67 @@
 {
   "project": "PrivateDAO",
-  "generatedAt": "2026-04-22T00:19:16.435Z",
-  "network": "devnet",
-  "programId": "5AhUsbQ4mJ8Xh7QJEomuS85qGgmK9iNvFqzF669Y7Psx",
+  "generatedAt": "2026-05-24T19:28:57.869Z",
+  "network": "testnet",
+  "programId": "EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva",
   "verificationWallet": "4Mm5YTRbJuyA8NcWM85wTnx6ZQMXNph2DSnzCCKLhsMD",
   "reviewerEntry": "https://privatedao.org/proof/?judge=1",
   "readNode": {
     "readPath": "backend-indexer",
-    "rpcEndpoint": "https://api.devnet.solana.com",
-    "rpcPoolSize": 2,
-    "rpcProviderClass": "public-devnet",
+    "rpcEndpoint": "https://api.testnet.solana.com",
+    "rpcPoolSize": 1,
+    "rpcProviderClass": "public-testnet",
     "magicBlockApiBase": "https://payments.magicblock.app",
     "magicBlockHealth": "ok",
     "overview": {
-      "generatedAt": "2026-04-22T00:19:07.894Z",
-      "proposals": 48,
-      "uniqueDaos": 28,
+      "generatedAt": "2026-05-24T19:28:51.947Z",
+      "proposals": 17,
+      "uniqueDaos": 16,
       "zkEnforced": 0,
-      "confidentialPayouts": 8,
-      "magicblockConfigured": 4,
-      "magicblockSettled": 3,
-      "refheConfigured": 6,
-      "refheSettled": 4,
-      "refheWithVerifier": 4,
+      "confidentialPayouts": 3,
+      "magicblockConfigured": 2,
+      "magicblockSettled": 1,
+      "refheConfigured": 3,
+      "refheSettled": 2,
+      "refheWithVerifier": 2,
       "executableConfidential": 0
     }
   },
   "simpleGovernance": {
-    "dao": "FZV9KmpeY1B31XvszQypp5T6nQN5C44JDLM4QWBEDvhx",
-    "treasury": "AZUroiNeGAjNdD84eEHnAKHHFwqAFmkjr2g1eoF7Ek5c",
-    "proposal": "AegjmwkX1FknBJMDyH5yM6BMhyHsiUreNtz3d8iz3QrP",
-    "phase": "Executed",
+    "dao": "CKDqPz4H64U5b66CDrTKAHDuQXV9NwMsKtDjZyUNHhiH",
+    "treasury": "mAM4bKHsk3xWBfzdgLrFByPpXP6bw6h21kMEc5hF6CN",
+    "proofRegistryDao": "FZV9KmpeY1B31XvszQypp5T6nQN5C44JDLM4QWBEDvhx",
+    "proofRegistryTreasury": "AZUroiNeGAjNdD84eEHnAKHHFwqAFmkjr2g1eoF7Ek5c",
+    "proposal": "8zFTWHhB8YonTX6FjAfRsWRP45izwBQaj57btAqgdtVi",
+    "proposalSource": "live-read-node-fallback",
+    "proofRegistryProposal": "AegjmwkX1FknBJMDyH5yM6BMhyHsiUreNtz3d8iz3QrP",
+    "phase": "Executable",
     "lifecycleStatus": "Passed",
     "accountChecks": [
       {
         "label": "program",
-        "pubkey": "5AhUsbQ4mJ8Xh7QJEomuS85qGgmK9iNvFqzF669Y7Psx",
-        "endpoint": "https://api.devnet.solana.com",
+        "pubkey": "EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva",
+        "endpoint": "https://api.testnet.solana.com",
         "exists": true,
         "executable": true
       },
       {
         "label": "simple-dao",
-        "pubkey": "FZV9KmpeY1B31XvszQypp5T6nQN5C44JDLM4QWBEDvhx",
-        "endpoint": "https://api.devnet.solana.com",
+        "pubkey": "CKDqPz4H64U5b66CDrTKAHDuQXV9NwMsKtDjZyUNHhiH",
+        "endpoint": "https://api.testnet.solana.com",
         "exists": true,
         "executable": false
       },
       {
         "label": "simple-treasury",
-        "pubkey": "AZUroiNeGAjNdD84eEHnAKHHFwqAFmkjr2g1eoF7Ek5c",
-        "endpoint": "https://api.devnet.solana.com",
-        "exists": true,
+        "pubkey": "mAM4bKHsk3xWBfzdgLrFByPpXP6bw6h21kMEc5hF6CN",
+        "endpoint": "unavailable",
+        "exists": false,
         "executable": false
       },
       {
         "label": "simple-proposal",
-        "pubkey": "AegjmwkX1FknBJMDyH5yM6BMhyHsiUreNtz3d8iz3QrP",
-        "endpoint": "https://api.devnet.solana.com",
+        "pubkey": "8zFTWHhB8YonTX6FjAfRsWRP45izwBQaj57btAqgdtVi",
+        "endpoint": "https://api.testnet.solana.com",
         "exists": true,
         "executable": false
       }
@@ -66,98 +70,100 @@
       {
         "label": "create-dao",
         "signature": "5mcyVi3SbZo4hvpVMjH2eZH8FYeywdbbPz4ArmE5wHXH5X9EnP6gSq76ogBWYWVkVUwzrCchPnSdhGV1mFb48s5Q",
-        "endpoint": "https://api.devnet.solana.com",
-        "status": "finalized",
-        "slot": 453103934,
-        "confirmed": true
+        "endpoint": "unavailable",
+        "status": "not-returned-by-current-rpc",
+        "slot": 0,
+        "confirmed": false
       },
       {
         "label": "deposit",
         "signature": "KHWqfteEQhsH7hk7onQymbmnYdtF8rLoPWwchoQz5XFy8eY3DufeaX8DPiiVS1or7XkMVjMrbH2rsEhPtrPfzi9",
-        "endpoint": "https://api.devnet.solana.com",
-        "status": "finalized",
-        "slot": 453103942,
-        "confirmed": true
+        "endpoint": "unavailable",
+        "status": "not-returned-by-current-rpc",
+        "slot": 0,
+        "confirmed": false
       },
       {
         "label": "create-proposal",
         "signature": "E93ikMXVJbtvz8ewAHA2BasZPVKYyUXe3Jy88h3b3AQubm7PSYFMNtDveBkRts7uYodwzb8cGZSVDoneKF16X2L",
-        "endpoint": "https://api.devnet.solana.com",
-        "status": "finalized",
-        "slot": 453103948,
-        "confirmed": true
+        "endpoint": "unavailable",
+        "status": "not-returned-by-current-rpc",
+        "slot": 0,
+        "confirmed": false
       },
       {
         "label": "commit",
         "signature": "3RMbrcYGx297hgcTrov9PqtUqM97ZFg6A21qxmepTboLQAoXov6toY2QTa8yU1i8zmQPvjR3ArNGpvR3jat79uTP",
-        "endpoint": "https://api.devnet.solana.com",
-        "status": "finalized",
-        "slot": 453103951,
-        "confirmed": true
+        "endpoint": "unavailable",
+        "status": "not-returned-by-current-rpc",
+        "slot": 0,
+        "confirmed": false
       },
       {
         "label": "reveal",
         "signature": "5L3cxZZgwMRnJTxNXLQCyjQMXSAi6bwoskFoKsfaQ7JycYUPuGCkWAkr7qA18WkddfNdSPB5qHt3FVSiHq2eDGh5",
-        "endpoint": "https://api.devnet.solana.com",
-        "status": "finalized",
-        "slot": 453104032,
-        "confirmed": true
+        "endpoint": "unavailable",
+        "status": "not-returned-by-current-rpc",
+        "slot": 0,
+        "confirmed": false
       },
       {
         "label": "finalize",
         "signature": "4JSPRJQuSY5es74TcChBTzuGMMCr4RknHkmr6vFmtmbav4TRABDAnapmtgipYioEZzh4wmKfg2PMzZHCfJ7UruLG",
-        "endpoint": "https://api.devnet.solana.com",
-        "status": "finalized",
-        "slot": 453104044,
-        "confirmed": true
+        "endpoint": "unavailable",
+        "status": "not-returned-by-current-rpc",
+        "slot": 0,
+        "confirmed": false
       },
       {
         "label": "execute",
         "signature": "x1vhP6H3Regi6WHYx6LUGbeo4CCbJxWwtUVucPVjonnymyccpM8mpb7t3UpQpqksXBU7PYGPd86cPnZLYwRzBn9",
-        "endpoint": "https://api.devnet.solana.com",
-        "status": "finalized",
-        "slot": 453104062,
-        "confirmed": true
+        "endpoint": "unavailable",
+        "status": "not-returned-by-current-rpc",
+        "slot": 0,
+        "confirmed": false
       }
     ],
-    "verificationStatus": "verified-devnet-governance-path"
+    "verificationStatus": "degraded-testnet-governance-path"
   },
   "confidentialOperations": {
-    "proposal": "52UpWHJodPWQzpR8u2qqpgwo3jRB7mvjgwCnf8oSJuXX",
-    "payoutPlan": "ELG1u6ZCmZeQsudRfqGfg4jBgfMSsU1vc9r9aZcTB9Ka",
+    "proposal": "3oJ4hkmHr7dZ29MAREMAvDgMxYAMKbrHrFFbZG7TWTuQ",
+    "proposalSource": "live-read-node-fallback",
+    "runtimeCaptureProposal": "52UpWHJodPWQzpR8u2qqpgwo3jRB7mvjgwCnf8oSJuXX",
+    "payoutPlan": "2CXuzM8615XNp1vwUyyU3MxArgJFw5AEZCmVgpCtH2yb",
     "payoutStatus": "Funded",
-    "refheEnvelope": "75QH1NdLyWcpcuKSDD1n3hLDG4VHPANGf2zDQZsiesFo",
+    "refheEnvelope": "5UHy5XTrYdTUn9Wfwmeur7kMp2rLneyuZZQJf1mYasy3",
     "refheStatus": "Settled",
-    "refheVerifierProgram": "5AhUsbQ4mJ8Xh7QJEomuS85qGgmK9iNvFqzF669Y7Psx",
-    "magicblockCorridor": "8YH5f29UX363oMM1mqsXDyyBtyu4Y1b1BBuikV4xkAys",
+    "refheVerifierProgram": "EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva",
+    "magicblockCorridor": "CwB641sj7R6GAL84kf5xThi4zjN9Edx5S7yXz7GDuo85",
     "magicblockStatus": "Settled",
-    "settlementWallet": "2TrX1tAJjcPcV8nc6f8LBAe97jZVi5hPG6jND3Wb1mCk",
+    "settlementWallet": "5vQiGkrsfz3wjeFWcPDFLAZV8Xyp36QRWatkh7Rt2FVj",
     "accountChecks": [
       {
         "label": "confidential-proposal",
-        "pubkey": "52UpWHJodPWQzpR8u2qqpgwo3jRB7mvjgwCnf8oSJuXX",
-        "endpoint": "https://api.devnet.solana.com",
+        "pubkey": "3oJ4hkmHr7dZ29MAREMAvDgMxYAMKbrHrFFbZG7TWTuQ",
+        "endpoint": "https://api.testnet.solana.com",
         "exists": true,
         "executable": false
       },
       {
         "label": "confidential-payout-plan",
-        "pubkey": "ELG1u6ZCmZeQsudRfqGfg4jBgfMSsU1vc9r9aZcTB9Ka",
-        "endpoint": "https://api.devnet.solana.com",
+        "pubkey": "2CXuzM8615XNp1vwUyyU3MxArgJFw5AEZCmVgpCtH2yb",
+        "endpoint": "https://api.testnet.solana.com",
         "exists": true,
         "executable": false
       },
       {
         "label": "refhe-envelope",
-        "pubkey": "75QH1NdLyWcpcuKSDD1n3hLDG4VHPANGf2zDQZsiesFo",
-        "endpoint": "https://api.devnet.solana.com",
+        "pubkey": "5UHy5XTrYdTUn9Wfwmeur7kMp2rLneyuZZQJf1mYasy3",
+        "endpoint": "https://api.testnet.solana.com",
         "exists": true,
         "executable": false
       },
       {
         "label": "magicblock-corridor",
-        "pubkey": "8YH5f29UX363oMM1mqsXDyyBtyu4Y1b1BBuikV4xkAys",
-        "endpoint": "https://api.devnet.solana.com",
+        "pubkey": "CwB641sj7R6GAL84kf5xThi4zjN9Edx5S7yXz7GDuo85",
+        "endpoint": "https://api.testnet.solana.com",
         "exists": true,
         "executable": false
       }
@@ -166,45 +172,45 @@
       {
         "label": "magicblock-deposit",
         "signature": "3FV1LENXhfzktPUQh6rK1mRhEk4aJf2snFhfMSK3nLM4au2y4n1smbEGCEWr5x8kJ7t86ZcAivB5HhsMqMWpkRJC",
-        "endpoint": "https://api.devnet.solana.com",
-        "status": "finalized",
-        "slot": 453755521,
-        "confirmed": true
+        "endpoint": "unavailable",
+        "status": "not-returned-by-current-rpc",
+        "slot": 0,
+        "confirmed": false
       },
       {
         "label": "magicblock-private-transfer",
         "signature": "662meytSDxGaCpkkkvMwqo6ZLFNvbC8jswHUw4sCaJmaYpov1995Xoik97CoWUHu6vvYigNdvfWSGBMfktzwbRr4",
-        "endpoint": "https://api.devnet.solana.com",
-        "status": "finalized",
-        "slot": 453755612,
-        "confirmed": true
+        "endpoint": "unavailable",
+        "status": "not-returned-by-current-rpc",
+        "slot": 0,
+        "confirmed": false
       },
       {
         "label": "magicblock-withdraw",
         "signature": "23VxsHqP9aDWTLCdPmRep5UxRXzj9mpvR9B5HGDC8Nt9tKNrVxiwCHCpzm7BLHg8TrChdpmx4awtHyUEW1QPdEBC",
-        "endpoint": "https://api.devnet.solana.com",
-        "status": "finalized",
-        "slot": 453755711,
-        "confirmed": true
+        "endpoint": "unavailable",
+        "status": "not-returned-by-current-rpc",
+        "slot": 0,
+        "confirmed": false
       },
       {
         "label": "magicblock-settle",
         "signature": "56zD3JYxYssgAkSsmxoh2zGzs11SakCXmUviMF53rdHy1HHcNQGqq72Jo9cbww2m67k7XsD5gqTB42HXMC8YEHHM",
-        "endpoint": "https://api.devnet.solana.com",
-        "status": "finalized",
-        "slot": 453755859,
-        "confirmed": true
+        "endpoint": "unavailable",
+        "status": "not-returned-by-current-rpc",
+        "slot": 0,
+        "confirmed": false
       },
       {
         "label": "magicblock-execute",
         "signature": "LoNED2YKkYWxaQbFV4y8fCzqGi5YrpPSruJYppqfvcTyAJ2zU5HM92QEsPNydQb26abE7qp2kB7hCNPJFbVUUPA",
-        "endpoint": "https://api.devnet.solana.com",
-        "status": "finalized",
-        "slot": 453757637,
-        "confirmed": true
+        "endpoint": "unavailable",
+        "status": "not-returned-by-current-rpc",
+        "slot": 0,
+        "confirmed": false
       }
     ],
-    "status": "verified-devnet-confidential-path"
+    "status": "degraded-testnet-confidential-path"
   },
   "zk": {
     "verificationMode": "offchain-groth16",
@@ -214,57 +220,57 @@
       {
         "label": "zk-anchor-vote",
         "signature": "3KBK6bai1g1iR4w7zyWGcpegJg2hqYUGAvnzjKK15FjvaJgfg9N5CPeAc8xFdzJC9gMSKSqwgrX7SNXg5BM18pUw",
-        "endpoint": "https://api.devnet.solana.com",
-        "status": "finalized",
-        "slot": 456166473,
-        "confirmed": true,
+        "endpoint": "unavailable",
+        "status": "not-returned-by-current-rpc",
+        "slot": 0,
+        "confirmed": false,
         "layer": "vote",
         "anchorPda": "J7PfXeZxu6V4iixevD3jgMVZ9PAp6XjZWsQH78Tvn4zo",
         "account": {
           "label": "zk-anchor-account-vote",
           "pubkey": "J7PfXeZxu6V4iixevD3jgMVZ9PAp6XjZWsQH78Tvn4zo",
-          "endpoint": "https://api.devnet.solana.com",
-          "exists": true,
+          "endpoint": "unavailable",
+          "exists": false,
           "executable": false
         }
       },
       {
         "label": "zk-anchor-delegation",
         "signature": "mSuC2AKhiNBawKRdBBvECW1VGJ6uWM5YaDU2YUL1xjt8DzSLJwWTMTCmYpN4XAreDxdXeaUaaesYCe1Dsi225U1",
-        "endpoint": "https://api.devnet.solana.com",
-        "status": "finalized",
-        "slot": 456166484,
-        "confirmed": true,
+        "endpoint": "unavailable",
+        "status": "not-returned-by-current-rpc",
+        "slot": 0,
+        "confirmed": false,
         "layer": "delegation",
         "anchorPda": "AqyT4w4Va2KU68LXy1k6ku6SW761iSvGLZaKbst14xeK",
         "account": {
           "label": "zk-anchor-account-delegation",
           "pubkey": "AqyT4w4Va2KU68LXy1k6ku6SW761iSvGLZaKbst14xeK",
-          "endpoint": "https://api.devnet.solana.com",
-          "exists": true,
+          "endpoint": "unavailable",
+          "exists": false,
           "executable": false
         }
       },
       {
         "label": "zk-anchor-tally",
         "signature": "3bMEgCMRc8pswjPDTYKw6Cd7hvHKeuVo4vvjqQ95JpPsfDNVuLBfSFzEgjowqGvvn2et6oW9HrMM716UJ1Bgr4Mu",
-        "endpoint": "https://api.devnet.solana.com",
-        "status": "finalized",
-        "slot": 456166492,
-        "confirmed": true,
+        "endpoint": "unavailable",
+        "status": "not-returned-by-current-rpc",
+        "slot": 0,
+        "confirmed": false,
         "layer": "tally",
         "anchorPda": "6YmgboGvYP6k5hzq1BfSJFN9PgheV1q52uipfLqnT8tt",
         "account": {
           "label": "zk-anchor-account-tally",
           "pubkey": "6YmgboGvYP6k5hzq1BfSJFN9PgheV1q52uipfLqnT8tt",
-          "endpoint": "https://api.devnet.solana.com",
-          "exists": true,
+          "endpoint": "unavailable",
+          "exists": false,
           "executable": false
         }
       }
     ],
     "anchorCount": 3,
-    "status": "proof-anchors-recorded-on-devnet"
+    "status": "proof-anchor-gap-detected"
   },
   "docs": [
     "docs/runtime/devnet-feature-sweep-2026-04-06.md",
@@ -275,6 +281,7 @@
     "docs/refhe-operator-flow.md",
     "docs/zk-proof-registry.json",
     "docs/zk-registry.generated.json",
+    "docs/zk-standalone-verifier-testnet-2026-05-23.md",
     "docs/read-node/snapshot.generated.md",
     "docs/read-node/ops.generated.md",
     "docs/rpc-architecture.md"
@@ -288,9 +295,9 @@
     "npm run verify:all"
   ],
   "notes": [
-    "This package verifies live Devnet transaction and account evidence for the current Frontier-facing integrations.",
+    "This package verifies live testnet transaction and account evidence for the current Frontier-facing integrations.",
     "ZK remains proof-anchored and threshold-attested rather than verifier-CPI complete.",
-    "MagicBlock and REFHE are proposal-bound and runtime-evidenced on Devnet; source-verifiable external receipts remain a mainnet blocker.",
+    "MagicBlock and REFHE are proposal-bound and runtime-evidenced on testnet; source-verifiable external receipts remain a mainnet blocker.",
     "RPC Fast readiness is shown through backend-indexer mode, pooled RPC endpoints, and the current managed-provider classification when present."
   ]
 }

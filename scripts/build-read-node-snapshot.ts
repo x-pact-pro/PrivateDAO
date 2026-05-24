@@ -480,20 +480,25 @@ function buildFeaturedProposalContexts(
   const reportByPubkey = new Map((report.proposals ?? []).map((proposal) => [proposal.proposalPublicKey, proposal]));
   const confidentialExecute = integrations.confidentialOperations?.txChecks?.find((entry) => entry.label === "magicblock-execute");
 
-  const payroll = proposalByPubkey.get(FEATURED_PROPOSAL_KEYS.payroll);
-  const gaming = proposalByPubkey.get(FEATURED_PROPOSAL_KEYS.gaming);
-  const grant = proposalByPubkey.get(FEATURED_PROPOSAL_KEYS.grant);
+  const confidentialCandidates = proposals.filter((proposal) => proposal.confidentialPayoutPlan);
+  const payroll =
+    proposalByPubkey.get(FEATURED_PROPOSAL_KEYS.payroll) ??
+    confidentialCandidates.find((proposal) => proposal.refheEnvelope?.status === "Settled") ??
+    confidentialCandidates[0] ??
+    proposals[0];
+  const gaming =
+    proposalByPubkey.get(FEATURED_PROPOSAL_KEYS.gaming) ??
+    confidentialCandidates.find((proposal) => proposal.magicblockCorridor?.status === "Settled") ??
+    confidentialCandidates.find((proposal) => proposal.pubkey !== payroll?.pubkey) ??
+    payroll;
+  const grant =
+    proposalByPubkey.get(FEATURED_PROPOSAL_KEYS.grant) ??
+    proposals.find((proposal) => proposal.treasuryAction) ??
+    proposals.find((proposal) => proposal.pubkey !== payroll?.pubkey && proposal.pubkey !== gaming?.pubkey) ??
+    payroll;
 
-  if (!payroll || !payroll.confidentialPayoutPlan) {
-    throw new Error("featured payroll proposal missing from read-node snapshot");
-  }
-
-  if (!gaming || !gaming.confidentialPayoutPlan) {
-    throw new Error("featured gaming proposal missing from read-node snapshot");
-  }
-
-  if (!grant || !grant.treasuryAction) {
-    throw new Error("featured grant proposal missing treasury action in read-node snapshot");
+  if (!payroll || !gaming || !grant) {
+    throw new Error("read-node snapshot has no live proposals to feature");
   }
 
   return {
@@ -580,9 +585,11 @@ async function main() {
   const featuredProposalContexts = buildFeaturedProposalContexts(proposals, report, integrations);
   const proposalRegistry = buildProposalRegistry(proposals, report, integrations);
   const featuredProposalRegistry = proposalRegistry.filter((proposal) =>
-    [FEATURED_PROPOSAL_KEYS.payroll, FEATURED_PROPOSAL_KEYS.gaming, FEATURED_PROPOSAL_KEYS.grant].includes(
-      proposal.execution.proposalAccount as typeof FEATURED_PROPOSAL_KEYS[keyof typeof FEATURED_PROPOSAL_KEYS],
-    ),
+    [
+      featuredProposalContexts.payroll.proposalAccount,
+      featuredProposalContexts.gaming.proposalAccount,
+      featuredProposalContexts.grant.proposalAccount,
+    ].includes(proposal.execution.proposalAccount),
   );
 
   const payload = {

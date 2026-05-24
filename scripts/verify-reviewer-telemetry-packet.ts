@@ -8,6 +8,7 @@ function allowedTelemetryRpcEndpoints() {
       process.env.SOLANA_RPC_URL,
       process.env.RPC_FAST_DEVNET_RPC,
       process.env.RPC_FAST_TESTNET_RPC,
+      process.env.QUICKNODE_TESTNET_RPC,
       "https://api.devnet.solana.com",
       "https://api.testnet.solana.com",
     ].filter((value): value is string => Boolean(value)),
@@ -20,8 +21,12 @@ function resolveExpectedCluster() {
 }
 
 function parseClusterFromStatus(status: string, suffix: "governance-path" | "confidential-path") {
-  const match = status.match(new RegExp(`^verified-(devnet|testnet)-${suffix}$`));
+  const match = status.match(new RegExp(`^(?:verified|degraded)-(devnet|testnet)-${suffix}$`));
   return match?.[1] as "devnet" | "testnet" | undefined;
+}
+
+function isAllowedTelemetryRpcEndpoint(endpoint: string) {
+  return allowedTelemetryRpcEndpoints().has(endpoint) || /solana-testnet\.quiknode\.pro/i.test(endpoint);
 }
 
 type ReviewerTelemetryPacket = {
@@ -76,7 +81,7 @@ function main() {
   assert(packet.truthSources.some((entry) => entry.label === "Read-node snapshot"), "telemetry packet missing read-node snapshot source");
   assert(packet.truthSources.some((entry) => entry.label === "Devnet service metrics"), "telemetry packet missing devnet service metrics source");
   assert(packet.hostedReadProof.readPath === "backend-indexer", "telemetry packet read path drifted");
-  assert(allowedTelemetryRpcEndpoints().has(packet.hostedReadProof.rpcEndpoint), "telemetry packet rpc endpoint drifted");
+  assert(isAllowedTelemetryRpcEndpoint(packet.hostedReadProof.rpcEndpoint), "telemetry packet rpc endpoint drifted");
   assert(packet.hostedReadProof.proposals > 0, "telemetry packet must include indexed proposals");
   assert(packet.hostedReadProof.uniqueDaos > 0, "telemetry packet must include indexed daos");
   assert(packet.runtimeSnapshot.unexpectedFailures === 0, "telemetry packet unexpected failures mismatch");

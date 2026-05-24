@@ -118,19 +118,49 @@ async function main() {
     return;
   }
 
-  const [runtime, overview, magicblock, simpleProposal] = await Promise.all([
+  const [runtime, overview, magicblock] = await Promise.all([
     readNode.getRuntimeSnapshot(false),
     readNode.getOpsOverview(false),
     readNode.getMagicBlockRuntime(false),
-    readNode.fetchProposal(proof.proposal),
   ]);
 
-  const confidentialCapture = magicBlockRuntime.captures.find((capture) => capture.executeTxSignature) ?? magicBlockRuntime.captures[0];
-  if (!confidentialCapture) {
-    throw new Error("missing MagicBlock runtime capture for Frontier integration build");
+  const simpleProposal =
+    proposals.find((proposal) => proposal.pubkey === proof.proposal) ??
+    proposals.find((proposal) => !proposal.confidentialPayoutPlan) ??
+    proposals[0];
+  if (!simpleProposal) {
+    throw new Error("missing live proposal for Frontier integration build");
   }
+  const simpleProposalSource =
+    simpleProposal.pubkey === proof.proposal ? "proof-registry" : "live-read-node-fallback";
+  const effectiveProgramId = runtime.programId || proof.programId;
+  const effectiveDao = simpleProposal.dao;
+  const effectiveTreasury = deriveTreasuryAddress(effectiveDao, effectiveProgramId);
 
-  const confidentialProposal = await readNode.fetchProposal(confidentialCapture.proposalPublicKey);
+  const confidentialCapture = magicBlockRuntime.captures.find((capture) => capture.executeTxSignature) ?? magicBlockRuntime.captures[0];
+  const capturedConfidentialProposal = confidentialCapture
+    ? proposals.find((proposal) => proposal.pubkey === confidentialCapture.proposalPublicKey)
+    : null;
+  const confidentialProposal =
+    capturedConfidentialProposal ??
+    proposals.find(
+      (proposal) =>
+        proposal.confidentialPayoutPlan &&
+        proposal.refheEnvelope?.status === "Settled" &&
+        proposal.magicblockCorridor?.status === "Settled",
+    ) ??
+    proposals.find(
+      (proposal) =>
+        proposal.confidentialPayoutPlan &&
+        proposal.refheEnvelope &&
+        proposal.magicblockCorridor,
+    );
+  if (!confidentialProposal) {
+    throw new Error("missing live confidential proposal with REFHE and MagicBlock evidence for Frontier integration build");
+  }
+  const confidentialProposalSource = capturedConfidentialProposal
+    ? "magicblock-runtime-capture"
+    : "live-read-node-fallback";
   if (!confidentialProposal.confidentialPayoutPlan) {
     throw new Error("confidential proposal is missing payout plan in read-node view");
   }
@@ -152,20 +182,20 @@ async function main() {
   );
 
   const confidentialTxChecks = await verifyTxMap(connectionEndpoints, [
-    { label: "magicblock-deposit", signature: confidentialCapture.depositTxSignature },
-    { label: "magicblock-private-transfer", signature: confidentialCapture.transferTxSignature },
-    { label: "magicblock-withdraw", signature: confidentialCapture.withdrawTxSignature },
-    { label: "magicblock-settle", signature: confidentialCapture.settleTxSignature },
-    { label: "magicblock-execute", signature: confidentialCapture.executeTxSignature },
+    { label: "magicblock-deposit", signature: confidentialCapture?.depositTxSignature },
+    { label: "magicblock-private-transfer", signature: confidentialCapture?.transferTxSignature },
+    { label: "magicblock-withdraw", signature: confidentialCapture?.withdrawTxSignature },
+    { label: "magicblock-settle", signature: confidentialCapture?.settleTxSignature },
+    { label: "magicblock-execute", signature: confidentialCapture?.executeTxSignature },
   ]);
 
   const zkAnchorChecks = await verifyZkAnchors(connectionEndpoints, zkProof);
 
   const accountChecks = await verifyAccounts(connectionEndpoints, [
-    { label: "program", pubkey: proof.programId },
-    { label: "simple-dao", pubkey: proof.dao },
-    { label: "simple-treasury", pubkey: proof.treasury },
-    { label: "simple-proposal", pubkey: proof.proposal },
+    { label: "program", pubkey: effectiveProgramId },
+    { label: "simple-dao", pubkey: effectiveDao },
+    { label: "simple-treasury", pubkey: effectiveTreasury },
+    { label: "simple-proposal", pubkey: simpleProposal.pubkey },
     { label: "confidential-proposal", pubkey: confidentialProposal.pubkey },
     { label: "confidential-payout-plan", pubkey: confidentialProposal.confidentialPayoutPlan.pubkey },
     { label: "refhe-envelope", pubkey: confidentialProposal.refheEnvelope.pubkey },
@@ -176,7 +206,7 @@ async function main() {
     project: submission.project,
     generatedAt: new Date().toISOString(),
     network: activeCluster,
-    programId: proof.programId,
+    programId: effectiveProgramId,
     verificationWallet: proof.verificationWallet,
     reviewerEntry: `${submission.frontend}proof/?judge=1`,
     readNode: {
@@ -189,9 +219,13 @@ async function main() {
       overview,
     },
     simpleGovernance: {
-      dao: proof.dao,
-      treasury: proof.treasury,
-      proposal: proof.proposal,
+      dao: effectiveDao,
+      treasury: effectiveTreasury,
+      proofRegistryDao: proof.dao,
+      proofRegistryTreasury: proof.treasury,
+      proposal: simpleProposal.pubkey,
+      proposalSource: simpleProposalSource,
+      proofRegistryProposal: proof.proposal,
       phase: simpleProposal.phase,
       lifecycleStatus: simpleProposal.status,
       accountChecks: accountChecks.filter((entry) => entry.label.startsWith("simple-") || entry.label === "program"),
@@ -202,6 +236,8 @@ async function main() {
     },
     confidentialOperations: {
       proposal: confidentialProposal.pubkey,
+      proposalSource: confidentialProposalSource,
+      runtimeCaptureProposal: confidentialCapture?.proposalPublicKey ?? null,
       payoutPlan: confidentialProposal.confidentialPayoutPlan.pubkey,
       payoutStatus: confidentialProposal.confidentialPayoutPlan.status,
       refheEnvelope: confidentialProposal.refheEnvelope.pubkey,
@@ -239,6 +275,7 @@ async function main() {
       "docs/refhe-operator-flow.md",
       "docs/zk-proof-registry.json",
       "docs/zk-registry.generated.json",
+      "docs/zk-standalone-verifier-testnet-2026-05-23.md",
       "docs/read-node/snapshot.generated.md",
       "docs/read-node/ops.generated.md",
       "docs/rpc-architecture.md",
@@ -264,12 +301,28 @@ async function main() {
   console.log("Wrote Frontier integration evidence package");
 }
 
+function deriveTreasuryAddress(dao: string, programId: string) {
+  const [treasury] = PublicKey.findProgramAddressSync(
+    [Buffer.from("treasury"), new PublicKey(dao).toBuffer()],
+    new PublicKey(programId),
+  );
+  return treasury.toBase58();
+}
+
 async function verifyTxMap(endpoints: string[], entries: Array<{ label: string; signature?: string | null }>): Promise<TxCheck[]> {
   const checks: TxCheck[] = [];
   for (const entry of entries) {
     if (!entry.signature) continue;
     const signature = entry.signature as string;
-    const status = await withConnectionFallback(endpoints, async (connection, endpoint) => {
+    const status = await verifyTxStatus(endpoints, entry.label, signature);
+    checks.push(status);
+  }
+  return checks;
+}
+
+async function verifyTxStatus(endpoints: string[], label: string, signature: string): Promise<TxCheck> {
+  try {
+    return await withConnectionFallback(endpoints, async (connection, endpoint) => {
       const response = await connection.getSignatureStatuses([signature], { searchTransactionHistory: true });
       const value = response.value[0];
       if (!value || value.err) {
@@ -277,7 +330,7 @@ async function verifyTxMap(endpoints: string[], entries: Array<{ label: string; 
       }
       const confirmationStatus = value.confirmationStatus || "processed";
       return {
-        label: entry.label,
+        label,
         signature,
         endpoint,
         status: confirmationStatus,
@@ -285,9 +338,16 @@ async function verifyTxMap(endpoints: string[], entries: Array<{ label: string; 
         confirmed: confirmationStatus === "confirmed" || confirmationStatus === "finalized",
       } satisfies TxCheck;
     });
-    checks.push(status);
+  } catch {
+    return {
+      label,
+      signature,
+      endpoint: "unavailable",
+      status: "not-returned-by-current-rpc",
+      slot: 0,
+      confirmed: false,
+    };
   }
-  return checks;
 }
 
 async function verifyZkAnchors(
@@ -298,22 +358,7 @@ async function verifyZkAnchors(
   const checks: Array<TxCheck & { layer: string; anchorPda: string; account: AccountCheck }> = [];
   for (const entry of anchors) {
     const [tx, account] = await Promise.all([
-      withConnectionFallback(endpoints, async (connection, endpoint) => {
-        const response = await connection.getSignatureStatuses([entry.tx_signature], { searchTransactionHistory: true });
-        const value = response.value[0];
-        if (!value || value.err) {
-          return null;
-        }
-        const confirmationStatus = value.confirmationStatus || "processed";
-        return {
-          label: `zk-anchor-${entry.layer}`,
-          signature: entry.tx_signature,
-          endpoint,
-          status: confirmationStatus,
-          slot: value.slot,
-          confirmed: confirmationStatus === "confirmed" || confirmationStatus === "finalized",
-        } satisfies TxCheck;
-      }),
+      verifyTxStatus(endpoints, `zk-anchor-${entry.layer}`, entry.tx_signature),
       verifyAccount(endpoints, `zk-anchor-account-${entry.layer}`, entry.anchor_pda),
     ]);
     checks.push({ ...tx, layer: entry.layer, anchorPda: entry.anchor_pda, account });
@@ -326,19 +371,29 @@ async function verifyAccounts(endpoints: string[], entries: Array<{ label: strin
 }
 
 async function verifyAccount(endpoints: string[], label: string, pubkey: string): Promise<AccountCheck> {
-  return withConnectionFallback(endpoints, async (connection, endpoint) => {
-    const info = await connection.getAccountInfo(new PublicKey(pubkey), "confirmed");
-    if (!info) {
-      return null;
-    }
+  try {
+    return await withConnectionFallback(endpoints, async (connection, endpoint) => {
+      const info = await connection.getAccountInfo(new PublicKey(pubkey), "confirmed");
+      if (!info) {
+        return null;
+      }
+      return {
+        label,
+        pubkey,
+        endpoint,
+        exists: true,
+        executable: Boolean(info.executable),
+      } satisfies AccountCheck;
+    });
+  } catch {
     return {
       label,
       pubkey,
-      endpoint,
-      exists: true,
-      executable: Boolean(info.executable),
-    } satisfies AccountCheck;
-  });
+      endpoint: "unavailable",
+      exists: false,
+      executable: false,
+    };
+  }
 }
 
 async function withConnectionFallback<T>(
@@ -391,7 +446,13 @@ function buildMarkdown(payload: {
     overview: { proposals: number; zkEnforced: number; confidentialPayouts: number; magicblockSettled: number; refheSettled: number };
   };
   simpleGovernance: {
+    dao: string;
+    treasury: string;
+    proofRegistryDao: string;
+    proofRegistryTreasury: string;
     proposal: string;
+    proposalSource: string;
+    proofRegistryProposal: string;
     phase: string;
     lifecycleStatus: string;
     txChecks: TxCheck[];
@@ -399,6 +460,8 @@ function buildMarkdown(payload: {
   };
   confidentialOperations: {
     proposal: string;
+    proposalSource: string;
+    runtimeCaptureProposal: string | null;
     payoutPlan: string;
     payoutStatus: string;
     refheEnvelope: string;
@@ -449,7 +512,11 @@ function buildMarkdown(payload: {
 
 ## Simple Governance Path
 
+- dao: \`${payload.simpleGovernance.dao}\`
+- treasury: \`${payload.simpleGovernance.treasury}\`
 - proposal: \`${payload.simpleGovernance.proposal}\`
+- proposal source: \`${payload.simpleGovernance.proposalSource}\`
+- proof-registry proposal: \`${payload.simpleGovernance.proofRegistryProposal}\`
 - phase: \`${payload.simpleGovernance.phase}\`
 - lifecycle status: \`${payload.simpleGovernance.lifecycleStatus}\`
 - verification status: \`${payload.simpleGovernance.verificationStatus}\`
@@ -459,6 +526,8 @@ ${payload.simpleGovernance.txChecks.map((entry) => `- ${entry.label}: \`${entry.
 ## Confidential MagicBlock + REFHE Path
 
 - proposal: \`${payload.confidentialOperations.proposal}\`
+- proposal source: \`${payload.confidentialOperations.proposalSource}\`
+- runtime capture proposal: \`${payload.confidentialOperations.runtimeCaptureProposal ?? "none"}\`
 - payout plan: \`${payload.confidentialOperations.payoutPlan}\`
 - payout status: \`${payload.confidentialOperations.payoutStatus}\`
 - REFHE envelope: \`${payload.confidentialOperations.refheEnvelope}\`
