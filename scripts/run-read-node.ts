@@ -429,6 +429,21 @@ function loadQuickNodeStreamTelemetry() {
   }
 }
 
+function quickNodeStreamStats() {
+  return {
+    ...quickNodeStreamTelemetry,
+    auth: process.env.QUICKNODE_STREAM_TOKEN ? "configured" : "missing-env",
+    network: "solana-testnet",
+    rawPayloadStorage: "disabled",
+    statePersistence: "runtime-volume",
+    acceptedAuthHeaders: [
+      "Authorization: Bearer <token>",
+      "x-quicknode-security-token",
+      "x-private-dao-stream-token",
+    ],
+  };
+}
+
 function persistQuickNodeStreamTelemetry() {
   try {
     mkdirSync(runtimeStateDir, { recursive: true });
@@ -2105,17 +2120,7 @@ async function handle(req: http.IncomingMessage, res: http.ServerResponse) {
       writeJson(res, 200, {
         ok: true,
         source: "quicknode-stream",
-        stats: {
-          ...quickNodeStreamTelemetry,
-          auth: process.env.QUICKNODE_STREAM_TOKEN ? "configured" : "missing-env",
-          network: "solana-testnet",
-          rawPayloadStorage: "disabled",
-          acceptedAuthHeaders: [
-            "Authorization: Bearer <token>",
-            "x-quicknode-security-token",
-            "x-private-dao-stream-token",
-          ],
-        },
+        stats: quickNodeStreamStats(),
       });
       return;
     }
@@ -2214,12 +2219,7 @@ async function handle(req: http.IncomingMessage, res: http.ServerResponse) {
         generatedAt: new Date().toISOString(),
         posture: "solana-testnet-production-candidate",
         runtime,
-        quickNodeStream: {
-          ...quickNodeStreamTelemetry,
-          auth: process.env.QUICKNODE_STREAM_TOKEN ? "configured" : "missing-env",
-          rawPayloadStorage: "disabled",
-          statePersistence: "runtime-volume",
-        },
+        quickNodeStream: quickNodeStreamStats(),
         visitors,
         execution,
         latestFreshness: freshness,
@@ -2489,7 +2489,7 @@ async function handle(req: http.IncomingMessage, res: http.ServerResponse) {
             rateLimited: metrics.rateLimited,
             blockedProbes: metrics.blockedProbes,
             routeHits: Object.fromEntries(metrics.routeHits.entries()),
-            quickNodeStream: quickNodeStreamTelemetry,
+            quickNodeStream: quickNodeStreamStats(),
           },
           deployment: {
             sameDomainRecommended: true,
@@ -2517,7 +2517,7 @@ async function handle(req: http.IncomingMessage, res: http.ServerResponse) {
           rateLimited: metrics.rateLimited,
           blockedProbes: metrics.blockedProbes,
           routeHits: Object.fromEntries(metrics.routeHits.entries()),
-          quickNodeStream: quickNodeStreamTelemetry,
+          quickNodeStream: quickNodeStreamStats(),
           rpcPoolSize: readNode.rpcEndpoints.length,
           cache: readNode.cacheStats(),
           programId: readNode.programId.toBase58(),

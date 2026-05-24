@@ -28,6 +28,7 @@ The route is intentionally reviewer-safe:
 
 - readiness aggregate: `https://api.privatedao.org/api/v1/readiness`
 - QuickNode stream stats: `https://api.privatedao.org/api/v1/quicknode/stream/stats`
+- metrics with stream posture: `https://api.privatedao.org/api/v1/metrics`
 - read-node health: `https://api.privatedao.org/healthz`
 - RPC services page: `https://privatedao.org/rpc-services`
 - API status page: `https://privatedao.org/api-status`
