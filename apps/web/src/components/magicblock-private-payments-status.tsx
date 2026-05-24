@@ -72,7 +72,7 @@ export function MagicBlockPrivatePaymentsStatus() {
       <div className="text-[11px] uppercase tracking-[0.28em] text-sky-100/78">MagicBlock on-chain corridor</div>
       <div className="mt-3 grid gap-6 lg:grid-cols-[1fr_0.9fr]">
         <div>
-          <h2 className="text-2xl font-semibold text-white">Private payments are tied to explorer-visible Devnet receipts</h2>
+          <h2 className="text-2xl font-semibold text-white">Private payments are tied to explorer-visible Testnet receipts</h2>
           <p className="mt-3 max-w-4xl text-sm leading-7 text-white/66">
             PrivateDAO exposes the MagicBlock corridor as a live proof lane: the read-node verifies the corridor PDA and
             the deposit, private transfer, withdraw, settle, and execute signatures directly against Solana RPC. Private
@@ -85,7 +85,7 @@ export function MagicBlockPrivatePaymentsStatus() {
               <div className="mt-2 text-2xl font-semibold text-white">
                 {proof ? `${proof.summary.finalized}/${proof.summary.checked}` : "reading"}
               </div>
-              <div className="mt-1 text-xs text-white/52">finalized on Devnet</div>
+              <div className="mt-1 text-xs text-white/52">finalized on Testnet</div>
             </div>
             <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
               <div className="text-[11px] uppercase tracking-[0.22em] text-white/42">Corridor</div>

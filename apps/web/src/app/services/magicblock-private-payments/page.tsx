@@ -11,7 +11,7 @@ import { cn } from "@/lib/utils";
 export const metadata: Metadata = buildRouteMetadata({
   title: "MagicBlock Private Payments",
   description:
-    "MagicBlock private payment corridor with on-chain Devnet proof, challenge/login authenticated private reads, and wallet-signed deposit, transfer, withdraw, settle, and execute receipts.",
+    "MagicBlock private payment corridor with on-chain Testnet proof, challenge/login authenticated private reads, and wallet-signed deposit, transfer, withdraw, settle, and execute receipts.",
   path: "/services/magicblock-private-payments",
   keywords: ["magicblock", "private payments", "ephemeral rollups", "solana payments", "private balance"],
 });
@@ -34,7 +34,7 @@ export default function MagicBlockPrivatePaymentsPage() {
         <div className="text-[11px] uppercase tracking-[0.28em] text-white/44">Reviewer route</div>
         <h2 className="mt-3 text-2xl font-semibold text-white">MagicBlock proof starts on-chain, then protects private reads</h2>
         <p className="mt-3 max-w-4xl text-sm leading-7 text-white/66">
-          The public proof endpoint checks the corridor PDA and finalized Devnet receipts live through Solana RPC. Private
+          The public proof endpoint checks the corridor PDA and finalized Testnet receipts live through Solana RPC. Private
           balances remain behind MagicBlock challenge/login, then the user wallet signs and submits any payment
           transaction to the connection returned by the payments API.
         </p>
