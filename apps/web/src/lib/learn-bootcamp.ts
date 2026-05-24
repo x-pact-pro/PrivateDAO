@@ -336,8 +336,8 @@ export const learnLectures: LearnLecture[] = [
     title: "Solana Runtime UX: Fast RPC, Diagnostics, and Activity Tracking",
     strapline: "Users trust a dApp when state updates feel honest.",
     summary:
-      "This lecture explains why Fast RPC, hosted reads, telemetry, analytics, and diagnostics are not backend trivia. They are core UX components that make Testnet activity understandable and trustworthy.",
-    badges: ["Fast RPC", "Diagnostics", "Dune-aware"],
+      "This lecture explains why Fast RPC, QuickNode Streams, hosted reads, telemetry, analytics, and diagnostics are not backend trivia. They are core UX components that make Testnet activity understandable and trustworthy.",
+    badges: ["Fast RPC", "QuickNode Streams", "Diagnostics"],
     sections: [
       {
         heading: "What you’ll learn",
@@ -352,12 +352,12 @@ export const learnLectures: LearnLecture[] = [
       {
         heading: "How PrivateDAO solves it",
         body:
-          "PrivateDAO uses dashboard, diagnostics, analytics, and reviewer packets to show the same truth from different depths. Fast RPC and hosted reads become visible through product behavior, not just claims.",
+          "PrivateDAO uses dashboard, diagnostics, analytics, API status, RPC services, and reviewer packets to show the same truth from different depths. QuickNode-backed Testnet telemetry, Fast RPC, and hosted reads become visible through product behavior, not just claims.",
       },
       {
         heading: "Try it now",
         body:
-          "Run a wallet action, then move into Dashboard, Diagnostics, Analytics, and Reviewer Telemetry to see the state change, proof freshness, and runtime corridor in one flow.",
+          "Run a wallet action, then move into Dashboard, Diagnostics, API Status, RPC Services, and Reviewer Telemetry to see the state change, proof freshness, QuickNode stream posture, and runtime corridor in one flow.",
       },
       {
         heading: "Check the code",
@@ -368,11 +368,14 @@ export const learnLectures: LearnLecture[] = [
     actions: [
       { href: "/dashboard", label: "Open Dashboard" },
       { href: "/diagnostics", label: "Open Diagnostics" },
-      { href: "/analytics", label: "Open Analytics" },
+      { href: "/rpc-services", label: "Open RPC Services" },
+      { href: "/api-status", label: "Open API Status" },
     ],
     codeRefs: [
       { label: "Dashboard route", href: `${githubBase}/apps/web/src/app/dashboard/page.tsx` },
       { label: "Diagnostics route", href: `${githubBase}/apps/web/src/app/diagnostics/page.tsx` },
+      { label: "RPC services route", href: `${githubBase}/apps/web/src/app/rpc-services/page.tsx` },
+      { label: "API status route", href: `${githubBase}/apps/web/src/app/api-status/page.tsx` },
       { label: "Testnet metrics", href: `${githubBase}/apps/web/src/lib/devnet-service-metrics.ts` },
       { label: "Reviewer telemetry packet", href: `${githubBase}/docs/reviewer-telemetry-packet.md` },
       { label: "Runtime activity starter template", href: `${githubBase}/templates/frontend-solana-bootcamp/runtime-activity-starter/RuntimeActivityStarter.tsx` },
@@ -380,7 +383,7 @@ export const learnLectures: LearnLecture[] = [
     liveExecution: {
       heading: "Run one state-and-proof check now",
       summary:
-        "After a real wallet action, inspect dashboard, diagnostics, analytics, and telemetry so the user sees freshness, status, retries, and proof instead of a shallow success message.",
+        "After a real wallet action, inspect dashboard, diagnostics, API status, RPC services, and telemetry so the user sees freshness, status, retries, QuickNode stream posture, and proof instead of a shallow success message.",
       routeHref: "/dashboard",
       routeLabel: "Open dashboard runtime",
       verifyHref: "/diagnostics",
@@ -388,7 +391,7 @@ export const learnLectures: LearnLecture[] = [
       steps: [
         "Perform a real wallet action first from Start or Govern.",
         "Open Dashboard to inspect the current activity and signatures.",
-        "Continue into Diagnostics and Analytics to confirm runtime behavior and proof freshness.",
+        "Continue into Diagnostics, API Status, and RPC Services to confirm runtime behavior, backend health, and proof freshness.",
       ],
     },
     assignment: {

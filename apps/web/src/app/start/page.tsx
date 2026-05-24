@@ -54,8 +54,10 @@ export default function StartPage() {
             {[
               ["1", "Connect wallet", "Use the header wallet button or the wallet sandbox.", "/wallet-template", "Open wallet path"],
               ["2", "Get Testnet SOL", "Fund the same wallet before creating or executing.", "https://faucet.solana.com/", "Open faucet"],
-              ["3", "Try Android", "Install the APK and use the same Testnet route language.", "/android", "Open Android"],
-              ["4", "Verify proof", "Inspect signatures, logs, receipts, and proof packets.", "/proof/?judge=1", "Open proof"],
+              ["3", "Run governance", "Create, vote, or execute from the same wallet-first product shell.", "/govern", "Open govern"],
+              ["4", "Check readiness", "Open live QuickNode-backed API health, counters, and proof freshness.", "/rpc-services", "Live readiness"],
+              ["5", "Try Android", "Install the APK and use the same Testnet route language.", "/android", "Open Android"],
+              ["6", "Verify proof", "Inspect signatures, logs, receipts, and proof packets.", "/proof/?judge=1", "Open proof"],
             ].map(([step, title, detail, href, cta]) => {
               const isExternal = href.startsWith("https://");
 

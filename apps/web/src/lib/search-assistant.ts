@@ -357,6 +357,33 @@ const assistantIntents: AssistantIntent[] = [
     keywords: ["read node", "read-node", "backend cutover", "same-domain", "api v1", "hosted reads", "metrics", "healthz", "aws", "namecheap", "program drift"],
   },
   {
+    title: "Inspect live Solana infrastructure readiness",
+    summary:
+      "Use the RPC services route when the question is about QuickNode Streams, Solana Testnet RPC, API health, readiness aggregate, visitor counters, execution counters, or backend proof freshness.",
+    primaryActionLabel: "Open live readiness",
+    primaryActionHref: "/rpc-services",
+    relatedRoutes: [
+      { label: "API status", href: "/api-status" },
+      { label: "Readiness aggregate", href: "/documents/readiness-aggregate" },
+      { label: "QuickNode stream intelligence", href: "/documents/quicknode-stream-intelligence" },
+    ],
+    keywords: [
+      "quicknode",
+      "quicknode streams",
+      "solana rpc",
+      "testnet rpc",
+      "rpc services",
+      "readiness aggregate",
+      "api health",
+      "api status",
+      "backend telemetry",
+      "runtime telemetry",
+      "proof freshness",
+      "visitor counters",
+      "execution counters",
+    ],
+  },
+  {
     title: "Open the Security + Intelligence layer",
     summary:
       "Use the intelligence route when the user wants proposal review, treasury execution review, voting summaries, RPC interpretation, or gaming-governance assistance inside the product.",
@@ -1133,6 +1160,14 @@ function getTelemetrySuggestion(query: string): AssistantSuggestion | null {
     "runtime telemetry",
     "dune data",
     "dune analytics",
+    "quicknode",
+    "quicknode streams",
+    "solana rpc",
+    "testnet rpc",
+    "readiness aggregate",
+    "api health",
+    "api status",
+    "proof freshness",
   ];
 
   if (!telemetryTerms.some((term) => normalized.includes(term))) {
@@ -1140,15 +1175,23 @@ function getTelemetrySuggestion(query: string): AssistantSuggestion | null {
   }
 
   return {
-    title: "Open the telemetry packet",
+    title: normalized.includes("quicknode") || normalized.includes("readiness aggregate") || normalized.includes("api health")
+      ? "Open live Solana infrastructure readiness"
+      : "Open the telemetry packet",
     summary:
-      "Start from the telemetry packet, then open diagnostics, analytics, and integration evidence. This is the shortest route for runtime maturity, hosted-read value, and infrastructure-facing proof.",
-    primaryActionLabel: "Open telemetry packet",
-    primaryActionHref: "/documents/reviewer-telemetry-packet",
+      normalized.includes("quicknode") || normalized.includes("readiness aggregate") || normalized.includes("api health")
+        ? "Start from RPC services, then open API status and the readiness aggregate. This is the shortest live route for QuickNode-backed Testnet telemetry, backend health, counters, and proof freshness."
+        : "Start from the telemetry packet, then open diagnostics, analytics, and integration evidence. This is the shortest route for runtime maturity, hosted-read value, and infrastructure-facing proof.",
+    primaryActionLabel: normalized.includes("quicknode") || normalized.includes("readiness aggregate") || normalized.includes("api health")
+      ? "Open live readiness"
+      : "Open telemetry packet",
+    primaryActionHref: normalized.includes("quicknode") || normalized.includes("readiness aggregate") || normalized.includes("api health")
+      ? "/rpc-services"
+      : "/documents/reviewer-telemetry-packet",
     relatedRoutes: [
-      { label: "1. Telemetry packet", href: "/documents/reviewer-telemetry-packet" },
-      { label: "2. Diagnostics", href: "/diagnostics" },
-      { label: "3. Analytics", href: "/analytics" },
+      { label: "1. RPC services", href: "/rpc-services" },
+      { label: "2. API status", href: "/api-status" },
+      { label: "3. Readiness aggregate", href: "/documents/readiness-aggregate" },
     ],
     queryBlock: getHighPriorityQueryBlock(normalized),
   };
