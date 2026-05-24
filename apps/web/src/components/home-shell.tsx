@@ -457,6 +457,11 @@ export function HomeShell() {
       detail: "Reliable live reads, signatures, and action logs.",
     },
     {
+      label: "QuickNode Streams",
+      badgeClass: "border-cyan-300/25 bg-cyan-300/[0.14] text-cyan-100",
+      detail: "Authenticated Testnet telemetry feeding readiness, proof freshness, and runtime intelligence.",
+    },
+    {
       label: "QVAC",
       badgeClass: "border-sky-300/25 bg-sky-300/[0.14] text-sky-100",
       detail: "Local-first AI context without routing sensitive operating data to a cloud model.",
@@ -487,6 +492,11 @@ export function HomeShell() {
       technology: "Fast RPC",
       service: "Live state, logs, and signature confirmation",
       outcome: "Used to keep Testnet reads, proposal status, and action feedback visible after a wallet action instead of leaving the user guessing.",
+    },
+    {
+      technology: "QuickNode Streams",
+      service: "Readiness aggregate and telemetry intake",
+      outcome: "Used to turn Solana Testnet block and program-log flow into reviewer-safe counters, proof freshness, and backend health evidence.",
     },
     {
       technology: "QVAC",
@@ -567,6 +577,8 @@ export function HomeShell() {
               <Badge variant="cyan">Private governance on Solana</Badge>
               <Badge variant="violet">Anchor 1 Testnet</Badge>
               <Badge variant="violet">QVAC local AI</Badge>
+              <Badge variant="cyan">QuickNode live telemetry</Badge>
+              <Badge variant="success">Readiness API live</Badge>
               <Badge variant="success">Private by design</Badge>
               <Badge variant="success">Try it now: web + Android</Badge>
             </div>
@@ -661,6 +673,9 @@ export function HomeShell() {
               </Link>
               <Link className={cn(buttonVariants({ size: "lg", variant: "secondary" }))} href="/judge">
                 {homeCopy.judge}
+              </Link>
+              <Link className={cn(buttonVariants({ size: "lg", variant: "outline" }))} href="/rpc-services">
+                Live readiness
               </Link>
               <Link className={cn(buttonVariants({ size: "lg", variant: "outline" }))} href="/learn">
                 {homeCopy.workflow}
