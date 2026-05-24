@@ -7,11 +7,19 @@ const WORKSPACE_ROOT = path.resolve(process.cwd(), "..");
 const SOLANA_CONFIG_PATH = path.resolve(WORKSPACE_ROOT, ".config/solana/cli/config.yml");
 
 type ReleaseCeremonyAttestation = {
+  currentTestnetProgramId?: string;
   programId: string;
   anchors: {
     dao: string;
     treasury: string;
   };
+};
+
+const CURRENT_TESTNET = {
+  cluster: "testnet",
+  programId: "EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva",
+  dao: "FEz2hCLGpDhJ3cdAm5CCWFzrKv8vDDzmmt9UjdF2fApZ",
+  treasury: "46F4oV4edtepPTGqLBfFJeBKdccgfnkk9e4WK7Z1MZD3",
 };
 
 type AccountJson = {
@@ -192,47 +200,48 @@ function recordAccountReadout(params: {
 
 function main() {
   const ceremony = readJson<ReleaseCeremonyAttestation>("docs/release-ceremony-attestation.generated.json");
+  const currentTestnetProgramId = ceremony.currentTestnetProgramId ?? CURRENT_TESTNET.programId;
 
   const payload = {
     schemaVersion: 1,
     project: "PrivateDAO",
-    targetNetwork: "mainnet-beta",
-    targetProgramId: ceremony.programId,
+    targetNetwork: "testnet",
+    targetProgramId: currentTestnetProgramId,
     observedReadouts: [
       recordProgramReadout({
-        id: "devnet-program",
-        label: "Current deployed program readout",
-        cluster: "devnet",
-        address: ceremony.programId,
-        note: "This is the currently observed live deployment readout. It is external chain evidence, but it is not mainnet custody proof by itself.",
+        id: "testnet-program",
+        label: "Current Testnet deployed program readout after Squads transfer",
+        cluster: CURRENT_TESTNET.cluster,
+        address: currentTestnetProgramId,
+        note: "Current reviewer-facing Anchor 1.0.1 Testnet program. This is the live custody surface for judging; archived Devnet readouts are no longer the current program baseline.",
       }),
       recordAccountReadout({
-        id: "devnet-dao",
-        label: "Current DAO anchor readout",
-        cluster: "devnet",
-        address: ceremony.anchors.dao,
-        note: "Current DAO PDA visibility on devnet.",
+        id: "testnet-dao",
+        label: "Current Testnet DAO anchor readout",
+        cluster: CURRENT_TESTNET.cluster,
+        address: CURRENT_TESTNET.dao,
+        note: "Canonical Testnet DAO PDA used for the post-timelock DAO authority handoff.",
       }),
       recordAccountReadout({
-        id: "devnet-treasury",
-        label: "Current treasury anchor readout",
-        cluster: "devnet",
-        address: ceremony.anchors.treasury,
-        note: "Current treasury PDA visibility on devnet.",
+        id: "testnet-treasury",
+        label: "Current Testnet treasury PDA readout",
+        cluster: CURRENT_TESTNET.cluster,
+        address: CURRENT_TESTNET.treasury,
+        note: "Derived Testnet treasury PDA for the canonical DAO. It may remain uninitialized until the DAO receives a deposit.",
       }),
       recordProgramReadout({
         id: "mainnet-program",
         label: "Target network program readout",
         cluster: "mainnet-beta",
-        address: ceremony.programId,
-        note: "If this stays not-found, mainnet custody transfer is not merely pending multisig evidence; there is no current mainnet program readout for this program id.",
+        address: currentTestnetProgramId,
+        note: "Mainnet is not claimed for the current product. This readout exists only to prove the public packet is Testnet-scoped and does not imply production mainnet deployment.",
       }),
       recordAccountReadout({
         id: "mainnet-treasury",
         label: "Target network treasury readout",
         cluster: "mainnet-beta",
-        address: ceremony.anchors.treasury,
-        note: "Target-network treasury visibility is required before claiming real-funds mainnet readiness.",
+        address: CURRENT_TESTNET.treasury,
+        note: "Mainnet treasury visibility is intentionally not claimed. Real-funds production readiness requires a separate mainnet cutover packet.",
       }),
     ],
   };

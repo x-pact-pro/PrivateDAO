@@ -1,6 +1,6 @@
 {
   "project": "PrivateDAO",
-  "generatedAt": "2026-05-24T20:49:31.364Z",
+  "generatedAt": "2026-05-24T21:26:13.384Z",
   "reviewerIntent": "Explain the current custody truth, show what is externally proven now, and make the missing external ceremony evidence explicit without narrative drift.",
   "custodyStatus": "ready-for-transfer",
   "productionMainnetClaimAllowed": false,
@@ -34,28 +34,19 @@
   "externallyProvenNow": {
     "observedReadouts": [
       {
-        "label": "Current deployed program readout",
-        "cluster": "devnet",
-        "address": "5AhUsbQ4mJ8Xh7QJEomuS85qGgmK9iNvFqzF669Y7Psx",
-        "explorerUrl": "https://explorer.solana.com/address/5AhUsbQ4mJ8Xh7QJEomuS85qGgmK9iNvFqzF669Y7Psx?cluster=devnet",
-        "authority": "4Mm5YTRbJuyA8NcWM85wTnx6ZQMXNph2DSnzCCKLhsMD",
-        "programDataAddress": "CeggEn3sNVbiuJHLKDaCPMH4uLczu1Dr3ZGKKcaKBqeN",
-        "lastDeploySlot": 454368825
+        "label": "Current Testnet deployed program readout after Squads transfer",
+        "cluster": "testnet",
+        "address": "EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva",
+        "explorerUrl": "https://explorer.solana.com/address/EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva?cluster=testnet",
+        "authority": "CALHrBqx6jbzcPn2NVcinqSAHeod65v9LcDuTxsdPqBv",
+        "programDataAddress": "FKyt5DcmRQcCF8kzMGjCvfGb3ZPHMQnH1SqiG9Mi8xEc",
+        "lastDeploySlot": 405189011
       },
       {
-        "label": "Current DAO anchor readout",
-        "cluster": "devnet",
-        "address": "FZV9KmpeY1B31XvszQypp5T6nQN5C44JDLM4QWBEDvhx",
-        "explorerUrl": "https://explorer.solana.com/address/FZV9KmpeY1B31XvszQypp5T6nQN5C44JDLM4QWBEDvhx?cluster=devnet",
-        "authority": null,
-        "programDataAddress": null,
-        "lastDeploySlot": null
-      },
-      {
-        "label": "Current treasury anchor readout",
-        "cluster": "devnet",
-        "address": "AZUroiNeGAjNdD84eEHnAKHHFwqAFmkjr2g1eoF7Ek5c",
-        "explorerUrl": "https://explorer.solana.com/address/AZUroiNeGAjNdD84eEHnAKHHFwqAFmkjr2g1eoF7Ek5c?cluster=devnet",
+        "label": "Current Testnet DAO anchor readout",
+        "cluster": "testnet",
+        "address": "FEz2hCLGpDhJ3cdAm5CCWFzrKv8vDDzmmt9UjdF2fApZ",
+        "explorerUrl": "https://explorer.solana.com/address/FEz2hCLGpDhJ3cdAm5CCWFzrKv8vDDzmmt9UjdF2fApZ?cluster=testnet",
         "authority": null,
         "programDataAddress": null,
         "lastDeploySlot": null

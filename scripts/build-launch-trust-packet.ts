@@ -60,7 +60,7 @@ function main() {
   const blockers = readJson<MainnetBlockers>("docs/mainnet-blockers.json");
   const realDevice = readJson<RealDeviceEvidence>("docs/runtime/real-device.generated.json");
   const canonicalCustody = readJson<CanonicalCustodyProof>("docs/canonical-custody-proof.generated.json");
-  const devnetProgramReadout = canonicalCustody.observedReadouts.find((entry) => entry.id === "devnet-program");
+  const testnetProgramReadout = canonicalCustody.observedReadouts.find((entry) => entry.id === "testnet-program");
   const mainnetProgramReadout = canonicalCustody.observedReadouts.find((entry) => entry.id === "mainnet-program");
 
   const payload = {
@@ -81,7 +81,7 @@ function main() {
       pendingAuthorityTransfers: multisig.authorityTransfers.filter((entry) => !entry.transferSignature).map((entry) => entry.surface),
       minimumTimelockHours: multisig.timelock.minimumHours,
       configuredTimelockHours: multisig.timelock.configuredHours,
-      observedDevnetAuthority: devnetProgramReadout?.authority ?? null,
+      observedTestnetAuthority: testnetProgramReadout?.authority ?? null,
       observedMainnetProgramStatus: mainnetProgramReadout?.status ?? "unknown",
     },
     runtime: {
@@ -176,7 +176,7 @@ function buildMarkdown(payload: {
     pendingAuthorityTransfers: string[];
     minimumTimelockHours: number;
     configuredTimelockHours: number | null;
-    observedDevnetAuthority: string | null;
+    observedTestnetAuthority: string | null;
     observedMainnetProgramStatus: string;
   };
   runtime: {
@@ -220,7 +220,7 @@ function buildMarkdown(payload: {
 - signer slots configured: \`${payload.custody.signerSlotsConfigured}\`
 - minimum timelock hours: \`${payload.custody.minimumTimelockHours}\`
 - configured timelock hours: \`${payload.custody.configuredTimelockHours ?? "pending"}\`
-- observed devnet authority: \`${payload.custody.observedDevnetAuthority ?? "pending"}\`
+- observed Testnet authority: \`${payload.custody.observedTestnetAuthority ?? "pending"}\`
 - observed target-network program status: \`${payload.custody.observedMainnetProgramStatus}\`
 
 Pending authority transfers:
