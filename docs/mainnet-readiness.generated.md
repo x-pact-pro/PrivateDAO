@@ -2,22 +2,19 @@
 
 This report is generated from the canonical PrivateDAO registries and reviewer artifacts. It exists to summarize what is already verified inside the repository and what still remains outside repository scope before any production cutover.
 
-> Status note, 2026-05-06: this generated report includes legacy Devnet evidence from the pre-Anchor-1 migration surface. The current reviewer-facing Testnet program is `EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva`; see `docs/anchor-1-migration-evidence-2026-04-30.md` and `docs/testnet-lifecycle-rehearsal-2026-05-07.md`. Production mainnet remains blocked until custody, audit, monitoring, and cutover evidence are recorded.
-
 ## Current Identity
 
 - Project: `PrivateDAO`
-- Legacy Devnet Program ID: `5AhUsbQ4mJ8Xh7QJEomuS85qGgmK9iNvFqzF669Y7Psx`
-- Current Testnet Program ID: `EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva`
+- Program ID: `5AhUsbQ4mJ8Xh7QJEomuS85qGgmK9iNvFqzF669Y7Psx`
 - Verification wallet: `4Mm5YTRbJuyA8NcWM85wTnx6ZQMXNph2DSnzCCKLhsMD`
 - Deploy transaction: `2CMEujY1CKnC8rH8BuLy4GvwYk3zfqMfAKaUjybcAvRhS1dnzg3Zd3GeMttBp4vkUbu69GkQtr3TWgbmBqGY8cyC`
 - DAO PDA: `FZV9KmpeY1B31XvszQypp5T6nQN5C44JDLM4QWBEDvhx`
 - Governance mint: `AZUkprJDfJPgAp7L4z3TpCV3KHqLiA8RjHAVhK9HCvDt`
 - Treasury PDA: `AZUroiNeGAjNdD84eEHnAKHHFwqAFmkjr2g1eoF7Ek5c`
 - Proposal PDA: `AegjmwkX1FknBJMDyH5yM6BMhyHsiUreNtz3d8iz3QrP`
-- PDAO mint: `AZUkprJDfJPgAp7L4z3TpCV3KHqLiA8RjHAVhK9HCvDt`
+- PDAO mint: `DFYvBdivHCe4bSErgCiKm2RhwGEcZYbBPFQzLNr37Bie`
 - PDAO token program: `TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb`
-- PDAO token account: `F4q77ZMJdC7eoEUw3CCR7DbKGTggyExjuMGKBEiM2ct4`
+- PDAO token account: `CeXqKvdjrVYsPZEX2ysBNs6jubofEXEk4emE2qdS4pVg`
 - PDAO initial supply: `1000000`
 
 ## Verified Internal Surfaces
@@ -101,8 +98,8 @@ This report is generated from the canonical PrivateDAO registries and reviewer a
 - ZK stack version: `1`
 - ZK layer count: `3`
 - Integrity algorithm: `sha256`
-- Integrity entries: `143`
-- Integrity aggregate sha256: `c041cf2d4522fb46fb2fe9bc31f2673f4605d67b1214f1750ffa090066b94d1c`
+- Integrity entries: `145`
+- Integrity aggregate sha256: `03193cf78a1ed1cf4a803da3722c2a3a6c1d465a8493a012fa317db46d492ea9`
 
 ## Additive Hardening V3
 

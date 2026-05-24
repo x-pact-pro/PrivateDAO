@@ -1,6 +1,6 @@
 {
   "project": "PrivateDAO",
-  "generatedAt": "2026-05-22T20:56:15.690Z",
+  "generatedAt": "2026-05-24T20:50:48.472Z",
   "decision": "blocked-external-steps",
   "productionMainnetClaimAllowed": false,
   "custody": {
@@ -19,7 +19,7 @@
     ],
     "minimumTimelockHours": 48,
     "configuredTimelockHours": 48,
-    "observedDevnetAuthority": null,
+    "observedDevnetAuthority": "4Mm5YTRbJuyA8NcWM85wTnx6ZQMXNph2DSnzCCKLhsMD",
     "observedMainnetProgramStatus": "not-found"
   },
   "runtime": {

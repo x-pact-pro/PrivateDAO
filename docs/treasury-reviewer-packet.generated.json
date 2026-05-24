@@ -1,10 +1,10 @@
 {
   "project": "PrivateDAO",
-  "generatedAt": "2026-04-22T00:25:26.325Z",
+  "generatedAt": "2026-05-24T20:49:41.433Z",
   "reviewerIntent": "Explain the treasury intake and payout posture as a reviewer-grade infrastructure surface, with strict sender discipline, public rails, proof links, commercial fit, and exact blocker visibility.",
   "treasuryNetwork": "Solana Testnet",
   "treasuryAddress": "AZUroiNeGAjNdD84eEHnAKHHFwqAFmkjr2g1eoF7Ek5c",
-  "custodyStatus": "pending-external",
+  "custodyStatus": "ready-for-transfer",
   "productionMainnetClaimAllowed": false,
   "exactBlocker": {
     "id": "upgrade-authority-multisig",
@@ -107,21 +107,7 @@
     }
   ],
   "exactPendingItems": [
-    "multisig public address",
-    "multisig creation signature",
     "rehearsal signature",
-    "timelock configuration of at least 48 hours",
-    "timelock configuration signature or readout",
-    "signer slot 1 public key",
-    "backup procedure for signer slot 1",
-    "signer slot 2 public key",
-    "backup procedure for signer slot 2",
-    "signer slot 3 public key",
-    "backup procedure for signer slot 3",
-    "program upgrade authority destination authority",
-    "program upgrade authority transfer signature",
-    "program upgrade authority post-transfer readout",
-    "program upgrade authority post-transfer readout reference",
     "dao authority destination authority",
     "dao authority transfer signature",
     "dao authority post-transfer readout",
@@ -134,7 +120,7 @@
   "currentTruth": {
     "summary": "PrivateDAO is devnet-proven and internally hardened, but real-funds mainnet production remains blocked until external audit, custody, monitoring, runtime, settlement-receipt, and release-ceremony items are closed with evidence.",
     "threshold": "2-of-3",
-    "multisigAddress": null
+    "multisigAddress": "thHmF7VYNtxE1MaDzYXbfPCiq13RF6JwuWnjvDZuSmF"
   },
   "liveRoutes": [
     "https://privatedao.org/services/",

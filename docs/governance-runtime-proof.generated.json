@@ -1,8 +1,8 @@
 {
   "project": "PrivateDAO",
-  "generatedAt": "2026-04-22T07:48:42.999Z",
+  "generatedAt": "2026-05-24T20:47:40.786Z",
   "network": "devnet",
-  "programId": "5AhUsbQ4mJ8Xh7QJEomuS85qGgmK9iNvFqzF669Y7Psx",
+  "programId": "EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva",
   "liveWalletLaneCount": 6,
   "repoScriptProofCount": 6,
   "browserWalletProofCount": 6,
@@ -53,7 +53,7 @@
       "repoScriptProofCaptured": true,
       "browserWalletProofCaptured": true,
       "realDeviceProofCaptured": false,
-      "supportNote": "Reveal vote is live in the web wallet lane once a live commit already exists in the same session. The full Solflare browser cycle is captured; Android capture expansion is still pending for this stage."
+      "supportNote": "Reveal vote is live in the web wallet lane once a live commit already exists in the same session. The full Solflare browser cycle is captured; Android remains in capture expansion for this stage."
     },
     {
       "action": "finalize_proposal",
@@ -63,7 +63,7 @@
       "repoScriptProofCaptured": true,
       "browserWalletProofCaptured": true,
       "realDeviceProofCaptured": false,
-      "supportNote": "Finalize proposal is live in the web wallet lane. Repo-script proof exists and the full Solflare browser cycle is captured; Android capture expansion is still pending for this stage."
+      "supportNote": "Finalize proposal is live in the web wallet lane. Repo-script proof exists and the full Solflare browser cycle is captured; Android remains in capture expansion for this stage."
     },
     {
       "action": "execute_proposal",

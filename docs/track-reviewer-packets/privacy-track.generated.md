@@ -3,7 +3,7 @@
 ## Overview
 
 - project: `PrivateDAO`
-- generated at: `2026-04-22T00:24:58.693Z`
+- generated at: `2026-05-24T20:49:20.437Z`
 - track slug: `privacy-track`
 - sponsor: `MagicBlock and privacy-aligned partners`
 - objective: Show PrivateDAO as the clearest privacy-native governance and confidential treasury product in the field.
@@ -32,7 +32,7 @@ What works now: Use the comprehensive story video as the first-pass product walk
 - Live Proof V3: Testnet proposal lifecycle, V3 hardening, and explorer-verifiable proof anchors are already documented. (/documents/live-proof-v3)
 - ZK capability matrix: The repo already states what the privacy layer proves today and what remains outside the claim boundary. (/documents/zk-capability-matrix)
 - Treasury reviewer packet: Generated treasury packet that makes sender discipline, reference-linked rails, payments fit, and the exact treasury blocker reviewer-visible. (/documents/treasury-reviewer-packet)
-- Reviewer telemetry packet: Generated telemetry truth packet that binds runtime evidence, integration evidence, read-node snapshot, and devnet service metrics into one reviewer-safe route. (/documents/reviewer-telemetry-packet)
+- Reviewer telemetry packet: Generated telemetry truth packet that binds runtime evidence, integration evidence, read-node snapshot, and testnet service metrics into one reviewer-safe route. (/documents/reviewer-telemetry-packet)
 
 ### What Is Still Pending
 

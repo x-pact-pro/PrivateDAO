@@ -1,6 +1,6 @@
 {
   "project": "PrivateDAO",
-  "generatedAt": "2026-04-22T00:24:58.686Z",
+  "generatedAt": "2026-05-24T20:49:20.433Z",
   "track": {
     "slug": "colosseum-frontier",
     "title": "Core Reviewer Packet",
@@ -41,7 +41,7 @@
       {
         "label": "Reviewer telemetry packet",
         "href": "/documents/reviewer-telemetry-packet",
-        "summary": "Generated telemetry truth packet that binds runtime evidence, integration evidence, read-node snapshot, and devnet service metrics into one reviewer-safe route."
+        "summary": "Generated telemetry truth packet that binds runtime evidence, integration evidence, read-node snapshot, and testnet service metrics into one reviewer-safe route."
       }
     ],
     "pendingSummary": "For the main submission, custody is not a side detail. It is the exact trust gate that separates a strong Testnet product from a real-funds launch claim, and the strict ingestion route now makes that ceremony packet reproducible instead of manual."
@@ -64,7 +64,7 @@
       "href": "/documents/reviewer-fast-path"
     },
     {
-      "label": "Judge proof path",
+      "label": "Legacy proof mode",
       "href": "/proof/?judge=1"
     },
     {
@@ -102,6 +102,10 @@
     {
       "label": "Wallet matrix",
       "href": "/viewer/wallet-compatibility-matrix.generated"
+    },
+    {
+      "label": "Canonical judge route",
+      "href": "/judge"
     }
   ],
   "validationGates": [

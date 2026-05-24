@@ -78,6 +78,22 @@ Kg5+Obl1Pgh6sclVxTKoLAoF8//4KeaIkLqvQEz58gQLnlLOFjejp/eL8z0kr6b9
 XUlHP+ocPBRQn/icAldPq+Xkc5cpxSOLcfnehYPjZ26xUQcHqBtSQyVMgb8aaSJr
 sQIDAQAB
 -----END PUBLIC KEY-----`;
+
+type GeneratedReadNodeSnapshot = {
+  generatedAt?: string;
+  runtime?: Record<string, unknown>;
+  overview?: Record<string, unknown>;
+  profiles?: Array<Record<string, unknown>>;
+  proposals?: Array<Record<string, unknown>>;
+};
+
+function readGeneratedReadNodeSnapshot(): GeneratedReadNodeSnapshot | null {
+  try {
+    return JSON.parse(readFileSync(resolve("docs/read-node/snapshot.generated.json"), "utf8")) as GeneratedReadNodeSnapshot;
+  } catch {
+    return null;
+  }
+}
 const onboardingIntakePublicKeyFingerprint = "a4cb6e4ab4a729245104b7d25e3cd753349d749cbb52384e2094fdbad393ac08";
 
 type SupabaseRow = Record<string, string | number | boolean | null | Record<string, unknown> | unknown[]>;
@@ -2460,44 +2476,88 @@ async function handle(req: http.IncomingMessage, res: http.ServerResponse) {
     }
 
     if (pathname === "/api/v1/ops/overview") {
-      const overview = await readNode.getOpsOverview(url.searchParams.get("refresh") === "1");
-      writeJson(res, 200, { ok: true, source: "backend-indexer", overview });
+      try {
+        const overview = await readNode.getOpsOverview(url.searchParams.get("refresh") === "1");
+        writeJson(res, 200, { ok: true, source: "backend-indexer", overview });
+      } catch (error) {
+        const fallback = readGeneratedReadNodeSnapshot();
+        if (!fallback?.overview) throw error;
+        writeJson(res, 200, {
+          ok: true,
+          source: "backend-indexer",
+          degraded: true,
+          degradedReason: "live-rpc-unavailable-used-generated-snapshot",
+          overview: fallback.overview,
+        });
+      }
       return;
     }
 
     if (pathname === "/api/v1/ops/snapshot") {
       const force = url.searchParams.get("refresh") === "1";
-      const [runtime, overview] = await Promise.all([
-        readNode.getRuntimeSnapshot(force),
-        readNode.getOpsOverview(force),
-      ]);
-      const profiles = readNode.getLoadProfiles();
-      const magicblock = await readNode.getMagicBlockRuntime(force);
-      writeJson(res, 200, {
-        ok: true,
-        source: "backend-indexer",
-        snapshot: {
-          generatedAt: new Date().toISOString(),
-          runtime,
-          overview,
-          magicblock,
-          profiles,
-          metrics: {
-            startedAt: serverStartedAt,
-            requestsTotal: metrics.requestsTotal,
-            requestsFailed: metrics.requestsFailed,
-            rateLimited: metrics.rateLimited,
-            blockedProbes: metrics.blockedProbes,
-            routeHits: Object.fromEntries(metrics.routeHits.entries()),
-            quickNodeStream: quickNodeStreamStats(),
+      try {
+        const [runtime, overview] = await Promise.all([
+          readNode.getRuntimeSnapshot(force),
+          readNode.getOpsOverview(force),
+        ]);
+        const profiles = readNode.getLoadProfiles();
+        const magicblock = await readNode.getMagicBlockRuntime(force);
+        writeJson(res, 200, {
+          ok: true,
+          source: "backend-indexer",
+          snapshot: {
+            generatedAt: new Date().toISOString(),
+            runtime,
+            overview,
+            magicblock,
+            profiles,
+            metrics: {
+              startedAt: serverStartedAt,
+              requestsTotal: metrics.requestsTotal,
+              requestsFailed: metrics.requestsFailed,
+              rateLimited: metrics.rateLimited,
+              blockedProbes: metrics.blockedProbes,
+              routeHits: Object.fromEntries(metrics.routeHits.entries()),
+              quickNodeStream: quickNodeStreamStats(),
+            },
+            deployment: {
+              sameDomainRecommended: true,
+              sameDomainGuide: "docs/read-node/same-domain-deploy.md",
+              readApiPath: "/api/v1",
+            },
           },
-          deployment: {
-            sameDomainRecommended: true,
-            sameDomainGuide: "docs/read-node/same-domain-deploy.md",
-            readApiPath: "/api/v1",
+        });
+      } catch (error) {
+        const fallback = readGeneratedReadNodeSnapshot();
+        if (!fallback?.runtime || !fallback?.overview) throw error;
+        writeJson(res, 200, {
+          ok: true,
+          source: "backend-indexer",
+          degraded: true,
+          degradedReason: "live-rpc-unavailable-used-generated-snapshot",
+          snapshot: {
+            generatedAt: new Date().toISOString(),
+            runtime: fallback.runtime,
+            overview: fallback.overview,
+            magicblock: await readNode.getMagicBlockRuntime(false),
+            profiles: fallback.profiles || readNode.getLoadProfiles(),
+            metrics: {
+              startedAt: serverStartedAt,
+              requestsTotal: metrics.requestsTotal,
+              requestsFailed: metrics.requestsFailed,
+              rateLimited: metrics.rateLimited,
+              blockedProbes: metrics.blockedProbes,
+              routeHits: Object.fromEntries(metrics.routeHits.entries()),
+              quickNodeStream: quickNodeStreamStats(),
+            },
+            deployment: {
+              sameDomainRecommended: true,
+              sameDomainGuide: "docs/read-node/same-domain-deploy.md",
+              readApiPath: "/api/v1",
+            },
           },
-        },
-      });
+        });
+      }
       return;
     }
 
@@ -2528,10 +2588,17 @@ async function handle(req: http.IncomingMessage, res: http.ServerResponse) {
 
     if (pathname === "/api/v1/proposals") {
       const dao = url.searchParams.get("dao") || undefined;
-      const proposals = await readNode.fetchProposals({
-        dao: dao || undefined,
-        force: url.searchParams.get("refresh") === "1",
-      });
+      let proposals: Array<unknown>;
+      try {
+        proposals = await readNode.fetchProposals({
+          dao: dao || undefined,
+          force: url.searchParams.get("refresh") === "1",
+        });
+      } catch (error) {
+        const fallback = readGeneratedReadNodeSnapshot();
+        if (!fallback?.proposals) throw error;
+        proposals = dao ? fallback.proposals.filter((proposal) => String(proposal.dao || "") === dao) : fallback.proposals;
+      }
       writeJson(res, 200, {
         ok: true,
         source: "backend-indexer",

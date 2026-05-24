@@ -6,7 +6,7 @@
 - current Testnet program id: `EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva`
 - legacy Devnet program id: `5AhUsbQ4mJ8Xh7QJEomuS85qGgmK9iNvFqzF669Y7Psx`
 - verification wallet: `4Mm5YTRbJuyA8NcWM85wTnx6ZQMXNph2DSnzCCKLhsMD`
-- generated at: `2026-05-24T15:29:25.377Z`
+- generated at: `2026-05-24T20:50:28.725Z`
 - acceptance decision: `repository-strong-but-external-blockers-remain`
 - accepted in repo: `9`
 - pending external: `3`

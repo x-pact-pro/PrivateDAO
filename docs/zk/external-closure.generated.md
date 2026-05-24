@@ -5,7 +5,7 @@
 - Project: PrivateDAO
 - Path: zk_enforced_external_closure
 - Status: pending-external-execution
-- Generated At: 2026-04-22T00:20:58.628Z
+- Generated At: 2026-05-24T20:47:07.970Z
 - Pending Blocking Count: 3
 
 ## Runtime Capture Summary

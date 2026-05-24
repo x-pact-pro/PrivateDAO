@@ -1,6 +1,6 @@
 {
   "project": "PrivateDAO",
-  "generatedAt": "2026-04-22T00:24:58.693Z",
+  "generatedAt": "2026-05-24T20:49:20.437Z",
   "track": {
     "slug": "privacy-track",
     "title": "Confidential Governance Reviewer Packet",
@@ -41,7 +41,7 @@
       {
         "label": "Reviewer telemetry packet",
         "href": "/documents/reviewer-telemetry-packet",
-        "summary": "Generated telemetry truth packet that binds runtime evidence, integration evidence, read-node snapshot, and devnet service metrics into one reviewer-safe route."
+        "summary": "Generated telemetry truth packet that binds runtime evidence, integration evidence, read-node snapshot, and testnet service metrics into one reviewer-safe route."
       }
     ],
     "pendingSummary": "Custody evidence is still required, and the signer or transfer packet can now be ingested through /custody in a strict repo-safe shape. The exact privacy-side blocker still remains the source-verifiable receipt path, not generic wording."

@@ -3,7 +3,7 @@
 ## Overview
 
 - project: `PrivateDAO`
-- generated at: `2026-04-22T00:24:58.695Z`
+- generated at: `2026-05-24T20:49:20.438Z`
 - track slug: `rpc-infrastructure`
 - sponsor: `RPC infrastructure sponsors`
 - objective: Make the hosted read path, diagnostics, and runtime trust posture impossible to miss.
@@ -32,7 +32,7 @@ What works now: Show diagnostics, runtime evidence, and hosted read/API packagin
 - Diagnostics: Latency, success rate, wallet coverage, proof completion, and incident-facing diagnostics are already surfaced live. (/diagnostics)
 - Core integrations: Hosted-read and runtime evidence already prove the infrastructure story on Testnet with reviewer-facing artifacts. (/documents/frontier-integrations)
 - Treasury reviewer packet: Generated treasury packet that makes sender discipline, reference-linked rails, payments fit, and the exact treasury blocker reviewer-visible. (/documents/treasury-reviewer-packet)
-- Reviewer telemetry packet: Generated telemetry truth packet that binds runtime evidence, integration evidence, read-node snapshot, and devnet service metrics into one reviewer-safe route. (/documents/reviewer-telemetry-packet)
+- Reviewer telemetry packet: Generated telemetry truth packet that binds runtime evidence, integration evidence, read-node snapshot, and testnet service metrics into one reviewer-safe route. (/documents/reviewer-telemetry-packet)
 
 ### What Is Still Pending
 

@@ -1,6 +1,6 @@
 {
   "project": "PrivateDAO",
-  "generatedAt": "2026-05-24T19:28:57.869Z",
+  "generatedAt": "2026-05-24T20:45:57.414Z",
   "network": "testnet",
   "programId": "EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva",
   "verificationWallet": "4Mm5YTRbJuyA8NcWM85wTnx6ZQMXNph2DSnzCCKLhsMD",
@@ -13,7 +13,7 @@
     "magicBlockApiBase": "https://payments.magicblock.app",
     "magicBlockHealth": "ok",
     "overview": {
-      "generatedAt": "2026-05-24T19:28:51.947Z",
+      "generatedAt": "2026-05-24T20:45:50.239Z",
       "proposals": 17,
       "uniqueDaos": 16,
       "zkEnforced": 0,

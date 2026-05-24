@@ -3,7 +3,7 @@
 ## Overview
 
 - project: `PrivateDAO`
-- generated at: `2026-05-23T04:56:42.383Z`
+- generated at: `2026-05-24T20:48:49.483Z`
 - status: `ready-for-transfer`
 - production mainnet claim allowed: `false`
 - network: `testnet`
@@ -99,21 +99,21 @@ Explorer links:
 
 ## Observed Chain Readouts
 
-### Current Testnet deployed program readout after Squads transfer
+### Current deployed program readout
 
-- cluster: `testnet`
+- cluster: `devnet`
 - status: `observed`
-- address: `EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva`
-- authority: `CALHrBqx6jbzcPn2NVcinqSAHeod65v9LcDuTxsdPqBv`
+- address: `5AhUsbQ4mJ8Xh7QJEomuS85qGgmK9iNvFqzF669Y7Psx`
+- authority: `4Mm5YTRbJuyA8NcWM85wTnx6ZQMXNph2DSnzCCKLhsMD`
 - owner: `BPFLoaderUpgradeab1e11111111111111111111111`
-- program data address: `FKyt5DcmRQcCF8kzMGjCvfGb3ZPHMQnH1SqiG9Mi8xEc`
-- last deploy slot: `405189011`
-- balance sol: `9.44107992`
-- explorer: `https://explorer.solana.com/address/EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva?cluster=testnet`
-- observed at: `2026-05-22T23:47:42+03:00`
-- command: `solana program show EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva --url https://api.testnet.solana.com`
+- program data address: `CeggEn3sNVbiuJHLKDaCPMH4uLczu1Dr3ZGKKcaKBqeN`
+- last deploy slot: `454368825`
+- balance sol: `9.82850136`
+- explorer: `https://explorer.solana.com/address/5AhUsbQ4mJ8Xh7QJEomuS85qGgmK9iNvFqzF669Y7Psx?cluster=devnet`
+- observed at: `2026-05-24T20:48:33.606Z`
+- command: `solana program show 5AhUsbQ4mJ8Xh7QJEomuS85qGgmK9iNvFqzF669Y7Psx --url devnet`
 - error: `pending`
-- note: `This is the reviewer-facing Testnet deployment after transferring program-upgrade authority to the Squads vault PDA.`
+- note: `This is the currently observed live deployment readout. It is external chain evidence, but it is not mainnet custody proof by itself.`
 
 ### Current DAO anchor readout
 
@@ -126,7 +126,7 @@ Explorer links:
 - last deploy slot: `pending`
 - balance sol: `0.00235248`
 - explorer: `https://explorer.solana.com/address/FZV9KmpeY1B31XvszQypp5T6nQN5C44JDLM4QWBEDvhx?cluster=devnet`
-- observed at: `2026-04-22T00:23:39.871Z`
+- observed at: `2026-05-24T20:48:34.335Z`
 - command: `solana account FZV9KmpeY1B31XvszQypp5T6nQN5C44JDLM4QWBEDvhx --url devnet --output json`
 - error: `pending`
 - note: `Current DAO PDA visibility on devnet.`
@@ -142,7 +142,7 @@ Explorer links:
 - last deploy slot: `pending`
 - balance sol: `0.15`
 - explorer: `https://explorer.solana.com/address/AZUroiNeGAjNdD84eEHnAKHHFwqAFmkjr2g1eoF7Ek5c?cluster=devnet`
-- observed at: `2026-04-22T00:23:40.913Z`
+- observed at: `2026-05-24T20:48:34.955Z`
 - command: `solana account AZUroiNeGAjNdD84eEHnAKHHFwqAFmkjr2g1eoF7Ek5c --url devnet --output json`
 - error: `pending`
 - note: `Current treasury PDA visibility on devnet.`
@@ -158,7 +158,7 @@ Explorer links:
 - last deploy slot: `pending`
 - balance sol: `pending`
 - explorer: `https://explorer.solana.com/address/5AhUsbQ4mJ8Xh7QJEomuS85qGgmK9iNvFqzF669Y7Psx`
-- observed at: `2026-04-22T00:23:41.524Z`
+- observed at: `2026-05-24T20:48:35.776Z`
 - command: `solana program show 5AhUsbQ4mJ8Xh7QJEomuS85qGgmK9iNvFqzF669Y7Psx --url mainnet-beta`
 - error: `Error: Unable to find the account 5AhUsbQ4mJ8Xh7QJEomuS85qGgmK9iNvFqzF669Y7Psx`
 - note: `If this stays not-found, mainnet custody transfer is not merely pending multisig evidence; there is no current mainnet program readout for this program id.`
@@ -174,7 +174,7 @@ Explorer links:
 - last deploy slot: `pending`
 - balance sol: `pending`
 - explorer: `https://explorer.solana.com/address/AZUroiNeGAjNdD84eEHnAKHHFwqAFmkjr2g1eoF7Ek5c`
-- observed at: `2026-04-22T00:23:42.044Z`
+- observed at: `2026-05-24T20:48:37.329Z`
 - command: `solana account AZUroiNeGAjNdD84eEHnAKHHFwqAFmkjr2g1eoF7Ek5c --url mainnet-beta --output json`
 - error: `Error: AccountNotFound: pubkey=AZUroiNeGAjNdD84eEHnAKHHFwqAFmkjr2g1eoF7Ek5c`
 - note: `Target-network treasury visibility is required before claiming real-funds mainnet readiness.`

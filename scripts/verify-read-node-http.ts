@@ -1,5 +1,6 @@
 import { spawn, ChildProcess } from "child_process";
 import path from "path";
+import "dotenv/config";
 
 const host = "127.0.0.1";
 const port = 8791;
@@ -22,10 +23,13 @@ async function main() {
   const child = startServer();
   try {
     const config = await waitForServer();
-    const [health, overview, snapshot, profiles, magicblock, metrics, proposals] = await Promise.all([
-      getJson<{ ok: boolean; health: string; runtime: { readPath: string; programId: string } }>("/healthz"),
-      getJson<{ ok: boolean; source: string; overview: { proposals: number; confidentialPayouts: number } }>("/api/v1/ops/overview"),
-      getJson<{
+    const health = await getJson<{ ok: boolean; health: string; runtime: { readPath: string; programId: string } }>("/healthz");
+    const overview = await getJson<{
+      ok: boolean;
+      source: string;
+      overview: { proposals: number; confidentialPayouts: number };
+    }>("/api/v1/ops/overview");
+    const snapshot = await getJson<{
         ok: boolean;
         source: string;
         snapshot: {
@@ -35,12 +39,19 @@ async function main() {
           profiles: Array<{ name: string; waveCount: number; waveSize: number }>;
           deployment: { sameDomainGuide: string; readApiPath: string };
         };
-      }>("/api/v1/ops/snapshot"),
-      getJson<{ ok: boolean; source: string; profiles: Array<{ name: string; waveCount: number; waveSize: number }> }>("/api/v1/devnet/profiles"),
-      getJson<{ ok: boolean; source: string; magicblock: { apiBase: string; health: string } }>("/api/v1/magicblock/health"),
-      getJson<{ ok: boolean; metrics: { requestsTotal: number; routeHits: Record<string, number> } }>("/api/v1/metrics"),
-      getJson<{ ok: boolean; count: number; proposals: Array<unknown> }>("/api/v1/proposals"),
-    ]);
+      }>("/api/v1/ops/snapshot");
+    const profiles = await getJson<{
+      ok: boolean;
+      source: string;
+      profiles: Array<{ name: string; waveCount: number; waveSize: number }>;
+    }>("/api/v1/devnet/profiles");
+    const magicblock = await getJson<{ ok: boolean; source: string; magicblock: { apiBase: string; health: string } }>(
+      "/api/v1/magicblock/health",
+    );
+    const metrics = await getJson<{ ok: boolean; metrics: { requestsTotal: number; routeHits: Record<string, number> } }>(
+      "/api/v1/metrics",
+    );
+    const proposals = await getJson<{ ok: boolean; count: number; proposals: Array<unknown> }>("/api/v1/proposals");
 
     assert(config.ok, "HTTP read node config route did not report ok");
     assert(config.config.readPath === "backend-indexer", "HTTP read node config did not report backend-indexer mode");
@@ -92,6 +103,8 @@ function startServer() {
       PRIVATE_DAO_READ_NODE_PORT: String(port),
       PRIVATE_DAO_READ_ALLOWED_ORIGIN: "*",
       PRIVATE_DAO_RPC_TIMEOUT_MS: process.env.PRIVATE_DAO_RPC_TIMEOUT_MS || "12000",
+      PRIVATE_DAO_GET_MULTIPLE_ACCOUNTS_CHUNK_SIZE: process.env.PRIVATE_DAO_GET_MULTIPLE_ACCOUNTS_CHUNK_SIZE || "5",
+      PRIVATE_DAO_READ_CACHE_TTL_MS: process.env.PRIVATE_DAO_READ_CACHE_TTL_MS || "60000",
       MAGICBLOCK_HTTP_TIMEOUT_MS: process.env.MAGICBLOCK_HTTP_TIMEOUT_MS || "2500",
     },
     stdio: ["ignore", "pipe", "pipe"],

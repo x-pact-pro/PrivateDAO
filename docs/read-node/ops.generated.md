@@ -1,9 +1,9 @@
 # Read Node Ops Snapshot
 
-- Generated at: `2026-05-24T19:36:28.400Z`
+- Generated at: `2026-05-24T20:45:21.733Z`
 - Read path: `backend-indexer`
-- RPC endpoint: `https://cosmological-hidden-water.solana-testnet.quiknode.pro/[redacted]`
-- RPC pool size: `2`
+- RPC endpoint: `https://api.testnet.solana.com`
+- RPC pool size: `1`
 - Program ID: `EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva`
 - Same-domain recommended: `true`
 - Read API path: `/api/v1`

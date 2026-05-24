@@ -3,7 +3,7 @@
 ## Overview
 
 - project: `PrivateDAO`
-- generated at: `2026-04-22T00:24:58.686Z`
+- generated at: `2026-05-24T20:49:20.433Z`
 - track slug: `colosseum-frontier`
 - sponsor: `Public-good governance infrastructure`
 - objective: Present PrivateDAO as a startup-quality Solana product that already behaves like a pre-mainnet company rather than a hacked-together prototype.
@@ -32,7 +32,7 @@ What works now: Lead the first 90 seconds from /start into /govern with a real w
 - Proof center: The full governance lifecycle, proof packets, and reviewer path are already visible inside the live product. (/proof)
 - Launch trust packet: The repo already binds launch truth, blockers, and buyer-safe trust wording into one explicit packet. (/documents/launch-trust-packet)
 - Treasury reviewer packet: Generated treasury packet that makes sender discipline, reference-linked rails, payments fit, and the exact treasury blocker reviewer-visible. (/documents/treasury-reviewer-packet)
-- Reviewer telemetry packet: Generated telemetry truth packet that binds runtime evidence, integration evidence, read-node snapshot, and devnet service metrics into one reviewer-safe route. (/documents/reviewer-telemetry-packet)
+- Reviewer telemetry packet: Generated telemetry truth packet that binds runtime evidence, integration evidence, read-node snapshot, and testnet service metrics into one reviewer-safe route. (/documents/reviewer-telemetry-packet)
 
 ### What Is Still Pending
 
@@ -52,7 +52,7 @@ For the main submission, custody is not a side detail. It is the exact trust gat
 
 - Track workspace: /tracks/colosseum-frontier
 - Proof route: /documents/reviewer-fast-path
-- Judge proof path: /proof/?judge=1
+- Legacy proof mode: /proof/?judge=1
 - Story video: /story
 - Reviewer telemetry packet: /documents/reviewer-telemetry-packet
 - Launch trust packet: /documents/launch-trust-packet
@@ -62,6 +62,7 @@ For the main submission, custody is not a side detail. It is the exact trust gat
 - Core integrations: /documents/frontier-integrations
 - PDAO attestation: /viewer/pdao-attestation.generated
 - Wallet matrix: /viewer/wallet-compatibility-matrix.generated
+- Canonical judge route: /judge
 
 ## Validation Gates
 

@@ -3,15 +3,15 @@
 ## Overview
 
 - project: `PrivateDAO`
-- generated at: `2026-05-24T19:37:22.799Z`
+- generated at: `2026-05-24T20:49:57.109Z`
 - reviewer intent: Show the shortest truth-synced route into runtime maturity, hosted reads, indexed governance, and infrastructure-facing reviewer value without claiming unsupported partnerships or mainnet readiness.
 
 ## Truth Sources
 
-- Runtime evidence: `2026-05-06T09:07:34.282Z` via `docs/runtime-evidence.generated.md`
-- Frontier integrations: `2026-05-24T19:28:57.869Z` via `docs/frontier-integrations.generated.md`
-- Read-node snapshot: `2026-05-24T19:36:28.563Z` via `docs/read-node/snapshot.generated.md`
-- Devnet service metrics: `2026-05-24T16:15:19.945Z` via `apps/web/src/lib/devnet-service-metrics.ts`
+- Runtime evidence: `2026-05-24T20:47:28.331Z` via `docs/runtime-evidence.generated.md`
+- Frontier integrations: `2026-05-24T20:45:57.414Z` via `docs/frontier-integrations.generated.md`
+- Read-node snapshot: `2026-05-24T20:44:54.358Z` via `docs/read-node/snapshot.generated.md`
+- Devnet service metrics: `2026-05-24T20:47:28.331Z` via `apps/web/src/lib/devnet-service-metrics.ts`
 
 ## What Works Now
 
@@ -23,17 +23,17 @@
 
 ## What Is Externally Or Operationally Proven Now
 
-- Runtime evidence package generated at 2026-05-06T09:07:34.282Z and published as docs/runtime-evidence.generated.md.
-- Frontier integrations package generated at 2026-05-24T19:28:57.869Z with reviewer entry https://privatedao.org/proof/?judge=1.
-- Read-node snapshot generated at 2026-05-24T19:36:28.563Z on slot 410642172 against https://cosmological-hidden-water.solana-testnet.quiknode.pro/[redacted].
+- Runtime evidence package generated at 2026-05-24T20:47:28.331Z and published as docs/runtime-evidence.generated.md.
+- Frontier integrations package generated at 2026-05-24T20:45:57.414Z with reviewer entry https://privatedao.org/proof/?judge=1.
+- Read-node snapshot generated at 2026-05-24T20:44:54.358Z on slot 410652948 against https://api.testnet.solana.com.
 - Proposal flow health, wallet readiness, and proof freshness summaries are taken from the same devnet service metrics module used by the live app.
 - Unexpected runtime failures remain 0 and unexpected adversarial successes remain 0.
 
 ## Hosted-Read Proof
 
 - read path: `backend-indexer`
-- rpc endpoint: `https://cosmological-hidden-water.solana-testnet.quiknode.pro/[redacted]`
-- slot: `410642172`
+- rpc endpoint: `https://api.testnet.solana.com`
+- slot: `410652948`
 - current Testnet program id: `EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva`
 - legacy Devnet hosted-read program id: `EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva`
 - commitment: `confirmed`
@@ -61,10 +61,10 @@
 
 - Proposal flow health: 50% — 0/7 governance proof steps are finalized. 1 proposal is already executed on Testnet, 0 proposal is still in commit mode, and 2 proposal is still waiting on settlement evidence. (Open proof and execution: /proof/?judge=1)
 - Wallet-by-wallet readiness: Runtime capture live — Wallet diagnostics, connect/sign/submit evidence, and real-device intake are surfaced as a living runtime program with proof packets attached for each supported wallet path. (Open wallet diagnostics: /diagnostics)
-- Proof freshness: 3h old — Runtime evidence 18d old and Testnet canary 3h old remain published together. The integration packet remains linked as the reviewer baseline without turning an archived source packet into the freshness score. Latest Testnet rehearsal is 18d old with 9 confirmed lifecycle signatures. (Open trust documents: /documents/live-proof-v3)
+- Proof freshness: fresh this hour — Runtime evidence fresh this hour and Testnet canary fresh this hour remain published together. The integration packet remains linked as the reviewer baseline without turning an archived source packet into the freshness score. Latest Testnet rehearsal is 18d old with 9 confirmed lifecycle signatures. (Open trust documents: /documents/live-proof-v3)
 - Hosted read coverage: 17 — The backend-indexer read path currently exposes 17 indexed proposals across 16 DAOs. (Open services: /services)
 - MagicBlock settlement completion: 0% — 0/5 confidential corridor transactions finalized in the current integration evidence package. (Open diagnostics: /diagnostics)
-- Primary RPC latency: 177 ms — Current blockhash latency from the primary Testnet endpoint. Version latency is 1173 ms. (Open analytics: /analytics)
+- Primary RPC latency: 186 ms — Current blockhash latency from the primary Testnet endpoint. Version latency is 1017 ms. (Open analytics: /analytics)
 
 ## Reviewer-First Path
 

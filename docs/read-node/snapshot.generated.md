@@ -1,15 +1,15 @@
 # Read Node Snapshot
 
-- Generated at: `2026-05-24T19:36:28.563Z`
+- Generated at: `2026-05-24T20:44:54.358Z`
 - Read path: `backend-indexer`
-- RPC endpoint: `https://cosmological-hidden-water.solana-testnet.quiknode.pro/[redacted]`
-- RPC pool size: `2`
+- RPC endpoint: `https://api.testnet.solana.com`
+- RPC pool size: `1`
 - Cache entries: `2`
 - Cache TTL ms: `15000`
 - Program ID: `EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva`
-- Slot: `410642172`
-- Solana core: `4.0.0-beta.7`
-- Feature set: `1253319928`
+- Slot: `410652948`
+- Solana core: `4.0.0-rc.0`
+- Feature set: `767961353`
 
 ## Proposal Coverage
 
@@ -35,10 +35,10 @@
 ## Sample
 
 - `REFHE confidential payroll envelope 2026-05-07` | phase=`Finalized` | recipient=`4Mm5YTRbJuyA8NcWM85wTnx6ZQMXNph2DSnzCCKLhsMD` | amount=`1,000,000 raw token units` | dao=`2gDRTWaNRjiySVdvqoSXnnUYF8CFSaJUxwG6LBg8P1gG`
-- `Settlement Hardening V3 + REFHE + MagicBlock live proof` | phase=`Executed` | recipient=`5vQiGkrsfz3wjeFWcPDFLAZV8Xyp36QRWatkh7Rt2FVj` | amount=`50,000,000 raw token units` | dao=`B8kydmvWdwNvGoGhgdP7oTNPphzNs2E6wfXpAoxHpeoo`
-- `Confidential payroll batch / April` | phase=`Finalized` | recipient=`pending` | amount=`Pending exact amount from the indexed proposal record` | dao=`FvQK8BjddPzhfAbjL5UNdv47JCtsCWSRAC1buJmHD1Cp`
-- `Payroll Pack · Confidential contributor cycle` | phase=`Finalized` | recipient=`AZUroiNeGAjNdD84eEHnAKHHFwqAFmkjr2g1eoF7Ek5c` | amount=`0.005 SOL` | dao=`DXvZ1Bmb7eZmEnBytE7QiSAnFyCj33vs4L9GsjoGpne7`
-- `Confidential payroll batch / April` | phase=`Executed` | recipient=`pending` | amount=`Pending exact amount from the indexed proposal record` | dao=`9H4hgS66y3xVwEfZNcFED6NpoEdJh78VqJbzkFDs1PiM`
+- `Confidential payroll batch / April255552` | phase=`Executable` | recipient=`pending` | amount=`Pending exact amount from the indexed proposal record` | dao=`CKDqPz4H64U5b66CDrTKAHDuQXV9NwMsKtDjZyUNHhiH`
+- `Governance Hardening V3 live proof` | phase=`Executed` | recipient=`Dxk6XdDfbhGkQr2EwkcqFDzH9Stx6Vj25EHpr6QuwNZV` | amount=`0.05 SOL` | dao=`DCstvkqyeuqNTunn7WrKvsc4j7XWPt4vbmpL37pvrY6X`
+- `Confidential payroll batch / April` | phase=`Executable` | recipient=`pending` | amount=`Pending exact amount from the indexed proposal record` | dao=`2McuCRTgwc96er39sQQnzkzcN94aGWMfR9Rtz64RCdQk`
+- `Governance Hardening V3 live proof` | phase=`Executed` | recipient=`3tY61SNRGEVDxpDAMfhDjWvtWaFsv4JTPHSV6uQNSA1z` | amount=`0.05 SOL` | dao=`C8uVwtCsE24XkMrT63HehZNcMcruS2KSokZq5XYZLdZr`
 
 ## Proposal Registry
 
@@ -51,10 +51,10 @@
 
 - `payroll` | phase=`Finalized` | proposal=`4A2qwBvTKYL9kGzjCNHaSCp8jJXcMRaFxPMWf5NJ2qBt` | recipient=`Confidential settlement wallet` | mint=`SPL token`
 - `gaming` | phase=`Executed` | proposal=`3oJ4hkmHr7dZ29MAREMAvDgMxYAMKbrHrFFbZG7TWTuQ` | recipient=`MagicBlock settlement corridor` | mint=`7VoozT9PVXieCZoB6KrNUQ8g2PDyBoVrhGy82NKGUudg`
-- `grant` | phase=`Finalized` | proposal=`EC6SJLqoe8jN48b4EBTgAWEJKcJxXGq1mCdup12aTY8f` | recipient=`AZUroiNeGAjNdD84eEHnAKHHFwqAFmkjr2g1eoF7Ek5c` | mint=`SOL`
+- `grant` | phase=`Executed` | proposal=`9TkPrSPEPwD9Cmrt4NZNqL9C157BXmJUZDRASgmkPGc8` | recipient=`Dxk6XdDfbhGkQr2EwkcqFDzH9Stx6Vj25EHpr6QuwNZV` | mint=`SOL`
 
 ## Featured Proposal Registry
 
 - `PDAO-001-2GDR` | `REFHE confidential payroll envelope 2026-05-07` | status=`Evidence gated` | treasury=`Confidential payout still gated for 1,000,000 units to 4Mm5…hsMD via mint native asset`
+- `PDAO-000-DCST` | `Governance Hardening V3 live proof` | status=`Executed` | treasury=`0.05 SOL sent to Dxk6…wNZV`
 - `PDAO-000-B8KY` | `Settlement Hardening V3 + REFHE + MagicBlock live proof` | status=`Executed` | treasury=`Confidential payout executed for 50,000,000 units to 5vQi…2FVj via mint 7Voo…Uudg`
-- `PDAO-000-DXVZ` | `Payroll Pack · Confidential contributor cycle` | status=`Timelocked` | treasury=`0.005 SOL queued to send to AZUr…Ek5c`

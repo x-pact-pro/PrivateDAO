@@ -1,6 +1,6 @@
 {
   "project": "PrivateDAO",
-  "generatedAt": "2026-04-22T00:24:58.695Z",
+  "generatedAt": "2026-05-24T20:49:20.438Z",
   "track": {
     "slug": "rpc-infrastructure",
     "title": "Runtime Infrastructure Reviewer Packet",
@@ -41,7 +41,7 @@
       {
         "label": "Reviewer telemetry packet",
         "href": "/documents/reviewer-telemetry-packet",
-        "summary": "Generated telemetry truth packet that binds runtime evidence, integration evidence, read-node snapshot, and devnet service metrics into one reviewer-safe route."
+        "summary": "Generated telemetry truth packet that binds runtime evidence, integration evidence, read-node snapshot, and testnet service metrics into one reviewer-safe route."
       }
     ],
     "pendingSummary": "Custody still matters for buyer trust, and the new /custody ingestion flow reduces operator drift when the real signer and transfer data arrives. The exact infrastructure blocker remains monitored operations, not generic product maturity."

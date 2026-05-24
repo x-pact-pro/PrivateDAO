@@ -3,7 +3,7 @@
 ## Overview
 
 - project: `PrivateDAO`
-- generated at: `2026-05-22T20:55:57.359Z`
+- generated at: `2026-05-24T20:49:31.364Z`
 - reviewer intent: Explain the current custody truth, show what is externally proven now, and make the missing external ceremony evidence explicit without narrative drift.
 - custody status: `ready-for-transfer`
 - trust decision: `blocked-external-steps`
@@ -21,12 +21,12 @@
 
 ## What Is Externally Proven Now
 
-- Current Testnet deployed program readout after Squads transfer (testnet)
-  - address: `EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva`
-  - explorer: https://explorer.solana.com/address/EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva?cluster=testnet
-  - authority: `CALHrBqx6jbzcPn2NVcinqSAHeod65v9LcDuTxsdPqBv`
-  - program data: `FKyt5DcmRQcCF8kzMGjCvfGb3ZPHMQnH1SqiG9Mi8xEc`
-  - last deploy slot: `405189011`
+- Current deployed program readout (devnet)
+  - address: `5AhUsbQ4mJ8Xh7QJEomuS85qGgmK9iNvFqzF669Y7Psx`
+  - explorer: https://explorer.solana.com/address/5AhUsbQ4mJ8Xh7QJEomuS85qGgmK9iNvFqzF669Y7Psx?cluster=devnet
+  - authority: `4Mm5YTRbJuyA8NcWM85wTnx6ZQMXNph2DSnzCCKLhsMD`
+  - program data: `CeggEn3sNVbiuJHLKDaCPMH4uLczu1Dr3ZGKKcaKBqeN`
+  - last deploy slot: `454368825`
 - Current DAO anchor readout (devnet)
   - address: `FZV9KmpeY1B31XvszQypp5T6nQN5C44JDLM4QWBEDvhx`
   - explorer: https://explorer.solana.com/address/FZV9KmpeY1B31XvszQypp5T6nQN5C44JDLM4QWBEDvhx?cluster=devnet

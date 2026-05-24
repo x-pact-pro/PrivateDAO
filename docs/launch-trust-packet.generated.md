@@ -3,7 +3,7 @@
 ## Overview
 
 - project: `PrivateDAO`
-- generated at: `2026-05-22T20:56:15.690Z`
+- generated at: `2026-05-24T20:50:48.472Z`
 - current decision: `blocked-external-steps`
 - production mainnet claim allowed: `false`
 
@@ -20,7 +20,7 @@
 - signer slots configured: `3`
 - minimum timelock hours: `48`
 - configured timelock hours: `48`
-- observed devnet authority: `pending`
+- observed devnet authority: `4Mm5YTRbJuyA8NcWM85wTnx6ZQMXNph2DSnzCCKLhsMD`
 - observed target-network program status: `not-found`
 
 Pending authority transfers:

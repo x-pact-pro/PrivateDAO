@@ -1,6 +1,6 @@
 # Treasury Reviewer Packet
 
-Generated: 2026-04-22T00:25:26.325Z
+Generated: 2026-05-24T20:49:41.433Z
 
 Explain the treasury intake and payout posture as a reviewer-grade infrastructure surface, with strict sender discipline, public rails, proof links, commercial fit, and exact blocker visibility.
 
@@ -8,11 +8,11 @@ Explain the treasury intake and payout posture as a reviewer-grade infrastructur
 
 - treasury network: Solana Testnet
 - treasury address: AZUroiNeGAjNdD84eEHnAKHHFwqAFmkjr2g1eoF7Ek5c
-- custody status: pending-external
+- custody status: ready-for-transfer
 - production mainnet claim allowed: false
 - trust decision: blocked-external-steps
 - threshold: 2-of-3
-- multisig address: pending
+- multisig address: thHmF7VYNtxE1MaDzYXbfPCiq13RF6JwuWnjvDZuSmF
 
 PrivateDAO is devnet-proven and internally hardened, but real-funds mainnet production remains blocked until external audit, custody, monitoring, runtime, settlement-receipt, and release-ceremony items are closed with evidence.
 
@@ -100,21 +100,7 @@ PrivateDAO is devnet-proven and internally hardened, but real-funds mainnet prod
 
 ## Exact Pending Items
 
-- multisig public address
-- multisig creation signature
 - rehearsal signature
-- timelock configuration of at least 48 hours
-- timelock configuration signature or readout
-- signer slot 1 public key
-- backup procedure for signer slot 1
-- signer slot 2 public key
-- backup procedure for signer slot 2
-- signer slot 3 public key
-- backup procedure for signer slot 3
-- program upgrade authority destination authority
-- program upgrade authority transfer signature
-- program upgrade authority post-transfer readout
-- program upgrade authority post-transfer readout reference
 - dao authority destination authority
 - dao authority transfer signature
 - dao authority post-transfer readout
