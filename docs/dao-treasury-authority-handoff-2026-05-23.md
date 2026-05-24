@@ -54,7 +54,7 @@ After the Squads timelock releases, set the target DAO and execute:
 EXECUTE_TIMELOCK=1 DAO_PDA=<DAO_PDA> scripts/execute-after-timelock.sh
 ```
 
-The sequence executes the Squads upgrade proposal, transfers DAO operating authority to the Squads vault, initializes the treasury operator authority PDA, then transfers treasury operator authority to the same Squads vault.
+The sequence executes the Squads upgrade proposal, initializes the treasury operator authority PDA while the current DAO authority can still satisfy the initializer constraint, transfers treasury operator authority to the Squads vault, then transfers DAO operating authority to the same Squads vault.
 
 ## PDA Continuity Fix
 
@@ -69,9 +69,9 @@ The live Testnet program is now upgrade-controlled by Squads. That is the desire
 1. Build the upgraded program artifact.
 2. Create a Squads upgrade proposal from the 2-of-3 multisig.
 3. Execute the upgrade after threshold approval and timelock.
-4. Call `transfer_dao_authority` on the target DAO.
-5. Call `initialize_treasury_operator_authority` on the target DAO.
-6. Call `transfer_treasury_operator_authority` to the Squads vault.
+4. Call `initialize_treasury_operator_authority` on the target DAO while the current DAO authority still signs.
+5. Call `transfer_treasury_operator_authority` to the Squads vault.
+6. Call `transfer_dao_authority` on the target DAO.
 7. Record the resulting `DaoAuthorityTransferred` and `TreasuryOperatorAuthorityTransferred` signatures in custody evidence.
 
 No document should claim the DAO operating authority or treasury operator authority has already moved on Testnet until the corresponding post-timelock signatures and readouts are recorded.

@@ -19,9 +19,9 @@ if [[ "${EXECUTE_TIMELOCK}" != "1" ]]; then
   echo "DAO PDA: ${DAO_PDA:-set DAO_PDA before DAO authority handoff}"
   echo "Planned commands:"
   echo "squads-cli vault-transaction execute --multisig ${MULTISIG} --vault ${VAULT} --transaction-index ${PROPOSAL_INDEX} --cluster testnet"
-  echo "npm run transfer:dao-authority -- --dao <DAO_PDA> --new-authority ${VAULT}"
   echo "npm run initialize:treasury-operator-authority -- --dao <DAO_PDA>"
   echo "npm run transfer:treasury-operator-authority -- --dao <DAO_PDA> --new-authority ${VAULT}"
+  echo "npm run transfer:dao-authority -- --dao <DAO_PDA> --new-authority ${VAULT}"
   echo "Exact prepared command after release:"
   echo "EXECUTE_TIMELOCK=1 DAO_PDA=FEz2hCLGpDhJ3cdAm5CCWFzrKv8vDDzmmt9UjdF2fApZ scripts/execute-after-timelock.sh"
   echo "Record the resulting tx/readout in docs/multisig-setup-intake.json or the custody intake flow."
@@ -42,7 +42,7 @@ fi
 
 solana config set --url "${CLUSTER}"
 squads-cli vault-transaction execute --multisig "${MULTISIG}" --vault "${VAULT}" --transaction-index "${PROPOSAL_INDEX}" --cluster testnet
-npm run transfer:dao-authority -- --dao "${DAO_PDA}" --new-authority "${VAULT}"
 npm run initialize:treasury-operator-authority -- --dao "${DAO_PDA}"
 npm run transfer:treasury-operator-authority -- --dao "${DAO_PDA}" --new-authority "${VAULT}"
+npm run transfer:dao-authority -- --dao "${DAO_PDA}" --new-authority "${VAULT}"
 echo "Done. Squads upgrade execution, DAO authority handoff, and treasury operator authority handoff submitted. Record signatures and post-transfer readouts before changing custody gates."
