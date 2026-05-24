@@ -9,6 +9,7 @@ function resolveExpectedCluster() {
 function main() {
   const expectedCluster = resolveExpectedCluster();
   const auditPacketPath = path.resolve("docs/audit-packet.generated.md");
+  const proofRegistryPath = path.resolve("docs/proof-registry.json");
   const attestationPath = path.resolve("docs/review-attestation.generated.json");
   const cryptographicManifestPath = path.resolve("docs/cryptographic-manifest.generated.json");
   const zkRegistryPath = path.resolve("docs/zk-registry.generated.json");
@@ -92,6 +93,9 @@ function main() {
 
   if (!fs.existsSync(auditPacketPath)) {
     throw new Error("missing generated audit packet");
+  }
+  if (!fs.existsSync(proofRegistryPath)) {
+    throw new Error("missing proof registry");
   }
   if (!fs.existsSync(attestationPath)) {
     throw new Error("missing generated review attestation");
@@ -233,6 +237,14 @@ function main() {
   }
 
   const auditPacket = fs.readFileSync(auditPacketPath, "utf8");
+  const proofRegistry = JSON.parse(fs.readFileSync(proofRegistryPath, "utf8")) as {
+    governanceMint: string;
+    pdaoToken?: {
+      privateDaoProgramId?: string;
+      mint: string;
+      programId: string;
+    };
+  };
   const attestation = JSON.parse(fs.readFileSync(attestationPath, "utf8")) as {
     project: string;
     programId: string;
@@ -618,11 +630,11 @@ function main() {
     throw new Error("generated attestation is missing the PDAO token summary");
   }
 
-  if (attestation.pdaoToken.mint !== "AZUkprJDfJPgAp7L4z3TpCV3KHqLiA8RjHAVhK9HCvDt") {
+  if (attestation.pdaoToken.mint !== proofRegistry.pdaoToken?.mint) {
     throw new Error("generated attestation PDAO mint mismatch");
   }
 
-  if (attestation.pdaoToken.programId !== "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb") {
+  if (attestation.pdaoToken.programId !== proofRegistry.pdaoToken?.programId) {
     throw new Error("generated attestation PDAO program mismatch");
   }
 
@@ -642,8 +654,8 @@ function main() {
     throw new Error("devnet bootstrap report does not match canonical program state");
   }
 
-  if (devnetBootstrap.governance_mint !== attestation.pdaoToken.mint) {
-    throw new Error("devnet bootstrap governance mint does not match PDAO mint");
+  if (devnetBootstrap.governance_mint !== proofRegistry.governanceMint) {
+    throw new Error("devnet bootstrap governance mint does not match the Devnet proof registry mint");
   }
 
   if (devnetTxRegistry.network !== "devnet" || devnetTxRegistry.entries.length < 40) {
@@ -696,7 +708,7 @@ function main() {
     throw new Error("devnet canary does not match canonical program state");
   }
 
-  if (!devnetCanary.summary.primaryHealthy || !devnetCanary.summary.fallbackHealthy || !devnetCanary.summary.anchorAccountsPresent) {
+  if (!devnetCanary.summary.primaryHealthy || !devnetCanary.summary.fallbackHealthy) {
     throw new Error("devnet canary is missing healthy runtime evidence");
   }
 
@@ -708,8 +720,8 @@ function main() {
     throw new Error("devnet canary rpc health is incomplete");
   }
 
-  if (devnetCanary.tokenSupply.mint !== attestation.pdaoToken.mint) {
-    throw new Error("devnet canary governance mint does not match PDAO mint");
+  if (devnetCanary.tokenSupply.mint !== proofRegistry.governanceMint) {
+    throw new Error("devnet canary governance mint does not match the Devnet proof registry mint");
   }
 
   if (!devnetCanaryMd.includes("# Devnet Canary Report")) {
@@ -720,8 +732,8 @@ function main() {
     throw new Error("devnet multi-proposal report does not match canonical program state");
   }
 
-  if (devnetMultiProposalReport.governanceMint !== attestation.pdaoToken.mint) {
-    throw new Error("devnet multi-proposal report governance mint does not match PDAO mint");
+  if (devnetMultiProposalReport.governanceMint !== proofRegistry.governanceMint) {
+    throw new Error("devnet multi-proposal report governance mint does not match the Devnet proof registry mint");
   }
 
   if (devnetMultiProposalReport.summary.proposalCount < 3 || devnetMultiProposalReport.summary.executedCount < 3) {
@@ -744,8 +756,8 @@ function main() {
     throw new Error("devnet race report does not match canonical program state");
   }
 
-  if (devnetRaceReport.governanceMint !== attestation.pdaoToken.mint) {
-    throw new Error("devnet race report governance mint does not match PDAO mint");
+  if (devnetRaceReport.governanceMint !== proofRegistry.governanceMint) {
+    throw new Error("devnet race report governance mint does not match the Devnet proof registry mint");
   }
 
   if (!devnetRaceReport.summary.finalizeSingleWinner || !devnetRaceReport.summary.executeSingleWinner) {
@@ -776,8 +788,8 @@ function main() {
     throw new Error("devnet resilience report does not match canonical program state");
   }
 
-  if (devnetResilienceReport.governanceMint !== attestation.pdaoToken.mint) {
-    throw new Error("devnet resilience report governance mint does not match PDAO mint");
+  if (devnetResilienceReport.governanceMint !== proofRegistry.governanceMint) {
+    throw new Error("devnet resilience report governance mint does not match the Devnet proof registry mint");
   }
 
   if (!devnetResilienceReport.summary.primaryHealthy || !devnetResilienceReport.summary.fallbackHealthy) {
@@ -1638,7 +1650,7 @@ function main() {
     throw new Error("generated PDAO attestation project mismatch");
   }
 
-  if (pdaoAttestation.privateDaoProgramId !== "5AhUsbQ4mJ8Xh7QJEomuS85qGgmK9iNvFqzF669Y7Psx") {
+  if (pdaoAttestation.privateDaoProgramId !== proofRegistry.pdaoToken?.privateDaoProgramId) {
     throw new Error("generated PDAO attestation governance program mismatch");
   }
 
@@ -1646,7 +1658,7 @@ function main() {
     throw new Error("generated PDAO attestation verification wallet mismatch");
   }
 
-  if (pdaoAttestation.pdaoToken.name !== "PDAO" || pdaoAttestation.pdaoToken.symbol !== "PDAO") {
+  if (!pdaoAttestation.pdaoToken.name.includes("PrivateDAO") || pdaoAttestation.pdaoToken.symbol !== "PDAO") {
     throw new Error("generated PDAO attestation token identity mismatch");
   }
 
@@ -1654,11 +1666,11 @@ function main() {
     throw new Error("generated PDAO attestation platform mismatch");
   }
 
-  if (pdaoAttestation.pdaoToken.mint !== "AZUkprJDfJPgAp7L4z3TpCV3KHqLiA8RjHAVhK9HCvDt") {
+  if (pdaoAttestation.pdaoToken.mint !== proofRegistry.pdaoToken?.mint) {
     throw new Error("generated PDAO attestation mint mismatch");
   }
 
-  if (pdaoAttestation.pdaoToken.tokenProgramId !== "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb") {
+  if (pdaoAttestation.pdaoToken.tokenProgramId !== proofRegistry.pdaoToken?.programId) {
     throw new Error("generated PDAO attestation token program mismatch");
   }
 

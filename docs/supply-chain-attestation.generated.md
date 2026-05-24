@@ -2,33 +2,33 @@
 
 ## Overview
 
-- Generated at: `2026-05-20T19:31:40+03:00`
+- Generated at: `2026-05-24T16:42:10+03:00`
 - Hash algorithm: `sha256`
 - Package manager surface: `npm+yarn`
-- Aggregate sha256: `f7bcfc429df8016ff0a6fd817110f89399ba68db0e9779bbbe7b3f554c09b8da`
+- Aggregate sha256: `59fd113a5d97a2fdc2e875a894297b555ebf0273eabc6b9bdad072ed271bb397`
 
 ## Top-Level Package Surface
 
 - Package name: `private-dao`
 - Package version: `0.3.0`
 - Dependencies: `6`
-- Dev dependencies: `14`
-- Scripts: `290`
+- Dev dependencies: `15`
+- Scripts: `304`
 
 ## Lockfile Coverage
 
-- Cargo lock: `Cargo.lock` with `217` packages
-- npm lock: `package-lock.json` with lockfile version `3` and `373` packages
-- Yarn lock: `yarn.lock` with `340` entries
+- Cargo lock: `Cargo.lock` with `218` packages
+- npm lock: `package-lock.json` with lockfile version `3` and `419` packages
+- Yarn lock: `yarn.lock` with `386` entries
 
 ## Tracked Integrity Files
 
-- `Cargo.toml` | sha256 `6183b506b7f0e0e9ba1a97b2597f218a96ec1c9924bcc3dc78f94f08601ff1b2` | bytes `331`
-- `Cargo.lock` | sha256 `7531013dda172fc3faf015a98acf0cef1b8fa7f393024cbf23b6f998371315f1` | bytes `57835`
-- `Anchor.toml` | sha256 `bf5a0ec9663df3f2c7c655c697495a7a77dac6a03361cb8ff7950752cf1ddab3` | bytes `552`
-- `package.json` | sha256 `6d0c3769ab9b5e7fd1ac3dc55cf4ce70e8795aa1bf2d2a3abe30013483fea3ca` | bytes `27864`
-- `yarn.lock` | sha256 `c709a6983ae046cdb10f6eec1406435aa51f2f0dd3da7319b3ed8aaaa0fc64d2` | bytes `101287`
-- `package-lock.json` | sha256 `d7c820b55e67e9383d179814c797f7c64fc6325b9319fef439335d561d36a9aa` | bytes `180225`
+- `Cargo.toml` | sha256 `556ebaa0c9c63f5fe0380a3f3316fde593fe6215baeb3cb120ee220060fa9a3a` | bytes `367`
+- `Cargo.lock` | sha256 `48991a08bd9de2e9346195e7caf6576bf879c1a8e32044e252fb781099c83785` | bytes `57962`
+- `Anchor.toml` | sha256 `82978c4d84145c0c6ba7e344453bab78d77c870f58b8dbf91857739052bb6389` | bytes `759`
+- `package.json` | sha256 `cc9001df8a41bf50747b665b583ba2186d1c58983e37f4fdfd038ccf4d262078` | bytes `29278`
+- `yarn.lock` | sha256 `28eddaa9f97d7006610ba3b26e36bc11adac0ecebc0b4e1fc5d0b230ce031b7d` | bytes `115949`
+- `package-lock.json` | sha256 `0a1daf1d4d18b1286896d83319376ee87906d3714c32d2bfdbad7e5a48728dc0` | bytes `203069`
 
 ## Review Commands
 

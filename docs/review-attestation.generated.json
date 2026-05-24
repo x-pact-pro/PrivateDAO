@@ -10,17 +10,17 @@
     "proposal": "AegjmwkX1FknBJMDyH5yM6BMhyHsiUreNtz3d8iz3QrP"
   },
   "pdaoToken": {
-    "mint": "AZUkprJDfJPgAp7L4z3TpCV3KHqLiA8RjHAVhK9HCvDt",
+    "mint": "DFYvBdivHCe4bSErgCiKm2RhwGEcZYbBPFQzLNr37Bie",
     "programId": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb",
-    "tokenAccount": "F4q77ZMJdC7eoEUw3CCR7DbKGTggyExjuMGKBEiM2ct4",
+    "tokenAccount": "CeXqKvdjrVYsPZEX2ysBNs6jubofEXEk4emE2qdS4pVg",
     "metadataUri": "https://privatedao.org/assets/pdao-token.json",
     "metadataAssetPath": "docs/assets/pdao-token.json",
     "decimals": 9,
     "supplyUi": "1000000",
     "transactionLabels": [
       "create-token",
-      "create-account",
       "initialize-metadata",
+      "create-account",
       "mint-initial-supply",
       "disable-mint-authority"
     ]
@@ -75,7 +75,7 @@
   "cryptographicIntegrity": {
     "algorithm": "sha256",
     "entryCount": 143,
-    "aggregateSha256": "158b98d102687a10f816512cfc011c8be015f29d825c7e339774de7d11e33068"
+    "aggregateSha256": "b8086b54619fa22544c6f0f996d067c54787d24633facd14b1caf52beafb3f4a"
   },
   "runtimeDocs": [
     "docs/governance-hardening-v3.md",

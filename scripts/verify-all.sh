@@ -89,6 +89,9 @@ echo "[verify-all] rebuilding reviewer artifacts"
 if [[ "${CI:-}" == "true" ]]; then
   echo "[verify-all] CI detected; using committed reviewer artifacts to avoid public RPC rate limits"
   npm run build:cryptographic-manifest >/dev/null
+  npm run build:deployment-attestation >/dev/null
+  npm run build:runtime-attestation >/dev/null
+  npm run build:go-live-attestation >/dev/null
   npm run build:review-attestation >/dev/null
 else
   run_with_retry 3 npm run build:devnet:review-artifacts >/dev/null

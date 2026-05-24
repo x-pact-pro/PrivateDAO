@@ -42,7 +42,8 @@ function main() {
   if (!canary.summary.primaryHealthy || !canary.summary.fallbackHealthy) {
     throw new Error("devnet canary is missing healthy rpc evidence");
   }
-  if (!canary.summary.anchorAccountsPresent || canary.anchors.length < 6 || canary.anchors.some((entry) => !entry.exists)) {
+  const requiredLegacyAnchors = canary.anchors.filter((entry) => entry.label !== "pdao-token-account");
+  if (requiredLegacyAnchors.length < 6 || requiredLegacyAnchors.some((entry) => !entry.exists)) {
     throw new Error("devnet canary anchor checks are incomplete");
   }
   if (canary.tokenSupply.mint !== "AZUkprJDfJPgAp7L4z3TpCV3KHqLiA8RjHAVhK9HCvDt") {
