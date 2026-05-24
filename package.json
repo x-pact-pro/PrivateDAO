@@ -309,7 +309,8 @@
     "anchor:version": "PATH=\"$HOME/.avm/bin:$PATH\" anchor --version",
     "deploy:devnet": "PATH=\"$HOME/.avm/bin:$PATH\" anchor deploy --provider.cluster devnet",
     "deploy:testnet": "PATH=\"$HOME/.avm/bin:$PATH\" anchor deploy --provider.cluster testnet",
-    "setup:testnet": "bash scripts/setup-testnet.sh"
+    "setup:testnet": "bash scripts/setup-testnet.sh",
+    "verify:quicknode-stream-intake": "ts-node scripts/verify-quicknode-stream-intake.ts"
   },
   "dependencies": {
     "@coral-xyz/anchor": "^0.32.1",

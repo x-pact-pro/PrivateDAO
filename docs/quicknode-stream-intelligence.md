@@ -92,6 +92,7 @@ Run:
 ```bash
 npm run typecheck
 npm run web:lint
+npm run verify:quicknode-stream-intake
 npm run verify:frontend-surface
 npm run web:build
 ```
