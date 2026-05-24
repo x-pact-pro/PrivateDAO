@@ -4,9 +4,9 @@ import { Connection, Keypair, PublicKey } from "@solana/web3.js";
 import * as multisig from "@sqds/multisig";
 
 const RPC_URL = process.env.SOLANA_RPC_URL ?? "https://api.testnet.solana.com";
-const MULTISIG = new PublicKey("thHmF7VYNtxE1MaDzYXbfPCiq13RF6JwuWnjvDZuSmF");
+const MULTISIG = new PublicKey(process.env.MULTISIG ?? "thHmF7VYNtxE1MaDzYXbfPCiq13RF6JwuWnjvDZuSmF");
 const PROGRAM_ID = new PublicKey("EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva");
-const TRANSACTION_INDEX = BigInt(1);
+const TRANSACTION_INDEX = BigInt(process.env.PROPOSAL_INDEX ?? "1");
 
 async function main() {
   const keypairPath = process.env.SQUADS_EXECUTOR_KEYPAIR ?? `${process.env.HOME}/.config/solana/id.json`;

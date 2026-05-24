@@ -18,7 +18,7 @@ if [[ "${EXECUTE_TIMELOCK}" != "1" ]]; then
   echo "Proposal index: ${PROPOSAL_INDEX}"
   echo "DAO PDA: ${DAO_PDA:-set DAO_PDA before DAO authority handoff}"
   echo "Planned commands:"
-  echo "squads-cli vault-transaction execute --multisig ${MULTISIG} --vault ${VAULT} --transaction-index ${PROPOSAL_INDEX} --cluster testnet"
+  echo "npm run execute:squads-upgrade"
   echo "npm run initialize:treasury-operator-authority -- --dao <DAO_PDA>"
   echo "npm run transfer:treasury-operator-authority -- --dao <DAO_PDA> --new-authority ${VAULT}"
   echo "npm run transfer:dao-authority -- --dao <DAO_PDA> --new-authority ${VAULT}"
@@ -41,7 +41,7 @@ if (( NOW < RELEASE )); then
 fi
 
 solana config set --url "${CLUSTER}"
-squads-cli vault-transaction execute --multisig "${MULTISIG}" --vault "${VAULT}" --transaction-index "${PROPOSAL_INDEX}" --cluster testnet
+npm run execute:squads-upgrade
 npm run initialize:treasury-operator-authority -- --dao "${DAO_PDA}"
 npm run transfer:treasury-operator-authority -- --dao "${DAO_PDA}" --new-authority "${VAULT}"
 npm run transfer:dao-authority -- --dao "${DAO_PDA}" --new-authority "${VAULT}"
