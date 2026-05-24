@@ -64,8 +64,8 @@ function main() {
     throw new Error("read-node markdown snapshot missing REFHE coverage");
   }
 
-  if (!markdown.includes("Devnet Load Profiles")) {
-    throw new Error("read-node markdown snapshot missing devnet load profile section");
+  if (!markdown.includes("Testnet Load Profiles")) {
+    throw new Error("read-node markdown snapshot missing Testnet load profile section");
   }
 
   if (!markdown.includes("Featured Proposal Contexts")) {

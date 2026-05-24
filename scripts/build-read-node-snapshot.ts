@@ -101,6 +101,13 @@ const ROOT = path.resolve(__dirname, "..");
 const JSON_PATH = path.join(ROOT, "docs/read-node/snapshot.generated.json");
 const MD_PATH = path.join(ROOT, "docs/read-node/snapshot.generated.md");
 const FRONTEND_TS_PATH = path.join(ROOT, "apps/web/src/lib/read-node-proposal-context.generated.ts");
+const NETWORK_LABEL_REPLACEMENTS: Array<[RegExp, string]> = [
+  [/\bExecuted on devnet\b/g, "Executed on Testnet"],
+  [/\bFinalized on devnet\b/g, "Finalized on Testnet"],
+  [/\balready executed on devnet\b/g, "already executed on Testnet"],
+  [/\bLive Devnet proof\b/g, "Live Testnet proof"],
+  [/## Devnet Load Profiles/g, "## Testnet Load Profiles"],
+];
 
 const FEATURED_PROPOSAL_KEYS = {
   payroll: "52UpWHJodPWQzpR8u2qqpgwo3jRB7mvjgwCnf8oSJuXX",
@@ -113,8 +120,34 @@ function resolveActiveCluster() {
   return raw === "devnet" ? "devnet" : "testnet";
 }
 
+function clusterLabel(cluster = resolveActiveCluster()) {
+  return cluster === "devnet" ? "Devnet" : "Testnet";
+}
+
 function readJson<T>(filePath: string): T {
   return JSON.parse(fs.readFileSync(path.join(ROOT, filePath), "utf8")) as T;
+}
+
+function isRecoverableRpcFailure(error: unknown) {
+  const message = String((error as Error)?.message || error || "").toLowerCase();
+  return (
+    message.includes("429") ||
+    message.includes("too many requests") ||
+    message.includes("rpc request timed out") ||
+    message.includes("fetch failed") ||
+    message.includes("network")
+  );
+}
+
+function rewriteExistingSnapshotNetworkLabels() {
+  for (const filePath of [JSON_PATH, MD_PATH, FRONTEND_TS_PATH]) {
+    if (!fs.existsSync(filePath)) continue;
+    let text = fs.readFileSync(filePath, "utf8");
+    for (const [pattern, replacement] of NETWORK_LABEL_REPLACEMENTS) {
+      text = text.replace(pattern, replacement);
+    }
+    fs.writeFileSync(filePath, text);
+  }
 }
 
 function formatLamportsToSol(lamports: number) {
@@ -202,9 +235,10 @@ function mapIndexedPhaseToPresentationStatus(
   return "Evidence gated";
 }
 
-function buildWindowSummary(phase: string, status: PresentationStatus) {
+function buildWindowSummary(phase: string, status: PresentationStatus, cluster = resolveActiveCluster()) {
+  const label = clusterLabel(cluster);
   if (status === "Executed") {
-    return "Commit closed · Reveal complete · Executed on devnet";
+    return `Commit closed · Reveal complete · Executed on ${label}`;
   }
 
   if (status === "Execution ready") {
@@ -212,7 +246,7 @@ function buildWindowSummary(phase: string, status: PresentationStatus) {
   }
 
   if (status === "Timelocked") {
-    return "Voting closed · Finalized on devnet · Timelock still active";
+    return `Voting closed · Finalized on ${label} · Timelock still active`;
   }
 
   if (status === "Ready to reveal") {
@@ -224,7 +258,7 @@ function buildWindowSummary(phase: string, status: PresentationStatus) {
   }
 
   if (phase === "Finalized") {
-    return "Voting closed · Finalized on devnet · Settlement evidence still incomplete";
+    return `Voting closed · Finalized on ${label} · Settlement evidence still incomplete`;
   }
 
   return "Execution boundary still depends on explicit evidence completion";
@@ -307,10 +341,11 @@ function buildTechSummary(
 function buildRegistrySummary(
   proposal: Awaited<ReturnType<PrivateDaoReadNode["fetchProposals"]>>[number],
   status: PresentationStatus,
+  cluster = resolveActiveCluster(),
 ) {
   const base = proposal.description.trim() || proposal.title;
   if (status === "Executed") {
-    return `${base} This indexed proposal already executed on devnet and should be reviewed as proof, not as a pending signature flow.`;
+    return `${base} This indexed proposal already executed on ${clusterLabel(cluster)} and should be reviewed as proof, not as a pending signature flow.`;
   }
   if (status === "Evidence gated") {
     return `${base} The governance phase is complete, but settlement evidence still gates the commercial trust surface.`;
@@ -448,7 +483,7 @@ function buildProposalContext(
     ),
     baselineAmount: amount,
     presentationStatus: status,
-    presentationWindow: buildWindowSummary(proposal.phase, status),
+    presentationWindow: buildWindowSummary(proposal.phase, status, activeCluster),
     presentationTreasury: buildTreasurySummary(proposal, status),
     phaseMappingLabel: `${proposal.phase} indexed phase maps to ${status} in the product surface`,
     txContext: {
@@ -525,11 +560,11 @@ function buildProposalRegistry(
       type: inferProposalType(proposal),
       status,
       quorum: buildQuorumSummary(proposal),
-      window: execution.presentationWindow ?? buildWindowSummary(proposal.phase, status),
+      window: execution.presentationWindow ?? buildWindowSummary(proposal.phase, status, resolveActiveCluster()),
       treasury: execution.presentationTreasury ?? buildTreasurySummary(proposal, status),
       privacy: buildPrivacySummary(proposal),
       tech: buildTechSummary(proposal),
-      summary: buildRegistrySummary(proposal, status),
+      summary: buildRegistrySummary(proposal, status, resolveActiveCluster()),
       execution,
     };
   });
@@ -651,7 +686,7 @@ async function main() {
 - REFHE proposals with verifier binding: \`${overview.refheWithVerifier}\`
 - Executable confidential proposals: \`${overview.executableConfidential}\`
 
-## Devnet Load Profiles
+## Testnet Load Profiles
 
 ${profiles.map((profile) => `- \`${profile.name}\` | wallets=\`${profile.walletCount}\` | waves=\`${profile.waveCount}\` | wave-size=\`${profile.waveSize}\` | funding-wave=\`${profile.fundingWaveSize}\` | target-pdao-ui=\`${profile.targetPdaoUi}\` | negative=\`${profile.negativeScenarios.join(", ")}\``).join("\n")}
 
@@ -695,6 +730,18 @@ export type ReadNodeFeaturedProposalContextKey = keyof typeof READ_NODE_FEATURED
 }
 
 main().catch((error) => {
+  if (
+    isRecoverableRpcFailure(error) &&
+    fs.existsSync(JSON_PATH) &&
+    fs.existsSync(MD_PATH) &&
+    fs.existsSync(FRONTEND_TS_PATH)
+  ) {
+    rewriteExistingSnapshotNetworkLabels();
+    console.warn(
+      "Read-node RPC unavailable; preserved committed snapshot data and refreshed Testnet presentation labels.",
+    );
+    return;
+  }
   console.error(error instanceof Error ? error.message : error);
   process.exit(1);
 });

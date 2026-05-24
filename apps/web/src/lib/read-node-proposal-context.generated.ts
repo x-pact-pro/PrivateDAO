@@ -23,7 +23,7 @@ export const READ_NODE_FEATURED_PROPOSAL_CONTEXTS = {
     "repeatedAttempts": 0,
     "baselineAmount": 1000000,
     "presentationStatus": "Evidence gated",
-    "presentationWindow": "Voting closed · Finalized on devnet · Settlement evidence still incomplete",
+    "presentationWindow": "Voting closed · Finalized on Testnet · Settlement evidence still incomplete",
     "presentationTreasury": "Confidential payout still gated for 1,000,000 units to 4Mm5…hsMD via mint native asset",
     "phaseMappingLabel": "Finalized indexed phase maps to Evidence gated in the product surface",
     "txContext": {
@@ -51,7 +51,7 @@ export const READ_NODE_FEATURED_PROPOSAL_CONTEXTS = {
     "repeatedAttempts": 0,
     "baselineAmount": 50000000,
     "presentationStatus": "Executed",
-    "presentationWindow": "Commit closed · Reveal complete · Executed on devnet",
+    "presentationWindow": "Commit closed · Reveal complete · Executed on Testnet",
     "presentationTreasury": "Confidential payout executed for 50,000,000 units to 5vQi…2FVj via mint 7Voo…Uudg",
     "phaseMappingLabel": "Executed indexed phase maps to Executed in the product surface",
     "txContext": {
@@ -79,7 +79,7 @@ export const READ_NODE_FEATURED_PROPOSAL_CONTEXTS = {
     "repeatedAttempts": 0,
     "baselineAmount": 0.05,
     "presentationStatus": "Executed",
-    "presentationWindow": "Commit closed · Reveal complete · Executed on devnet",
+    "presentationWindow": "Commit closed · Reveal complete · Executed on Testnet",
     "presentationTreasury": "0.05 SOL sent to Dxk6…wNZV",
     "phaseMappingLabel": "Executed indexed phase maps to Executed in the product surface",
     "txContext": {
@@ -95,7 +95,7 @@ export const READ_NODE_PROPOSAL_REGISTRY = [
     "type": "Enterprise DAO",
     "status": "Evidence gated",
     "quorum": "51% quorum · governance token requirement 0",
-    "window": "Voting closed · Finalized on devnet · Settlement evidence still incomplete",
+    "window": "Voting closed · Finalized on Testnet · Settlement evidence still incomplete",
     "treasury": "Confidential payout still gated for 1,000,000 units to 4Mm5…hsMD via mint native asset",
     "privacy": "Commit-reveal + REFHE envelope",
     "tech": [
@@ -124,7 +124,7 @@ export const READ_NODE_PROPOSAL_REGISTRY = [
       "repeatedAttempts": 0,
       "baselineAmount": 1000000,
       "presentationStatus": "Evidence gated",
-      "presentationWindow": "Voting closed · Finalized on devnet · Settlement evidence still incomplete",
+      "presentationWindow": "Voting closed · Finalized on Testnet · Settlement evidence still incomplete",
       "presentationTreasury": "Confidential payout still gated for 1,000,000 units to 4Mm5…hsMD via mint native asset",
       "phaseMappingLabel": "Finalized indexed phase maps to Evidence gated in the product surface",
       "txContext": {
@@ -182,14 +182,14 @@ export const READ_NODE_PROPOSAL_REGISTRY = [
     "type": "Treasury Committee",
     "status": "Executed",
     "quorum": "51% quorum · governance token requirement 0",
-    "window": "Commit closed · Reveal complete · Executed on devnet",
+    "window": "Commit closed · Reveal complete · Executed on Testnet",
     "treasury": "0.05 SOL sent to Dxk6…wNZV",
     "privacy": "Commit-reveal + indexed treasury action",
     "tech": [
       "ZK",
       "Fast RPC"
     ],
-    "summary": "Live Devnet proof for token-supply quorum, dedicated reveal rebate vault, and V3 finalize path. This indexed proposal already executed on devnet and should be reviewed as proof, not as a pending signature flow.",
+    "summary": "Live Testnet proof for token-supply quorum, dedicated reveal rebate vault, and V3 finalize path. This indexed proposal already executed on Testnet and should be reviewed as proof, not as a pending signature flow.",
     "execution": {
       "sourceType": "runtime-indexed",
       "sourceLabel": "Backend-indexed proposal record: Governance Hardening V3 live proof (Executed)",
@@ -210,7 +210,7 @@ export const READ_NODE_PROPOSAL_REGISTRY = [
       "repeatedAttempts": 0,
       "baselineAmount": 0.05,
       "presentationStatus": "Executed",
-      "presentationWindow": "Commit closed · Reveal complete · Executed on devnet",
+      "presentationWindow": "Commit closed · Reveal complete · Executed on Testnet",
       "presentationTreasury": "0.05 SOL sent to Dxk6…wNZV",
       "phaseMappingLabel": "Executed indexed phase maps to Executed in the product surface",
       "txContext": {
@@ -268,14 +268,14 @@ export const READ_NODE_PROPOSAL_REGISTRY = [
     "type": "Treasury Committee",
     "status": "Executed",
     "quorum": "51% quorum · governance token requirement 0",
-    "window": "Commit closed · Reveal complete · Executed on devnet",
+    "window": "Commit closed · Reveal complete · Executed on Testnet",
     "treasury": "0.05 SOL sent to 3tY6…SA1z",
     "privacy": "Commit-reveal + indexed treasury action",
     "tech": [
       "ZK",
       "Fast RPC"
     ],
-    "summary": "Live Devnet proof for token-supply quorum, dedicated reveal rebate vault, and V3 finalize path. This indexed proposal already executed on devnet and should be reviewed as proof, not as a pending signature flow.",
+    "summary": "Live Testnet proof for token-supply quorum, dedicated reveal rebate vault, and V3 finalize path. This indexed proposal already executed on Testnet and should be reviewed as proof, not as a pending signature flow.",
     "execution": {
       "sourceType": "runtime-indexed",
       "sourceLabel": "Backend-indexed proposal record: Governance Hardening V3 live proof (Executed)",
@@ -296,7 +296,7 @@ export const READ_NODE_PROPOSAL_REGISTRY = [
       "repeatedAttempts": 0,
       "baselineAmount": 0.05,
       "presentationStatus": "Executed",
-      "presentationWindow": "Commit closed · Reveal complete · Executed on devnet",
+      "presentationWindow": "Commit closed · Reveal complete · Executed on Testnet",
       "presentationTreasury": "0.05 SOL sent to 3tY6…SA1z",
       "phaseMappingLabel": "Executed indexed phase maps to Executed in the product surface",
       "txContext": {
@@ -311,14 +311,14 @@ export const READ_NODE_PROPOSAL_REGISTRY = [
     "type": "Enterprise DAO",
     "status": "Executed",
     "quorum": "51% quorum · governance token requirement 0",
-    "window": "Commit closed · Reveal complete · Executed on devnet",
+    "window": "Commit closed · Reveal complete · Executed on Testnet",
     "treasury": "Treasury action is still pending explicit indexing in the current proposal record",
     "privacy": "Commit-reveal governance path",
     "tech": [
       "ZK",
       "Fast RPC"
     ],
-    "summary": "Confidential payroll batch / April submitted from the live web governance surface. This indexed proposal already executed on devnet and should be reviewed as proof, not as a pending signature flow.",
+    "summary": "Confidential payroll batch / April submitted from the live web governance surface. This indexed proposal already executed on Testnet and should be reviewed as proof, not as a pending signature flow.",
     "execution": {
       "sourceType": "runtime-indexed",
       "sourceLabel": "Backend-indexed proposal record: Confidential payroll batch / April (Executed)",
@@ -339,7 +339,7 @@ export const READ_NODE_PROPOSAL_REGISTRY = [
       "repeatedAttempts": 0,
       "baselineAmount": null,
       "presentationStatus": "Executed",
-      "presentationWindow": "Commit closed · Reveal complete · Executed on devnet",
+      "presentationWindow": "Commit closed · Reveal complete · Executed on Testnet",
       "presentationTreasury": "Treasury action is still pending explicit indexing in the current proposal record",
       "phaseMappingLabel": "Executed indexed phase maps to Executed in the product surface",
       "txContext": {
@@ -397,7 +397,7 @@ export const READ_NODE_PROPOSAL_REGISTRY = [
     "type": "Gaming DAO",
     "status": "Evidence gated",
     "quorum": "51% quorum · governance token requirement 0",
-    "window": "Voting closed · Finalized on devnet · Settlement evidence still incomplete",
+    "window": "Voting closed · Finalized on Testnet · Settlement evidence still incomplete",
     "treasury": "Confidential payout still gated for 50,000,000 units to 7snW…5R7u via mint A3rV…2rPu",
     "privacy": "Commit-reveal + REFHE envelope",
     "tech": [
@@ -427,7 +427,7 @@ export const READ_NODE_PROPOSAL_REGISTRY = [
       "repeatedAttempts": 0,
       "baselineAmount": 50000000,
       "presentationStatus": "Evidence gated",
-      "presentationWindow": "Voting closed · Finalized on devnet · Settlement evidence still incomplete",
+      "presentationWindow": "Voting closed · Finalized on Testnet · Settlement evidence still incomplete",
       "presentationTreasury": "Confidential payout still gated for 50,000,000 units to 7snW…5R7u via mint A3rV…2rPu",
       "phaseMappingLabel": "Finalized indexed phase maps to Evidence gated in the product surface",
       "txContext": {
@@ -442,7 +442,7 @@ export const READ_NODE_PROPOSAL_REGISTRY = [
     "type": "Enterprise DAO",
     "status": "Timelocked",
     "quorum": "51% quorum · governance token requirement 0",
-    "window": "Voting closed · Finalized on devnet · Timelock still active",
+    "window": "Voting closed · Finalized on Testnet · Timelock still active",
     "treasury": "Treasury action is still pending explicit indexing in the current proposal record",
     "privacy": "Commit-reveal governance path",
     "tech": [
@@ -470,7 +470,7 @@ export const READ_NODE_PROPOSAL_REGISTRY = [
       "repeatedAttempts": 0,
       "baselineAmount": null,
       "presentationStatus": "Timelocked",
-      "presentationWindow": "Voting closed · Finalized on devnet · Timelock still active",
+      "presentationWindow": "Voting closed · Finalized on Testnet · Timelock still active",
       "presentationTreasury": "Treasury action is still pending explicit indexing in the current proposal record",
       "phaseMappingLabel": "Finalized indexed phase maps to Timelocked in the product surface",
       "txContext": {
@@ -485,7 +485,7 @@ export const READ_NODE_PROPOSAL_REGISTRY = [
     "type": "Treasury Committee",
     "status": "Timelocked",
     "quorum": "51% quorum · governance token requirement 0",
-    "window": "Voting closed · Finalized on devnet · Timelock still active",
+    "window": "Voting closed · Finalized on Testnet · Timelock still active",
     "treasury": "3 SOL queued to send to 73Ez…sdq9",
     "privacy": "Commit-reveal + indexed treasury action",
     "tech": [
@@ -513,7 +513,7 @@ export const READ_NODE_PROPOSAL_REGISTRY = [
       "repeatedAttempts": 0,
       "baselineAmount": 3,
       "presentationStatus": "Timelocked",
-      "presentationWindow": "Voting closed · Finalized on devnet · Timelock still active",
+      "presentationWindow": "Voting closed · Finalized on Testnet · Timelock still active",
       "presentationTreasury": "3 SOL queued to send to 73Ez…sdq9",
       "phaseMappingLabel": "Finalized indexed phase maps to Timelocked in the product surface",
       "txContext": {
@@ -528,14 +528,14 @@ export const READ_NODE_PROPOSAL_REGISTRY = [
     "type": "Treasury Committee",
     "status": "Executed",
     "quorum": "51% quorum · governance token requirement 0",
-    "window": "Commit closed · Reveal complete · Executed on devnet",
+    "window": "Commit closed · Reveal complete · Executed on Testnet",
     "treasury": "0.005 SOL sent to 6yPm…PaiM",
     "privacy": "Commit-reveal + indexed treasury action",
     "tech": [
       "ZK",
       "Fast RPC"
     ],
-    "summary": "Full Testnet rehearsal for create, commit, reveal, finalize, execute, and treasury verification. This indexed proposal already executed on devnet and should be reviewed as proof, not as a pending signature flow.",
+    "summary": "Full Testnet rehearsal for create, commit, reveal, finalize, execute, and treasury verification. This indexed proposal already executed on Testnet and should be reviewed as proof, not as a pending signature flow.",
     "execution": {
       "sourceType": "runtime-indexed",
       "sourceLabel": "Backend-indexed proposal record: Testnet treasury execution rehearsal (Executed)",
@@ -556,7 +556,7 @@ export const READ_NODE_PROPOSAL_REGISTRY = [
       "repeatedAttempts": 0,
       "baselineAmount": 0.005,
       "presentationStatus": "Executed",
-      "presentationWindow": "Commit closed · Reveal complete · Executed on devnet",
+      "presentationWindow": "Commit closed · Reveal complete · Executed on Testnet",
       "presentationTreasury": "0.005 SOL sent to 6yPm…PaiM",
       "phaseMappingLabel": "Executed indexed phase maps to Executed in the product surface",
       "txContext": {
@@ -571,7 +571,7 @@ export const READ_NODE_PROPOSAL_REGISTRY = [
     "type": "Gaming DAO",
     "status": "Executed",
     "quorum": "51% quorum · governance token requirement 0",
-    "window": "Commit closed · Reveal complete · Executed on devnet",
+    "window": "Commit closed · Reveal complete · Executed on Testnet",
     "treasury": "Confidential payout executed for 50,000,000 units to 5vQi…2FVj via mint 7Voo…Uudg",
     "privacy": "Commit-reveal + REFHE envelope",
     "tech": [
@@ -580,7 +580,7 @@ export const READ_NODE_PROPOSAL_REGISTRY = [
       "MagicBlock",
       "Fast RPC"
     ],
-    "summary": "Execute a token confidential payout only after REFHE settlement, MagicBlock corridor settlement, and strict settlement evidence. This indexed proposal already executed on devnet and should be reviewed as proof, not as a pending signature flow.",
+    "summary": "Execute a token confidential payout only after REFHE settlement, MagicBlock corridor settlement, and strict settlement evidence. This indexed proposal already executed on Testnet and should be reviewed as proof, not as a pending signature flow.",
     "execution": {
       "sourceType": "runtime-indexed",
       "sourceLabel": "Backend-indexed proposal record: Settlement Hardening V3 + REFHE + MagicBlock live proof (Executed)",
@@ -601,7 +601,7 @@ export const READ_NODE_PROPOSAL_REGISTRY = [
       "repeatedAttempts": 0,
       "baselineAmount": 50000000,
       "presentationStatus": "Executed",
-      "presentationWindow": "Commit closed · Reveal complete · Executed on devnet",
+      "presentationWindow": "Commit closed · Reveal complete · Executed on Testnet",
       "presentationTreasury": "Confidential payout executed for 50,000,000 units to 5vQi…2FVj via mint 7Voo…Uudg",
       "phaseMappingLabel": "Executed indexed phase maps to Executed in the product surface",
       "txContext": {
@@ -616,14 +616,14 @@ export const READ_NODE_PROPOSAL_REGISTRY = [
     "type": "Enterprise DAO",
     "status": "Executed",
     "quorum": "51% quorum · governance token requirement 0",
-    "window": "Commit closed · Reveal complete · Executed on devnet",
+    "window": "Commit closed · Reveal complete · Executed on Testnet",
     "treasury": "Treasury action is still pending explicit indexing in the current proposal record",
     "privacy": "Commit-reveal governance path",
     "tech": [
       "ZK",
       "Fast RPC"
     ],
-    "summary": "Confidential payroll batch / April2026 submitted from the live web governance surface. This indexed proposal already executed on devnet and should be reviewed as proof, not as a pending signature flow.",
+    "summary": "Confidential payroll batch / April2026 submitted from the live web governance surface. This indexed proposal already executed on Testnet and should be reviewed as proof, not as a pending signature flow.",
     "execution": {
       "sourceType": "runtime-indexed",
       "sourceLabel": "Backend-indexed proposal record: Confidential payroll batch / April2026 (Executed)",
@@ -644,7 +644,7 @@ export const READ_NODE_PROPOSAL_REGISTRY = [
       "repeatedAttempts": 0,
       "baselineAmount": null,
       "presentationStatus": "Executed",
-      "presentationWindow": "Commit closed · Reveal complete · Executed on devnet",
+      "presentationWindow": "Commit closed · Reveal complete · Executed on Testnet",
       "presentationTreasury": "Treasury action is still pending explicit indexing in the current proposal record",
       "phaseMappingLabel": "Executed indexed phase maps to Executed in the product surface",
       "txContext": {
@@ -659,14 +659,14 @@ export const READ_NODE_PROPOSAL_REGISTRY = [
     "type": "Enterprise DAO",
     "status": "Executed",
     "quorum": "51% quorum · governance token requirement 0",
-    "window": "Commit closed · Reveal complete · Executed on devnet",
+    "window": "Commit closed · Reveal complete · Executed on Testnet",
     "treasury": "Treasury action is still pending explicit indexing in the current proposal record",
     "privacy": "Commit-reveal governance path",
     "tech": [
       "ZK",
       "Fast RPC"
     ],
-    "summary": "Confidential payroll batch / April444 submitted from the live web governance surface. This indexed proposal already executed on devnet and should be reviewed as proof, not as a pending signature flow.",
+    "summary": "Confidential payroll batch / April444 submitted from the live web governance surface. This indexed proposal already executed on Testnet and should be reviewed as proof, not as a pending signature flow.",
     "execution": {
       "sourceType": "runtime-indexed",
       "sourceLabel": "Backend-indexed proposal record: Confidential payroll batch / April444 (Executed)",
@@ -687,7 +687,7 @@ export const READ_NODE_PROPOSAL_REGISTRY = [
       "repeatedAttempts": 0,
       "baselineAmount": null,
       "presentationStatus": "Executed",
-      "presentationWindow": "Commit closed · Reveal complete · Executed on devnet",
+      "presentationWindow": "Commit closed · Reveal complete · Executed on Testnet",
       "presentationTreasury": "Treasury action is still pending explicit indexing in the current proposal record",
       "phaseMappingLabel": "Executed indexed phase maps to Executed in the product surface",
       "txContext": {
@@ -702,14 +702,14 @@ export const READ_NODE_PROPOSAL_REGISTRY = [
     "type": "Treasury Committee",
     "status": "Executed",
     "quorum": "51% quorum · governance token requirement 0",
-    "window": "Commit closed · Reveal complete · Executed on devnet",
+    "window": "Commit closed · Reveal complete · Executed on Testnet",
     "treasury": "0.005 SOL sent to 6EaY…6zPQ",
     "privacy": "Commit-reveal + indexed treasury action",
     "tech": [
       "ZK",
       "Fast RPC"
     ],
-    "summary": "Full Testnet rehearsal for create, commit, reveal, finalize, execute, and treasury verification. This indexed proposal already executed on devnet and should be reviewed as proof, not as a pending signature flow.",
+    "summary": "Full Testnet rehearsal for create, commit, reveal, finalize, execute, and treasury verification. This indexed proposal already executed on Testnet and should be reviewed as proof, not as a pending signature flow.",
     "execution": {
       "sourceType": "runtime-indexed",
       "sourceLabel": "Backend-indexed proposal record: Testnet treasury execution rehearsal (Executed)",
@@ -730,7 +730,7 @@ export const READ_NODE_PROPOSAL_REGISTRY = [
       "repeatedAttempts": 0,
       "baselineAmount": 0.005,
       "presentationStatus": "Executed",
-      "presentationWindow": "Commit closed · Reveal complete · Executed on devnet",
+      "presentationWindow": "Commit closed · Reveal complete · Executed on Testnet",
       "presentationTreasury": "0.005 SOL sent to 6EaY…6zPQ",
       "phaseMappingLabel": "Executed indexed phase maps to Executed in the product surface",
       "txContext": {
@@ -745,7 +745,7 @@ export const READ_NODE_PROPOSAL_REGISTRY = [
     "type": "Enterprise DAO",
     "status": "Timelocked",
     "quorum": "51% quorum · governance token requirement 0",
-    "window": "Voting closed · Finalized on devnet · Timelock still active",
+    "window": "Voting closed · Finalized on Testnet · Timelock still active",
     "treasury": "0.005 SOL queued to send to AZUr…Ek5c",
     "privacy": "Commit-reveal + indexed treasury action",
     "tech": [
@@ -773,7 +773,7 @@ export const READ_NODE_PROPOSAL_REGISTRY = [
       "repeatedAttempts": 0,
       "baselineAmount": 0.005,
       "presentationStatus": "Timelocked",
-      "presentationWindow": "Voting closed · Finalized on devnet · Timelock still active",
+      "presentationWindow": "Voting closed · Finalized on Testnet · Timelock still active",
       "presentationTreasury": "0.005 SOL queued to send to AZUr…Ek5c",
       "phaseMappingLabel": "Finalized indexed phase maps to Timelocked in the product surface",
       "txContext": {
@@ -788,7 +788,7 @@ export const READ_NODE_PROPOSAL_REGISTRY = [
     "type": "Enterprise DAO",
     "status": "Timelocked",
     "quorum": "51% quorum · governance token requirement 0",
-    "window": "Voting closed · Finalized on devnet · Timelock still active",
+    "window": "Voting closed · Finalized on Testnet · Timelock still active",
     "treasury": "Treasury action is still pending explicit indexing in the current proposal record",
     "privacy": "Commit-reveal governance path",
     "tech": [
@@ -816,7 +816,7 @@ export const READ_NODE_PROPOSAL_REGISTRY = [
       "repeatedAttempts": 0,
       "baselineAmount": null,
       "presentationStatus": "Timelocked",
-      "presentationWindow": "Voting closed · Finalized on devnet · Timelock still active",
+      "presentationWindow": "Voting closed · Finalized on Testnet · Timelock still active",
       "presentationTreasury": "Treasury action is still pending explicit indexing in the current proposal record",
       "phaseMappingLabel": "Finalized indexed phase maps to Timelocked in the product surface",
       "txContext": {
@@ -833,7 +833,7 @@ export const READ_NODE_FEATURED_PROPOSAL_REGISTRY = [
     "type": "Enterprise DAO",
     "status": "Evidence gated",
     "quorum": "51% quorum · governance token requirement 0",
-    "window": "Voting closed · Finalized on devnet · Settlement evidence still incomplete",
+    "window": "Voting closed · Finalized on Testnet · Settlement evidence still incomplete",
     "treasury": "Confidential payout still gated for 1,000,000 units to 4Mm5…hsMD via mint native asset",
     "privacy": "Commit-reveal + REFHE envelope",
     "tech": [
@@ -862,7 +862,7 @@ export const READ_NODE_FEATURED_PROPOSAL_REGISTRY = [
       "repeatedAttempts": 0,
       "baselineAmount": 1000000,
       "presentationStatus": "Evidence gated",
-      "presentationWindow": "Voting closed · Finalized on devnet · Settlement evidence still incomplete",
+      "presentationWindow": "Voting closed · Finalized on Testnet · Settlement evidence still incomplete",
       "presentationTreasury": "Confidential payout still gated for 1,000,000 units to 4Mm5…hsMD via mint native asset",
       "phaseMappingLabel": "Finalized indexed phase maps to Evidence gated in the product surface",
       "txContext": {
@@ -877,14 +877,14 @@ export const READ_NODE_FEATURED_PROPOSAL_REGISTRY = [
     "type": "Treasury Committee",
     "status": "Executed",
     "quorum": "51% quorum · governance token requirement 0",
-    "window": "Commit closed · Reveal complete · Executed on devnet",
+    "window": "Commit closed · Reveal complete · Executed on Testnet",
     "treasury": "0.05 SOL sent to Dxk6…wNZV",
     "privacy": "Commit-reveal + indexed treasury action",
     "tech": [
       "ZK",
       "Fast RPC"
     ],
-    "summary": "Live Devnet proof for token-supply quorum, dedicated reveal rebate vault, and V3 finalize path. This indexed proposal already executed on devnet and should be reviewed as proof, not as a pending signature flow.",
+    "summary": "Live Testnet proof for token-supply quorum, dedicated reveal rebate vault, and V3 finalize path. This indexed proposal already executed on Testnet and should be reviewed as proof, not as a pending signature flow.",
     "execution": {
       "sourceType": "runtime-indexed",
       "sourceLabel": "Backend-indexed proposal record: Governance Hardening V3 live proof (Executed)",
@@ -905,7 +905,7 @@ export const READ_NODE_FEATURED_PROPOSAL_REGISTRY = [
       "repeatedAttempts": 0,
       "baselineAmount": 0.05,
       "presentationStatus": "Executed",
-      "presentationWindow": "Commit closed · Reveal complete · Executed on devnet",
+      "presentationWindow": "Commit closed · Reveal complete · Executed on Testnet",
       "presentationTreasury": "0.05 SOL sent to Dxk6…wNZV",
       "phaseMappingLabel": "Executed indexed phase maps to Executed in the product surface",
       "txContext": {
@@ -920,7 +920,7 @@ export const READ_NODE_FEATURED_PROPOSAL_REGISTRY = [
     "type": "Gaming DAO",
     "status": "Executed",
     "quorum": "51% quorum · governance token requirement 0",
-    "window": "Commit closed · Reveal complete · Executed on devnet",
+    "window": "Commit closed · Reveal complete · Executed on Testnet",
     "treasury": "Confidential payout executed for 50,000,000 units to 5vQi…2FVj via mint 7Voo…Uudg",
     "privacy": "Commit-reveal + REFHE envelope",
     "tech": [
@@ -929,7 +929,7 @@ export const READ_NODE_FEATURED_PROPOSAL_REGISTRY = [
       "MagicBlock",
       "Fast RPC"
     ],
-    "summary": "Execute a token confidential payout only after REFHE settlement, MagicBlock corridor settlement, and strict settlement evidence. This indexed proposal already executed on devnet and should be reviewed as proof, not as a pending signature flow.",
+    "summary": "Execute a token confidential payout only after REFHE settlement, MagicBlock corridor settlement, and strict settlement evidence. This indexed proposal already executed on Testnet and should be reviewed as proof, not as a pending signature flow.",
     "execution": {
       "sourceType": "runtime-indexed",
       "sourceLabel": "Backend-indexed proposal record: Settlement Hardening V3 + REFHE + MagicBlock live proof (Executed)",
@@ -950,7 +950,7 @@ export const READ_NODE_FEATURED_PROPOSAL_REGISTRY = [
       "repeatedAttempts": 0,
       "baselineAmount": 50000000,
       "presentationStatus": "Executed",
-      "presentationWindow": "Commit closed · Reveal complete · Executed on devnet",
+      "presentationWindow": "Commit closed · Reveal complete · Executed on Testnet",
       "presentationTreasury": "Confidential payout executed for 50,000,000 units to 5vQi…2FVj via mint 7Voo…Uudg",
       "phaseMappingLabel": "Executed indexed phase maps to Executed in the product surface",
       "txContext": {

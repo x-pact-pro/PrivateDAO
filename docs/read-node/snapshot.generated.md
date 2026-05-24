@@ -25,7 +25,7 @@
 - REFHE proposals with verifier binding: `2`
 - Executable confidential proposals: `0`
 
-## Devnet Load Profiles
+## Testnet Load Profiles
 
 - `50` | wallets=`50` | waves=`5` | wave-size=`10` | funding-wave=`5` | target-pdao-ui=`100` | negative=`wrong-voter-record, wrong-delegation-marker, wrong-token-account`
 - `100` | wallets=`100` | waves=`5` | wave-size=`20` | funding-wave=`10` | target-pdao-ui=`100` | negative=`wrong-voter-record, wrong-delegation-marker, wrong-token-account, late-reveal`
