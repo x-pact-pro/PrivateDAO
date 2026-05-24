@@ -11,6 +11,7 @@ EXECUTE_TIMELOCK="${EXECUTE_TIMELOCK:-0}"
 
 if [[ "${EXECUTE_TIMELOCK}" != "1" ]]; then
   echo "DRY RUN: set EXECUTE_TIMELOCK=1 after ${RELEASE_AT} to execute."
+  node scripts/check-squads-timelock-window.mjs || true
   echo "Cluster: ${CLUSTER}"
   echo "Squads vault: ${VAULT}"
   echo "Squads multisig: ${MULTISIG}"
@@ -21,6 +22,8 @@ if [[ "${EXECUTE_TIMELOCK}" != "1" ]]; then
   echo "npm run transfer:dao-authority -- --dao <DAO_PDA> --new-authority ${VAULT}"
   echo "npm run initialize:treasury-operator-authority -- --dao <DAO_PDA>"
   echo "npm run transfer:treasury-operator-authority -- --dao <DAO_PDA> --new-authority ${VAULT}"
+  echo "Exact prepared command after release:"
+  echo "EXECUTE_TIMELOCK=1 DAO_PDA=FEz2hCLGpDhJ3cdAm5CCWFzrKv8vDDzmmt9UjdF2fApZ scripts/execute-after-timelock.sh"
   echo "Record the resulting tx/readout in docs/multisig-setup-intake.json or the custody intake flow."
   exit 0
 fi

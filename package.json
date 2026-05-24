@@ -238,6 +238,7 @@
     "verify:operation-ledger": "test -s docs/operation-ledger.generated.json && test -s docs/operation-ledger.generated.md",
     "verify:zk-standalone-verifier": "ts-node scripts/verify-zk-standalone-verifier.ts",
     "execute:squads-upgrade": "ts-node scripts/execute-squads-upgrade-after-timelock.ts",
+    "check:squads-timelock": "node scripts/check-squads-timelock-window.mjs",
     "verify:runtime-evidence": "ts-node scripts/verify-runtime-evidence.ts",
     "verify:real-device-runtime": "ts-node scripts/verify-real-device-runtime-evidence.ts",
     "verify:monitoring-delivery": "ts-node scripts/verify-monitoring-delivery-evidence.ts",

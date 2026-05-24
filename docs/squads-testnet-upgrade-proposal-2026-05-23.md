@@ -64,7 +64,8 @@ This proves the current remaining delay is enforced by the Squads program itself
 After the timelock releases, execute the vault transaction, then verify:
 
 ```bash
-npm run execute:squads-upgrade
+npm run check:squads-timelock
+EXECUTE_TIMELOCK=1 DAO_PDA=FEz2hCLGpDhJ3cdAm5CCWFzrKv8vDDzmmt9UjdF2fApZ scripts/execute-after-timelock.sh
 solana program show EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva --url https://api.testnet.solana.com
 ```
 

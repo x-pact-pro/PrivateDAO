@@ -41,6 +41,22 @@ Even valid multisig owners cannot bypass the timelock after reaching threshold a
 - Execution unlock: `2026-05-25T00:31:05Z`
 - Next step after unlock: execute upgrade, then transfer DAO authority and treasury authority to the Squads vault.
 
+## Operational Reminder Gate
+
+The release window is guarded by a local reminder command so the handoff is not left to memory:
+
+```bash
+npm run check:squads-timelock
+```
+
+Before `2026-05-25T00:31:05Z`, the command prints `waiting-for-timelock-release` and the remaining time. After the release timestamp, it prints `execution-window-open` and exits non-zero to force operator attention.
+
+The prepared post-release command is:
+
+```bash
+EXECUTE_TIMELOCK=1 DAO_PDA=FEz2hCLGpDhJ3cdAm5CCWFzrKv8vDDzmmt9UjdF2fApZ scripts/execute-after-timelock.sh
+```
+
 ## Ecosystem Lesson
 
 A timelock is only meaningful when the same multisig that controls upgrades cannot disable or bypass it instantly. This Testnet evidence shows the PrivateDAO custody layer currently enforces that rule.
