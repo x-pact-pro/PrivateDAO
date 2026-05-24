@@ -32,7 +32,7 @@ jobs:
           echo "$HOME/.local/share/solana/install/active_release/bin" >> $GITHUB_PATH
 
       - name: Install Anchor CLI
-        run: cargo install --git https://github.com/coral-xyz/anchor avm --locked --force && avm install 0.31.1 && avm use 0.31.1
+        run: cargo install --git https://github.com/coral-xyz/anchor avm --locked --force && avm install 1.0.1 && avm use 1.0.1
 
       - name: Install dependencies
         run: yarn install --frozen-lockfile

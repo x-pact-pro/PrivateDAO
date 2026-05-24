@@ -90,6 +90,7 @@ SOLANA_KEYGEN_BIN="${SOLANA_KEYGEN_BIN:-$(resolve_tool solana-keygen \
 
 ANCHOR_BIN="${ANCHOR_BIN:-$(resolve_tool_prefer_candidates anchor \
   "$HOME/.avm/bin/anchor" \
+  "$HOME/.avm/bin/anchor-1.0.1" \
   "$HOME/.avm/bin/anchor-0.32.1" \
   "$HOME/.local/bin/anchor" \
   "$HOME/.cargo/bin/anchor" \
