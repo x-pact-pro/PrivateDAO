@@ -22,8 +22,8 @@ function hasValue(value: string | undefined) {
 export function getRpcFastInfrastructureSnapshot() {
   const endpoints: RpcFastEndpoint[] = [
     {
-      label: "Devnet RPC",
-      purpose: "Primary Ika Solana pre-alpha, proof, and reviewer-readiness route for live Devnet reads.",
+      label: "Archived Devnet RPC",
+      purpose: "Historical Ika Solana pre-alpha and proof-read route kept for comparison; current reviewer operations lead with Testnet.",
       configured:
         hasValue(process.env.RPCFAST_DEVNET_RPC_URL) ||
         hasValue(process.env.RPC_FAST_DEVNET_RPC) ||
@@ -35,8 +35,8 @@ export function getRpcFastInfrastructureSnapshot() {
       ),
     },
     {
-      label: "Devnet WebSocket",
-      purpose: "Realtime Devnet confirmation and status channel for live proof surfaces.",
+      label: "Archived Devnet WebSocket",
+      purpose: "Historical Devnet confirmation channel retained for compatibility checks; current runtime UX leads with Testnet.",
       configured:
         hasValue(process.env.RPCFAST_DEVNET_WSS_URL) ||
         hasValue(process.env.RPC_FAST_DEVNET_WSS) ||
@@ -49,7 +49,7 @@ export function getRpcFastInfrastructureSnapshot() {
     },
     {
       label: "Testnet RPC",
-      purpose: "Backend release-candidate transaction and monitoring path; browser bundles keep using public cluster RPC.",
+      purpose: "Primary backend release-candidate transaction, read-node, and monitoring path for current reviewer operations.",
       configured: hasValue(process.env.RPC_FAST_TESTNET_RPC),
       host: endpointHost(process.env.RPC_FAST_TESTNET_RPC),
     },
@@ -60,7 +60,7 @@ export function getRpcFastInfrastructureSnapshot() {
       host: endpointHost(process.env.RPC_FAST_TESTNET_WSS),
     },
     {
-      label: "Devnet Yellowstone gRPC",
+      label: "Archived Devnet Yellowstone gRPC",
       purpose: "Historical rehearsal stream for program/account observation and diagnostics comparison.",
       configured:
         hasValue(process.env.RPCFAST_DEVNET_YELLOWSTONE_GRPC_ENDPOINT) ||

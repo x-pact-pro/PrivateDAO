@@ -13,6 +13,9 @@ const CURATED_DOCUMENTS = path.resolve("apps/web/src/lib/curated-documents.ts");
 const SITE_DATA = path.resolve("apps/web/src/lib/site-data.ts");
 const SITE_FOOTER = path.resolve("apps/web/src/components/site-footer.tsx");
 const DOCUMENT_RENDERER = path.resolve("apps/web/src/components/document-renderer.tsx");
+const TRACK_COMMERCIALIZATION = path.resolve("apps/web/src/lib/track-commercialization.ts");
+const TECHNICAL_ELIGIBILITY = path.resolve("apps/web/src/lib/technical-eligibility.ts");
+const RPCFAST_INFRASTRUCTURE = path.resolve("apps/web/src/lib/rpcfast-infrastructure.ts");
 
 function main() {
   const rootIndex = fs.readFileSync(ROOT_INDEX, "utf8");
@@ -27,6 +30,9 @@ function main() {
   const siteData = fs.readFileSync(SITE_DATA, "utf8");
   const siteFooter = fs.readFileSync(SITE_FOOTER, "utf8");
   const documentRenderer = fs.readFileSync(DOCUMENT_RENDERER, "utf8");
+  const trackCommercialization = fs.readFileSync(TRACK_COMMERCIALIZATION, "utf8");
+  const technicalEligibility = fs.readFileSync(TECHNICAL_ELIGIBILITY, "utf8");
+  const rpcfastInfrastructure = fs.readFileSync(RPCFAST_INFRASTRUCTURE, "utf8");
 
   if (!homeShell.includes("Superteam Poland") && !homeShell.includes('eyebrow="Why PrivateDAO"')) {
     throw new Error("home shell is missing the achievement surface for Superteam Poland");
@@ -78,6 +84,17 @@ function main() {
     [documentRenderer, "rounded-3xl border border-white/10", "document renderer is missing readable table styling"],
   ];
 
+  const forbiddenChecks: Array<[string, string, string]> = [
+    [siteData, "live devnet", "site data still presents Devnet as the live operating route"],
+    [homeShell, "live devnet", "home shell still presents Devnet as the live operating route"],
+    [servicesSurface, "live devnet", "services surface still presents Devnet as the live operating route"],
+    [documentRenderer, "live devnet", "document renderer should not encode stale network copy"],
+    [trackCommercialization, "live product path stable on devnet", "commercialization plan still presents Devnet as the live product path"],
+    [trackCommercialization, "devnet-backed operating partnership", "commercialization plan still presents Devnet as the operating partnership path"],
+    [technicalEligibility, "live devnet routes", "technical eligibility still presents Devnet as the live route"],
+    [rpcfastInfrastructure, "Primary Ika Solana pre-alpha, proof, and reviewer-readiness route for live Devnet reads", "RPCFast infrastructure still presents Devnet as the current primary read path"],
+  ];
+
   const hasGithubPagesPrefix = rootIndex.includes("/PrivateDAO/_next/");
   const hasRootDomainPrefix = rootIndex.includes("/_next/");
   if (!hasGithubPagesPrefix && !hasRootDomainPrefix) {
@@ -86,6 +103,12 @@ function main() {
 
   for (const [body, fragment, message] of checks) {
     if (!body.includes(fragment)) {
+      throw new Error(message);
+    }
+  }
+
+  for (const [body, fragment, message] of forbiddenChecks) {
+    if (body.toLowerCase().includes(fragment.toLowerCase())) {
       throw new Error(message);
     }
   }

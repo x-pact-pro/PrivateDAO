@@ -128,7 +128,7 @@ export function getTrackCommercializationPlan(
       mainnetUpgradePath: [
         "Preserve the integrated product flow from demo through operations review.",
         "Use launch trust packet and blocker review as the explicit pre-mainnet commercial checkpoint.",
-        "Move from devnet-backed operating partnership into formal retained governance support once readiness gates are satisfied.",
+        "Move from Testnet-backed operating partnership into formal retained governance support once readiness gates are satisfied.",
       ],
       routes: [
         { label: "Products", href: "/products" },
@@ -168,7 +168,7 @@ export function getTrackCommercializationPlan(
       firstPaidMotion:
         "Offer a build-and-adopt pilot where a customer uses the product shell, docs viewer, diagnostics, and evidence flow as a starting governance infrastructure layer.",
       mainnetUpgradePath: [
-        "Keep architecture, deployment, and wallet behavior stable across devnet and production surfaces.",
+        "Keep architecture, deployment, and wallet behavior stable across Testnet and production surfaces.",
         "Continue proving verification discipline through root-domain publishing and route-level trust continuity.",
         "Use retained operations and hosted-read packaging as the commercial bridge into mainnet support.",
       ],
@@ -230,7 +230,7 @@ export function getTrackCommercializationPlan(
     firstPaidMotion:
       "Start with a pilot grounded in the live product and service corridors before expanding into retained operations.",
     mainnetUpgradePath: [
-      "Keep the live product path stable on devnet.",
+      "Keep the live product path stable on Solana Testnet.",
       "Use trust packets and blocker reviews as explicit upgrade gates.",
       "Promote to broader customer rollout only when readiness evidence is sufficient.",
     ],

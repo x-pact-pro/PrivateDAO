@@ -51,7 +51,7 @@ const fits: Record<string, TrackTechnicalFit> = {
         sponsor: "Solana Foundation",
         status: "Direct live use",
         detail:
-          "Real Program ID, governance mint, wallet path, trust packets, and live devnet routes are all visible in-product instead of staying buried in backend-only artifacts.",
+          "Real Testnet Program ID, governance mint, wallet path, trust packets, and live Testnet routes are all visible in-product instead of staying buried in backend-only artifacts.",
       },
     ],
     evidenceRoutes: [
