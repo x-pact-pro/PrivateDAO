@@ -10,6 +10,7 @@ const SECURITY_CENTER = path.resolve("apps/web/src/components/security-center.ts
 const DIAGNOSTICS_CENTER = path.resolve("apps/web/src/components/diagnostics-center.tsx");
 const SERVICES_SURFACE = path.resolve("apps/web/src/components/services-surface.tsx");
 const PROOF_PAGE = path.resolve("apps/web/src/app/proof/page.tsx");
+const JUPITER_TREASURY_ROUTE_PAGE = path.resolve("apps/web/src/app/services/jupiter-treasury-route/page.tsx");
 const JUDGE_PAGE = path.resolve("apps/web/src/app/judge/page.tsx");
 const SECURITY_PAGE = path.resolve("apps/web/src/app/security/page.tsx");
 const API_STATUS_PAGE = path.resolve("apps/web/src/app/api-status/page.tsx");
@@ -39,6 +40,7 @@ function main() {
   const diagnosticsCenter = fs.readFileSync(DIAGNOSTICS_CENTER, "utf8");
   const servicesSurface = fs.readFileSync(SERVICES_SURFACE, "utf8");
   const proofPage = fs.readFileSync(PROOF_PAGE, "utf8");
+  const jupiterTreasuryRoutePage = fs.readFileSync(JUPITER_TREASURY_ROUTE_PAGE, "utf8");
   const judgePage = fs.readFileSync(JUDGE_PAGE, "utf8");
   const securityPage = fs.readFileSync(SECURITY_PAGE, "utf8");
   const apiStatusPage = fs.readFileSync(API_STATUS_PAGE, "utf8");
@@ -132,6 +134,7 @@ function main() {
     [securityPage, "/documents/squads-current-binary-upgrade-proposal-2026-05-25", "security route is not linked to the current Squads proposal packet"],
     [proofPage, "finalized Testnet private payment receipts", "proof route is missing Testnet private-payment receipt language"],
     [proofPage, "/documents/frontier-track-closure-matrix-2026-05-25", "proof route is missing the Frontier track closure matrix link"],
+    [jupiterTreasuryRoutePage, "Jupiter Developer Platform /order", "Jupiter service page is missing static Developer Platform order copy"],
     [apiStatusPage, "MagicBlock receipts", "API status route is missing MagicBlock receipt evidence"],
     [apiStatusPage, "Ika readiness", "API status route is missing Ika readiness evidence"],
     [apiStatusPage, "REFHE proof", "API status route is missing REFHE proof evidence"],

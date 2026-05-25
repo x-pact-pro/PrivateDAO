@@ -35,6 +35,8 @@ export default function JupiterTreasuryRoutePage() {
         <p className="mt-3 max-w-4xl text-sm leading-7 text-white/66">
           Jupiter routing is used as an execution-quality layer in treasury context, not as a detached trading widget.
           The operator sees quote posture first, then carries that context into governed actions and proof surfaces.
+          When the server key is configured, this lane uses Jupiter Developer Platform /order through the PrivateDAO
+          backend; the public Lite Quote route remains as a safe fallback for static review.
         </p>
         <div className="mt-5 flex flex-wrap gap-3">
           <Link href="/execute#treasury-rebalance" className={cn(buttonVariants({ size: "sm" }))}>
@@ -52,4 +54,3 @@ export default function JupiterTreasuryRoutePage() {
     </OperationsShell>
   );
 }
-
