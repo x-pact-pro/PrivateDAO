@@ -82,6 +82,8 @@ echo "[verify-all] checking demo video"
 npm run verify:demo-video >/dev/null
 echo "[verify-all] checking program id consistency"
 npm run verify:program-id-consistency >/dev/null
+echo "[verify-all] checking current network state"
+npm run verify:current-network-state >/dev/null
 echo "[verify-all] checking PDAO token surface"
 npm run verify:pdao-surface >/dev/null
 
@@ -120,6 +122,10 @@ npm run verify:release-drill >/dev/null
 
 echo "[verify-all] checking cryptographic integrity"
 npm run verify:cryptographic-manifest >/dev/null
+echo "[verify-all] checking cryptographic on-chain matrix"
+npm run verify:cryptographic-onchain-matrix >/dev/null
+echo "[verify-all] checking ZK documentation"
+npm run verify:zk-docs >/dev/null
 
 echo "[verify-all] checking release manifest"
 npm run verify:release-manifest >/dev/null
@@ -147,6 +153,8 @@ fi
 
 echo "[verify-all] checking integration and runtime bundle"
 run_parallel_group \
+  "backend provider readiness" "npm run verify:backend-provider-readiness >/dev/null" \
+  "QuickNode stream intake" "npm run verify:quicknode-stream-intake >/dev/null" \
   "Frontier integrations" "npm run verify:frontier-integrations >/dev/null" \
   "Colosseum competitive analysis" "npm run verify:colosseum-competitive >/dev/null" \
   "real-device runtime intake" "npm run verify:real-device-runtime >/dev/null" \
