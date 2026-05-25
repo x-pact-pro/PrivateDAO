@@ -2,6 +2,16 @@
 
 Date: 2026-05-23
 
+## Current Status
+
+This is a historical custody packet for the first May 23 upgrade route. It remains useful as proof of the original buffer upload, Squads approvals, and timelock enforcement.
+
+The current executable Testnet release path is now Squads proposal index `3`, documented at:
+
+`docs/squads-current-binary-upgrade-proposal-2026-05-25.md`
+
+Current proposal index `3` uses buffer `HXcaUbT7Q8euufUbDKuhoRkSSYQPwUwmhw69TdePV6uY`, proposal PDA `HAQdiBhjHdYG35MNqn9JzMhg5itFFSj8oTnVPGhM2VYM`, and timelock release `2026-05-27T02:25:39Z`.
+
 This packet records the live Squads proposal that upgrades the Testnet program to the build containing `transfer_dao_authority` and the anonymous governance primitive SDK evidence.
 
 ## Upgrade Buffer

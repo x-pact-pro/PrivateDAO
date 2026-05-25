@@ -1,5 +1,15 @@
 # Timelock Enforcement Proof 2026-05-23
 
+## Current Status
+
+This is a historical enforcement proof. It records the May 23 attempt to shorten the Squads timelock and the `6021 - TimeLockNotReleased` rejection.
+
+The current executable Testnet release path is now Squads proposal index `3`, documented at:
+
+`docs/squads-current-binary-upgrade-proposal-2026-05-25.md`
+
+Current proposal index `3` uses proposal PDA `HAQdiBhjHdYG35MNqn9JzMhg5itFFSj8oTnVPGhM2VYM`, buffer `HXcaUbT7Q8euufUbDKuhoRkSSYQPwUwmhw69TdePV6uY`, and timelock release `2026-05-27T02:25:39Z`.
+
 ## What Happened
 
 PrivateDAO attempted to accelerate the approved Squads upgrade path by reducing the Testnet multisig timelock to `0`.

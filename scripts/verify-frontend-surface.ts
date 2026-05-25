@@ -18,6 +18,9 @@ const DOCUMENT_RENDERER = path.resolve("apps/web/src/components/document-rendere
 const TRACK_COMMERCIALIZATION = path.resolve("apps/web/src/lib/track-commercialization.ts");
 const TECHNICAL_ELIGIBILITY = path.resolve("apps/web/src/lib/technical-eligibility.ts");
 const RPCFAST_INFRASTRUCTURE = path.resolve("apps/web/src/lib/rpcfast-infrastructure.ts");
+const OLD_SQUADS_PROPOSAL_DOC = path.resolve("docs/squads-testnet-upgrade-proposal-2026-05-23.md");
+const OLD_TIMELOCK_DOC = path.resolve("docs/timelock-enforcement-proof-2026-05-23.md");
+const OLD_ARENA_SUBMISSION_DOC = path.resolve("docs/arena-frontier-submission-2026-05-23.md");
 
 function main() {
   const rootIndex = fs.readFileSync(ROOT_INDEX, "utf8");
@@ -37,6 +40,9 @@ function main() {
   const trackCommercialization = fs.readFileSync(TRACK_COMMERCIALIZATION, "utf8");
   const technicalEligibility = fs.readFileSync(TECHNICAL_ELIGIBILITY, "utf8");
   const rpcfastInfrastructure = fs.readFileSync(RPCFAST_INFRASTRUCTURE, "utf8");
+  const oldSquadsProposalDoc = fs.readFileSync(OLD_SQUADS_PROPOSAL_DOC, "utf8");
+  const oldTimelockDoc = fs.readFileSync(OLD_TIMELOCK_DOC, "utf8");
+  const oldArenaSubmissionDoc = fs.readFileSync(OLD_ARENA_SUBMISSION_DOC, "utf8");
 
   if (!homeShell.includes("Superteam Poland") && !homeShell.includes('eyebrow="Why PrivateDAO"')) {
     throw new Error("home shell is missing the achievement surface for Superteam Poland");
@@ -88,6 +94,15 @@ function main() {
     [securityPage, "Squads proposal index 3", "security route is missing the current Squads proposal index"],
     [securityPage, "2026-05-27T02:25:39Z", "security route is missing the current Squads proposal 3 timelock release"],
     [securityPage, "/documents/squads-current-binary-upgrade-proposal-2026-05-25", "security route is not linked to the current Squads proposal packet"],
+    [oldSquadsProposalDoc, "This is a historical custody packet", "old Squads proposal doc is missing historical status"],
+    [oldSquadsProposalDoc, "Current proposal index `3`", "old Squads proposal doc is missing the current proposal index 3 pointer"],
+    [oldSquadsProposalDoc, "2026-05-27T02:25:39Z", "old Squads proposal doc is missing the current proposal 3 timelock release"],
+    [oldTimelockDoc, "This is a historical enforcement proof", "old timelock doc is missing historical status"],
+    [oldTimelockDoc, "Current proposal index `3`", "old timelock doc is missing the current proposal index 3 pointer"],
+    [oldTimelockDoc, "2026-05-27T02:25:39Z", "old timelock doc is missing the current proposal 3 timelock release"],
+    [oldArenaSubmissionDoc, "preserved as a historical May 23 reviewer snapshot", "old arena submission doc is missing historical status"],
+    [oldArenaSubmissionDoc, "Current proposal index `3`", "old arena submission doc is missing the current proposal index 3 pointer"],
+    [oldArenaSubmissionDoc, "2026-05-27T02:25:39Z", "old arena submission doc is missing the current proposal 3 timelock release"],
     [documentRenderer, "function parseInline", "document renderer is missing inline markdown support"],
     [documentRenderer, "function flushOrderedList", "document renderer is missing ordered-list support"],
     [documentRenderer, "function flushTable", "document renderer is missing markdown table support"],

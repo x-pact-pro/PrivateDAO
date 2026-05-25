@@ -640,10 +640,10 @@ const curatedDocuments: CuratedDocument[] = [
     title: "Squads Testnet Upgrade Proposal 2026-05-23",
     category: "Security",
     summary:
-      "Explorer-verifiable packet for the active Squads proposal that upgrades the Testnet program to the DAO authority handoff build, including buffer hash match and first approval signature.",
+      "Historical Explorer-verifiable packet for the first May 23 Squads upgrade route; current execution has moved to proposal index 3.",
     audience: "Judges, security reviewers, Solana operators, technical diligence teams",
     boundary:
-      "Upgrade proposal packet only; it records the uploaded buffer and first approval while keeping execution blocked until the second signer and timelock close.",
+      "Historical upgrade proposal packet only; use the 2026-05-25 current binary proposal packet for active execution status.",
     docPath: "docs/squads-testnet-upgrade-proposal-2026-05-23.md",
     rawHref: `${repositoryBlobBase}/docs/squads-testnet-upgrade-proposal-2026-05-23.md`,
   },
@@ -664,10 +664,10 @@ const curatedDocuments: CuratedDocument[] = [
     title: "Timelock Enforcement Proof 2026-05-23",
     category: "Reviewer core",
     summary:
-      "Live Testnet custody evidence showing that even a 2-of-3 Squads threshold could not bypass the active timelock before release.",
+      "Historical Testnet custody evidence showing that even a 2-of-3 Squads threshold could not bypass the May 23 timelock before release.",
     audience: "Judges, Solana security reviewers, governance reviewers, operators",
     boundary:
-      "Covers Squads Testnet timelock enforcement and the pending upgrade proposal. DAO and treasury authority handoffs remain post-unlock execution steps.",
+      "Covers May 23 Squads Testnet timelock enforcement. Current execution status is proposal index 3 with release 2026-05-27T02:25:39Z.",
     docPath: "docs/timelock-enforcement-proof-2026-05-23.md",
     rawHref: `${repositoryBlobBase}/docs/timelock-enforcement-proof-2026-05-23.md`,
   },
@@ -676,10 +676,10 @@ const curatedDocuments: CuratedDocument[] = [
     title: "Arena Frontier Submission 2026-05-23",
     category: "Reviewer core",
     summary:
-      "Single submission packet for the current Testnet product: Anchor 1.0.1 governance program, ZK verifier, Squads custody, PDAO Token-2022, security story, and judge links.",
+      "Historical May 23 submission packet for the Testnet product: Anchor 1.0.1 governance program, ZK verifier, Squads custody, PDAO Token-2022, security story, and judge links.",
     audience: "Colosseum judges, Solana reviewers, investors, ecosystem partners",
     boundary:
-      "Current Testnet submission packet. Historical Devnet evidence remains archived, and DAO/treasury authority handoff remains post-timelock execution work.",
+      "Historical Testnet submission packet. Active custody execution status lives in the 2026-05-25 current binary proposal packet.",
     docPath: "docs/arena-frontier-submission-2026-05-23.md",
     rawHref: `${repositoryBlobBase}/docs/arena-frontier-submission-2026-05-23.md`,
   },

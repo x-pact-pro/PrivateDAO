@@ -1,5 +1,15 @@
 # Arena Frontier Submission 2026-05-23
 
+## Current Status
+
+This submission packet is preserved as a historical May 23 reviewer snapshot. The current Testnet custody release path has advanced to Squads proposal index `3`.
+
+Current proposal index `3` is documented at:
+
+`docs/squads-current-binary-upgrade-proposal-2026-05-25.md`
+
+It uses proposal PDA `HAQdiBhjHdYG35MNqn9JzMhg5itFFSj8oTnVPGhM2VYM`, buffer `HXcaUbT7Q8euufUbDKuhoRkSSYQPwUwmhw69TdePV6uY`, and timelock release `2026-05-27T02:25:39Z`.
+
 PrivateDAO is a founder-built Solana Testnet product for private governance, treasury policy, confidential payroll, encrypted payments, GamingDAO rewards, local-first decision intelligence, wallet-first execution, and reviewer-visible proof.
 
 ## What Is Built
@@ -50,7 +60,7 @@ The current live target is Solana Testnet with Anchor 1.0.1. Historical Devnet e
 
 DAO authority and treasury authority transfers remain scheduled after the Squads timelock unlocks at:
 
-`2026-05-25T00:31:05Z`
+`2026-05-27T02:25:39Z`
 
 ## Direct Review Links
 
