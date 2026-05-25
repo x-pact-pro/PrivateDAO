@@ -106,6 +106,9 @@ export default function SecurityPage() {
           <Link href="/documents/testnet-encrypted-integrations-activation-2026-05-23" className={cn(buttonVariants({ size: "sm" }))}>
             Open activation packet
           </Link>
+          <Link href="/documents/mainnet-cryptographic-readiness-ladder-2026-05-25" className={cn(buttonVariants({ size: "sm", variant: "secondary" }))}>
+            Open mainnet ladder
+          </Link>
           <Link href="/documents/live-proof-v3" className={cn(buttonVariants({ size: "sm", variant: "secondary" }))}>
             Open live proof V3
           </Link>

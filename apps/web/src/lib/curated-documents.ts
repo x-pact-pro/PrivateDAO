@@ -42,6 +42,18 @@ export function getIndexableCuratedDocuments() {
 
 const curatedDocuments: CuratedDocument[] = [
   {
+    slug: "mainnet-cryptographic-readiness-ladder-2026-05-25",
+    title: "Mainnet Cryptographic Readiness Ladder",
+    category: "Release",
+    summary:
+      "Cutover ladder mapping every cryptographic rail from core instruction to Testnet proof, public route, and the remaining mainnet gate without claiming unfinished real-funds launch.",
+    audience: "Judges, funders, security reviewers, operators, ecosystem partners",
+    boundary:
+      "Mainnet-readiness ladder only; it presents current Solana Testnet proof and exact cutover gates without claiming mainnet funds, final Ika 2PC-MPC signing, Umbra full claim settlement, external audit completion, or production alert delivery before evidence exists.",
+    docPath: "docs/mainnet-cryptographic-readiness-ladder-2026-05-25.md",
+    rawHref: `${repositoryBlobBase}/docs/mainnet-cryptographic-readiness-ladder-2026-05-25.md`,
+  },
+  {
     slug: "cryptographic-onchain-matrix-2026-05-25",
     title: "Cryptographic On-Chain Matrix",
     category: "Security",

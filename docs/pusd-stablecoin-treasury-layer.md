@@ -93,6 +93,25 @@ No unverified mint address is hardcoded into the repository. The official Solana
 
 This matches the expected prototype standard: the UI route, treasury profile, billing SKU, SPL transfer builder, memo label, explorer link, and reviewer packet are present as one operating surface. The official PUSD mint resource activates the PUSD-specific transfer path without redesigning the product.
 
+## Execution path
+
+The PUSD lane is designed to read as a real treasury product in four steps:
+
+1. Select a PUSD lane for payroll, grants, commerce settlement, or gaming rewards.
+2. Build a wallet-reviewed SPL `TransferChecked` transaction from the configured mint, receive account, decimals, and token program.
+3. Sign from the connected Solana wallet so PrivateDAO never custodies the payer key.
+4. Attach memo, signature, explorer link, and reviewer route back to `/judge`, `/proof`, and the treasury reviewer packet.
+
+Production PUSD activation is configuration-gated, not a rewrite. The required inputs are:
+
+- `NEXT_PUBLIC_TREASURY_PUSD_MINT`
+- `NEXT_PUBLIC_TREASURY_PUSD_RECEIVE_ADDRESS`
+- `NEXT_PUBLIC_TREASURY_PUSD_DECIMALS`
+- `NEXT_PUBLIC_TREASURY_PUSD_TOKEN_PROGRAM`
+- `PRIVATE_DAO_MICROPAYMENT_SYMBOL=PUSD`
+
+Until those are attached to the production environment with funded accounts and policy approval, PrivateDAO should describe the current state as a Testnet-ready PUSD treasury lane, not completed real PUSD settlement.
+
 ## Stablecoin expansion posture
 
 PUSD is the strongest named corridor for the institutional stablecoin story. USDC and USDG remain supported as adjacent rails so PrivateDAO can serve broader treasury, commerce, payroll, and ecosystem payment flows without locking the product to one asset.

@@ -57,6 +57,19 @@ Reward intent: education completion raffle.
 - Billing route: https://privatedao.org/services/testnet-billing-rehearsal/
 - Judge route: https://privatedao.org/judge/
 
+## Backend relay
+
+The browser workbench posts to:
+
+- `https://api.privatedao.org/api/v1/torque/custom-event`
+
+The read-node keeps Torque credentials server-side through `TORQUE_API_KEY` and forwards to the configured ingestion endpoint only when the key exists. This is the correct production shape because the static site can show and test the event payload, but it must not expose reward credentials in browser JavaScript.
+
+The route therefore has two useful states:
+
+- local/event-inspection mode for judges, where payloads can be generated and copied immediately
+- server-forwarding mode for production, where scoped credentials, campaign IDs, abuse checks, and delivery transcripts are enabled on the read-node
+
 ## Friction log
 
 The product surface keeps a compact friction log for the Torque track:
@@ -65,6 +78,7 @@ The product surface keeps a compact friction log for the Torque track:
 - Static-export deployment cannot safely hide private Torque API keys in browser code.
 - The correct production path is a server-side event relay or Torque MCP runner with scoped credentials.
 - The browser workbench still helps judges inspect event shape, route mapping, and reward intent immediately.
+- Production rewards must reject duplicate wallet spam, repeated non-finalized actions, and events that are not connected to DAO, proposal, billing, learning, or treasury execution proof.
 
 ## Track fit
 

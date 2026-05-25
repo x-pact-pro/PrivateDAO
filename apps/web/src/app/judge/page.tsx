@@ -128,6 +128,14 @@ export default function JudgePage() {
       cta: "Open readiness JSON",
     },
     {
+      label: "Mainnet cryptographic ladder",
+      value: "Core -> proof -> route -> gate",
+      detail:
+        "A cutover map ties Squads custody, DAO authority, treasury-operator authority, ZK, REFHE, MagicBlock, Umbra, Ika, Jupiter, QuickNode, and intelligence rails to exact mainnet gates.",
+      href: "/documents/mainnet-cryptographic-readiness-ladder-2026-05-25",
+      cta: "Open ladder",
+    },
+    {
       label: "Release proof package",
       value: "Testnet -> mainnet gates",
       detail:

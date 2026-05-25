@@ -34,6 +34,20 @@ export const metadata: Metadata = buildRouteMetadata({
 });
 
 export default function PusdStablecoinPage() {
+  const executionPath = [
+    ["Select lane", "Choose PUSD payroll, grants, or gaming rewards from the treasury flow."],
+    ["Build transfer", "The browser constructs an SPL TransferChecked transaction using configured mint, decimals, receive account, and token program."],
+    ["Sign in wallet", "The user reviews and signs from the connected Solana Testnet wallet; PrivateDAO does not custody user keys."],
+    ["Verify proof", "Memo, signature, and explorer link are routed back to Judge, Proof, and treasury reviewer packets."],
+  ] as const;
+  const activationInputs = [
+    "NEXT_PUBLIC_TREASURY_PUSD_MINT",
+    "NEXT_PUBLIC_TREASURY_PUSD_RECEIVE_ADDRESS",
+    "NEXT_PUBLIC_TREASURY_PUSD_DECIMALS",
+    "NEXT_PUBLIC_TREASURY_PUSD_TOKEN_PROGRAM",
+    "PRIVATE_DAO_MICROPAYMENT_SYMBOL=PUSD",
+  ] as const;
+
   return (
     <OperationsShell
       eyebrow="PUSD track"
@@ -52,7 +66,10 @@ export default function PusdStablecoinPage() {
         <h2 className="mt-3 text-2xl font-semibold text-white">Payroll, grants, and reward pools under governed stablecoin flow</h2>
         <p className="mt-3 max-w-4xl text-sm leading-7 text-white/66">
           PUSD is integrated as a practical treasury rail. Operators can run billing and payout rehearsals from the
-          browser, then validate execution context through judge and proof surfaces.
+          browser, then validate execution context through judge and proof surfaces. The product does not hardcode an
+          unverified mint; the official PUSD Solana mint and receive account are injected through environment
+          configuration, so the same wallet-first flow can move from Testnet rehearsal to production policy when the
+          activation inputs are present.
         </p>
         <div className="mt-5 flex flex-wrap gap-3">
           <Link href="/services/testnet-billing-rehearsal" className={cn(buttonVariants({ size: "sm" }))}>
@@ -66,6 +83,41 @@ export default function PusdStablecoinPage() {
           </Link>
         </div>
       </div>
+
+      <section className="rounded-[30px] border border-cyan-300/18 bg-[linear-gradient(135deg,rgba(34,211,238,0.11),rgba(20,241,149,0.07),rgba(8,13,28,0.94))] p-6">
+        <div className="text-[11px] uppercase tracking-[0.28em] text-cyan-100/78">Wallet-first stablecoin execution</div>
+        <h2 className="mt-3 max-w-4xl text-2xl font-semibold text-white">PUSD is framed as a treasury operating layer, not a token badge</h2>
+        <p className="mt-3 max-w-4xl text-sm leading-7 text-white/66">
+          The value is not simply listing PUSD. PrivateDAO wraps the stablecoin inside governance approval, memo-coded
+          payout intent, wallet review, confidential-payroll positioning, and reviewer-readable proof. That gives DAOs,
+          gaming communities, and grant committees a stable payment lane that normal users can understand in minutes.
+        </p>
+        <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+          {executionPath.map(([label, detail]) => (
+            <div key={label} className="rounded-[22px] border border-white/10 bg-black/22 p-4">
+              <div className="text-[10px] uppercase tracking-[0.22em] text-cyan-100/62">{label}</div>
+              <p className="mt-3 text-sm leading-6 text-white/62">{detail}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="rounded-[30px] border border-amber-300/18 bg-amber-300/[0.07] p-6">
+        <div className="text-[11px] uppercase tracking-[0.28em] text-amber-100/78">Activation inputs</div>
+        <h2 className="mt-3 text-2xl font-semibold text-white">Production PUSD activation is configuration-gated, not a rewrite</h2>
+        <p className="mt-3 max-w-4xl text-sm leading-7 text-white/66">
+          The implementation already supports configured SPL/Token-2022-style treasury assets through the same payment
+          request surface. The remaining production step is attaching the official PUSD mint, funded receive account,
+          and policy-approved wallet before claiming real PUSD settlement.
+        </p>
+        <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-5">
+          {activationInputs.map((input) => (
+            <div key={input} className="rounded-2xl border border-white/10 bg-black/22 p-4 font-mono text-xs leading-6 text-white/62">
+              {input}
+            </div>
+          ))}
+        </div>
+      </section>
 
       <div className="grid gap-3 md:grid-cols-3">
         {pusdLanes.map((lane) => (
@@ -81,4 +133,3 @@ export default function PusdStablecoinPage() {
     </OperationsShell>
   );
 }
-

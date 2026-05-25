@@ -214,6 +214,7 @@
     "verify:frontier-integrations": "MAGICBLOCK_HTTP_TIMEOUT_MS=2500 PRIVATE_DAO_RPC_TIMEOUT_MS=12000 ts-node scripts/verify-frontier-integrations.ts",
     "verify:frontier-track-closure": "ts-node scripts/verify-frontier-track-closure.ts",
     "verify:cryptographic-onchain-matrix": "ts-node scripts/verify-cryptographic-onchain-matrix.ts",
+    "verify:mainnet-cryptographic-readiness": "ts-node scripts/verify-mainnet-cryptographic-readiness.ts",
     "verify:colosseum-competitive": "ts-node scripts/verify-colosseum-competitive-analysis.ts",
     "verify:weekly-updates": "ts-node scripts/verify-weekly-update-videos.ts",
     "verify:weekly-youtube-ready": "ts-node scripts/verify-weekly-youtube-ready.ts",

@@ -124,6 +124,8 @@ echo "[verify-all] checking cryptographic integrity"
 npm run verify:cryptographic-manifest >/dev/null
 echo "[verify-all] checking cryptographic on-chain matrix"
 npm run verify:cryptographic-onchain-matrix >/dev/null
+echo "[verify-all] checking mainnet cryptographic readiness"
+npm run verify:mainnet-cryptographic-readiness >/dev/null
 echo "[verify-all] checking ZK documentation"
 npm run verify:zk-docs >/dev/null
 

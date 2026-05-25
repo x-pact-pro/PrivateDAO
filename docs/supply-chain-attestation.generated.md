@@ -2,10 +2,10 @@
 
 ## Overview
 
-- Generated at: `2026-05-25T14:48:49+03:00`
+- Generated at: `2026-05-25T15:07:00+03:00`
 - Hash algorithm: `sha256`
 - Package manager surface: `npm+yarn`
-- Aggregate sha256: `7641da4ee6e579f1270144cf412fde032277a3d9dfe9344e353300de0adba428`
+- Aggregate sha256: `8525a4e7ade5802d4dc14d4e43aef7012a446e89070deb309d380d9a485c07db`
 
 ## Top-Level Package Surface
 
@@ -13,7 +13,7 @@
 - Package version: `0.3.0`
 - Dependencies: `6`
 - Dev dependencies: `15`
-- Scripts: `314`
+- Scripts: `315`
 
 ## Lockfile Coverage
 
@@ -26,7 +26,7 @@
 - `Cargo.toml` | sha256 `556ebaa0c9c63f5fe0380a3f3316fde593fe6215baeb3cb120ee220060fa9a3a` | bytes `367`
 - `Cargo.lock` | sha256 `48991a08bd9de2e9346195e7caf6576bf879c1a8e32044e252fb781099c83785` | bytes `57962`
 - `Anchor.toml` | sha256 `82978c4d84145c0c6ba7e344453bab78d77c870f58b8dbf91857739052bb6389` | bytes `759`
-- `package.json` | sha256 `8a048c0faf8e35ce9ca29acb39b3b560cb7757baffd01d0b065c6d76ddc2e8a3` | bytes `30398`
+- `package.json` | sha256 `1e495c29775e44f241623e8af53a85f30f2f361e5d8ca1bf21cf1870cef430e4` | bytes `30505`
 - `yarn.lock` | sha256 `28eddaa9f97d7006610ba3b26e36bc11adac0ecebc0b4e1fc5d0b230ce031b7d` | bytes `115949`
 - `package-lock.json` | sha256 `0a1daf1d4d18b1286896d83319376ee87906d3714c32d2bfdbad7e5a48728dc0` | bytes `203069`
 
