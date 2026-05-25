@@ -116,6 +116,7 @@ function main() {
     [judgePage, "2026-05-27T02:25:39Z", "judge route is missing the current Squads proposal 3 timelock release"],
     [judgePage, "Current proposal index 3", "judge route is missing the current Squads proposal index"],
     [judgePage, "/documents/squads-current-binary-upgrade-proposal-2026-05-25", "judge route is not linked to the current Squads proposal packet"],
+    [judgePage, "/documents/mainnet-proof-package", "judge route is missing the release proof package link"],
     [securityPage, "Squads proposal index 3", "security route is missing the current Squads proposal index"],
     [securityPage, "2026-05-27T02:25:39Z", "security route is missing the current Squads proposal 3 timelock release"],
     [securityPage, "/documents/squads-current-binary-upgrade-proposal-2026-05-25", "security route is not linked to the current Squads proposal packet"],

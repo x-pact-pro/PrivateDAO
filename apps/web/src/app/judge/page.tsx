@@ -104,6 +104,14 @@ export default function JudgePage() {
       href: "https://api.privatedao.org/api/v1/readiness",
       cta: "Open readiness JSON",
     },
+    {
+      label: "Release proof package",
+      value: "Testnet -> mainnet gates",
+      detail:
+        "Curated package binding the current Testnet program, acceptance matrix, runtime evidence, release drill, and external gates without overstating mainnet real-funds status.",
+      href: "/documents/mainnet-proof-package",
+      cta: "Open release proof",
+    },
   ];
   const recognitionSignals = [
     {
