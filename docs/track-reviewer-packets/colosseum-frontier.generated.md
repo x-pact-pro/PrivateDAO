@@ -3,7 +3,7 @@
 ## Overview
 
 - project: `PrivateDAO`
-- generated at: `2026-05-25T10:42:52.932Z`
+- generated at: `2026-05-25T16:20:23.584Z`
 - track slug: `colosseum-frontier`
 - sponsor: `Public-good governance infrastructure`
 - objective: Present PrivateDAO as a startup-quality Solana product that already behaves like a pre-mainnet company rather than a hacked-together prototype.

@@ -146,7 +146,7 @@ async function measureRpc(label: "primary" | "fallback", url: string, connection
 
   return {
     label,
-    url,
+    url: redactRpcUrl(url),
     version: version["solana-core"],
     slot,
     blockhash: latestBlockhash.blockhash,
@@ -154,6 +154,10 @@ async function measureRpc(label: "primary" | "fallback", url: string, connection
     versionLatencyMs,
     blockhashLatencyMs,
   };
+}
+
+function redactRpcUrl(url: string) {
+  return url.replace(/([?&](?:api[_-]?key|token|key)=)[^&]+/gi, "$1REDACTED");
 }
 
 async function inspectAccount(connection: Connection, label: string, address: string): Promise<AnchorCheck> {

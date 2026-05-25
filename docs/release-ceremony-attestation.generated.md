@@ -2,8 +2,8 @@
 
 ## Overview
 
-- Generated at: `2026-05-25T13:35:56+03:00`
-- Release commit: `f64778f29b3ae63c8463a680c14d378642bae8e1`
+- Generated at: `2026-05-25T18:56:50+03:00`
+- Release commit: `2f42655541056a19916da85b513dfe463b62e579`
 - Release branch: `main`
 - Current Testnet program id: `EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva`
 - Legacy Devnet release program id: `5AhUsbQ4mJ8Xh7QJEomuS85qGgmK9iNvFqzF669Y7Psx`
