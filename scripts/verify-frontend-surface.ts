@@ -155,6 +155,9 @@ function main() {
     [trackCommercialization, "devnet-backed operating partnership", "commercialization plan still presents Devnet as the operating partnership path"],
     [technicalEligibility, "live devnet routes", "technical eligibility still presents Devnet as the live route"],
     [rpcfastInfrastructure, "Primary Ika Solana pre-alpha, proof, and reviewer-readiness route for live Devnet reads", "RPCFast infrastructure still presents Devnet as the current primary read path"],
+    [curatedDocuments, "live rail and Devnet execution target", "curated documents still present a Devnet execution target as current"],
+    [curatedDocuments, "current Devnet posture", "curated documents still present Devnet posture as current"],
+    [curatedDocuments, "documents live Devnet evidence", "curated documents still present Devnet evidence as the current review state"],
   ];
 
   const hasGithubPagesPrefix = rootIndex.includes("/PrivateDAO/_next/");

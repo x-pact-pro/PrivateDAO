@@ -107,7 +107,8 @@ const curatedDocuments: CuratedDocument[] = [
     category: "Strategy",
     summary: "Operational brief for DAO-controlled micropayment batches, showing how approved policy becomes batched stablecoin settlement with judge-visible runtime proof and telemetry continuity.",
     audience: "Judges, funders, operators, builders",
-    boundary: "Operating brief only; it describes the live rail and Devnet execution target without claiming production stablecoin settlement closure beyond the linked evidence.",
+    boundary:
+      "Operating brief only; it now frames Devnet material as historical rehearsal evidence and points operators to the current Testnet proof path without claiming production stablecoin settlement closure.",
     docPath: "docs/agentic-treasury-micropayment-rail.md",
     rawHref: `${repositoryBlobBase}/docs/agentic-treasury-micropayment-rail.md`,
   },
@@ -297,7 +298,8 @@ const curatedDocuments: CuratedDocument[] = [
     category: "Strategy",
     summary: "Public-good proposal describing PrivateDAO as live governance infrastructure and developer tooling for reviewer clarity, treasury coordination, and production-intent Solana operations.",
     audience: "Grant reviewers, ecosystem funders, operators, judges",
-    boundary: "Proposal surface only; it explains the product, current Devnet posture, and funding direction without claiming that mainnet closure is already complete.",
+    boundary:
+      "Proposal surface only; it explains the product, current Testnet posture, and funding direction without claiming that mainnet closure is already complete.",
     docPath: "docs/solana-developer-tooling-proposal-2026.md",
     rawHref: `${repositoryBlobBase}/docs/solana-developer-tooling-proposal-2026.md`,
   },
@@ -523,7 +525,8 @@ const curatedDocuments: CuratedDocument[] = [
     category: "Reviewer core",
     summary: "Judging-stage technical review covering wallet execution boundaries, visitor transaction counters, compliance UX clarity, treasury handoff stability, and the founder-built business narrative.",
     audience: "Judges, technical reviewers, grant reviewers, operators",
-    boundary: "Technical review and judging narrative; it documents live Devnet evidence and production gates without claiming completed mainnet release.",
+    boundary:
+      "Technical review and judging narrative; it preserves older Devnet evidence as historical context while routing current reviewers to the Testnet gates without claiming completed mainnet release.",
     docPath: "docs/grand-champion-technical-review-2026-05-22.md",
     rawHref: `${repositoryBlobBase}/docs/grand-champion-technical-review-2026-05-22.md`,
   },
