@@ -1125,7 +1125,7 @@ export class PrivateDaoReadNode {
     const finalized = transactions.filter((entry: MagicBlockOnchainProofView["transactions"][number]) => entry.confirmed).length;
     const proof: MagicBlockOnchainProofView = {
       generatedAt: new Date().toISOString(),
-      network: evidence.network || "devnet",
+      network: "devnet",
       rpcEndpoint: redactRpcEndpoint(chain.endpoint),
       proposal: confidential.proposal,
       corridorPda: confidential.magicblockCorridor,
