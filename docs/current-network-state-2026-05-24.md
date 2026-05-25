@@ -11,7 +11,10 @@ This is the canonical address boundary for the current reviewer-facing PrivateDA
 - Squads vault authority: `CALHrBqx6jbzcPn2NVcinqSAHeod65v9LcDuTxsdPqBv`
 - Squads multisig: `thHmF7VYNtxE1MaDzYXbfPCiq13RF6JwuWnjvDZuSmF`
 - Squads threshold: `2-of-3`
-- Timelock release target: `2026-05-25T00:31:05Z`
+- Executed Squads proposal index `1`: `3E7SMWBouxxqFAMQFXybZQzfvnbchtYdZLBUE5QKe5GaJa4uMbJsVNHybubjSBBePuFuQUM6Cyed7goG7pPyj4Jk`
+- Current binary Squads proposal index `3`: `HAQdiBhjHdYG35MNqn9JzMhg5itFFSj8oTnVPGhM2VYM`
+- Current binary proposal status: `Approved 2-of-3; timelock enforced`
+- Current binary timelock release target: `2026-05-27T02:25:39Z`
 
 ## Legacy Archive
 
@@ -30,5 +33,5 @@ PrivateDAO is currently evaluated through the `EP9x...Jzsecuva` Anchor 1.0.1 pro
 solana program show EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva --url https://api.testnet.solana.com
 spl-token display --program-2022 DFYvBdivHCe4bSErgCiKm2RhwGEcZYbBPFQzLNr37Bie --url https://api.testnet.solana.com --output json-compact
 npm run check:squads-timelock
+PROPOSAL_INDEX=3 npm run execute:squads-upgrade
 ```
-

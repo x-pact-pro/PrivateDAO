@@ -8,6 +8,11 @@ const MULTISIG = new PublicKey(process.env.MULTISIG ?? "thHmF7VYNtxE1MaDzYXbfPCi
 const PROGRAM_ID = new PublicKey("EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva");
 const TRANSACTION_INDEX = BigInt(process.env.PROPOSAL_INDEX ?? "1");
 
+function redactRpcUrl(url: string): string {
+  if (url.includes("quiknode.pro")) return "quicknode-testnet-redacted";
+  return url;
+}
+
 async function main() {
   const keypairPath = process.env.SQUADS_EXECUTOR_KEYPAIR ?? `${process.env.HOME}/.config/solana/id.json`;
   const executor = Keypair.fromSecretKey(Uint8Array.from(JSON.parse(fs.readFileSync(keypairPath, "utf8"))));
@@ -22,7 +27,7 @@ async function main() {
   console.log(
     JSON.stringify(
       {
-        rpcUrl: RPC_URL,
+        rpcUrl: redactRpcUrl(RPC_URL),
         multisig: MULTISIG.toBase58(),
         proposalPda: proposalPda.toBase58(),
         transactionIndex: TRANSACTION_INDEX.toString(),
