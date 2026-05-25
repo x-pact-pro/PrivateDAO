@@ -648,6 +648,18 @@ const curatedDocuments: CuratedDocument[] = [
     rawHref: `${repositoryBlobBase}/docs/squads-testnet-upgrade-proposal-2026-05-23.md`,
   },
   {
+    slug: "squads-current-binary-upgrade-proposal-2026-05-25",
+    title: "Squads Current Binary Upgrade Proposal 2026-05-25",
+    category: "Security",
+    summary:
+      "Current Squads proposal index 3 packet for the Anchor 1.0.1 Testnet binary, including buffer authority transfer, 2-of-3 approvals, and the enforced 2026-05-27 timelock release.",
+    audience: "Judges, security reviewers, Solana operators, technical diligence teams",
+    boundary:
+      "Current Testnet proposal packet only; execution remains blocked until 2026-05-27T02:25:39Z and DAO/treasury handoff claims require post-execution readouts.",
+    docPath: "docs/squads-current-binary-upgrade-proposal-2026-05-25.md",
+    rawHref: `${repositoryBlobBase}/docs/squads-current-binary-upgrade-proposal-2026-05-25.md`,
+  },
+  {
     slug: "timelock-enforcement-proof-2026-05-23",
     title: "Timelock Enforcement Proof 2026-05-23",
     category: "Reviewer core",

@@ -17,10 +17,10 @@ const proofRows = [
   {
     icon: TimerReset,
     label: "Squads multisig custody",
-    status: "2/2 approved",
-    claim: "The Testnet upgrade path reached threshold approval, and a timelock bypass attempt was rejected with TimeLockNotReleased / 6021.",
-    evidence: "Vault CALHr...PqBv · signer txs 4Y8a2c2eg... and 2VH24vs... · execution unlock 2026-05-25T00:31:05Z.",
-    href: "/documents/timelock-enforcement-proof-2026-05-23",
+    status: "2-of-3 approved",
+    claim: "The current Testnet proposal index 3 reached threshold approval, and execution remains blocked until the enforced 48-hour timelock release.",
+    evidence: "Vault CALHr...PqBv · signer approvals 4rcv9Eyf... and 3giWXof... · execution unlock 2026-05-27T02:25:39Z.",
+    href: "/documents/squads-current-binary-upgrade-proposal-2026-05-25",
   },
   {
     icon: KeyRound,

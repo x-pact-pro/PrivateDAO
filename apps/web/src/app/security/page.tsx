@@ -145,7 +145,7 @@ export default function SecurityPage() {
           <Link href="/documents/timelock-enforcement-proof-2026-05-23" className={cn(buttonVariants({ size: "sm" }))}>
             Open timelock proof
           </Link>
-          <Link href="/documents/squads-testnet-upgrade-proposal-2026-05-23" className={cn(buttonVariants({ size: "sm", variant: "secondary" }))}>
+          <Link href="/documents/squads-current-binary-upgrade-proposal-2026-05-25" className={cn(buttonVariants({ size: "sm", variant: "secondary" }))}>
             Open Squads proposal proof
           </Link>
           <Link href="/documents/zk-standalone-verifier-testnet-2026-05-23" className={cn(buttonVariants({ size: "sm", variant: "outline" }))}>

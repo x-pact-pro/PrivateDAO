@@ -80,13 +80,13 @@ export default function JudgePage() {
       value: "Vault CALHr...PqBv",
       detail:
         "Current proposal index 3 reached threshold with signer approvals 4rcv9Eyf... and 3giWXof...; enforced timelock release 2026-05-27T02:25:39Z.",
-      href: "/documents/squads-testnet-upgrade-proposal-2026-05-23",
+      href: "/documents/squads-current-binary-upgrade-proposal-2026-05-25",
       cta: "Open proposal proof",
     },
     {
       label: "Timelock enforcement demonstrated",
       value: "6021 TimeLockNotReleased",
-      detail: "Even valid 2/2 multisig signers cannot bypass the active 48-hour delay. Recorded in commit 2eccecb60 and the proof packet.",
+      detail: "Even threshold-approved multisig execution cannot bypass the active 48-hour delay. Recorded in the proof packet and current proposal 3 status.",
       href: "/documents/timelock-enforcement-proof-2026-05-23",
       cta: "Open timelock proof",
     },
