@@ -2,6 +2,7 @@
 set -euo pipefail
 
 CLUSTER="${CLUSTER:-https://api.testnet.solana.com}"
+ANCHOR_WALLET="${ANCHOR_WALLET:-${HOME}/.config/solana/id.json}"
 VAULT="${VAULT:-CALHrBqx6jbzcPn2NVcinqSAHeod65v9LcDuTxsdPqBv}"
 MULTISIG="${MULTISIG:-thHmF7VYNtxE1MaDzYXbfPCiq13RF6JwuWnjvDZuSmF}"
 PROPOSAL_INDEX="${PROPOSAL_INDEX:-1}"
@@ -41,6 +42,9 @@ if (( NOW < RELEASE )); then
 fi
 
 solana config set --url "${CLUSTER}"
+export SOLANA_RPC_URL="${CLUSTER}"
+export ANCHOR_PROVIDER_URL="${CLUSTER}"
+export ANCHOR_WALLET="${ANCHOR_WALLET}"
 npm run execute:squads-upgrade
 npm run initialize:treasury-operator-authority -- --dao "${DAO_PDA}"
 npm run transfer:treasury-operator-authority -- --dao "${DAO_PDA}" --new-authority "${VAULT}"
