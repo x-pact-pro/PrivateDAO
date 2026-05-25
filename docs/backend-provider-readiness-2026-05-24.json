@@ -1,6 +1,6 @@
 {
   "project": "PrivateDAO",
-  "generatedAt": "2026-05-24T23:40:00.000Z",
+  "generatedAt": "2026-05-25T04:18:25.392Z",
   "baseUrl": "https://api.privatedao.org",
   "cluster": "solana-testnet",
   "expectedProgramId": "EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva",
@@ -28,7 +28,7 @@
       "path": "/api/v1/quicknode/stream/stats",
       "httpStatus": 200,
       "status": "pass",
-      "summary": "2 accepted payload(s), HMAC-compatible root fallback active, raw storage disabled"
+      "summary": "2 accepted payload(s), raw storage disabled"
     },
     {
       "label": "Supabase visitor counters",
@@ -36,15 +36,15 @@
       "path": "/api/v1/visitors/stats",
       "httpStatus": 200,
       "status": "pass",
-      "summary": "740 total sessions, visitor tx counters live"
+      "summary": "740 total sessions, 57 visitor txs"
     },
     {
       "label": "MagicBlock receipt proof",
-      "provider": "MagicBlock + Solana Testnet receipts",
+      "provider": "MagicBlock + Solana receipts",
       "path": "/api/v1/magicblock/onchain-proof",
       "httpStatus": 200,
       "status": "pass",
-      "summary": "5/5 receipts finalized on Testnet"
+      "summary": "5/5 receipts finalized; runtime ok"
     },
     {
       "label": "Ika Solana pre-alpha readiness",
@@ -52,7 +52,7 @@
       "path": "/api/v1/ika/solana-prealpha/readiness",
       "httpStatus": 200,
       "status": "pass",
-      "summary": "program executable, operator funded, latest blockhash available"
+      "summary": "program executable=true, operator funded=true, latest blockhash=BhgGG2Lr...VTfZ25"
     },
     {
       "label": "REFHE payroll proof route",
@@ -60,7 +60,7 @@
       "path": "/api/v1/refhe/payroll/proof",
       "httpStatus": 200,
       "status": "pass",
-      "summary": "valid ciphertext and commitment payload returns encrypted-computation receipt"
+      "summary": "encrypted computation receipt 4a86b4e9...45350b"
     },
     {
       "label": "Supabase freshness memo",

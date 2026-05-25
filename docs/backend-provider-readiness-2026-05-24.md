@@ -5,7 +5,7 @@
 - Base URL: `https://api.privatedao.org`
 - Cluster: `solana-testnet`
 - Current program: `EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva`
-- Generated at: `2026-05-24T23:40:00.000Z`
+- Generated at: `2026-05-25T04:18:25.392Z`
 - Posture: `backend-production-candidate`
 
 ## Provider Checks
@@ -32,7 +32,7 @@
 - endpoint: `https://api.privatedao.org/api/v1/quicknode/stream/stats`
 - status: `pass`
 - http: `200`
-- summary: HMAC-compatible stream intake is active; root POST fallback rewrites to `/api/v1/quicknode/stream`; raw storage disabled
+- summary: 2 accepted payload(s), raw storage disabled
 
 ### Supabase visitor counters
 
@@ -40,15 +40,15 @@
 - endpoint: `https://api.privatedao.org/api/v1/visitors/stats`
 - status: `pass`
 - http: `200`
-- summary: 740 total sessions, visitor tx counters live
+- summary: 740 total sessions, 57 visitor txs
 
 ### MagicBlock receipt proof
 
-- provider: `MagicBlock + Solana Testnet receipts`
+- provider: `MagicBlock + Solana receipts`
 - endpoint: `https://api.privatedao.org/api/v1/magicblock/onchain-proof`
 - status: `pass`
 - http: `200`
-- summary: 5/5 receipts finalized on Testnet
+- summary: 5/5 receipts finalized; runtime ok
 
 ### Ika Solana pre-alpha readiness
 
@@ -56,7 +56,7 @@
 - endpoint: `https://api.privatedao.org/api/v1/ika/solana-prealpha/readiness`
 - status: `pass`
 - http: `200`
-- summary: program executable, operator funded, latest blockhash available
+- summary: program executable=true, operator funded=true, latest blockhash=BhgGG2Lr...VTfZ25
 
 ### REFHE payroll proof route
 
@@ -64,7 +64,7 @@
 - endpoint: `https://api.privatedao.org/api/v1/refhe/payroll/proof`
 - status: `pass`
 - http: `200`
-- summary: valid ciphertext and commitment payload returns encrypted-computation receipt
+- summary: encrypted computation receipt 4a86b4e9...45350b
 
 ### Supabase freshness memo
 
