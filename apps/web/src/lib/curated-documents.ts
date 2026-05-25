@@ -90,6 +90,30 @@ const curatedDocuments: CuratedDocument[] = [
     rawHref: `${repositoryBlobBase}/docs/operation-ledger.generated.md`,
   },
   {
+    slug: "mainnet-proof-package",
+    title: "Mainnet Proof Package",
+    category: "Release",
+    summary:
+      "Compact reviewer package binding the current Testnet program, acceptance matrix, runtime evidence, release drill, external-readiness intake, and canonical verification commands.",
+    audience: "Judges, funders, security reviewers, operators, ecosystem partners",
+    boundary:
+      "Release-readiness packet only; it anchors the current Testnet proof path and keeps mainnet real-funds launch gated on external audit, custody execution, monitoring, and cutover closure.",
+    docPath: "docs/mainnet-proof-package.generated.md",
+    rawHref: `${repositoryBlobBase}/docs/mainnet-proof-package.generated.md`,
+  },
+  {
+    slug: "mainnet-acceptance-matrix",
+    title: "Mainnet Acceptance Matrix",
+    category: "Release",
+    summary:
+      "Repository-generated acceptance matrix separating accepted in-repo evidence, pending external gates, legacy Devnet regression proof, and the current Testnet program path.",
+    audience: "Judges, funders, security reviewers, operators, ecosystem partners",
+    boundary:
+      "Acceptance matrix only; it makes the production gate explicit without turning Testnet proof, historical Devnet artifacts, or repository simulations into a completed mainnet launch claim.",
+    docPath: "docs/mainnet-acceptance-matrix.generated.md",
+    rawHref: `${repositoryBlobBase}/docs/mainnet-acceptance-matrix.generated.md`,
+  },
+  {
     slug: "solana-anonymous-governance-primitive",
     title: "Solana Anonymous Governance Primitive",
     category: "ZK",

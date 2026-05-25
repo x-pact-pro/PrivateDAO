@@ -104,6 +104,8 @@ function main() {
     [curatedDocuments, 'slug: "trust-package"', "curated documents are missing trust package"],
     [curatedDocuments, 'slug: "service-catalog"', "curated documents are missing service catalog"],
     [curatedDocuments, 'slug: "frontier-integrations"', "curated documents are missing frontier integrations"],
+    [curatedDocuments, 'slug: "mainnet-proof-package"', "curated documents are missing mainnet proof package"],
+    [curatedDocuments, 'slug: "mainnet-acceptance-matrix"', "curated documents are missing mainnet acceptance matrix"],
     [curatedDocuments, 'slug: "squads-current-binary-upgrade-proposal-2026-05-25"', "curated documents are missing current Squads proposal 3 packet"],
     [siteData, "https://discord.gg/GjJykUtTTt", "site data is missing the Discord server link"],
     [siteData, "https://arena.colosseum.org/projects/explore/praivatedao", "site data is missing the Colosseum project link"],
