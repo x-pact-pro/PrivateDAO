@@ -27,6 +27,7 @@ const routeMoments = [
 ] as const;
 
 type JupiterPreviewResponse = {
+  source?: "developer-platform-order" | "lite-quote";
   request?: {
     inputMint?: string;
     outputMint?: string;
@@ -94,6 +95,7 @@ function mapJupiterQuoteToPreview(raw: JupiterQuoteResponse, request: { inputMin
   const routePlan = Array.isArray(raw.routePlan) ? raw.routePlan : [];
 
   return {
+    source: "lite-quote",
     request,
     summary: {
       mode: raw.swapMode ?? "ExactIn",
@@ -118,6 +120,13 @@ function mapJupiterQuoteToPreview(raw: JupiterQuoteResponse, request: { inputMin
   };
 }
 
+function mapJupiterOrderToPreview(raw: JupiterPreviewResponse): JupiterPreviewResponse {
+  return {
+    ...raw,
+    source: "developer-platform-order",
+  };
+}
+
 export function JupiterTreasuryRouteSurface() {
   const [inputMint, setInputMint] = useState(DEFAULT_INPUT_MINT);
   const [outputMint, setOutputMint] = useState(DEFAULT_OUTPUT_MINT);
@@ -130,21 +139,41 @@ export function JupiterTreasuryRouteSurface() {
   const [running, setRunning] = useState(false);
 
   async function handlePreview() {
-    const configuredEndpoint = process.env.NEXT_PUBLIC_JUPITER_QUOTE_ENDPOINT?.trim();
-    const endpoint = configuredEndpoint || "https://lite-api.jup.ag/swap/v1/quote";
+    const configuredOrderEndpoint = process.env.NEXT_PUBLIC_JUPITER_ORDER_ENDPOINT?.trim();
+    const configuredQuoteEndpoint = process.env.NEXT_PUBLIC_JUPITER_QUOTE_ENDPOINT?.trim();
+    const quoteEndpoint = configuredQuoteEndpoint || "https://lite-api.jup.ag/swap/v1/quote";
     const normalizedSlippage = Number(slippageBps);
-    const query = new URLSearchParams({
+    const requestPayload = {
       inputMint,
       outputMint,
       amount,
-      slippageBps: Number.isFinite(normalizedSlippage) ? String(Math.round(normalizedSlippage)) : "75",
-    });
+      slippageBps: Number.isFinite(normalizedSlippage) ? Math.round(normalizedSlippage) : 75,
+    };
 
     setRunning(true);
-    setDeliveryState("Requesting Jupiter route preview...");
+    setDeliveryState(configuredOrderEndpoint ? "Requesting Jupiter Developer Platform order preview..." : "Requesting Jupiter route preview...");
 
     try {
-      const response = await fetch(`${endpoint}?${query.toString()}`, {
+      if (configuredOrderEndpoint) {
+        const response = await fetch(configuredOrderEndpoint, {
+          method: "POST",
+          headers: { Accept: "application/json", "Content-Type": "application/json" },
+          body: JSON.stringify(requestPayload),
+          cache: "no-store",
+        });
+        const body = (await response.json().catch(() => null)) as JupiterPreviewResponse | null;
+        setPreview(body ? mapJupiterOrderToPreview(body) : null);
+        setDeliveryState(response.ok ? "Jupiter Developer Platform order preview received." : body?.error ?? `Jupiter endpoint responded ${response.status}.`);
+        return;
+      }
+
+      const query = new URLSearchParams({
+        inputMint,
+        outputMint,
+        amount,
+        slippageBps: String(requestPayload.slippageBps),
+      });
+      const response = await fetch(`${quoteEndpoint}?${query.toString()}`, {
         method: "GET",
         headers: { Accept: "application/json" },
         cache: "no-store",
@@ -155,12 +184,12 @@ export function JupiterTreasuryRouteSurface() {
             inputMint,
             outputMint,
             amount,
-            slippageBps: Number.isFinite(normalizedSlippage) ? Math.round(normalizedSlippage) : null,
+            slippageBps: requestPayload.slippageBps,
           })
         : null;
 
       setPreview(mapped);
-      setDeliveryState(response.ok ? "Jupiter Quote API preview received." : body?.error ?? `Jupiter endpoint responded ${response.status}.`);
+      setDeliveryState(response.ok ? "Jupiter Lite Quote API preview received." : body?.error ?? `Jupiter endpoint responded ${response.status}.`);
     } catch (error) {
       setPreview(null);
       setDeliveryState(error instanceof Error ? error.message : "Jupiter route preview failed.");
@@ -271,6 +300,16 @@ export function JupiterTreasuryRouteSurface() {
                 <div className="rounded-2xl border border-white/8 bg-black/20 p-4 text-sm text-white/62">
                   <div className="text-[11px] uppercase tracking-[0.22em] text-white/46">Router</div>
                   <div className="mt-2 text-white">{preview?.summary?.router ?? "Requesting live quote"}</div>
+                </div>
+                <div className="rounded-2xl border border-white/8 bg-black/20 p-4 text-sm text-white/62">
+                  <div className="text-[11px] uppercase tracking-[0.22em] text-white/46">API mode</div>
+                  <div className="mt-2 text-white">
+                    {preview?.source === "developer-platform-order"
+                      ? "Developer Platform /order"
+                      : preview?.source === "lite-quote"
+                        ? "Lite Quote fallback"
+                        : "Requesting live quote"}
+                  </div>
                 </div>
                 <div className="rounded-2xl border border-white/8 bg-black/20 p-4 text-sm text-white/62">
                   <div className="text-[11px] uppercase tracking-[0.22em] text-white/46">Mode</div>

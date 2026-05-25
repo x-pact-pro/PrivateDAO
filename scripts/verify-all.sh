@@ -156,6 +156,7 @@ run_parallel_group \
   "backend provider readiness" "npm run verify:backend-provider-readiness >/dev/null" \
   "QuickNode stream intake" "npm run verify:quicknode-stream-intake >/dev/null" \
   "Frontier integrations" "npm run verify:frontier-integrations >/dev/null" \
+  "Frontier track closure" "npm run verify:frontier-track-closure >/dev/null" \
   "Colosseum competitive analysis" "npm run verify:colosseum-competitive >/dev/null" \
   "real-device runtime intake" "npm run verify:real-device-runtime >/dev/null" \
   "runtime evidence" "npm run verify:runtime-evidence >/dev/null" \

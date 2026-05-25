@@ -214,6 +214,9 @@ export default function ProofPage() {
           <Link href="/judge" className={cn(buttonVariants({ size: "sm", variant: "outline" }))}>
             Open judge route
           </Link>
+          <Link href="/documents/frontier-track-closure-matrix-2026-05-25" className={cn(buttonVariants({ size: "sm", variant: "secondary" }))}>
+            Open track closure matrix
+          </Link>
         </div>
       </div>
       <MagicBlockPrivatePaymentsStatus />

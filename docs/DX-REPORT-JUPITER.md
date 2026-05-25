@@ -10,9 +10,10 @@
 - Route-level integration is visible and reviewer-friendly.
 - Treasury-route framing is aligned with governance-first execution.
 - Proof and judge continuity is straightforward to explain.
+- The product now supports a server-side Jupiter Developer Platform `/order` mode through `NEXT_PUBLIC_JUPITER_ORDER_ENDPOINT`, while preserving the public Lite Quote fallback for static review surfaces.
 
 ## Friction points
-1. API error semantics need stronger user-facing normalization.
+1. API error semantics still need stronger user-facing normalization across `/order`, `/execute`, and quote-only fallback modes.
 2. Route/quote terminology is still too technical for first-time users.
 3. Some execution hints are distributed across pages; a single condensed status panel would improve speed.
 
@@ -26,4 +27,3 @@
 
 ## Estimated time-to-first-value
 - For an already connected wallet and configured environment: under 3 minutes to understand the lane and run first controlled route rehearsal.
-

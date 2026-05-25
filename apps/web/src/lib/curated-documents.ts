@@ -54,6 +54,18 @@ const curatedDocuments: CuratedDocument[] = [
     rawHref: `${repositoryBlobBase}/docs/cryptographic-onchain-matrix-2026-05-25.md`,
   },
   {
+    slug: "frontier-track-closure-matrix-2026-05-25",
+    title: "Frontier Track Closure Matrix",
+    category: "Reviewer core",
+    summary:
+      "Judging-stage matrix mapping Encrypt/Ika, MagicBlock, Umbra, Jupiter, QuickNode, Solflare, Eitherway, intelligence, and capital-route tracks to live product routes, backend proof, and verification commands.",
+    audience: "Judges, ecosystem partners, security reviewers, investors, operators",
+    boundary:
+      "Track-closure matrix only; it presents current Solana Testnet proof, provider readiness, and product routes without claiming mainnet real-funds release, final Ika 2PC-MPC signing, or completed Umbra claim settlement.",
+    docPath: "docs/frontier-track-closure-matrix-2026-05-25.md",
+    rawHref: `${repositoryBlobBase}/docs/frontier-track-closure-matrix-2026-05-25.md`,
+  },
+  {
     slug: "three-minute-product-entry-2026-05-23",
     title: "Three-Minute Product Entry",
     category: "Product",

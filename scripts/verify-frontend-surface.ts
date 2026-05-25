@@ -14,6 +14,7 @@ const JUDGE_PAGE = path.resolve("apps/web/src/app/judge/page.tsx");
 const SECURITY_PAGE = path.resolve("apps/web/src/app/security/page.tsx");
 const API_STATUS_PAGE = path.resolve("apps/web/src/app/api-status/page.tsx");
 const RPC_SERVICES_LIVE_PANEL = path.resolve("apps/web/src/components/rpc-services-live-panel.tsx");
+const JUPITER_TREASURY_ROUTE_SURFACE = path.resolve("apps/web/src/components/jupiter-treasury-route-surface.tsx");
 const CURATED_DOCUMENTS = path.resolve("apps/web/src/lib/curated-documents.ts");
 const SITE_DATA = path.resolve("apps/web/src/lib/site-data.ts");
 const SITE_FOOTER = path.resolve("apps/web/src/components/site-footer.tsx");
@@ -41,6 +42,7 @@ function main() {
   const securityPage = fs.readFileSync(SECURITY_PAGE, "utf8");
   const apiStatusPage = fs.readFileSync(API_STATUS_PAGE, "utf8");
   const rpcServicesLivePanel = fs.readFileSync(RPC_SERVICES_LIVE_PANEL, "utf8");
+  const jupiterTreasuryRouteSurface = fs.readFileSync(JUPITER_TREASURY_ROUTE_SURFACE, "utf8");
   const curatedDocuments = fs.readFileSync(CURATED_DOCUMENTS, "utf8");
   const siteData = fs.readFileSync(SITE_DATA, "utf8");
   const siteFooter = fs.readFileSync(SITE_FOOTER, "utf8");
@@ -104,6 +106,7 @@ function main() {
     [curatedDocuments, 'slug: "trust-package"', "curated documents are missing trust package"],
     [curatedDocuments, 'slug: "service-catalog"', "curated documents are missing service catalog"],
     [curatedDocuments, 'slug: "frontier-integrations"', "curated documents are missing frontier integrations"],
+    [curatedDocuments, 'slug: "frontier-track-closure-matrix-2026-05-25"', "curated documents are missing the Frontier track closure matrix"],
     [curatedDocuments, 'slug: "mainnet-proof-package"', "curated documents are missing mainnet proof package"],
     [curatedDocuments, 'slug: "mainnet-acceptance-matrix"', "curated documents are missing mainnet acceptance matrix"],
     [curatedDocuments, 'slug: "squads-current-binary-upgrade-proposal-2026-05-25"', "curated documents are missing current Squads proposal 3 packet"],
@@ -117,10 +120,16 @@ function main() {
     [judgePage, "Current proposal index 3", "judge route is missing the current Squads proposal index"],
     [judgePage, "/documents/squads-current-binary-upgrade-proposal-2026-05-25", "judge route is not linked to the current Squads proposal packet"],
     [judgePage, "/documents/mainnet-proof-package", "judge route is missing the release proof package link"],
+    [judgePage, "/documents/frontier-track-closure-matrix-2026-05-25", "judge route is missing the Frontier track closure matrix link"],
+    [judgePage, "https://privatedao.org/services/jupiter-treasury-route/", "judge route is missing the Jupiter submission link"],
+    [judgePage, "https://privatedao.org/services/umbra-confidential-payout/", "judge route is missing the Umbra submission link"],
+    [judgePage, "https://privatedao.org/services/eitherway-live-dapp/", "judge route is missing the Eitherway submission link"],
+    [judgePage, "https://privatedao.org/services/encrypt-ika-operations/", "judge route is missing the Encrypt/Ika submission link"],
     [securityPage, "Squads proposal index 3", "security route is missing the current Squads proposal index"],
     [securityPage, "2026-05-27T02:25:39Z", "security route is missing the current Squads proposal 3 timelock release"],
     [securityPage, "/documents/squads-current-binary-upgrade-proposal-2026-05-25", "security route is not linked to the current Squads proposal packet"],
     [proofPage, "finalized Testnet private payment receipts", "proof route is missing Testnet private-payment receipt language"],
+    [proofPage, "/documents/frontier-track-closure-matrix-2026-05-25", "proof route is missing the Frontier track closure matrix link"],
     [apiStatusPage, "MagicBlock receipts", "API status route is missing MagicBlock receipt evidence"],
     [apiStatusPage, "Ika readiness", "API status route is missing Ika readiness evidence"],
     [apiStatusPage, "REFHE proof", "API status route is missing REFHE proof evidence"],
@@ -130,6 +139,9 @@ function main() {
     [rpcServicesLivePanel, "accepted stream payloads", "RPC services panel is missing QuickNode stream ingestion detail"],
     [rpcServicesLivePanel, "receipts finalized", "RPC services panel is missing MagicBlock receipt finality detail"],
     [rpcServicesLivePanel, "program executable", "RPC services panel is missing Ika executable-readiness detail"],
+    [jupiterTreasuryRouteSurface, "NEXT_PUBLIC_JUPITER_ORDER_ENDPOINT", "Jupiter treasury route is missing server order endpoint support"],
+    [jupiterTreasuryRouteSurface, "Developer Platform /order", "Jupiter treasury route is missing Developer Platform order mode copy"],
+    [jupiterTreasuryRouteSurface, "Lite Quote fallback", "Jupiter treasury route is missing public quote fallback copy"],
     [curatedDocuments, "archived canary evidence", "runtime evidence document summary still presents old canary language as current"],
     [oldSquadsProposalDoc, "This is a historical custody packet", "old Squads proposal doc is missing historical status"],
     [oldSquadsProposalDoc, "Current proposal index `3`", "old Squads proposal doc is missing the current proposal index 3 pointer"],

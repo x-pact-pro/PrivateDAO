@@ -57,6 +57,29 @@ const ENCRYPTED_INTEGRATIONS_2026_05_23 = {
   programId: "EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva",
 };
 
+const SUBMISSION_LINKS = [
+  {
+    label: "Jupiter treasury route",
+    href: "https://privatedao.org/services/jupiter-treasury-route/",
+    detail: "Developer Platform order mode, Lite Quote fallback, and governed treasury route preview.",
+  },
+  {
+    label: "Umbra confidential payout",
+    href: "https://privatedao.org/services/umbra-confidential-payout/",
+    detail: "Recipient-private payout lane with claim-style flow, relayer visibility, and proof continuity.",
+  },
+  {
+    label: "Eitherway wallet-first dApp",
+    href: "https://privatedao.org/services/eitherway-live-dapp/",
+    detail: "Connect, sign, choose partner route, and continue into governed execution from one browser path.",
+  },
+  {
+    label: "Encrypt / Ika operations",
+    href: "https://privatedao.org/services/encrypt-ika-operations/",
+    detail: "Encrypted operations, REFHE proof receipts, Ika readiness, and confidential payroll preparation.",
+  },
+] as const;
+
 export const metadata: Metadata = buildRouteMetadata({
   title: "Verification Route",
   description:
@@ -112,6 +135,14 @@ export default function JudgePage() {
       href: "/documents/mainnet-proof-package",
       cta: "Open release proof",
     },
+    {
+      label: "Frontier track closure",
+      value: "Encrypt/Ika + MagicBlock + Umbra",
+      detail:
+        "One matrix maps every active partner track to the live product route, backend proof endpoint, operating boundary, and verification command without exposing secrets.",
+      href: "/documents/frontier-track-closure-matrix-2026-05-25",
+      cta: "Open track matrix",
+    },
   ];
   const recognitionSignals = [
     {
@@ -160,6 +191,37 @@ export default function JudgePage() {
       ]}
     >
       <LocalizedRouteSummary routeKey="judge" />
+      <section className="rounded-[30px] border border-white/10 bg-[linear-gradient(135deg,rgba(255,255,255,0.08),rgba(34,211,238,0.07),rgba(8,13,28,0.95))] p-5">
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <div className="text-[11px] uppercase tracking-[0.3em] text-cyan-100/78">Submission fast links</div>
+            <h2 className="mt-3 max-w-4xl text-2xl font-semibold text-white">Four focused review links for the active partner lanes</h2>
+            <p className="mt-3 max-w-4xl text-sm leading-7 text-white/64">
+              These links are the cleanest submission surfaces for Jupiter, Umbra, Eitherway, and Encrypt / Ika. Each route starts at product value, then exposes the proof and execution boundary.
+            </p>
+          </div>
+          <Link href="/documents/frontier-track-closure-matrix-2026-05-25" className={cn(buttonVariants({ variant: "secondary" }), "shrink-0")}>
+            Open track matrix
+            <ArrowUpRight className="h-4 w-4" />
+          </Link>
+        </div>
+        <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+          {SUBMISSION_LINKS.map((link) => (
+            <a
+              key={link.href}
+              href={link.href}
+              className="rounded-[22px] border border-white/10 bg-black/24 p-4 transition hover:border-cyan-300/30 hover:bg-black/32"
+            >
+              <div className="text-sm font-semibold text-white">{link.label}</div>
+              <p className="mt-2 text-xs leading-5 text-white/58">{link.detail}</p>
+              <div className="mt-4 inline-flex items-center gap-2 text-xs font-medium text-cyan-100">
+                Open submission route
+                <ArrowUpRight className="h-3.5 w-3.5" />
+              </div>
+            </a>
+          ))}
+        </div>
+      </section>
       <section className="rounded-[30px] border border-cyan-300/24 bg-[radial-gradient(circle_at_top_left,rgba(34,211,238,0.20),transparent_34%),linear-gradient(135deg,rgba(14,165,233,0.12),rgba(20,241,149,0.09),rgba(8,13,28,0.95))] p-5 shadow-[0_24px_80px_rgba(0,0,0,0.30)]">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>

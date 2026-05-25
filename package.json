@@ -212,6 +212,7 @@
     "verify:backend-provider-readiness": "ts-node scripts/verify-backend-provider-readiness.ts",
     "verify:read-node-ops": "ts-node scripts/verify-read-node-ops-snapshot.ts",
     "verify:frontier-integrations": "MAGICBLOCK_HTTP_TIMEOUT_MS=2500 PRIVATE_DAO_RPC_TIMEOUT_MS=12000 ts-node scripts/verify-frontier-integrations.ts",
+    "verify:frontier-track-closure": "ts-node scripts/verify-frontier-track-closure.ts",
     "verify:cryptographic-onchain-matrix": "ts-node scripts/verify-cryptographic-onchain-matrix.ts",
     "verify:colosseum-competitive": "ts-node scripts/verify-colosseum-competitive-analysis.ts",
     "verify:weekly-updates": "ts-node scripts/verify-weekly-update-videos.ts",

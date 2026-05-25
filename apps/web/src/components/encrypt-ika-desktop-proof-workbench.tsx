@@ -71,7 +71,7 @@ export function EncryptIkaDesktopProofWorkbench() {
     { id: "browser-encryption", label: "Browser encryption", state: "idle", detail: "WebCrypto payload encryption runs locally before proof." },
     { id: "refhe-receipt", label: "REFHE receipt", state: "idle", detail: "Build encrypted payroll receipt and commitment continuity." },
     { id: "ika-sui", label: "Ika Sui readiness", state: "idle", detail: "Read Ika network encryption key and packages through @ika.xyz/sdk." },
-    { id: "ika-solana", label: "Ika Solana pre-alpha", state: "idle", detail: "Read executable program and funded operator wallet on devnet." },
+    { id: "ika-solana", label: "Ika Solana pre-alpha", state: "idle", detail: "Read executable program and funded Testnet/pre-alpha operator wallet." },
     { id: "ika-approval", label: "Ika approval route", state: "idle", detail: "Prepare the governed approval route for the confidential payroll message." },
   ]);
   const [preview, setPreview] = useState("Run an encrypted proof action to see live output.");

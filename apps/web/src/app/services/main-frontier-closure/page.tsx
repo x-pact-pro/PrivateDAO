@@ -61,6 +61,9 @@ export default function MainFrontierClosurePage() {
           <Link href="/execute" className={cn(buttonVariants({ size: "sm", variant: "outline" }))}>
             Open execute
           </Link>
+          <Link href="/documents/frontier-track-closure-matrix-2026-05-25" className={cn(buttonVariants({ size: "sm", variant: "secondary" }))}>
+            Open track closure matrix
+          </Link>
         </div>
       </div>
 

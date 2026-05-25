@@ -74,7 +74,7 @@ export function IkaDwalletCustodyWorkbench() {
       <p className="mt-3 max-w-4xl text-sm leading-7 text-white/66">
         This workbench uses <code>@ika.xyz/sdk</code> on the read node to initialize Ika testnet, read the live network
         encryption key, choose the dWallet curve, and show a live execution lane for custody routing. It also reads the
-        Ika Solana pre-alpha program and the funded devnet operator wallet used for the approval-flow lane.
+        Ika Solana pre-alpha program and the funded Testnet/pre-alpha operator wallet used for the approval-flow lane.
       </p>
 
       <div className="mt-5 grid gap-4 lg:grid-cols-[0.9fr_1.1fr]">
