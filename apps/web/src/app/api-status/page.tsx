@@ -51,9 +51,27 @@ const quickChecks = [
   },
   {
     title: "Backend provider readiness",
-    body: "AWS, QuickNode RPC, QuickNode Streams, Supabase counters, QVAC proof, Umbra relayer, and chain watcher in one verification packet.",
+    body: "AWS, QuickNode RPC, QuickNode Streams, MagicBlock receipts, Ika readiness, REFHE proof, Supabase counters, QVAC proof, Umbra relayer, and chain watcher in one verification packet.",
     href: "/documents/backend-provider-readiness-2026-05-24",
     icon: DatabaseZap,
+  },
+  {
+    title: "MagicBlock receipt proof",
+    body: "Reviewer-safe on-chain receipt proof for the private payment execution lane.",
+    href: "https://api.privatedao.org/api/v1/magicblock/onchain-proof",
+    icon: ShieldCheck,
+  },
+  {
+    title: "Ika readiness",
+    body: "Live readiness for the Ika Solana pre-alpha approval-flow lane and funded operator boundary.",
+    href: "https://api.privatedao.org/api/v1/ika/solana-prealpha/readiness",
+    icon: DatabaseZap,
+  },
+  {
+    title: "REFHE payroll proof",
+    body: "Encrypted-computation receipt endpoint for confidential payroll payload integrity.",
+    href: "/services/refhe-payroll-proof",
+    icon: ShieldCheck,
   },
   {
     title: "QVAC proof",
@@ -74,6 +92,9 @@ export default function ApiStatusPage() {
         { label: "Readiness aggregate", variant: "success" },
         { label: "Visitor counters", variant: "cyan" },
         { label: "QuickNode stream-ready", variant: "cyan" },
+        { label: "MagicBlock receipts", variant: "success" },
+        { label: "Ika readiness", variant: "violet" },
+        { label: "REFHE proof", variant: "violet" },
         { label: "Proof freshness", variant: "violet" },
       ]}
     >

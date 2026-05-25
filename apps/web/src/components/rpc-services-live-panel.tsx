@@ -52,11 +52,50 @@ const initialEndpoints: EndpointState[] = [
     status: "checking",
     detail: "Checking QuickNode stream telemetry...",
   },
+  {
+    label: "MagicBlock receipts",
+    href: "https://api.privatedao.org/api/v1/magicblock/onchain-proof",
+    purpose: "Checks the private-payment receipt packet and finalized Solana proof continuity.",
+    status: "checking",
+    detail: "Checking MagicBlock receipt proof...",
+  },
+  {
+    label: "Ika readiness",
+    href: "https://api.privatedao.org/api/v1/ika/solana-prealpha/readiness",
+    purpose: "Checks the Ika Solana pre-alpha program, funded operator, and approval-flow readiness boundary.",
+    status: "checking",
+    detail: "Checking Ika Solana pre-alpha readiness...",
+  },
+  {
+    label: "REFHE payroll route",
+    href: "https://api.privatedao.org/api/v1/refhe/payroll/proof",
+    purpose: "POST-only encrypted-computation proof route used by the confidential payroll service.",
+    status: "online",
+    detail: "POST-only proof route; verified by backend provider readiness.",
+  },
 ];
 
 function summarizePayload(payload: unknown) {
   if (typeof payload !== "object" || payload === null) return "Endpoint returned a response.";
   const record = payload as Record<string, unknown>;
+  const stats = record.stats as Record<string, unknown> | undefined;
+  if (stats && typeof stats === "object") {
+    const accepted = Number(stats.acceptedPayloads ?? 0);
+    const totals = stats.totals as Record<string, unknown> | undefined;
+    const matches = Number(totals?.privateDaoTransactionCount ?? stats.privateDaoTransactionCount ?? 0);
+    return `Online: ${accepted} accepted stream payloads and ${matches} PrivateDAO program match(es).`;
+  }
+  const proof = record.proof as Record<string, unknown> | undefined;
+  const summary = proof?.summary as Record<string, unknown> | undefined;
+  if (summary && typeof summary === "object") {
+    return `Online: ${Number(summary.finalized ?? 0)}/${Number(summary.checked ?? 0)} receipts finalized.`;
+  }
+  const solanaPreAlpha = record.solanaPreAlpha as Record<string, unknown> | undefined;
+  if (solanaPreAlpha && typeof solanaPreAlpha === "object") {
+    const program = solanaPreAlpha.program as Record<string, unknown> | undefined;
+    const operator = solanaPreAlpha.operator as Record<string, unknown> | undefined;
+    return `Online: program executable=${String(program?.executable ?? "unknown")}, operator funded=${String(operator?.funded ?? "unknown")}.`;
+  }
   if (record.ok === true || record.status === "ok") return "Online and returning reviewer-readable JSON.";
   if (typeof record.health === "object" && record.health !== null) return "Online with nested health payload.";
   return "Endpoint responded; inspect JSON for details.";
@@ -71,6 +110,9 @@ export function RpcServicesLivePanel() {
       const next = await Promise.all(
         initialEndpoints.map(async (endpoint) => {
           try {
+            if (endpoint.href.endsWith("/api/v1/refhe/payroll/proof")) {
+              return endpoint;
+            }
             const response = await fetch(endpoint.href, { cache: "no-store" });
             const payload = (await response.json().catch(() => null)) as unknown;
             return {
@@ -108,7 +150,7 @@ export function RpcServicesLivePanel() {
           Umbra relayer reachability, and QVAC runtime proof from the public product surface.
         </p>
       </CardHeader>
-      <CardContent className="grid gap-4 lg:grid-cols-5">
+      <CardContent className="grid gap-4 lg:grid-cols-4">
         {endpoints.map((endpoint) => {
           const online = endpoint.status === "online";
           return (
@@ -139,7 +181,7 @@ export function RpcServicesLivePanel() {
             </div>
           );
         })}
-        <div className="rounded-3xl border border-cyan-300/20 bg-cyan-300/8 p-5 lg:col-span-3">
+        <div className="rounded-3xl border border-cyan-300/20 bg-cyan-300/8 p-5 lg:col-span-4">
           <div className="mb-2 flex items-center gap-2 text-cyan-100">
             <ShieldCheck className="h-4 w-4" />
             <span className="font-semibold">Reviewer boundary</span>
