@@ -76,9 +76,10 @@ export default function JudgePage() {
       cta: "Open receipt",
     },
     {
-      label: "Squads 2/2 approved",
+      label: "Squads 2-of-3 approved",
       value: "Vault CALHr...PqBv",
-      detail: "Upgrade proposal reached threshold. Config-bypass approvals: 4Y8a2c2eg... and 2VH24vs...; timelock release 2026-05-25T00:31:05Z.",
+      detail:
+        "Current proposal index 3 reached threshold with signer approvals 4rcv9Eyf... and 3giWXof...; enforced timelock release 2026-05-27T02:25:39Z.",
       href: "/documents/squads-testnet-upgrade-proposal-2026-05-23",
       cta: "Open proposal proof",
     },

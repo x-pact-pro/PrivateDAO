@@ -129,8 +129,8 @@ export default function SecurityPage() {
             ["Passed", "Threshold", "2-of-3 with 48h timelock"],
             ["Passed", "Signer roster", "4Mm5... · BBBP... · 2Kp..."],
             ["Passed", "Upgrade authority", "Canonical program authority transferred to Squads vault"],
-            ["Pending", "DAO authority", "Scheduled after 2026-05-25T00:31:05Z unlock"],
-            ["Pending", "Treasury authority", "Scheduled after upgrade execution and readouts"],
+            ["Pending", "DAO authority", "Scheduled after Squads proposal index 3 unlocks on 2026-05-27T02:25:39Z"],
+            ["Pending", "Treasury authority", "Scheduled after proposal index 3 execution and post-transfer readouts"],
           ].map(([state, label, detail]) => (
             <div key={label} className="rounded-2xl border border-white/10 bg-black/22 p-4">
               <div className={cn("text-[10px] uppercase tracking-[0.22em]", state === "Passed" ? "text-emerald-100/76" : "text-amber-100/76")}>

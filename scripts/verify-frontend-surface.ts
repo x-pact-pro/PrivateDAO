@@ -9,6 +9,8 @@ const PROOF_CENTER = path.resolve("apps/web/src/components/proof-center.tsx");
 const SECURITY_CENTER = path.resolve("apps/web/src/components/security-center.tsx");
 const DIAGNOSTICS_CENTER = path.resolve("apps/web/src/components/diagnostics-center.tsx");
 const SERVICES_SURFACE = path.resolve("apps/web/src/components/services-surface.tsx");
+const JUDGE_PAGE = path.resolve("apps/web/src/app/judge/page.tsx");
+const SECURITY_PAGE = path.resolve("apps/web/src/app/security/page.tsx");
 const CURATED_DOCUMENTS = path.resolve("apps/web/src/lib/curated-documents.ts");
 const SITE_DATA = path.resolve("apps/web/src/lib/site-data.ts");
 const SITE_FOOTER = path.resolve("apps/web/src/components/site-footer.tsx");
@@ -26,6 +28,8 @@ function main() {
   const securityCenter = fs.readFileSync(SECURITY_CENTER, "utf8");
   const diagnosticsCenter = fs.readFileSync(DIAGNOSTICS_CENTER, "utf8");
   const servicesSurface = fs.readFileSync(SERVICES_SURFACE, "utf8");
+  const judgePage = fs.readFileSync(JUDGE_PAGE, "utf8");
+  const securityPage = fs.readFileSync(SECURITY_PAGE, "utf8");
   const curatedDocuments = fs.readFileSync(CURATED_DOCUMENTS, "utf8");
   const siteData = fs.readFileSync(SITE_DATA, "utf8");
   const siteFooter = fs.readFileSync(SITE_FOOTER, "utf8");
@@ -77,6 +81,10 @@ function main() {
     [siteData, "https://x.com/privateDAOOS", "site data is missing the X profile link"],
     [siteData, "https://t.me/Fahdkotb", "site data is missing the Telegram contact link"],
     [siteFooter, "communityLinks.map", "site footer is missing centralized community link rendering"],
+    [judgePage, "2026-05-27T02:25:39Z", "judge route is missing the current Squads proposal 3 timelock release"],
+    [judgePage, "Current proposal index 3", "judge route is missing the current Squads proposal index"],
+    [securityPage, "Squads proposal index 3", "security route is missing the current Squads proposal index"],
+    [securityPage, "2026-05-27T02:25:39Z", "security route is missing the current Squads proposal 3 timelock release"],
     [documentRenderer, "function parseInline", "document renderer is missing inline markdown support"],
     [documentRenderer, "function flushOrderedList", "document renderer is missing ordered-list support"],
     [documentRenderer, "function flushTable", "document renderer is missing markdown table support"],
@@ -89,6 +97,8 @@ function main() {
     [homeShell, "live devnet", "home shell still presents Devnet as the live operating route"],
     [servicesSurface, "live devnet", "services surface still presents Devnet as the live operating route"],
     [documentRenderer, "live devnet", "document renderer should not encode stale network copy"],
+    [judgePage, "timelock release 2026-05-25T00:31:05Z", "judge route still shows the old Squads timelock release"],
+    [securityPage, "2026-05-25T00:31:05Z unlock", "security route still shows the old Squads timelock release"],
     [trackCommercialization, "live product path stable on devnet", "commercialization plan still presents Devnet as the live product path"],
     [trackCommercialization, "devnet-backed operating partnership", "commercialization plan still presents Devnet as the operating partnership path"],
     [technicalEligibility, "live devnet routes", "technical eligibility still presents Devnet as the live route"],
