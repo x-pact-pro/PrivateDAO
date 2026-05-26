@@ -2530,7 +2530,7 @@ function privacyExecutionClaimsStatus() {
     cluster: matrix.cluster,
     programId: matrix.programId,
     claimPolicy:
-      "Every privacy/encryption claim must be visitor-repeatable on Solana Testnet and must expose either a blockchain explorer URL or a live receipt endpoint. Intent/readiness claims are not promoted to final on-chain settlement until the missing signature exists.",
+      "Every privacy/encryption claim must be visitor-repeatable on Solana Testnet and must expose either a blockchain explorer URL or a live receipt endpoint. Browser claims use an AES-GCM local encrypted packet and anchor only a digest commitment on-chain. Intent/readiness claims are not promoted to final on-chain settlement until the missing signature exists.",
     claims: matrix.serviceMatrix.map((service) => ({
       service: service.service,
       route: service.route,
@@ -2547,6 +2547,7 @@ function privacyExecutionClaimsStatus() {
       "visitorRepeatable === true for every claim",
       "executionProofClass is explicit for every claim",
       "blockchainVerificationUrl points to Solana Testnet explorer for every claim",
+      "browser claim console anchors PDAO_ENCRYPTED_CLAIM_V1 digest commitments",
       "on-chain signature claims must include transaction evidence",
       "intent/readiness claims must keep their nextOnchainGate visible",
     ],

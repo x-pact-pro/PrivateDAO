@@ -150,7 +150,7 @@ const PAGE_CHECKS: PageCheck[] = [
   {
     name: "services-claim-console",
     url: `${ROOT}/services/`,
-    requiredFragments: ["On-chain claim console", "Anchor claim on-chain", "Get Testnet SOL"],
+    requiredFragments: ["On-chain claim console", "Encrypt + anchor on-chain", "Get Testnet SOL"],
   },
   {
     name: "runtime-infrastructure",
@@ -363,6 +363,12 @@ const API_CHECKS: ApiCheck[] = [
       if (payload?.cluster !== "testnet") return `privacy execution claims cluster mismatch: ${payload?.cluster}`;
       const claims = Array.isArray(payload?.claims) ? payload.claims : [];
       if (claims.length < 7) return `privacy execution claims too small: ${claims.length}`;
+      if (typeof payload?.claimPolicy !== "string" || !payload.claimPolicy.includes("AES-GCM")) {
+        return "privacy execution claims policy must mention AES-GCM encrypted claim packets";
+      }
+      if (!Array.isArray(payload?.mustPass) || !payload.mustPass.some((entry: string) => entry.includes("PDAO_ENCRYPTED_CLAIM_V1"))) {
+        return "privacy execution claims must enforce PDAO_ENCRYPTED_CLAIM_V1";
+      }
       for (const claim of claims) {
         if (claim?.visitorRepeatable !== true) return `${claim?.service} claim is not visitor-repeatable`;
         if (typeof claim?.proofClass !== "string" || claim.proofClass.length < 8) return `${claim?.service} missing proofClass`;

@@ -19,6 +19,75 @@ type PrivacyClaim = {
   claim: string;
 };
 
+type EncryptedClaimPacket = {
+  version: "pdao-encrypted-claim-v1";
+  algorithm: "AES-GCM-256";
+  digest: string;
+  iv: string;
+  key: string;
+  ciphertext: string;
+  plaintextPreview: {
+    rail: string;
+    proofClass: string;
+    network: string;
+    visitor: string;
+    createdAt: string;
+  };
+};
+
+function bytesToBase64(bytes: Uint8Array) {
+  let binary = "";
+  bytes.forEach((byte) => {
+    binary += String.fromCharCode(byte);
+  });
+  return window.btoa(binary);
+}
+
+function bytesToHex(bytes: Uint8Array) {
+  return Array.from(bytes)
+    .map((byte) => byte.toString(16).padStart(2, "0"))
+    .join("");
+}
+
+async function buildEncryptedClaimPacket(input: {
+  claim: PrivacyClaim;
+  visitor: string;
+  createdAt: string;
+}): Promise<EncryptedClaimPacket> {
+  const plaintext = {
+    rail: input.claim.id,
+    label: input.claim.label,
+    proofClass: input.claim.proofClass,
+    claim: input.claim.claim,
+    route: input.claim.route,
+    network: SOLANA_NETWORK_LABEL,
+    visitor: input.visitor,
+    createdAt: input.createdAt,
+  };
+  const encoded = new TextEncoder().encode(JSON.stringify(plaintext));
+  const key = await crypto.subtle.generateKey({ name: "AES-GCM", length: 256 }, true, ["encrypt"]);
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+  const ciphertext = new Uint8Array(await crypto.subtle.encrypt({ name: "AES-GCM", iv }, key, encoded));
+  const rawKey = new Uint8Array(await crypto.subtle.exportKey("raw", key));
+  const digest = new Uint8Array(await crypto.subtle.digest("SHA-256", ciphertext));
+
+  return {
+    version: "pdao-encrypted-claim-v1",
+    algorithm: "AES-GCM-256",
+    digest: bytesToHex(digest),
+    iv: bytesToBase64(iv),
+    key: bytesToBase64(rawKey),
+    ciphertext: bytesToBase64(ciphertext),
+    plaintextPreview: {
+      rail: input.claim.id,
+      proofClass: input.claim.proofClass,
+      network: SOLANA_NETWORK_LABEL,
+      visitor: `${input.visitor.slice(0, 6)}...${input.visitor.slice(-6)}`,
+      createdAt: input.createdAt,
+    },
+  };
+}
+
 const privacyClaims: PrivacyClaim[] = [
   {
     id: "private-governance",
@@ -77,6 +146,7 @@ export function PrivacyExecutionClaimConsole({ compact = false }: { compact?: bo
   const [selectedClaimId, setSelectedClaimId] = useState(privacyClaims[0].id);
   const [status, setStatus] = useState(`Connect a ${SOLANA_NETWORK_LABEL} wallet, pick a privacy rail, and anchor the claim on-chain.`);
   const [signature, setSignature] = useState<string | null>(null);
+  const [encryptedPacket, setEncryptedPacket] = useState<EncryptedClaimPacket | null>(null);
   const [isRunning, setIsRunning] = useState(false);
 
   const selectedClaim = useMemo(
@@ -92,16 +162,23 @@ export function PrivacyExecutionClaimConsole({ compact = false }: { compact?: bo
 
     setIsRunning(true);
     setSignature(null);
-    setStatus(`Preparing ${selectedClaim.label} claim attestation on ${SOLANA_NETWORK_LABEL}...`);
+    setEncryptedPacket(null);
+    setStatus(`Encrypting ${selectedClaim.label} claim locally before anchoring it on ${SOLANA_NETWORK_LABEL}...`);
 
     try {
       const latestBlockhash = await connection.getLatestBlockhash("confirmed");
+      const createdAt = new Date().toISOString();
+      const packet = await buildEncryptedClaimPacket({
+        claim: selectedClaim,
+        visitor: publicKey.toBase58(),
+        createdAt,
+      });
+      setEncryptedPacket(packet);
       const memo = [
-        "PDAO_PRIVACY_CLAIM",
+        "PDAO_ENCRYPTED_CLAIM_V1",
         selectedClaim.id,
         selectedClaim.proofClass,
-        publicKey.toBase58(),
-        Date.now().toString(),
+        packet.digest.slice(0, 40),
       ].join(":");
 
       const transaction = new Transaction({
@@ -142,7 +219,7 @@ export function PrivacyExecutionClaimConsole({ compact = false }: { compact?: bo
         "confirmed",
       );
 
-      setStatus(`${selectedClaim.label} claim anchored on ${SOLANA_NETWORK_LABEL}. Open the explorer link to verify the memo transaction.`);
+      setStatus(`${selectedClaim.label} encrypted claim anchored on ${SOLANA_NETWORK_LABEL}. The chain stores the commitment; the encrypted packet remains in this browser session for verification.`);
     } catch (error) {
       setStatus(error instanceof Error ? error.message : "Privacy claim attestation failed.");
     } finally {
@@ -158,13 +235,14 @@ export function PrivacyExecutionClaimConsole({ compact = false }: { compact?: bo
           <h2 className="text-2xl font-semibold text-white">Anchor any privacy rail as a visitor-signed Testnet claim</h2>
           <p className="mt-3 text-sm leading-7 text-white/64">
             This console makes every privacy and encryption lane end-to-end testable from the browser. The visitor
-            selects the rail, signs a Solana Testnet memo attestation, then verifies the signature on-chain. Stronger
-            rails still keep their native REFHE, MagicBlock, Ika, Umbra, Jupiter, and Torque proof paths beside this
-            universal claim layer.
+            selects the rail, encrypts the claim locally, signs a Solana Testnet commitment transaction, then verifies
+            the signature on-chain. Stronger rails still keep their native REFHE, MagicBlock, Ika, Umbra, Jupiter, and
+            Torque proof paths beside this universal claim layer.
           </p>
           <p className="mt-3 rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-xs leading-6 text-white/60">
-            Repeatable means every visitor can run a fresh live attempt. Each click creates a new wallet-signed
-            Testnet transaction from that visitor wallet, not a replay of an old project signature.
+            Repeatable means every visitor can run a fresh live attempt. Each click creates a new AES-GCM encrypted
+            claim packet and a new wallet-signed Testnet commitment from that visitor wallet, not a replay of an old
+            project signature.
           </p>
           <div className="mt-4 flex flex-wrap gap-3">
             <a href="https://faucet.solana.com/" target="_blank" rel="noreferrer" className={cn(buttonVariants({ size: "sm" }))}>
@@ -206,7 +284,7 @@ export function PrivacyExecutionClaimConsole({ compact = false }: { compact?: bo
           </div>
           <div className="mt-4 flex flex-wrap gap-3">
             <button type="button" onClick={() => void anchorSelectedClaim()} disabled={isRunning} className={cn(buttonVariants({ size: "sm" }))}>
-              {isRunning ? "Anchoring..." : "Anchor claim on-chain"}
+              {isRunning ? "Encrypting + anchoring..." : "Encrypt + anchor on-chain"}
             </button>
             <a href={selectedClaim.route} className={cn(buttonVariants({ size: "sm", variant: "outline" }))}>
               Open service
@@ -216,6 +294,18 @@ export function PrivacyExecutionClaimConsole({ compact = false }: { compact?: bo
             {status}
           </div>
           {signature ? <div className="mt-3 break-all font-mono text-xs text-cyan-100">{signature}</div> : null}
+          {encryptedPacket ? (
+            <div className="mt-4 rounded-2xl border border-cyan-300/16 bg-cyan-300/[0.05] p-3">
+              <div className="text-[11px] uppercase tracking-[0.22em] text-cyan-100/68">Local encrypted claim packet</div>
+              <div className="mt-2 text-xs leading-6 text-white/58">
+                Only the digest is anchored on-chain. The key and ciphertext are shown locally so the visitor can inspect
+                what was committed without publishing private claim context.
+              </div>
+              <pre className="mt-3 max-h-52 overflow-auto rounded-xl border border-white/10 bg-black/30 p-3 text-[11px] leading-5 text-white/66">
+                {JSON.stringify(encryptedPacket, null, 2)}
+              </pre>
+            </div>
+          ) : null}
         </div>
       </div>
     </section>

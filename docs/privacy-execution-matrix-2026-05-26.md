@@ -44,11 +44,12 @@ Every service row in the live API now carries `executionProofClass`, `visitorRep
 
 1. The visitor connects a Solana Testnet wallet.
 2. The visitor selects any privacy or encryption rail.
-3. The browser builds a fresh Memo Program transaction containing the selected rail and proof class.
-4. The visitor signs from their own wallet.
-5. The page returns a new Testnet signature and Explorer link.
+3. The browser creates a fresh AES-GCM encrypted claim packet locally.
+4. The browser hashes the ciphertext and builds a Memo Program transaction containing `PDAO_ENCRYPTED_CLAIM_V1`, the selected rail, the proof class, and the digest prefix.
+5. The visitor signs from their own wallet.
+6. The page returns a new Testnet signature, Explorer link, and local encrypted packet for inspection.
 
-This gives every rail a live visitor-generated on-chain claim path today, while the stronger native rails continue to carry their own evidence: REFHE signatures, MagicBlock signatures, ZK verifier receipts, Ika readiness receipts, Umbra claim-intent receipts, Jupiter route previews, Torque delivery receipts, and intelligence-provider proofs.
+This gives every rail a live visitor-generated encrypted on-chain claim path today, while the stronger native rails continue to carry their own evidence: REFHE signatures, MagicBlock signatures, ZK verifier receipts, Ika readiness receipts, Umbra claim-intent receipts, Jupiter route previews, Torque delivery receipts, and intelligence-provider proofs.
 
 ## Provider Execution Gate
 
