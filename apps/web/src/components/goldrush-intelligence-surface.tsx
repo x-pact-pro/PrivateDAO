@@ -198,6 +198,8 @@ export function GoldRushIntelligenceSurface() {
   const runtimeMode =
     responseData?.sources?.goldRush === "live"
       ? "Live vendor intelligence"
+      : responseData?.sources?.goldRush === "warehouse-live-wallet-endpoint-pending"
+        ? "GoldRush Warehouse live + wallet fallback"
       : responseData?.sources?.goldRush === "credits-exhausted-fallback"
         ? "Live fallback"
         : "Degraded fallback";

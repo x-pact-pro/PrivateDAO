@@ -205,6 +205,8 @@ const API_CHECKS: ApiCheck[] = [
       if (payload?.ok !== true) return "Zerion portfolio POST did not return ok=true";
       if (payload?.source !== "zerion") return `Zerion source mismatch: ${payload?.source}`;
       if (payload?.status !== 200) return `Zerion upstream status mismatch: ${payload?.status}`;
+      if (typeof payload?.summary?.totalPositionsUsd !== "number") return "Zerion portfolio missing normalized summary";
+      if (!payload?.positionsDistributionByChain || typeof payload.positionsDistributionByChain !== "object") return "Zerion portfolio missing chain distribution";
       return null;
     },
   },

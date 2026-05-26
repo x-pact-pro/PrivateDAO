@@ -2117,11 +2117,35 @@ async function fetchZerionPortfolio(wallet: string) {
     },
   });
   const raw = (await response.json().catch(() => null)) as unknown;
+  const rawRecord = raw && typeof raw === "object" ? (raw as Record<string, unknown>) : {};
+  const data = rawRecord.data && typeof rawRecord.data === "object" ? (rawRecord.data as Record<string, unknown>) : {};
+  const attributes =
+    data.attributes && typeof data.attributes === "object" ? (data.attributes as Record<string, unknown>) : {};
+  const total = attributes.total && typeof attributes.total === "object" ? (attributes.total as Record<string, unknown>) : {};
+  const changes = attributes.changes && typeof attributes.changes === "object" ? (attributes.changes as Record<string, unknown>) : {};
+  const byType =
+    attributes.positions_distribution_by_type && typeof attributes.positions_distribution_by_type === "object"
+      ? (attributes.positions_distribution_by_type as Record<string, unknown>)
+      : {};
+  const byChain =
+    attributes.positions_distribution_by_chain && typeof attributes.positions_distribution_by_chain === "object"
+      ? (attributes.positions_distribution_by_chain as Record<string, unknown>)
+      : {};
   const result = {
     ok: response.ok,
     source: "zerion",
     status: response.status,
     wallet,
+    walletAddress: wallet,
+    currency: "usd",
+    positionsFilter: "only_simple",
+    summary: {
+      totalPositionsUsd: typeof total.positions === "number" ? total.positions : null,
+      absoluteChange1d: typeof changes.absolute_1d === "number" ? changes.absolute_1d : null,
+      percentChange1d: typeof changes.percent_1d === "number" ? changes.percent_1d : null,
+    },
+    positionsDistributionByType: byType,
+    positionsDistributionByChain: byChain,
     raw,
   };
   if (response.ok) {

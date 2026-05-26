@@ -62,6 +62,9 @@ function buildPolicyPayload(template: (typeof policyTemplates)[number]) {
 }
 
 type ZerionPortfolioResponse = {
+  ok?: boolean;
+  source?: string;
+  status?: number;
   walletAddress?: string;
   currency?: string;
   positionsFilter?: string;
@@ -72,6 +75,12 @@ type ZerionPortfolioResponse = {
   };
   positionsDistributionByType?: Record<string, number>;
   positionsDistributionByChain?: Record<string, number>;
+  cache?: {
+    hit?: boolean;
+    cachedAt?: string;
+    staleBecause?: string;
+    upstreamStatus?: number;
+  };
   error?: string;
 };
 
@@ -104,7 +113,8 @@ export function ZerionAgentPolicySurface() {
 
   async function handleLoadPortfolio() {
     const endpoint = process.env.NEXT_PUBLIC_ZERION_PORTFOLIO_ENDPOINT?.trim() || "https://api.privatedao.org/api/v1/zerion/portfolio";
-    const walletRef = walletAddress.trim() || "project-wallet";
+    const defaultWallet = "4Mm5YTRbJuyA8NcWM85wTnx6ZQMXNph2DSnzCCKLhsMD";
+    const walletRef = walletAddress.trim() || defaultWallet;
     const reference = `zerion-${Date.now()}`;
 
     setLoadingPortfolio(true);
@@ -115,7 +125,7 @@ export function ZerionAgentPolicySurface() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          walletAddress: walletAddress.trim() || undefined,
+          walletAddress: walletRef,
           currency: "usd",
           positionsFilter: "only_simple",
           sync: false,
@@ -123,7 +133,8 @@ export function ZerionAgentPolicySurface() {
       });
       const body = (await response.json().catch(() => null)) as ZerionPortfolioResponse | null;
       setPortfolio(body);
-      setPortfolioState(response.ok ? "Zerion portfolio summary received." : body?.error ?? `Zerion endpoint responded ${response.status}.`);
+      const cacheNote = body?.cache?.hit ? ` Cache used${body.cache.staleBecause ? ` after ${body.cache.staleBecause}` : ""}.` : "";
+      setPortfolioState(response.ok ? `Zerion portfolio summary received.${cacheNote}` : body?.error ?? `Zerion endpoint responded ${response.status}.`);
 
       await persistOperationReceipt({
         operationType: "zerion-policy-portfolio-check",
@@ -241,8 +252,8 @@ export function ZerionAgentPolicySurface() {
         <div className="space-y-5">
           <div className="rounded-3xl border border-cyan-300/16 bg-cyan-300/[0.08] p-5">
             <div className="text-sm font-semibold text-cyan-100">Live wallet portfolio check</div>
-            <div className="mt-2 text-sm leading-7 text-white/64">
-              Before treating the agent as operationally useful, review the live wallet portfolio that the policy is supposed to protect.
+              <div className="mt-2 text-sm leading-7 text-white/64">
+              Before treating the agent as operationally useful, review the live wallet portfolio that the policy is supposed to protect. Empty input uses the funded PrivateDAO Testnet operator wallet.
             </div>
             <div className="mt-4">
               <WalletOrSnsInput
@@ -261,6 +272,11 @@ export function ZerionAgentPolicySurface() {
               </Link>
             </div>
             <div className="mt-4 text-sm leading-7 text-white/68">{portfolioState}</div>
+            {portfolio?.cache?.hit ? (
+              <div className="mt-3 rounded-2xl border border-emerald-300/16 bg-emerald-300/[0.08] px-3 py-2 text-xs leading-6 text-emerald-50/82">
+                Zerion cache hit: {portfolio.cache.cachedAt ?? "recent"}{portfolio.cache.staleBecause ? ` · ${portfolio.cache.staleBecause}` : ""}
+              </div>
+            ) : null}
             {portfolio ? (
               <div className="mt-4 grid gap-3 md:grid-cols-3">
                 <div className="rounded-2xl border border-white/10 bg-black/20 p-4 text-sm text-white/68">
