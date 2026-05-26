@@ -146,9 +146,10 @@ const API_CHECKS: ApiCheck[] = [
     validate: (payload) => {
       const proof = payload?.proof;
       if (payload?.ok !== true) return "MagicBlock proof did not return ok=true";
-      if (proof?.network !== "devnet") return `MagicBlock proof network must be devnet, got ${proof?.network}`;
-      if (proof?.runtime?.cluster !== "devnet") return `MagicBlock runtime cluster must be devnet, got ${proof?.runtime?.cluster}`;
+      if (proof?.network !== "testnet") return `MagicBlock proof network must be testnet, got ${proof?.network}`;
+      if (proof?.runtime?.cluster !== "testnet") return `MagicBlock runtime cluster must be testnet, got ${proof?.runtime?.cluster}`;
       if (proof?.summary?.allFinalized !== true) return "MagicBlock proof transactions are not all finalized";
+      if (proof?.corridorAccount?.owner !== "EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva") return "MagicBlock corridor owner mismatch";
       return null;
     },
   },

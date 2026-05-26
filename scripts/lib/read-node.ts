@@ -214,6 +214,8 @@ export type OpsOverview = {
 export type MagicBlockRuntimeView = {
   apiBase: string;
   cluster: string;
+  paymentApiCluster?: string;
+  solanaRuntimeCluster?: string;
   health: string;
   privatePayments: {
     challengePath: string;
@@ -303,6 +305,9 @@ function devnetExplorerTx(signature: string) {
   return `https://explorer.solana.com/tx/${signature}?cluster=devnet`;
 }
 
+function solanaExplorerTx(signature: string, cluster: RuntimeCluster) {
+  return `https://explorer.solana.com/tx/${signature}?cluster=${cluster}`;
+}
 
 function redactRpcEndpoint(endpoint: string) {
   try {
@@ -1053,33 +1058,51 @@ export class PrivateDaoReadNode {
   }
 
   async getMagicBlockOnchainProof(force = false): Promise<MagicBlockOnchainProofView> {
-    const key = this.cacheKey("magicblock-onchain-proof", "devnet-corridor");
+    const key = this.cacheKey("magicblock-onchain-proof", "testnet-corridor");
     if (!force) {
       const cached = this.getCached<MagicBlockOnchainProofView>(key);
       if (cached) return cached;
     }
 
-    const evidencePath = path.resolve(process.cwd(), "docs", "frontier-integrations.generated.json");
+    const evidencePath = path.resolve(process.cwd(), "docs", "test-wallet-live-proof-v3.generated.json");
     const evidence = JSON.parse(fs.readFileSync(evidencePath, "utf8")) as any;
-    const confidential = evidence.confidentialOperations || {};
-    const txInputs: Array<any> = (confidential.txChecks || []).filter((entry: any) =>
-      typeof entry?.label === "string" && entry.label.startsWith("magicblock-"),
-    );
+    const confidential = evidence.settlementV3 || {};
+    const sourceTransactions = confidential.transactions || {};
+    const txInputs: Array<any> = [
+      {
+        label: "configure-magicblock-corridor",
+        signature: sourceTransactions.configureMagicBlockPrivatePaymentCorridor,
+      },
+      {
+        label: "settle-magicblock-corridor",
+        signature: sourceTransactions.settleMagicBlockPrivatePaymentCorridor,
+      },
+      {
+        label: "execute-confidential-payout-v3",
+        signature: sourceTransactions.executeV3,
+      },
+    ].filter((entry) => typeof entry.signature === "string" && entry.signature.length > 0);
     const signatures = txInputs.map((entry: any) => String(entry.signature));
-    const runtime = await this.getMagicBlockRuntime(force);
+    const baseRuntime = await this.getMagicBlockRuntime(force);
+    const runtime: MagicBlockRuntimeView = {
+      ...baseRuntime,
+      cluster: "testnet",
+      solanaRuntimeCluster: "testnet",
+      paymentApiCluster: baseRuntime.cluster,
+    };
     const corridorPk = new PublicKey(confidential.magicblockCorridor);
 
     let lastError: unknown = null;
-    const devnetEndpoints = Array.from(
+    const testnetEndpoints = Array.from(
       new Set([
-        ...resolveDevnetRpcEndpoints().filter((endpoint) =>
-          endpoint.includes("devnet") || endpoint.includes("sol-devnet") || endpoint.includes("api.devnet.solana.com"),
+        ...resolveClusterRpcEndpoints("testnet").filter((endpoint) =>
+          endpoint.includes("testnet") || endpoint.includes("solana-testnet") || endpoint.includes("api.testnet.solana.com"),
         ),
-        "https://api.devnet.solana.com",
+        "https://api.testnet.solana.com",
       ]),
     );
     let chain: { endpoint: string; statuses: Awaited<ReturnType<Connection["getSignatureStatuses"]>>["value"]; corridorInfo: any } | null = null;
-    for (const endpoint of devnetEndpoints) {
+    for (const endpoint of testnetEndpoints) {
       try {
         const connection = new Connection(endpoint, this.commitment);
         const [statusResponse, corridorInfo] = await Promise.all([
@@ -1118,14 +1141,14 @@ export class PrivateDaoReadNode {
         slot: typeof status?.slot === "number" ? status.slot : typeof entry.slot === "number" ? entry.slot : null,
         confirmed: Boolean(status && !status.err && confirmationStatus === "finalized"),
         err: status?.err ?? null,
-        explorerUrl: devnetExplorerTx(String(entry.signature)),
+        explorerUrl: solanaExplorerTx(String(entry.signature), "testnet"),
       };
     });
 
     const finalized = transactions.filter((entry: MagicBlockOnchainProofView["transactions"][number]) => entry.confirmed).length;
     const proof: MagicBlockOnchainProofView = {
       generatedAt: new Date().toISOString(),
-      network: "devnet",
+      network: "testnet",
       rpcEndpoint: redactRpcEndpoint(chain.endpoint),
       proposal: confidential.proposal,
       corridorPda: confidential.magicblockCorridor,

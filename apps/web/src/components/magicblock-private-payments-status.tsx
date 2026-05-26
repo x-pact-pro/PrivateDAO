@@ -14,7 +14,7 @@ type OnchainProof = {
   corridorPda: string;
   corridorAccount: { exists: boolean; lamports: number; owner: string | null };
   settlementWallet: string;
-  runtime: { health: string; apiBase: string; cluster: string };
+  runtime: { health: string; apiBase: string; cluster: string; paymentApiCluster?: string; solanaRuntimeCluster?: string };
   transactions: Array<{ label: string; signature: string; status: string | null; confirmed: boolean; explorerUrl: string }>;
   summary: { checked: number; finalized: number; allFinalized: boolean };
 };
@@ -95,9 +95,20 @@ export function MagicBlockPrivatePaymentsStatus() {
             <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
               <div className="text-[11px] uppercase tracking-[0.22em] text-white/42">Runtime</div>
               <div className="mt-2 text-sm font-semibold text-white">{proof ? proof.runtime.health : "reading"}</div>
-              <div className="mt-1 text-xs text-white/52">MagicBlock Payments API</div>
+              <div className="mt-1 text-xs text-white/52">
+                {proof ? `Solana ${proof.runtime.solanaRuntimeCluster || proof.runtime.cluster}` : "Solana Testnet"} proof
+              </div>
             </div>
           </div>
+
+          {proof ? (
+            <div className="mt-4 rounded-2xl border border-sky-200/14 bg-sky-200/[0.06] p-3 text-xs leading-6 text-sky-50/72">
+              The corridor proof is verified on Solana {proof.network}. MagicBlock private balance reads still use the
+              wallet-authorized Payments API boundary
+              {proof.runtime.paymentApiCluster ? ` (${proof.runtime.paymentApiCluster})` : ""}; the page keeps those
+              two clusters explicit instead of hiding the runtime boundary.
+            </div>
+          ) : null}
 
           {error ? <div className="mt-4 rounded-2xl border border-amber-300/20 bg-amber-300/10 p-3 text-sm text-amber-100">{error}</div> : null}
 
