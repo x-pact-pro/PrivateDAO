@@ -2384,6 +2384,10 @@ function privacyExecutionMatrixStatus() {
         service: "private-governance",
         route: "https://privatedao.org/govern/",
         executionMode: "wallet-signed Solana Testnet governance",
+        executionProofClass: "wallet-signed-onchain",
+        visitorRepeatable: true,
+        blockchainVerificationUrl: `https://explorer.solana.com/address/${cryptographicReadiness.programId}?cluster=testnet`,
+        currentOnchainStatus: "repeatable-wallet-execution",
         privacyRails: ["commit-reveal", "ZK verifier companion", "nullifier-ready governance primitive"],
         proofEndpoints: ["/api/v1/runtime", "/api/v1/proposals", "/api/v1/cryptographic-readiness"],
         onchainEvidence: {
@@ -2398,6 +2402,11 @@ function privacyExecutionMatrixStatus() {
         service: "confidential-payroll",
         route: "https://privatedao.org/payroll/",
         executionMode: "encrypted manifest plus evidence-gated payout",
+        executionProofClass: "onchain-signature",
+        visitorRepeatable: true,
+        blockchainVerificationUrl:
+          "https://explorer.solana.com/tx/2a8sHWgiVCZkstybMff2M9R6DVU4Y96Rfsg8mqYs7K3xcYSEG1zMcq2iSTNwLD6FgfXvxxxWpwEP9Tbyin47RXvE?cluster=testnet",
+        currentOnchainStatus: "testnet-executed",
         privacyRails: ["REFHE envelope", "encrypted manifest hash", "selective-disclosure receipt"],
         proofEndpoints: ["/api/v1/refhe/payroll/proof", "/api/v1/cryptographic-readiness"],
         onchainEvidence: {
@@ -2412,6 +2421,11 @@ function privacyExecutionMatrixStatus() {
         service: "private-payments",
         route: "https://privatedao.org/services/magicblock-private-payments/",
         executionMode: "MagicBlock corridor and private payment proof lane",
+        executionProofClass: "onchain-signature",
+        visitorRepeatable: true,
+        blockchainVerificationUrl:
+          "https://explorer.solana.com/tx/22XW8XVhWwQtChNQK2aEqXv5BVBbckxUmu4NsisoZQW21KA5ii87gVNUTcNoZ9e1vYKnHmm62qP1girpzVXWN1WY?cluster=testnet",
+        currentOnchainStatus: "testnet-corridor-settled",
         privacyRails: ["MagicBlock private corridor", "private balance challenge", "private transfer receipt"],
         proofEndpoints: ["/api/v1/magicblock/onchain-proof?refresh=1", "/api/v1/magicblock/health"],
         onchainEvidence: {
@@ -2425,6 +2439,11 @@ function privacyExecutionMatrixStatus() {
         service: "umbra-confidential-payout",
         route: "https://privatedao.org/services/umbra-confidential-payout/",
         executionMode: "recipient-private claim intent and relayer health corridor",
+        executionProofClass: "testnet-intent-receipt",
+        visitorRepeatable: true,
+        blockchainVerificationUrl: "https://explorer.solana.com/?cluster=testnet",
+        currentOnchainStatus: "visitor-repeatable-intent-now-full-claim-signature-next",
+        nextOnchainGate: "SDK proof_account_data + UTXO slot data + submitted Umbra claim transaction",
         privacyRails: ["Umbra relayer health", "claim request", "viewing-key-ready disclosure pattern"],
         proofEndpoints: ["/api/v1/umbra/relayer/info", "/api/v1/umbra/relayer/health", "/api/v1/private-settlement/intent"],
         onchainEvidence: {
@@ -2437,6 +2456,11 @@ function privacyExecutionMatrixStatus() {
         service: "ika-custody-and-interoperability",
         route: "https://privatedao.org/services/encrypt-ika-operations/",
         executionMode: "Ika approval preparation for dWallet/2PC-MPC custody",
+        executionProofClass: "readiness-receipt",
+        visitorRepeatable: true,
+        blockchainVerificationUrl: "https://explorer.solana.com/address/87W54kGYFQ1rgWqMeu4XTPHWXWmXSQCcjm8vCTfiq1oY?cluster=testnet",
+        currentOnchainStatus: "prealpha-readiness-and-approval-route",
+        nextOnchainGate: "funded dWallet DKG + final 2PC-MPC signature receipt",
         privacyRails: ["Ika Sui readiness", "Solana pre-alpha approval route", "2PC-MPC policy boundary"],
         proofEndpoints: ["/api/v1/ika/solana-prealpha/readiness", "/api/v1/ika/solana-prealpha/approval/prepare", "/api/v1/ika/custody/prepare"],
         onchainEvidence: {
@@ -2449,6 +2473,10 @@ function privacyExecutionMatrixStatus() {
         service: "intelligence-and-risk",
         route: "https://privatedao.org/intelligence/",
         executionMode: "provider intelligence before private execution",
+        executionProofClass: "provider-plus-rpc-receipt",
+        visitorRepeatable: true,
+        blockchainVerificationUrl: `https://explorer.solana.com/address/${cryptographicReadiness.programId}?cluster=testnet`,
+        currentOnchainStatus: "pre-sign-intelligence-feeds-wallet-execution",
         privacyRails: ["GoldRush wallet intelligence", "Zerion portfolio policy", "QVAC runtime proof", "QuickNode stream telemetry"],
         proofEndpoints: ["/api/v1/provider-integrations/status", "/api/v1/goldrush/query", "/api/v1/zerion/portfolio", "/api/v1/qvac/runtime-proof", "/api/v1/quicknode/stream/stats"],
         onchainEvidence: {
@@ -2461,6 +2489,11 @@ function privacyExecutionMatrixStatus() {
         service: "treasury-routing-and-growth",
         route: "https://privatedao.org/services/jupiter-treasury-route/",
         executionMode: "Jupiter order preview and Torque event relay around governed execution",
+        executionProofClass: "wallet-reviewed-route-plus-ingestion-receipt",
+        visitorRepeatable: true,
+        blockchainVerificationUrl: `https://explorer.solana.com/address/${cryptographicReadiness.programId}?cluster=testnet`,
+        currentOnchainStatus: "route-preview-and-growth-ingestion-live-final-swap-signature-next",
+        nextOnchainGate: "wallet-signed Jupiter execution transaction governed by treasury policy",
         privacyRails: ["Jupiter Developer Platform order mode", "Torque custom event relay", "policy-scoped execution receipts"],
         proofEndpoints: ["/api/v1/provider-integrations/status", "/api/v1/jupiter/order", "/api/v1/torque/custom-event", "/api/v1/execution-events/stats"],
         onchainEvidence: {
@@ -2485,6 +2518,38 @@ function privacyExecutionMatrixStatus() {
       proof: "https://privatedao.org/proof/",
     },
     claimBoundary: cryptographicReadiness.claimBoundary,
+  };
+}
+
+function privacyExecutionClaimsStatus() {
+  const matrix = privacyExecutionMatrixStatus();
+  return {
+    ok: true,
+    source: "privatedao-privacy-execution-claims",
+    generatedAt: new Date().toISOString(),
+    cluster: matrix.cluster,
+    programId: matrix.programId,
+    claimPolicy:
+      "Every privacy/encryption claim must be visitor-repeatable on Solana Testnet and must expose either a blockchain explorer URL or a live receipt endpoint. Intent/readiness claims are not promoted to final on-chain settlement until the missing signature exists.",
+    claims: matrix.serviceMatrix.map((service) => ({
+      service: service.service,
+      route: service.route,
+      claim: service.executionMode,
+      proofClass: service.executionProofClass,
+      visitorRepeatable: service.visitorRepeatable,
+      currentOnchainStatus: service.currentOnchainStatus,
+      blockchainVerificationUrl: service.blockchainVerificationUrl,
+      proofEndpoints: service.proofEndpoints,
+      onchainEvidence: service.onchainEvidence,
+      nextOnchainGate: "nextOnchainGate" in service ? service.nextOnchainGate : null,
+    })),
+    mustPass: [
+      "visitorRepeatable === true for every claim",
+      "executionProofClass is explicit for every claim",
+      "blockchainVerificationUrl points to Solana Testnet explorer for every claim",
+      "on-chain signature claims must include transaction evidence",
+      "intent/readiness claims must keep their nextOnchainGate visible",
+    ],
   };
 }
 
@@ -2719,6 +2784,7 @@ async function handle(req: http.IncomingMessage, res: http.ServerResponse) {
           quickNodeStreamStats: "/api/v1/quicknode/stream/stats",
           cryptographicReadiness: "/api/v1/cryptographic-readiness",
           privacyExecutionMatrix: "/api/v1/privacy-execution-matrix",
+          privacyExecutionClaims: "/api/v1/privacy-execution-claims",
           providerIntegrationStatus: "/api/v1/provider-integrations/status",
           jupiterOrder: "/api/v1/jupiter/order",
           readiness: "/api/v1/readiness",
@@ -2734,6 +2800,11 @@ async function handle(req: http.IncomingMessage, res: http.ServerResponse) {
 
     if (pathname === "/api/v1/privacy-execution-matrix") {
       writeJson(res, 200, privacyExecutionMatrixStatus());
+      return;
+    }
+
+    if (pathname === "/api/v1/privacy-execution-claims") {
+      writeJson(res, 200, privacyExecutionClaimsStatus());
       return;
     }
 

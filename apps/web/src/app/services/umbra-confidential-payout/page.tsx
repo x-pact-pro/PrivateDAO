@@ -26,7 +26,7 @@ export default function UmbraConfidentialPayoutPage() {
     <OperationsShell
       eyebrow="Umbra track"
       title="Confidential payout lane for claim-style recipient flows"
-      description="This route packages Umbra-style recipient privacy flow as real product behavior: claim-link preparation, private settlement intents, private recipient boundaries, and proof continuity for operators, treasury teams, and judges."
+      description="This route packages Umbra-style recipient privacy flow as Testnet product behavior: claim-link preparation, private settlement intents, private recipient boundaries, and proof continuity for operators, treasury teams, and judges."
       badges={[
         { label: "Umbra lane", variant: "success" },
         { label: "Claim-style payouts", variant: "cyan" },
@@ -35,16 +35,20 @@ export default function UmbraConfidentialPayoutPage() {
     >
       <LocalizedRouteSummary routeKey="services" />
       <OperationStateLegend
-        description="On this Umbra lane, relayer health and intent receipts are visible before any claim is treated as a completed private payout. The page keeps that boundary explicit for visitors and reviewers."
+        description="On this Umbra Testnet lane, relayer health and intent receipts are visible before any claim is treated as a completed private payout. The page keeps that boundary explicit for visitors and reviewers."
       />
 
       <div className="rounded-[28px] border border-emerald-300/16 bg-emerald-300/[0.08] p-6">
         <div className="text-[11px] uppercase tracking-[0.28em] text-emerald-100/78">Execution model</div>
-        <h2 className="mt-3 text-2xl font-semibold text-white">Prepare claim link, execute private payout, verify receipt</h2>
+        <h2 className="mt-3 text-2xl font-semibold text-white">Prepare claim link, execute Testnet payout intent, verify receipt</h2>
         <p className="mt-3 max-w-4xl text-sm leading-7 text-white/66">
           The payout lane is structured for recipient privacy and operator clarity. Umbra is not isolated here; it
           serves the larger PrivateDAO system by handling the recipient-private disbursement edge inside confidential
           payroll, treasury payouts, grants, and controlled organizational distributions.
+        </p>
+        <p className="mt-3 max-w-4xl rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-xs leading-6 text-emerald-50/72">
+          Build note: PrivateDAO development and hardening continue without interruption. This public route stays live
+          while each integration is promoted from preparation, to Testnet receipt, to stronger on-chain execution proof.
         </p>
         <div className="mt-5 flex flex-wrap gap-3">
           <Link href="/execute#vendor-payment" className={cn(buttonVariants({ size: "sm" }))}>

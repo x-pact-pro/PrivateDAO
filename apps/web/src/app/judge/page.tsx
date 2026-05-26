@@ -10,6 +10,7 @@ import { MagicBlockPrivatePaymentsStatus } from "@/components/magicblock-private
 import { OperationsShell } from "@/components/operations-shell";
 import { ProjectOperatingMap } from "@/components/project-operating-map";
 import { PrivacyPolicySelector } from "@/components/privacy-policy-selector";
+import { PrivacyExecutionClaimConsole } from "@/components/privacy-execution-claim-console";
 import { PrivacyProofExplainer } from "@/components/privacy-proof-explainer";
 import { TestnetProofMatrix } from "@/components/testnet-proof-matrix";
 import { PlatformCapabilityStack } from "@/components/platform-capability-stack";
@@ -508,6 +509,8 @@ export default function JudgePage() {
           </div>
         </div>
       </section>
+
+      <PrivacyExecutionClaimConsole compact />
 
       <section className="rounded-[30px] border border-white/10 bg-[linear-gradient(135deg,rgba(255,255,255,0.08),rgba(34,211,238,0.07),rgba(8,13,28,0.95))] p-5">
         <div className="flex flex-wrap items-start justify-between gap-4">

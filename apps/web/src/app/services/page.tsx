@@ -31,6 +31,7 @@ import { LocalizedServicesPrimer } from "@/components/localized-services-primer"
 import { LocalizedRouteSummary } from "@/components/localized-route-summary";
 import { ConfidentialPaymentsSystemSurface } from "@/components/confidential-payments-system-surface";
 import { PrivacyPolicySelector } from "@/components/privacy-policy-selector";
+import { PrivacyExecutionClaimConsole } from "@/components/privacy-execution-claim-console";
 import { PrivacySdkApiStarter } from "@/components/privacy-sdk-api-starter";
 import { SectionHeader } from "@/components/section-header";
 import { SettlementReceiptSurface } from "@/components/settlement-receipt-surface";
@@ -84,6 +85,7 @@ export default function ServicesPage() {
       />
       <ExecutionSpineSurface context="services" compact />
       <CryptographicExecutionSpine compact context="services" />
+      <PrivacyExecutionClaimConsole />
       <div>
         <ServicesSurface />
       </div>

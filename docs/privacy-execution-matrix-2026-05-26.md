@@ -26,15 +26,29 @@ without exposing private payroll rows, private balances, strategy text, provider
 
 ## Service Coverage
 
-| Service | Privacy / intelligence rail | Public route | Backend proof |
-| --- | --- | --- | --- |
-| Private governance | commit-reveal, ZK verifier companion, nullifier-ready primitive | `/govern/` | `/api/v1/runtime`, `/api/v1/cryptographic-readiness` |
-| Confidential payroll | REFHE envelope, encrypted manifest hash, selective disclosure receipt | `/payroll/` | `/api/v1/refhe/payroll/proof` |
-| Private payments | MagicBlock private corridor and receipt proof | `/services/magicblock-private-payments/` | `/api/v1/magicblock/onchain-proof?refresh=1` |
-| Umbra payout | recipient-private claim intent and relayer health | `/services/umbra-confidential-payout/` | `/api/v1/umbra/relayer/info`, `/api/v1/umbra/relayer/health`, `/api/v1/private-settlement/intent` |
-| Ika custody | Solana approval preparation for Ika dWallet / 2PC-MPC route | `/services/encrypt-ika-operations/` | `/api/v1/ika/solana-prealpha/readiness`, `/api/v1/ika/solana-prealpha/approval/prepare`, `/api/v1/ika/custody/prepare` |
-| Intelligence | GoldRush, Zerion, QVAC, QuickNode Stream telemetry | `/intelligence/` | `/api/v1/provider-integrations/status`, `/api/v1/goldrush/query`, `/api/v1/zerion/portfolio`, `/api/v1/qvac/runtime-proof`, `/api/v1/quicknode/stream/stats` |
-| Treasury / growth | Jupiter order preview, Torque custom event relay, execution event stats | `/services/jupiter-treasury-route/`, `/services/torque-growth-loop/` | `/api/v1/provider-integrations/status`, `/api/v1/jupiter/order`, `/api/v1/torque/custom-event`, `/api/v1/execution-events/stats` |
+| Service | Privacy / intelligence rail | Execution proof class | Visitor repeatable | Backend proof |
+| --- | --- | --- | --- | --- |
+| Private governance | commit-reveal, ZK verifier companion, nullifier-ready primitive | `wallet-signed-onchain` | yes | `/api/v1/runtime`, `/api/v1/cryptographic-readiness` |
+| Confidential payroll | REFHE envelope, encrypted manifest hash, selective disclosure receipt | `onchain-signature` | yes | `/api/v1/refhe/payroll/proof` |
+| Private payments | MagicBlock private corridor and receipt proof | `onchain-signature` | yes | `/api/v1/magicblock/onchain-proof?refresh=1` |
+| Umbra payout | recipient-private claim intent and relayer health | `testnet-intent-receipt` | yes | `/api/v1/umbra/relayer/info`, `/api/v1/umbra/relayer/health`, `/api/v1/private-settlement/intent` |
+| Ika custody | Solana approval preparation for Ika dWallet / 2PC-MPC route | `readiness-receipt` | yes | `/api/v1/ika/solana-prealpha/readiness`, `/api/v1/ika/solana-prealpha/approval/prepare`, `/api/v1/ika/custody/prepare` |
+| Intelligence | GoldRush, Zerion, QVAC, QuickNode Stream telemetry | `provider-plus-rpc-receipt` | yes | `/api/v1/provider-integrations/status`, `/api/v1/goldrush/query`, `/api/v1/zerion/portfolio`, `/api/v1/qvac/runtime-proof`, `/api/v1/quicknode/stream/stats` |
+| Treasury / growth | Jupiter order preview, Torque custom event relay, execution event stats | `wallet-reviewed-route-plus-ingestion-receipt` | yes | `/api/v1/provider-integrations/status`, `/api/v1/jupiter/order`, `/api/v1/torque/custom-event`, `/api/v1/execution-events/stats` |
+
+Every service row in the live API now carries `executionProofClass`, `visitorRepeatable`, `blockchainVerificationUrl`, and `currentOnchainStatus`. That is the enforcement layer: on-chain signature rails stay visibly on-chain, while intent/readiness rails stay visitor-repeatable but cannot be mislabeled as final chain settlement before the missing signature exists.
+
+## Visitor-Repeatable Claim Layer
+
+`/services` and `/judge` now expose an on-chain claim console. The console is intentionally simple and repeatable:
+
+1. The visitor connects a Solana Testnet wallet.
+2. The visitor selects any privacy or encryption rail.
+3. The browser builds a fresh Memo Program transaction containing the selected rail and proof class.
+4. The visitor signs from their own wallet.
+5. The page returns a new Testnet signature and Explorer link.
+
+This gives every rail a live visitor-generated on-chain claim path today, while the stronger native rails continue to carry their own evidence: REFHE signatures, MagicBlock signatures, ZK verifier receipts, Ika readiness receipts, Umbra claim-intent receipts, Jupiter route previews, Torque delivery receipts, and intelligence-provider proofs.
 
 ## Provider Execution Gate
 
@@ -60,6 +74,6 @@ Torque has one extra boundary: MCP auth tokens are not automatically ingestion A
 
 This matrix does not claim mainnet funds are live. It does not claim final funded Ika dWallet DKG, final Ika 2PC-MPC signatures, or full Umbra claim settlement unless those are separately recorded with execution evidence.
 
-It does prove the operating shape of the product: sensitive services are routed through private/intelligent preparation, wallet-controlled execution, and public-safe proof.
+It does prove the operating shape of the product: sensitive services are routed through private/intelligent preparation, wallet-controlled execution, and public-safe proof. The current engineering direction is stricter than the old copy: every privacy or encryption promise must move toward a repeatable Solana Testnet action with a visitor-openable verification URL.
 
 No private keys, provider API keys, RPC tokens, PEM contents, or wallet secret keys are included.

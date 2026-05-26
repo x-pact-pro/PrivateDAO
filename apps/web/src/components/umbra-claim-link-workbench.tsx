@@ -10,10 +10,14 @@ import { cn } from "@/lib/utils";
 
 type ClaimAsset = "PUSD" | "AUDD" | "USDC" | "USDT" | "SOL";
 type IntentResponse = {
+  ok?: boolean;
+  mode?: string;
+  source?: string;
   executionReference?: string;
   signature?: string;
   reference?: string;
   receipt?: {
+    network?: string;
     executionReference?: string;
     receiptHash?: string;
     note?: string;
@@ -38,6 +42,8 @@ export function UmbraClaimLinkWorkbench() {
   const [memo, setMemo] = useState("Umbra claim payout rehearsal");
   const [claimLink, setClaimLink] = useState("");
   const [status, setStatus] = useState("Build a claim link, then execute the claim settlement intent.");
+  const [verificationUrl, setVerificationUrl] = useState("https://api.privatedao.org/api/v1/umbra/relayer/health");
+  const [lastReceipt, setLastReceipt] = useState<IntentResponse | null>(null);
   const [running, setRunning] = useState(false);
 
   const payload = useMemo(
@@ -60,12 +66,12 @@ export function UmbraClaimLinkWorkbench() {
     const encoded = toBase64(JSON.stringify(payload));
     const link = encoded ? `https://privatedao.org/services/umbra-confidential-payout?claim=${encodeURIComponent(encoded)}` : "";
     setClaimLink(link);
-    setStatus(link ? "Claim link prepared. Execute claim intent to record settlement continuity." : "Unable to prepare claim link.");
+    setStatus(link ? "Testnet claim link prepared. Execute claim intent to record settlement continuity." : "Unable to prepare claim link.");
   }
 
   async function executeClaimIntent() {
     setRunning(true);
-    setStatus("Submitting Umbra claim intent...");
+    setStatus("Submitting Umbra claim intent to the PrivateDAO Testnet read-node...");
     try {
       if (payload.recipient.length < 32 || payload.amount.length === 0 || Number(payload.amount) <= 0) {
         setStatus("Enter a valid Solana recipient and a positive amount before executing the Umbra intent.");
@@ -86,6 +92,8 @@ export function UmbraClaimLinkWorkbench() {
         body?.signature ||
         body?.reference ||
         `umbra-${Date.now()}`;
+      setLastReceipt(body);
+      setVerificationUrl("https://api.privatedao.org/api/v1/umbra/relayer/health");
 
       await persistOperationReceipt({
         operationType: "umbra-payment-link-claim",
@@ -101,7 +109,7 @@ export function UmbraClaimLinkWorkbench() {
 
       setStatus(
         response.ok
-          ? `Umbra claim intent delivered. Reference: ${executionReference}`
+          ? `Umbra Testnet claim intent delivered. Reference: ${executionReference}`
           : `Umbra proxy responded ${response.status}. ${body?.receipt?.note || ""}`.trim(),
       );
     } catch (error) {
@@ -114,11 +122,24 @@ export function UmbraClaimLinkWorkbench() {
   return (
     <section className="rounded-[28px] border border-emerald-300/16 bg-emerald-300/[0.08] p-6">
       <div className="text-[11px] uppercase tracking-[0.28em] text-emerald-100/78">Umbra claim-link lane</div>
-      <h2 className="mt-3 text-2xl font-semibold text-white">Create a private claim link and execute the payout intent</h2>
+      <h2 className="mt-3 text-2xl font-semibold text-white">Create a private claim link and execute the Testnet payout intent</h2>
       <p className="mt-3 max-w-4xl text-sm leading-7 text-white/66">
-        This lane models Umbra-style claim payouts for recipients who should not expose destination details publicly.
-        It prepares a claim link, forwards a claim settlement intent, and records proof continuity.
+        This lane lets the visitor run the Umbra-style flow directly from the browser on the PrivateDAO Testnet
+        operating surface. It prepares a claim link, forwards a recipient-private settlement intent to the read-node,
+        records proof continuity, and leaves a live relayer health endpoint that the user can open immediately.
       </p>
+      <div className="mt-4 grid gap-3 md:grid-cols-3">
+        {[
+          ["Network", "Solana Testnet"],
+          ["User action", "Build -> execute -> verify"],
+          ["Proof path", "Read-node receipt + live relayer health"],
+        ].map(([label, value]) => (
+          <div key={label} className="rounded-2xl border border-emerald-200/14 bg-black/20 p-3">
+            <div className="text-[10px] uppercase tracking-[0.2em] text-emerald-100/55">{label}</div>
+            <div className="mt-1 text-sm font-medium text-white">{value}</div>
+          </div>
+        ))}
+      </div>
 
       <div className="mt-5 grid gap-4 xl:grid-cols-[0.95fr_1.05fr]">
         <div className="rounded-[24px] border border-white/10 bg-black/20 p-4">
@@ -157,6 +178,12 @@ export function UmbraClaimLinkWorkbench() {
             <Link href="/proof" className={cn(buttonVariants({ size: "sm", variant: "outline" }))}>
               Open proof
             </Link>
+            <a href={verificationUrl} target="_blank" rel="noreferrer" className={cn(buttonVariants({ size: "sm", variant: "outline" }))}>
+              Verify Testnet rail
+            </a>
+            <a href="https://explorer.solana.com/?cluster=testnet" target="_blank" rel="noreferrer" className={cn(buttonVariants({ size: "sm", variant: "outline" }))}>
+              Open Testnet explorer
+            </a>
           </div>
         </div>
 
@@ -164,6 +191,22 @@ export function UmbraClaimLinkWorkbench() {
           <div className="rounded-[24px] border border-white/10 bg-black/20 p-4">
             <div className="text-[11px] uppercase tracking-[0.22em] text-white/44">Delivery state</div>
             <div className="mt-3 text-sm leading-7 text-white/72">{status}</div>
+          </div>
+          <div className="rounded-[24px] border border-emerald-300/16 bg-emerald-300/[0.06] p-4">
+            <div className="text-[11px] uppercase tracking-[0.22em] text-emerald-100/60">User-verifiable Testnet receipt</div>
+            <div className="mt-3 text-sm leading-7 text-white/72">
+              After execution, the receipt reports <span className="font-mono text-emerald-100">network: testnet</span>,
+              the settlement rail, execution reference, and relayer boundary. The project keeps building and hardening
+              this rail continuously without interrupting the public Testnet route.
+            </div>
+            <div className="mt-3 rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-xs leading-6 text-white/58">
+              Boundary: this browser action proves the Umbra Testnet intent route and relayer readiness. Full Umbra
+              claim settlement becomes explorer-linked only when the wallet supplies SDK proof account data, UTXO slot
+              data, and a submitted claim transaction.
+            </div>
+            <pre className="mt-3 overflow-x-auto rounded-2xl border border-white/10 bg-black/30 p-4 text-xs leading-6 text-white/70">
+              {lastReceipt ? JSON.stringify(lastReceipt, null, 2) : "Execute the claim intent to display the latest Testnet receipt."}
+            </pre>
           </div>
           <div className="rounded-[24px] border border-white/10 bg-black/20 p-4">
             <div className="text-[11px] uppercase tracking-[0.22em] text-white/44">Claim link</div>

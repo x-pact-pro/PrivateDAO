@@ -65,7 +65,7 @@ const PAGE_CHECKS: PageCheck[] = [
   {
     name: "judge",
     url: `${ROOT}/judge/`,
-    requiredFragments: ["PrivateDAO", "Testnet", "REFHE", "hosts"],
+    requiredFragments: ["PrivateDAO", "Testnet", "REFHE", "On-chain claim console"],
   },
   {
     name: "encrypt-ika",
@@ -80,7 +80,7 @@ const PAGE_CHECKS: PageCheck[] = [
   {
     name: "umbra",
     url: `${ROOT}/services/umbra-confidential-payout/`,
-    requiredFragments: ["Umbra", "PrivateDAO"],
+    requiredFragments: ["Umbra", "PrivateDAO", "Solana Testnet", "Verify Testnet rail"],
   },
   {
     name: "eitherway",
@@ -148,6 +148,11 @@ const PAGE_CHECKS: PageCheck[] = [
     requiredFragments: ["Confidential", "payments", "Testnet"],
   },
   {
+    name: "services-claim-console",
+    url: `${ROOT}/services/`,
+    requiredFragments: ["On-chain claim console", "Anchor claim on-chain", "Get Testnet SOL"],
+  },
+  {
     name: "runtime-infrastructure",
     url: `${ROOT}/services/runtime-infrastructure/`,
     requiredFragments: ["Runtime", "QuickNode", "Testnet"],
@@ -201,7 +206,7 @@ const PAGE_CHECKS: PageCheck[] = [
   {
     name: "umbra-private-payments",
     url: `${ROOT}/services/umbra-private-payments/`,
-    requiredFragments: ["Umbra", "private", "payments"],
+    requiredFragments: ["Umbra", "private", "payments", "Solana Testnet"],
   },
   {
     name: "legacy-review",
@@ -331,6 +336,45 @@ const API_CHECKS: ApiCheck[] = [
       const missing = required.filter((service) => !services.some((entry: any) => entry?.service === service));
       if (missing.length) return `privacy execution matrix missing ${missing.join(", ")}`;
       if (payload?.cluster !== "testnet") return `privacy execution matrix cluster mismatch: ${payload?.cluster}`;
+      for (const entry of services) {
+        if (entry?.testnetExecutable !== true) return `${entry?.service} is not marked testnetExecutable`;
+        if (entry?.visitorRepeatable !== true) return `${entry?.service} is not marked visitorRepeatable`;
+        if (typeof entry?.executionProofClass !== "string" || entry.executionProofClass.length < 8) {
+          return `${entry?.service} missing executionProofClass`;
+        }
+        if (typeof entry?.blockchainVerificationUrl !== "string" || !entry.blockchainVerificationUrl.includes("cluster=testnet")) {
+          return `${entry?.service} missing Testnet blockchainVerificationUrl`;
+        }
+        if (typeof entry?.currentOnchainStatus !== "string" || entry.currentOnchainStatus.length < 8) {
+          return `${entry?.service} missing currentOnchainStatus`;
+        }
+      }
+      const onchainServices = services.filter((entry: any) => entry?.executionProofClass === "onchain-signature");
+      if (onchainServices.length < 2) return "privacy execution matrix must include at least two on-chain signature privacy rails";
+      return null;
+    },
+  },
+  {
+    name: "privacy-execution-claims",
+    method: "GET",
+    url: `${API}/api/v1/privacy-execution-claims`,
+    validate: (payload) => {
+      if (payload?.ok !== true) return "privacy execution claims did not return ok=true";
+      if (payload?.cluster !== "testnet") return `privacy execution claims cluster mismatch: ${payload?.cluster}`;
+      const claims = Array.isArray(payload?.claims) ? payload.claims : [];
+      if (claims.length < 7) return `privacy execution claims too small: ${claims.length}`;
+      for (const claim of claims) {
+        if (claim?.visitorRepeatable !== true) return `${claim?.service} claim is not visitor-repeatable`;
+        if (typeof claim?.proofClass !== "string" || claim.proofClass.length < 8) return `${claim?.service} missing proofClass`;
+        if (typeof claim?.blockchainVerificationUrl !== "string" || !claim.blockchainVerificationUrl.includes("cluster=testnet")) {
+          return `${claim?.service} missing Testnet blockchain verification URL`;
+        }
+        if (claim.proofClass === "onchain-signature") {
+          const evidence = claim?.onchainEvidence || {};
+          const hasTx = Object.values(evidence).some((value) => typeof value === "string" && value.length > 40);
+          if (!hasTx) return `${claim?.service} on-chain claim missing transaction evidence`;
+        }
+      }
       return null;
     },
   },
