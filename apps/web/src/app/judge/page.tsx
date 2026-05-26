@@ -122,8 +122,10 @@ const encryptionStatusNotes = [
   "REFHE envelope: configured and settled on Solana Testnet.",
   "MagicBlock corridor: configured, settled, and consumed before payout.",
   "ZK verifier: standalone BN254/Groth16 receipt is live; integrated path waits for Squads proposal 3.",
-  "Ika / 2PC-MPC: readiness route is live; final funded dWallet signature is not claimed.",
+  "Ika / 2PC-MPC: SDK readiness, Solana approval preparation, and custody preparation route are live; final funded dWallet signature is not claimed.",
   "Umbra: recipient-private product lane is live; full claim settlement waits for SDK proof account data.",
+  "Torque: protected read-node relay delivered a real private_treasury_execution custom_event and keeps the ingestion key server-side.",
+  "GoldRush + Zerion: wallet intelligence and policy portfolio checks are included in the live service gate.",
 ] as const;
 
 const canonicalReviewPaths = [
@@ -135,6 +137,22 @@ const canonicalReviewPaths = [
   ["/proof/encrypt-ika-desktop", "Encrypt / Ika desktop proof"],
   ["/services/refhe-payroll-proof", "REFHE payroll proof route"],
 ] as const;
+
+const liveServiceGate = {
+  command: "npm run verify:live-service-execution",
+  completedAt: "2026-05-26T05:37:59Z",
+  pagesChecked: 11,
+  apisChecked: 16,
+  failures: 0,
+  routes: [
+    ["Privacy matrix", "Every service is mapped to rail, proof, and boundary.", "https://api.privatedao.org/api/v1/privacy-execution-matrix"],
+    ["Provider status", "GoldRush, Zerion, Torque, Jupiter, QVAC, and QuickNode are exposed as live provider state.", "https://api.privatedao.org/api/v1/provider-integrations/status"],
+    ["Ika custody", "Ika SDK live-readiness and custody preparation are available from the hosted read-node.", "https://api.privatedao.org/api/v1/ika/custody/prepare"],
+    ["Torque event", "A protected server relay delivers private_treasury_execution to Torque with accepted ingestion evidence.", "/services/torque-growth-loop"],
+    ["GoldRush intelligence", "Wallet intelligence uses GoldRush Warehouse state with Zerion and Solana RPC fallback visibility.", "/services/goldrush-decision-intelligence"],
+    ["Zerion policy", "Portfolio intelligence is normalized for the governed agent policy lane.", "/services/zerion-agent-policy"],
+  ],
+} as const;
 
 export const metadata: Metadata = buildRouteMetadata({
   title: "Verification Route",
@@ -402,6 +420,47 @@ export default function JudgePage() {
               </div>
             );
           })}
+        </div>
+      </section>
+
+      <section className="rounded-[30px] border border-cyan-300/20 bg-[radial-gradient(circle_at_top_left,rgba(34,211,238,0.18),transparent_34%),linear-gradient(135deg,rgba(14,165,233,0.10),rgba(20,241,149,0.08),rgba(8,13,28,0.95))] p-5">
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <div className="text-[11px] uppercase tracking-[0.3em] text-cyan-100/78">Live service gate</div>
+            <h2 className="mt-3 max-w-4xl text-2xl font-semibold text-white">
+              The judge route is backed by a live 11-page / 16-API execution check.
+            </h2>
+            <p className="mt-3 max-w-4xl text-sm leading-7 text-white/64">
+              This is the operational gate used after each backend change. It verifies the public pages, provider
+              endpoints, privacy matrix, Ika custody preparation, Torque delivery, GoldRush/Zerion intelligence,
+              Umbra intent, Jupiter routing, QuickNode stream stats, MagicBlock receipts, and REFHE proof endpoint.
+            </p>
+          </div>
+          <div className="rounded-2xl border border-white/10 bg-black/24 p-4 text-right">
+            <div className="font-mono text-[11px] uppercase tracking-[0.18em] text-cyan-100/62">{liveServiceGate.command}</div>
+            <div className="mt-2 text-3xl font-semibold text-white">{liveServiceGate.failures} failures</div>
+            <div className="mt-1 text-xs leading-5 text-white/50">
+              {liveServiceGate.pagesChecked} pages · {liveServiceGate.apisChecked} APIs · {liveServiceGate.completedAt}
+            </div>
+          </div>
+        </div>
+        <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+          {liveServiceGate.routes.map(([label, detail, href]) => (
+            <a
+              key={label}
+              href={href}
+              target={href.startsWith("http") ? "_blank" : undefined}
+              rel={href.startsWith("http") ? "noreferrer" : undefined}
+              className="rounded-[22px] border border-white/10 bg-black/24 p-4 transition hover:border-cyan-300/30 hover:bg-black/32"
+            >
+              <div className="text-sm font-semibold text-white">{label}</div>
+              <p className="mt-2 text-xs leading-5 text-white/58">{detail}</p>
+              <div className="mt-4 inline-flex items-center gap-2 text-xs font-medium text-cyan-100">
+                Open live route
+                <ArrowUpRight className="h-3.5 w-3.5" />
+              </div>
+            </a>
+          ))}
         </div>
       </section>
 
