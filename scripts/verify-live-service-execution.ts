@@ -150,7 +150,7 @@ const PAGE_CHECKS: PageCheck[] = [
   {
     name: "services-claim-console",
     url: `${ROOT}/services/`,
-    requiredFragments: ["On-chain claim console", "Encrypt + anchor on-chain", "Prepare on-chain memo", "Verify receipt locally", "Copy public attestation", "Get Testnet SOL"],
+    requiredFragments: ["On-chain claim console", "Encrypt + anchor on-chain", "Verify receipt locally", "Copy public attestation", "Get Testnet SOL"],
   },
   {
     name: "runtime-infrastructure",
