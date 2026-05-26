@@ -100,6 +100,66 @@ const PAGE_CHECKS: PageCheck[] = [
     requiredFragments: ["API Status", "QuickNode", "Testnet"],
   },
   {
+    name: "main-frontier-closure",
+    url: `${ROOT}/services/main-frontier-closure/`,
+    requiredFragments: ["Frontier", "Superteam", "Encrypt"],
+  },
+  {
+    name: "confidential-payments",
+    url: `${ROOT}/services/confidential-payments/`,
+    requiredFragments: ["Confidential", "payments", "Testnet"],
+  },
+  {
+    name: "runtime-infrastructure",
+    url: `${ROOT}/services/runtime-infrastructure/`,
+    requiredFragments: ["Runtime", "QuickNode", "Testnet"],
+  },
+  {
+    name: "trust",
+    url: `${ROOT}/trust/`,
+    requiredFragments: ["Trust", "Testnet", "Security"],
+  },
+  {
+    name: "frontier",
+    url: `${ROOT}/frontier/`,
+    requiredFragments: ["Frontier", "PrivateDAO", "Testnet"],
+  },
+  {
+    name: "submission",
+    url: `${ROOT}/submission/`,
+    requiredFragments: ["Submission", "PrivateDAO", "Testnet"],
+  },
+  {
+    name: "frontier-track-closure-document",
+    url: `${ROOT}/documents/frontier-track-closure-matrix-2026-05-25/`,
+    requiredFragments: ["Frontier", "Encrypt", "MagicBlock"],
+  },
+  {
+    name: "encrypted-integrations-activation-document",
+    url: `${ROOT}/documents/testnet-encrypted-integrations-activation-2026-05-23/`,
+    requiredFragments: ["Testnet", "REFHE", "MagicBlock"],
+  },
+  {
+    name: "privacy-execution-matrix-document",
+    url: `${ROOT}/documents/privacy-execution-matrix-2026-05-26/`,
+    requiredFragments: ["privacy", "execution", "matrix"],
+  },
+  {
+    name: "qvac-sovereign-ai",
+    url: `${ROOT}/services/qvac-sovereign-ai/`,
+    requiredFragments: ["QVAC", "AI", "PrivateDAO"],
+  },
+  {
+    name: "refhe-payroll-proof",
+    url: `${ROOT}/services/refhe-payroll-proof/`,
+    requiredFragments: ["REFHE", "payroll", "proof"],
+  },
+  {
+    name: "umbra-private-payments",
+    url: `${ROOT}/services/umbra-private-payments/`,
+    requiredFragments: ["Umbra", "private", "payments"],
+  },
+  {
     name: "legacy-review",
     url: `${ROOT}/review/`,
     requiredFragments: ["PrivateDAO", "Testnet"],

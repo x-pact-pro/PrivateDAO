@@ -140,8 +140,8 @@ const canonicalReviewPaths = [
 
 const liveServiceGate = {
   command: "npm run verify:live-service-execution",
-  completedAt: "2026-05-26T06:55:13Z",
-  pagesChecked: 19,
+  completedAt: "2026-05-26T07:04:30Z",
+  pagesChecked: 31,
   apisChecked: 16,
   failures: 0,
   routes: [
