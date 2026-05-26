@@ -122,6 +122,10 @@ const API_CHECKS: ApiCheck[] = [
         if (!providers?.[provider]?.proofEndpoint) return `provider status missing proof endpoint for ${provider}`;
         if (!providers?.[provider]?.route) return `provider status missing route for ${provider}`;
       }
+      if (providers?.torque?.deliveryVerified !== true) return "Torque delivery is not verified";
+      if (providers?.torque?.customEventName !== "private_treasury_execution") return "Torque custom event name mismatch";
+      if (providers?.torque?.customEventId !== "cmpm5lolt00iajq1jjluy5a3m") return "Torque custom event id mismatch";
+      if (providers?.torque?.lastIngestionId !== "4e660492-af75-4a28-9cb2-a81f7779be38") return "Torque ingestion evidence mismatch";
       if (payload?.cluster !== "testnet") return `provider status cluster mismatch: ${payload?.cluster}`;
       return null;
     },
@@ -191,6 +195,28 @@ const API_CHECKS: ApiCheck[] = [
       if (payload?.ok !== true) return "QuickNode stream stats did not return ok=true";
       if (payload?.stats?.auth !== "configured") return "QuickNode stream auth is not configured";
       if (payload?.stats?.network !== "solana-testnet") return `QuickNode stream network mismatch: ${payload?.stats?.network}`;
+      return null;
+    },
+  },
+  {
+    name: "torque-custom-event",
+    method: "POST",
+    url: `${API}/api/v1/torque/custom-event`,
+    body: {
+      userPubkey: "4Mm5YTRbJuyA8NcWM85wTnx6ZQMXNph2DSnzCCKLhsMD",
+      timestamp: 1779770400000,
+      eventName: "private_treasury_execution",
+      data: {
+        amount: 2100,
+        type: "live_service_execution_gate",
+        success: true,
+      },
+    },
+    validate: (payload) => {
+      if (payload?.ok !== true) return "Torque custom event did not return ok=true";
+      if (payload?.status !== 202) return `Torque upstream status mismatch: ${payload?.status}`;
+      if (payload?.raw?.status !== "ACCEPTED") return `Torque raw status mismatch: ${payload?.raw?.status}`;
+      if (typeof payload?.raw?.ingestionId !== "string") return "Torque custom event missing ingestion id";
       return null;
     },
   },
