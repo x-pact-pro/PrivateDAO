@@ -87,7 +87,16 @@ const API_CHECKS: ApiCheck[] = [
     name: "cryptographic-readiness",
     method: "GET",
     url: `${API}/api/v1/cryptographic-readiness`,
-    validate: (payload) => (payload?.ok === true ? null : "cryptographic readiness did not return ok=true"),
+    validate: (payload) => {
+      if (payload?.ok !== true) return "cryptographic readiness did not return ok=true";
+      const rails = Array.isArray(payload?.rails) ? payload.rails : [];
+      const torque = rails.find((entry: any) => entry?.id === "torque-growth-relay");
+      if (torque?.status !== "server-relay-delivery-verified") return `Torque cryptographic rail status mismatch: ${torque?.status}`;
+      if (torque?.lastIngestionId !== "4e660492-af75-4a28-9cb2-a81f7779be38") return "Torque cryptographic rail ingestion evidence mismatch";
+      const ika = rails.find((entry: any) => entry?.id === "ika-2pc-mpc");
+      if (ika?.proof !== "/api/v1/ika/custody/prepare") return "Ika cryptographic rail must point to custody prepare proof";
+      return null;
+    },
   },
   {
     name: "privacy-execution-matrix",
