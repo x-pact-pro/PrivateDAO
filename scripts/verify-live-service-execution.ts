@@ -25,6 +25,12 @@ const API_DOMAIN = process.env.PRIVATE_DAO_API_DOMAIN || "api.privatedao.org";
 const ROOT = `https://${ROOT_DOMAIN}`;
 const API = `https://${API_DOMAIN}`;
 const REQUEST_TIMEOUT_MS = Number(process.env.PRIVATE_DAO_LIVE_EXECUTION_TIMEOUT_MS || 20_000);
+const GLOBAL_FORBIDDEN_PAGE_FRAGMENTS = [
+  "app.privatedao.xyz",
+  "No custody ceremony evidence",
+  "Evidence completion: 0/6",
+  "0/6 custody gates",
+];
 
 const HOST_CHECKS: HostCheck[] = [
   {
@@ -603,7 +609,9 @@ async function runPageCheck(check: PageCheck) {
     const response = await fetchWithTimeout(check.url);
     const body = await response.text();
     const missingFragments = check.requiredFragments.filter((fragment) => !body.includes(fragment));
-    const forbiddenFragments = (check.forbiddenFragments || []).filter((fragment) => body.includes(fragment));
+    const forbiddenFragments = [...GLOBAL_FORBIDDEN_PAGE_FRAGMENTS, ...(check.forbiddenFragments || [])].filter((fragment) =>
+      body.includes(fragment),
+    );
     const hasNotFound = /\b404\b|not found/i.test(body);
     const ok = response.ok && missingFragments.length === 0 && forbiddenFragments.length === 0 && !hasNotFound;
     return {
