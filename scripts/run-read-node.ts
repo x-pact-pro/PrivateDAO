@@ -2121,6 +2121,7 @@ function providerIntegrationStatus() {
     existsSync(join(process.cwd(), "apps/web/node_modules/@qvac/sdk")) ||
     existsSync(join(process.cwd(), "node_modules/@qvac/sdk"));
   const qvacProofAvailable = existsSync(join(process.cwd(), "docs/qvac-runtime-proof.generated.json"));
+  const torqueDeliveryVerified = process.env.TORQUE_INGESTION_KEY_VERIFIED?.toLowerCase() === "true";
   return {
     ok: true,
     source: "privatedao-provider-integration-status",
@@ -2144,14 +2145,19 @@ function providerIntegrationStatus() {
       torque: {
         configured: Boolean(getApiKey("TORQUE_API_KEY") || getApiKey("TORQUE_API_TOKEN")),
         credentialPresent: Boolean(getApiKey("TORQUE_API_KEY") || getApiKey("TORQUE_API_TOKEN")),
-        deliveryVerified: process.env.TORQUE_INGESTION_KEY_VERIFIED?.toLowerCase() === "true",
+        deliveryVerified: torqueDeliveryVerified,
+        projectId: process.env.TORQUE_PROJECT_ID || null,
+        customEventId: process.env.TORQUE_CUSTOM_EVENT_ID || null,
+        customEventName: process.env.TORQUE_CUSTOM_EVENT_NAME || "private_treasury_execution",
+        lastIngestionId: process.env.TORQUE_LAST_INGESTION_ID || null,
         proofEndpoint: "/api/v1/torque/custom-event",
         route: "https://privatedao.org/services/torque-growth-loop/",
         executionMode: "server-side custom_event relay",
         endpoint: redactUrlSecret(torqueEndpoint.endsWith("/events") ? torqueEndpoint : `${torqueEndpoint.replace(/\/+$/, "")}/events`),
         privacyBoundary: "Only product-action events are relayed; secrets and reward credentials stay server-side.",
-        deliveryBoundary:
-          "Torque MCP tokens authenticate the MCP/API session. Event ingestion still requires an active Torque ingestion API key accepted by ingest.torque.so.",
+        deliveryBoundary: torqueDeliveryVerified
+          ? "Active Torque ingestion API key verified against ingest.torque.so; MCP auth remains separate from event delivery credentials."
+          : "Torque MCP tokens authenticate the MCP/API session. Event ingestion still requires an active Torque ingestion API key accepted by ingest.torque.so.",
       },
       jupiter: {
         configured: Boolean(getApiKey("JUPITER_API_KEY") || getApiKey("JUPITER_DEVELOPER_API_KEY")),

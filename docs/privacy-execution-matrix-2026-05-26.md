@@ -42,6 +42,13 @@ without exposing private payroll rows, private balances, strategy text, provider
 
 Torque has one extra boundary: MCP auth tokens are not automatically ingestion API keys. The status route therefore exposes whether a Torque credential is present separately from whether event ingestion has been verified by `ingest.torque.so`.
 
+2026-05-26 Torque activation evidence:
+
+- Project: `PrivateDAO` (`cmpm5lnzt00hujq1jd9imtp2o`)
+- Custom event: `private_treasury_execution` (`cmpm5lolt00iajq1jjluy5a3m`)
+- Accepted ingestion proof: `4e660492-af75-4a28-9cb2-a81f7779be38`
+- Live verification field: `/api/v1/provider-integrations/status -> providers.torque.deliveryVerified`
+
 ## Boundary
 
 This matrix does not claim mainnet funds are live. It does not claim final funded Ika dWallet DKG, final Ika 2PC-MPC signatures, or full Umbra claim settlement unless those are separately recorded with execution evidence.
