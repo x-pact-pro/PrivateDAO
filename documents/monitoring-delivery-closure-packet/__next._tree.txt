@@ -2,4 +2,4 @@
 :HL["/_next/static/chunks/0h5yiu_v469jm.css","style"]
 :HL["/_next/static/media/0c89a48fa5027cee-s.p.0rd3rjvnnhw7n.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
 :HL["/_next/static/media/797e433ab948586e-s.p.09zddjkbdep5a.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
-0:{"tree":{"name":"","param":null,"prefetchHints":16,"slots":{"children":{"name":"documents","param":null,"prefetchHints":0,"slots":{"children":{"name":"slug","param":{"type":"d","key":"monitoring-delivery-closure-packet","siblings":null},"prefetchHints":0,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":0,"slots":null}}}}}}},"staleTime":300,"buildId":"RoVqK6YtHjuvZ01LdwkAE"}
+0:{"tree":{"name":"","param":null,"prefetchHints":16,"slots":{"children":{"name":"documents","param":null,"prefetchHints":0,"slots":{"children":{"name":"slug","param":{"type":"d","key":"monitoring-delivery-closure-packet","siblings":null},"prefetchHints":0,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":0,"slots":null}}}}}}},"staleTime":300,"buildId":"RLfguvEAWkvRppU2XbLeR"}

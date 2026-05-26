@@ -42,6 +42,18 @@ export function getIndexableCuratedDocuments() {
 
 const curatedDocuments: CuratedDocument[] = [
   {
+    slug: "live-service-execution-gate-2026-05-26",
+    title: "Live Service Execution Gate",
+    category: "Reviewer core",
+    summary:
+      "Production-runtime gate that checks public reviewer pages, historical routes, hosted readiness APIs, MagicBlock proof, QuickNode stream telemetry, REFHE payroll receipt generation, Ika approval preparation, Umbra health, and QVAC proof.",
+    audience: "Judges, operators, security reviewers, ecosystem partners",
+    boundary:
+      "Live service execution gate only; it proves current public route and hosted API behavior without claiming mainnet real-funds launch, completed external audit, final Ika dWallet signing, or full Umbra private claim settlement.",
+    docPath: "docs/live-service-execution-gate-2026-05-26.md",
+    rawHref: `${repositoryBlobBase}/docs/live-service-execution-gate-2026-05-26.md`,
+  },
+  {
     slug: "mainnet-cryptographic-readiness-ladder-2026-05-25",
     title: "Mainnet Cryptographic Readiness Ladder",
     category: "Release",
