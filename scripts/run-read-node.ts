@@ -2556,6 +2556,51 @@ function privacyExecutionClaimsStatus() {
   };
 }
 
+function privacyExecutionClaimPrepare(searchParams: URLSearchParams) {
+  const matrix = privacyExecutionMatrixStatus();
+  const claimId = searchParams.get("claim") || "private-governance";
+  const digest = searchParams.get("digest") || "<sha256-ciphertext-digest-prefix>";
+  const service = matrix.serviceMatrix.find((entry) => entry.service === claimId);
+
+  if (!service) {
+    return {
+      ok: false,
+      source: "privatedao-privacy-execution-claim-prepare",
+      error: `Unknown privacy claim: ${claimId}`,
+      acceptedClaims: matrix.serviceMatrix.map((entry) => entry.service),
+    };
+  }
+
+  const digestPrefix = digest === "<sha256-ciphertext-digest-prefix>" ? digest : digest.slice(0, 40);
+  const digestLooksValid = digest === "<sha256-ciphertext-digest-prefix>" || /^[a-f0-9]{40,64}$/i.test(digest);
+  const memo = ["PDAO_ENCRYPTED_CLAIM_V1", service.service, service.executionProofClass, digestPrefix].join(":");
+
+  return {
+    ok: digestLooksValid,
+    source: "privatedao-privacy-execution-claim-prepare",
+    generatedAt: new Date().toISOString(),
+    cluster: matrix.cluster,
+    service: service.service,
+    label: service.executionMode,
+    proofClass: service.executionProofClass,
+    memoProgram: "MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr",
+    memo,
+    digestPrefix,
+    digestValidation: digestLooksValid ? "valid-or-template" : "invalid-hex-digest",
+    signingModel: "visitor-wallet-signs-solana-testnet-memo-transaction",
+    explorerAfterSignature: "https://explorer.solana.com/tx/<signature>?cluster=testnet",
+    privacyBoundary:
+      "The Solana transaction anchors only the digest commitment. The AES key and private disclosure receipt stay with the visitor unless explicitly shared.",
+    steps: [
+      "Create AES-GCM encrypted claim packet in the browser.",
+      "Hash ciphertext with SHA-256.",
+      "Build a Solana Memo Program instruction with the returned memo.",
+      "Sign from the visitor Testnet wallet.",
+      "Open the returned transaction signature on Solana Explorer or Solscan.",
+    ],
+  };
+}
+
 async function handle(req: http.IncomingMessage, res: http.ServerResponse) {
   if (req.method === "OPTIONS") {
     writeJson(res, 200, { ok: true });
@@ -2808,6 +2853,12 @@ async function handle(req: http.IncomingMessage, res: http.ServerResponse) {
 
     if (pathname === "/api/v1/privacy-execution-claims") {
       writeJson(res, 200, privacyExecutionClaimsStatus());
+      return;
+    }
+
+    if (pathname === "/api/v1/privacy-execution-claims/prepare") {
+      const result = privacyExecutionClaimPrepare(url.searchParams);
+      writeJson(res, result.ok ? 200 : 400, result);
       return;
     }
 

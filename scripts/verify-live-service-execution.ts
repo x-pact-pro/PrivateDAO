@@ -150,7 +150,7 @@ const PAGE_CHECKS: PageCheck[] = [
   {
     name: "services-claim-console",
     url: `${ROOT}/services/`,
-    requiredFragments: ["On-chain claim console", "Encrypt + anchor on-chain", "Verify receipt locally", "Copy public attestation", "Get Testnet SOL"],
+    requiredFragments: ["On-chain claim console", "Encrypt + anchor on-chain", "Prepare on-chain memo", "Verify receipt locally", "Copy public attestation", "Get Testnet SOL"],
   },
   {
     name: "runtime-infrastructure",
@@ -386,6 +386,23 @@ const API_CHECKS: ApiCheck[] = [
           const hasTx = Object.values(evidence).some((value) => typeof value === "string" && value.length > 40);
           if (!hasTx) return `${claim?.service} on-chain claim missing transaction evidence`;
         }
+      }
+      return null;
+    },
+  },
+  {
+    name: "privacy-execution-claim-prepare",
+    method: "GET",
+    url: `${API}/api/v1/privacy-execution-claims/prepare?claim=private-payments&digest=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa`,
+    validate: (payload) => {
+      if (payload?.ok !== true) return "privacy claim prepare did not return ok=true";
+      if (payload?.cluster !== "testnet") return `privacy claim prepare cluster mismatch: ${payload?.cluster}`;
+      if (payload?.memoProgram !== "MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr") return "privacy claim prepare memo program mismatch";
+      if (typeof payload?.memo !== "string" || !payload.memo.startsWith("PDAO_ENCRYPTED_CLAIM_V1:private-payments:")) {
+        return "privacy claim prepare memo missing PDAO_ENCRYPTED_CLAIM_V1 private-payments payload";
+      }
+      if (typeof payload?.privacyBoundary !== "string" || !payload.privacyBoundary.includes("AES key")) {
+        return "privacy claim prepare must state AES key boundary";
       }
       return null;
     },

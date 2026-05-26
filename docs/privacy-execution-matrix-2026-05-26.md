@@ -51,6 +51,8 @@ Every service row in the live API now carries `executionProofClass`, `visitorRep
 7. The visitor can verify the encrypted receipt locally, copy it, or download it as a selective-disclosure receipt without uploading private claim context.
 8. The visitor can export a public attestation that contains the digest, memo, memo program, signature, and Explorer URL without the AES key, then keep the private disclosure receipt separate for allowed reviewers only.
 
+The read-node also exposes `/api/v1/privacy-execution-claims/prepare?claim=<rail>` so any visitor, reviewer, or integration can inspect the exact Solana Testnet Memo schema before signing. The endpoint returns the Memo Program id, the `PDAO_ENCRYPTED_CLAIM_V1` payload format, signing model, Explorer URL template, and privacy boundary without requiring private keys or provider credentials.
+
 This gives every rail a live visitor-generated encrypted on-chain claim path today, while the stronger native rails continue to carry their own evidence: REFHE signatures, MagicBlock signatures, ZK verifier receipts, Ika readiness receipts, Umbra claim-intent receipts, Jupiter route previews, Torque delivery receipts, and intelligence-provider proofs.
 
 ## Provider Execution Gate

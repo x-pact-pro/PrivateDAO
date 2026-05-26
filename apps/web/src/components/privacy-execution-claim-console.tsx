@@ -370,6 +370,14 @@ export function PrivacyExecutionClaimConsole({ compact = false }: { compact?: bo
             <a href="https://api.privatedao.org/api/v1/privacy-execution-claims" target="_blank" rel="noreferrer" className={cn(buttonVariants({ size: "sm", variant: "secondary" }))}>
               Claims JSON
             </a>
+            <a
+              href={`https://api.privatedao.org/api/v1/privacy-execution-claims/prepare?claim=${encodeURIComponent(selectedClaim.id)}`}
+              target="_blank"
+              rel="noreferrer"
+              className={cn(buttonVariants({ size: "sm", variant: "secondary" }))}
+            >
+              Prepare on-chain memo
+            </a>
             <a href="https://api.privatedao.org/api/v1/privacy-execution-matrix" target="_blank" rel="noreferrer" className={cn(buttonVariants({ size: "sm", variant: "outline" }))}>
               Matrix JSON
             </a>

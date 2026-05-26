@@ -25,6 +25,7 @@ function main() {
   for (const required of [
     "function privacyExecutionMatrixStatus()",
     'pathname === "/api/v1/privacy-execution-matrix"',
+    'pathname === "/api/v1/privacy-execution-claims/prepare"',
     'pathname === "/api/v1/provider-integrations/status"',
     "function providerIntegrationStatus()",
     "wallet-first-private-operations",
@@ -44,6 +45,7 @@ function main() {
     "wallet-signed-onchain",
     "PDAO_ENCRYPTED_CLAIM_V1",
     "AES-GCM",
+    "privacyExecutionClaimPrepare",
     "selective-disclosure receipt",
     "public attestation",
     "private disclosure",
@@ -76,6 +78,7 @@ function main() {
     "Review -> Sign -> Verify",
     "AES-GCM encrypted claim packet",
     "PDAO_ENCRYPTED_CLAIM_V1",
+    "/api/v1/privacy-execution-claims/prepare?claim=<rail>",
     "selective-disclosure receipt",
     "public attestation",
     "private disclosure receipt",
