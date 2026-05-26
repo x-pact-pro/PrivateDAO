@@ -38,6 +38,35 @@ export default function TorqueGrowthLoopPage() {
     "Abuse checks for duplicate wallets, repeated events, and non-finalized actions",
     "Delivery transcript recorded for reviewer and operator inspection",
   ] as const;
+  const incentiveRecipes = [
+    {
+      type: "Leaderboard",
+      use: "Rank operators by verified private treasury actions or governance activation.",
+      guardrail: "Never use raw metric payout. Use fixed rank prizes or capped formulas such as min(N * 0.05, 500).",
+    },
+    {
+      type: "Rebate",
+      use: "Return a small percentage after a signed billing SKU, proposal execution, or treasury route preview.",
+      guardrail: "Always cap the pool and user payout before creation so Testnet behavior cannot imply unlimited rewards.",
+    },
+    {
+      type: "Raffle",
+      use: "Reward learning completion, first wallet execution, or weekly verified participation.",
+      guardrail: "Use equal chances for education loops; use weighted tickets only when activity-based weighting is intentional.",
+    },
+    {
+      type: "Direct",
+      use: "Distribute partner, contributor, or judge-demo rewards to a fixed wallet list.",
+      guardrail: "Treat pasted allocations as explicit inputs and keep the browser out of reward credential custody.",
+    },
+  ] as const;
+  const mcpWorkflow = [
+    ["Authenticate", "Torque MCP token stays local/operator-side; ingestion keys stay server-side in the read-node."],
+    ["Select project", "PrivateDAO project cmpm5lnzt00hujq1jd9imtp2o is the active growth workspace."],
+    ["Load context", "The assistant should load project context before choosing formula, source, schedule, or reward type."],
+    ["Preview first", "Every query must be previewed before an incentive is created; no blind leaderboard formulas."],
+    ["Publish evidence", "Each incentive should link back to /judge, provider status, event ID, and accepted ingestion proof."],
+  ] as const;
 
   return (
     <OperationsShell
@@ -123,6 +152,34 @@ export default function TorqueGrowthLoopPage() {
           {productionGates.map((gate) => (
             <div key={gate} className="rounded-2xl border border-white/10 bg-black/22 p-4 text-sm leading-6 text-white/62">
               {gate}
+            </div>
+          ))}
+        </div>
+      </section>
+      <section className="rounded-[30px] border border-fuchsia-300/18 bg-[linear-gradient(135deg,rgba(217,70,239,0.10),rgba(34,211,238,0.07),rgba(8,13,28,0.94))] p-6">
+        <div className="text-[11px] uppercase tracking-[0.28em] text-fuchsia-100/78">MCP-safe incentive design</div>
+        <h2 className="mt-3 max-w-4xl text-2xl font-semibold text-white">Torque is wired as an operator-controlled growth engine, not a blind reward faucet</h2>
+        <p className="mt-3 max-w-4xl text-sm leading-7 text-white/66">
+          The page exposes the public product loop while the MCP workflow remains an operator action: authenticate, choose
+          project context, preview the query, confirm reward economics, and publish evidence. This prevents the common
+          leaderboard mistake where raw activity values become uncapped token payouts.
+        </p>
+        <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+          {incentiveRecipes.map((recipe) => (
+            <div key={recipe.type} className="rounded-[22px] border border-white/10 bg-black/24 p-4">
+              <div className="text-sm font-semibold text-white">{recipe.type}</div>
+              <p className="mt-3 text-sm leading-6 text-white/62">{recipe.use}</p>
+              <div className="mt-4 rounded-2xl border border-fuchsia-200/12 bg-fuchsia-200/[0.06] p-3 text-xs leading-6 text-fuchsia-50/72">
+                {recipe.guardrail}
+              </div>
+            </div>
+          ))}
+        </div>
+        <div className="mt-5 grid gap-3 lg:grid-cols-5">
+          {mcpWorkflow.map(([label, detail]) => (
+            <div key={label} className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
+              <div className="text-[10px] uppercase tracking-[0.22em] text-cyan-100/62">{label}</div>
+              <p className="mt-3 text-xs leading-6 text-white/58">{detail}</p>
             </div>
           ))}
         </div>
