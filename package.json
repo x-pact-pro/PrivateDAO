@@ -28,6 +28,7 @@
     "verify:host-topology": "bash scripts/verify-host-topology.sh",
     "verify:host-topology:strict": "PRIVATE_DAO_STRICT_HOST_TOPOLOGY=1 bash scripts/verify-host-topology.sh",
     "verify:public-edge-health": "bash scripts/check-public-edge-health.sh",
+    "verify:live-service-execution": "ts-node scripts/verify-live-service-execution.ts",
     "verify:public-image-assets": "node scripts/verify-public-image-assets.js",
     "status:source": "bash scripts/status-source-tree.sh",
     "status:triage": "bash scripts/worktree-triage-report.sh",

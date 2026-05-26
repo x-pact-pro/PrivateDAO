@@ -1,6 +1,6 @@
 # Ecosystem Focus Alignment
 
-Generated at: `2026-05-25T16:21:22.222Z`
+Generated at: `2026-05-25T23:49:52.318Z`
 
 Truth-aligned mapping of PrivateDAO into decentralisation, censorship resistance, DAO tooling, education, developer tooling, payments, and selective cause-driven fit.
 

@@ -3,7 +3,7 @@
 ## Overview
 
 - project: `PrivateDAO`
-- generated at: `2026-05-25T16:20:35.925Z`
+- generated at: `2026-05-25T23:49:09.464Z`
 - reviewer intent: Explain the current custody truth, show what is externally proven now, and make the missing external ceremony evidence explicit without narrative drift.
 - custody status: `ready-for-transfer`
 - trust decision: `blocked-external-steps`
