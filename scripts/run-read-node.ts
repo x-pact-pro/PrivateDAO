@@ -2057,7 +2057,7 @@ async function buildQvacRuntimeProof() {
 }
 
 async function forwardTorqueEvent(body: Record<string, unknown>) {
-  const apiKey = getApiKey("TORQUE_API_KEY");
+  const apiKey = getApiKey("TORQUE_API_KEY") || getApiKey("TORQUE_API_TOKEN");
   const configuredEndpoint = process.env.TORQUE_CUSTOM_EVENT_API_URL?.trim() || process.env.TORQUE_INGESTER_URL?.trim() || "https://ingest.torque.so/events";
   const endpoint = configuredEndpoint.endsWith("/events") ? configuredEndpoint : `${configuredEndpoint.replace(/\/+$/, "")}/events`;
   if (!apiKey) {
@@ -2142,12 +2142,16 @@ function providerIntegrationStatus() {
         privacyBoundary: "Portfolio data is used to scope policy review; wallet execution remains approve-before-execute.",
       },
       torque: {
-        configured: Boolean(getApiKey("TORQUE_API_KEY")),
+        configured: Boolean(getApiKey("TORQUE_API_KEY") || getApiKey("TORQUE_API_TOKEN")),
+        credentialPresent: Boolean(getApiKey("TORQUE_API_KEY") || getApiKey("TORQUE_API_TOKEN")),
+        deliveryVerified: process.env.TORQUE_INGESTION_KEY_VERIFIED?.toLowerCase() === "true",
         proofEndpoint: "/api/v1/torque/custom-event",
         route: "https://privatedao.org/services/torque-growth-loop/",
         executionMode: "server-side custom_event relay",
         endpoint: redactUrlSecret(torqueEndpoint.endsWith("/events") ? torqueEndpoint : `${torqueEndpoint.replace(/\/+$/, "")}/events`),
         privacyBoundary: "Only product-action events are relayed; secrets and reward credentials stay server-side.",
+        deliveryBoundary:
+          "Torque MCP tokens authenticate the MCP/API session. Event ingestion still requires an active Torque ingestion API key accepted by ingest.torque.so.",
       },
       jupiter: {
         configured: Boolean(getApiKey("JUPITER_API_KEY") || getApiKey("JUPITER_DEVELOPER_API_KEY")),

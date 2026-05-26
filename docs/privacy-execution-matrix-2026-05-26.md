@@ -40,6 +40,8 @@ without exposing private payroll rows, private balances, strategy text, provider
 
 `/api/v1/provider-integrations/status` is intentionally safe to call without secrets. It reports whether each server-side credential is configured, which public product route uses it, which proof endpoint exercises it, and which privacy boundary prevents provider data from becoming leaked strategy text.
 
+Torque has one extra boundary: MCP auth tokens are not automatically ingestion API keys. The status route therefore exposes whether a Torque credential is present separately from whether event ingestion has been verified by `ingest.torque.so`.
+
 ## Boundary
 
 This matrix does not claim mainnet funds are live. It does not claim final funded Ika dWallet DKG, final Ika 2PC-MPC signatures, or full Umbra claim settlement unless those are separately recorded with execution evidence.
