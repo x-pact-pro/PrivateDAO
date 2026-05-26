@@ -366,6 +366,25 @@ export function PrivacyExecutionClaimConsole({ compact = false }: { compact?: bo
             {status}
           </div>
           {signature ? <div className="mt-3 break-all font-mono text-xs text-cyan-100">{signature}</div> : null}
+          <div className="mt-4 rounded-2xl border border-white/10 bg-white/[0.03] p-3">
+            <div className="text-[11px] uppercase tracking-[0.22em] text-white/50">Selective disclosure receipt</div>
+            <div className="mt-2 text-xs leading-6 text-white/56">
+              After anchoring, verify the encrypted packet locally, copy it, or download it without uploading private
+              claim context.
+            </div>
+            <div className="mt-3 flex flex-wrap gap-2">
+              <button type="button" onClick={() => void verifyReceiptLocally()} disabled={!encryptedPacket} className={cn(buttonVariants({ size: "sm", variant: "secondary" }))}>
+                Verify receipt locally
+              </button>
+              <button type="button" onClick={() => void copyEncryptedReceipt()} disabled={!encryptedPacket} className={cn(buttonVariants({ size: "sm", variant: "outline" }))}>
+                Copy encrypted receipt
+              </button>
+              <button type="button" onClick={downloadEncryptedReceipt} disabled={!encryptedPacket} className={cn(buttonVariants({ size: "sm", variant: "outline" }))}>
+                Download receipt
+              </button>
+            </div>
+            {receiptStatus ? <div className="mt-3 rounded-xl border border-white/10 bg-black/20 p-3 text-xs text-white/62">{receiptStatus}</div> : null}
+          </div>
           {encryptedPacket ? (
             <div className="mt-4 rounded-2xl border border-cyan-300/16 bg-cyan-300/[0.05] p-3">
               <div className="text-[11px] uppercase tracking-[0.22em] text-cyan-100/68">Local encrypted claim packet</div>
@@ -373,18 +392,6 @@ export function PrivacyExecutionClaimConsole({ compact = false }: { compact?: bo
                 Only the digest is anchored on-chain. The key and ciphertext are shown locally so the visitor can inspect
                 what was committed without publishing private claim context.
               </div>
-              <div className="mt-3 flex flex-wrap gap-2">
-                <button type="button" onClick={() => void verifyReceiptLocally()} className={cn(buttonVariants({ size: "sm", variant: "secondary" }))}>
-                  Verify receipt locally
-                </button>
-                <button type="button" onClick={() => void copyEncryptedReceipt()} className={cn(buttonVariants({ size: "sm", variant: "outline" }))}>
-                  Copy encrypted receipt
-                </button>
-                <button type="button" onClick={downloadEncryptedReceipt} className={cn(buttonVariants({ size: "sm", variant: "outline" }))}>
-                  Download receipt
-                </button>
-              </div>
-              {receiptStatus ? <div className="mt-3 rounded-xl border border-white/10 bg-black/20 p-3 text-xs text-white/62">{receiptStatus}</div> : null}
               <pre className="mt-3 max-h-52 overflow-auto rounded-xl border border-white/10 bg-black/30 p-3 text-[11px] leading-5 text-white/66">
                 {JSON.stringify(encryptedPacket, null, 2)}
               </pre>
