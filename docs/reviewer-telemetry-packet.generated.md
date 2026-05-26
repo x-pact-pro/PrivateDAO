@@ -3,15 +3,15 @@
 ## Overview
 
 - project: `PrivateDAO`
-- generated at: `2026-05-25T23:49:40.089Z`
+- generated at: `2026-05-26T03:09:35.774Z`
 - reviewer intent: Show the shortest truth-synced route into runtime maturity, hosted reads, indexed governance, and infrastructure-facing reviewer value without claiming unsupported partnerships or mainnet readiness.
 
 ## Truth Sources
 
-- Runtime evidence: `2026-05-25T23:46:52.503Z` via `docs/runtime-evidence.generated.md`
-- Frontier integrations: `2026-05-25T23:45:05.280Z` via `docs/frontier-integrations.generated.md`
-- Read-node snapshot: `2026-05-25T23:43:56.329Z` via `docs/read-node/snapshot.generated.md`
-- Devnet service metrics: `2026-05-25T23:46:52.503Z` via `apps/web/src/lib/devnet-service-metrics.ts`
+- Runtime evidence: `2026-05-26T03:07:06.583Z` via `docs/runtime-evidence.generated.md`
+- Frontier integrations: `2026-05-26T03:05:31.037Z` via `docs/frontier-integrations.generated.md`
+- Read-node snapshot: `2026-05-26T03:04:20.758Z` via `docs/read-node/snapshot.generated.md`
+- Devnet service metrics: `2026-05-26T03:07:06.583Z` via `apps/web/src/lib/devnet-service-metrics.ts`
 
 ## What Works Now
 
@@ -23,9 +23,9 @@
 
 ## What Is Externally Or Operationally Proven Now
 
-- Runtime evidence package generated at 2026-05-25T23:46:52.503Z and published as docs/runtime-evidence.generated.md.
-- Frontier integrations package generated at 2026-05-25T23:45:05.280Z with reviewer entry https://privatedao.org/proof/?judge=1.
-- Read-node snapshot generated at 2026-05-25T23:43:56.329Z on slot 410906370 against https://api.testnet.solana.com.
+- Runtime evidence package generated at 2026-05-26T03:07:06.583Z and published as docs/runtime-evidence.generated.md.
+- Frontier integrations package generated at 2026-05-26T03:05:31.037Z with reviewer entry https://privatedao.org/proof/?judge=1.
+- Read-node snapshot generated at 2026-05-26T03:04:20.758Z on slot 410937813 against https://api.testnet.solana.com.
 - Proposal flow health, wallet readiness, and proof freshness summaries are taken from the same devnet service metrics module used by the live app.
 - Unexpected runtime failures remain 0 and unexpected adversarial successes remain 0.
 
@@ -33,7 +33,7 @@
 
 - read path: `backend-indexer`
 - rpc endpoint: `https://api.testnet.solana.com`
-- slot: `410906370`
+- slot: `410937813`
 - current Testnet program id: `EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva`
 - legacy Devnet hosted-read program id: `EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva`
 - commitment: `confirmed`
@@ -64,7 +64,7 @@
 - Proof freshness: fresh this hour — Runtime evidence fresh this hour and Testnet canary fresh this hour remain published together. The integration packet remains linked as the reviewer baseline without turning an archived source packet into the freshness score. Latest Testnet rehearsal is 19d old with 9 confirmed lifecycle signatures. (Open trust documents: /documents/live-proof-v3)
 - Hosted read coverage: 17 — The backend-indexer read path currently exposes 17 indexed proposals across 16 DAOs. (Open services: /services)
 - MagicBlock settlement completion: 0% — 0/5 confidential corridor transactions finalized in the current integration evidence package. (Open diagnostics: /diagnostics)
-- Primary RPC latency: 181 ms — Current blockhash latency from the primary Testnet endpoint. Version latency is 948 ms. (Open analytics: /analytics)
+- Primary RPC latency: 104 ms — Current blockhash latency from the primary Testnet endpoint. Version latency is 796 ms. (Open analytics: /analytics)
 
 ## Reviewer-First Path
 

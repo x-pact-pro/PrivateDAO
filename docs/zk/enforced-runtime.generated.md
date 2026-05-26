@@ -3,7 +3,7 @@
 ## Overview
 
 - project: `PrivateDAO`
-- generated at: `2026-05-25T23:46:15.941Z`
+- generated at: `2026-05-26T03:06:31.076Z`
 - network: `devnet`
 - status: `pending-zk-enforced-capture`
 - target count: `5`

@@ -1,26 +1,26 @@
 {
   "project": "PrivateDAO",
-  "generatedAt": "2026-05-25T23:49:40.089Z",
+  "generatedAt": "2026-05-26T03:09:35.774Z",
   "reviewerIntent": "Show the shortest truth-synced route into runtime maturity, hosted reads, indexed governance, and infrastructure-facing reviewer value without claiming unsupported partnerships or mainnet readiness.",
   "truthSources": [
     {
       "label": "Runtime evidence",
-      "generatedAt": "2026-05-25T23:46:52.503Z",
+      "generatedAt": "2026-05-26T03:07:06.583Z",
       "href": "docs/runtime-evidence.generated.md"
     },
     {
       "label": "Frontier integrations",
-      "generatedAt": "2026-05-25T23:45:05.280Z",
+      "generatedAt": "2026-05-26T03:05:31.037Z",
       "href": "docs/frontier-integrations.generated.md"
     },
     {
       "label": "Read-node snapshot",
-      "generatedAt": "2026-05-25T23:43:56.329Z",
+      "generatedAt": "2026-05-26T03:04:20.758Z",
       "href": "docs/read-node/snapshot.generated.md"
     },
     {
       "label": "Devnet service metrics",
-      "generatedAt": "2026-05-25T23:46:52.503Z",
+      "generatedAt": "2026-05-26T03:07:06.583Z",
       "href": "apps/web/src/lib/devnet-service-metrics.ts"
     }
   ],
@@ -32,9 +32,9 @@
     "2 REFHE-settled and 1 MagicBlock-settled proposal paths are already reflected in the indexed source."
   ],
   "externallyProvenNow": [
-    "Runtime evidence package generated at 2026-05-25T23:46:52.503Z and published as docs/runtime-evidence.generated.md.",
-    "Frontier integrations package generated at 2026-05-25T23:45:05.280Z with reviewer entry https://privatedao.org/proof/?judge=1.",
-    "Read-node snapshot generated at 2026-05-25T23:43:56.329Z on slot 410906370 against https://api.testnet.solana.com.",
+    "Runtime evidence package generated at 2026-05-26T03:07:06.583Z and published as docs/runtime-evidence.generated.md.",
+    "Frontier integrations package generated at 2026-05-26T03:05:31.037Z with reviewer entry https://privatedao.org/proof/?judge=1.",
+    "Read-node snapshot generated at 2026-05-26T03:04:20.758Z on slot 410937813 against https://api.testnet.solana.com.",
     "Proposal flow health, wallet readiness, and proof freshness summaries are taken from the same devnet service metrics module used by the live app.",
     "Unexpected runtime failures remain 0 and unexpected adversarial successes remain 0."
   ],
@@ -47,7 +47,7 @@
   "hostedReadProof": {
     "readPath": "backend-indexer",
     "rpcEndpoint": "https://api.testnet.solana.com",
-    "slot": 410906370,
+    "slot": 410937813,
     "currentTestnetProgramId": "EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva",
     "programId": "EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva",
     "commitment": "confirmed",
@@ -115,8 +115,8 @@
     },
     {
       "label": "Primary RPC latency",
-      "value": "181 ms",
-      "detail": "Current blockhash latency from the primary Testnet endpoint. Version latency is 948 ms.",
+      "value": "104 ms",
+      "detail": "Current blockhash latency from the primary Testnet endpoint. Version latency is 796 ms.",
       "tone": "cyan",
       "routeLabel": "Open analytics",
       "routeHref": "/analytics"

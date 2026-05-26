@@ -2,7 +2,7 @@
 
 ## Overview
 
-- Generated at: `2026-05-25T23:46:52.503Z`
+- Generated at: `2026-05-26T03:07:06.583Z`
 - Program id: `5AhUsbQ4mJ8Xh7QJEomuS85qGgmK9iNvFqzF669Y7Psx`
 - Verification wallet: `4Mm5YTRbJuyA8NcWM85wTnx6ZQMXNph2DSnzCCKLhsMD`
 - Diagnostics page: `https://privatedao.org/diagnostics/`
