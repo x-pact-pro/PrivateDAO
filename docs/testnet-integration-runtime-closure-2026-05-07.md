@@ -25,13 +25,13 @@ This packet records the current live integration state after refreshing the Priv
 - magicblock: `ok` · HTTP `200` · https://api.privatedao.org/api/v1/magicblock/health
 - cloakIntent: `ok` · HTTP `200` · https://api.privatedao.org/api/v1/private-settlement/intent
 - umbraIntent: `ok` · HTTP `200` · https://api.privatedao.org/api/v1/private-settlement/intent
-- torque: `not-ok` · HTTP `502` · https://api.privatedao.org/api/v1/torque/custom-event
+- torque: `ok` · HTTP `202` · https://api.privatedao.org/api/v1/torque/custom-event
 
 ## Truth Boundaries
 
 - umbra: Live relayer info and intent receipt are proven. Full Umbra claim submission still requires SDK-generated proof_account_data and UTXO slot data from a real Umbra pool claim.
 - cloak: Read-node accepts POST and returns a deterministic Testnet intent receipt. No CLOAK_RELAY_URL is configured, so this is not a live Cloak relay execution.
-- torque: Read-node is configured and reaches Torque, but the submitted event name is not registered for this API key unless Torque dashboard configuration is updated.
+- torque: Read-node now forwards `private_treasury_execution` to Torque through a server-side ingestion key. The query-ready custom event is `cmpm5lolt00iajq1jjluy5a3m`; accepted ingestion proof `4e660492-af75-4a28-9cb2-a81f7779be38`.
 - zkVerifier: ZK proof anchors exist in prior Devnet evidence. Full on-chain verifier CPI remains a separate integration boundary.
 
 ## Source Files

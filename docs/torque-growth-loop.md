@@ -70,13 +70,22 @@ The route therefore has two useful states:
 - local/event-inspection mode for judges, where payloads can be generated and copied immediately
 - server-forwarding mode for production, where scoped credentials, campaign IDs, abuse checks, and delivery transcripts are enabled on the read-node
 
+## 2026-05-26 activation
+
+- Torque project: `PrivateDAO` (`cmpm5lnzt00hujq1jd9imtp2o`)
+- Query-ready custom event: `private_treasury_execution` (`cmpm5lolt00iajq1jjluy5a3m`)
+- Accepted ingestion proof: `4e660492-af75-4a28-9cb2-a81f7779be38`
+- Live status: `https://api.privatedao.org/api/v1/provider-integrations/status` -> `providers.torque.deliveryVerified`
+
+This means the growth loop is no longer a browser-only payload builder. The protected read-node relay has delivered a real custom event to Torque with a server-side ingestion API key.
+
 ## Friction log
 
 The product surface keeps a compact friction log for the Torque track:
 
 - The growth primitive must attach to real actions, not page visits.
 - Static-export deployment cannot safely hide private Torque API keys in browser code.
-- The correct production path is a server-side event relay or Torque MCP runner with scoped credentials.
+- The correct production path is the active server-side event relay, with Torque MCP kept separate for project administration.
 - The browser workbench still helps judges inspect event shape, route mapping, and reward intent immediately.
 - Production rewards must reject duplicate wallet spam, repeated non-finalized actions, and events that are not connected to DAO, proposal, billing, learning, or treasury execution proof.
 

@@ -21,11 +21,12 @@ export default function TorqueGrowthLoopPage() {
   const operatingSteps = [
     ["Action", "A user creates a DAO, creates a proposal, signs a billing route, finishes learning, or executes a private treasury event."],
     ["Event", "The browser builds a Torque-style custom_event payload with wallet, route, network, reward intent, and proof routes."],
-    ["Relay", "The read-node endpoint /api/v1/torque/custom-event forwards the event only when server-side Torque credentials are configured."],
+    ["Relay", "The read-node endpoint /api/v1/torque/custom-event forwards the event with a verified server-side Torque ingestion key."],
     ["Proof", "The user lands back in Judge, Proof, or Learn so the incentive loop points to a real product action, not a vanity visit."],
   ] as const;
   const productionGates = [
     "Server-side TORQUE_API_KEY configured outside the static site",
+    "Accepted ingestion proof: 4e660492-af75-4a28-9cb2-a81f7779be38",
     "Campaign IDs and reward policy mapped per event type",
     "Abuse checks for duplicate wallets, repeated events, and non-finalized actions",
     "Delivery transcript recorded for reviewer and operator inspection",
@@ -65,7 +66,7 @@ export default function TorqueGrowthLoopPage() {
         <h2 className="mt-3 max-w-4xl text-2xl font-semibold text-white">Torque becomes the measurable retention layer for real PrivateDAO operations</h2>
         <p className="mt-3 max-w-4xl text-sm leading-7 text-white/66">
           The loop is intentionally strict: PrivateDAO does not reward passive page views. It converts wallet-first
-          actions into custom_events, forwards them through the protected read-node relay when credentials exist, then
+          actions into custom_events, forwards them through the protected read-node relay with verified credentials, then
           sends the user back to a proof route where the action can be inspected.
         </p>
         <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
@@ -79,12 +80,12 @@ export default function TorqueGrowthLoopPage() {
       </section>
       <section className="rounded-[30px] border border-amber-300/18 bg-amber-300/[0.07] p-6">
         <div className="text-[11px] uppercase tracking-[0.28em] text-amber-100/78">What is already functional</div>
-        <h2 className="mt-3 text-2xl font-semibold text-white">The page can build events now; production forwarding stays server-side</h2>
+        <h2 className="mt-3 text-2xl font-semibold text-white">The page builds events and the read-node forwards them to Torque</h2>
         <p className="mt-3 max-w-4xl text-sm leading-7 text-white/66">
           The visible workbench builds inspectable event payloads, records local delivery state, and posts to
           <span className="font-mono text-amber-100"> /api/v1/torque/custom-event</span>. The API route exists in the
-          read-node and forwards to Torque only when scoped server credentials are present. This keeps private keys out
-          of the browser while preserving a testable growth UX for judges.
+          read-node and forwards to Torque with a scoped server credential. This keeps private keys out of the browser
+          while preserving a testable growth UX for judges.
         </p>
         <div className="mt-5 grid gap-3 md:grid-cols-2">
           {productionGates.map((gate) => (

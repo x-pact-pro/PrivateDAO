@@ -209,9 +209,9 @@ export default function JudgePage() {
     },
     {
       label: "Provider integration status",
-      value: "GoldRush + Zerion + QVAC live",
+      value: "GoldRush + Zerion + Torque + QVAC live",
       detail:
-        "A dedicated status route now reports which provider rails are configured, which proof endpoint exercises each rail, and which privacy boundary keeps credentials and strategy text out of the browser.",
+        "A dedicated status route now reports configured provider rails, proof endpoints, privacy boundaries, and Torque delivery verification through a real accepted custom_event.",
       href: "https://api.privatedao.org/api/v1/provider-integrations/status",
       cta: "Open provider JSON",
     },
