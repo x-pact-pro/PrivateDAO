@@ -46,6 +46,7 @@ const rateMap = new Map<string, { count: number; resetAt: number }>();
 const serverStartedAt = new Date().toISOString();
 const visitorPingsMemory: VisitorPingRow[] = [];
 const executionEventsMemory: OperationExecutionEventRow[] = [];
+const zerionPortfolioCache = new Map<string, { cachedAt: number; response: Record<string, unknown> }>();
 let lastFreshnessPingMemory: FreshnessPingRow | null = null;
 let lastVisitorTelegramAt = 0;
 const visitorTelegramSessions = new Map<string, number>();
@@ -2088,6 +2089,19 @@ async function forwardTorqueEvent(body: Record<string, unknown>) {
 
 async function fetchZerionPortfolio(wallet: string) {
   const apiKey = getApiKey("ZERION_API_KEY");
+  const cacheKey = wallet.trim();
+  const cached = zerionPortfolioCache.get(cacheKey);
+  const cacheTtlMs = Number(process.env.ZERION_PORTFOLIO_CACHE_TTL_MS || 10 * 60_000);
+  if (cached && Date.now() - cached.cachedAt < cacheTtlMs) {
+    return {
+      ...cached.response,
+      cache: {
+        hit: true,
+        cachedAt: new Date(cached.cachedAt).toISOString(),
+        ttlMs: cacheTtlMs,
+      },
+    };
+  }
   if (!apiKey) {
     return {
       ok: false,
@@ -2103,13 +2117,31 @@ async function fetchZerionPortfolio(wallet: string) {
     },
   });
   const raw = (await response.json().catch(() => null)) as unknown;
-  return {
+  const result = {
     ok: response.ok,
     source: "zerion",
     status: response.status,
     wallet,
     raw,
   };
+  if (response.ok) {
+    zerionPortfolioCache.set(cacheKey, { cachedAt: Date.now(), response: result });
+  }
+  if (!response.ok && response.status === 429 && cached) {
+    return {
+      ...cached.response,
+      ok: true,
+      status: 200,
+      cache: {
+        hit: true,
+        staleBecause: "zerion-rate-limited",
+        upstreamStatus: 429,
+        cachedAt: new Date(cached.cachedAt).toISOString(),
+        ttlMs: cacheTtlMs,
+      },
+    };
+  }
+  return result;
 }
 
 function providerIntegrationStatus() {

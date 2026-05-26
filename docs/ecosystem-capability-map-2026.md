@@ -50,8 +50,9 @@ This avoids a common failure mode where every ecosystem program creates a differ
 
 - Ecosystem reference: live activity, incentives, measurable engagement loops, retention primitives.
 - PrivateDAO implementation:
-  - the platform can emit growth-loop events from meaningful user actions
+  - the platform now emits growth-loop events from meaningful user actions through the protected read-node relay
   - DAO creation, proposal creation, billing signatures, and learning completion map into measurable event rails
+  - `private_treasury_execution` is query-ready in Torque and has accepted ingestion evidence
   - the incentive surface is tied to actual product behavior, not fake gamification
 - Product routes:
   - `/services/torque-growth-loop`
@@ -66,6 +67,7 @@ This avoids a common failure mode where every ecosystem program creates a differ
 - PrivateDAO implementation:
   - commit-reveal governance stays central to the product
   - ZK review rails, REFHE/FHE posture, and privacy-linked operating surfaces are exposed through guided routes
+  - Umbra private settlement intent, REFHE payroll proof, MagicBlock receipt proof, and Ika custody preparation are covered by the live-service gate
   - protected stages stay private while public verification remains easy
 - Product routes:
   - `/security`
@@ -96,6 +98,7 @@ This avoids a common failure mode where every ecosystem program creates a differ
 - PrivateDAO implementation:
   - indexed proposal state, runtime logs, telemetry packets, and analytics surfaces are already part of the site
   - analytics are framed as proof and operations tooling, not decorative dashboards
+  - GoldRush, Zerion, QVAC, QuickNode, and Solana RPC are composed as an intelligence layer with explicit provider fallback boundaries
 - Product routes:
   - `/analytics`
   - `/diagnostics`

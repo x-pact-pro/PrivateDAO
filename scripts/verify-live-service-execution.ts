@@ -150,10 +150,49 @@ const API_CHECKS: ApiCheck[] = [
     validate: (payload) => (payload?.ok === true ? null : "Umbra relayer health did not return ok=true"),
   },
   {
+    name: "private-settlement-intent",
+    method: "POST",
+    url: `${API}/api/v1/private-settlement/intent`,
+    body: {
+      rail: "umbra",
+      asset: "USDC",
+      amount: "1.25",
+      recipient: "4Mm5YTRbJuyA8NcWM85wTnx6ZQMXNph2DSnzCCKLhsMD",
+      operationType: "live-service-execution-gate",
+      memo: "PrivateDAO live privacy matrix check",
+    },
+    validate: (payload) => {
+      if (payload?.ok !== true) return "Private settlement intent did not return ok=true";
+      if (payload?.receipt?.rail !== "umbra") return `Private settlement rail mismatch: ${payload?.receipt?.rail}`;
+      if (payload?.receipt?.network !== "testnet") return `Private settlement network mismatch: ${payload?.receipt?.network}`;
+      if (typeof payload?.receipt?.executionReference !== "string") return "Private settlement intent missing execution reference";
+      return null;
+    },
+  },
+  {
     name: "qvac-runtime-proof",
     method: "GET",
     url: `${API}/api/v1/qvac/runtime-proof`,
     validate: (payload) => (payload?.ok === true ? null : "QVAC runtime proof did not return ok=true"),
+  },
+  {
+    name: "goldrush-wallet-intelligence",
+    method: "POST",
+    url: `${API}/api/v1/goldrush/query`,
+    body: {
+      walletAddress: "4Mm5YTRbJuyA8NcWM85wTnx6ZQMXNph2DSnzCCKLhsMD",
+      chainName: "solana-testnet",
+      queryType: "wallet-history",
+    },
+    validate: (payload) => {
+      if (payload?.ok !== true) return "GoldRush wallet intelligence did not return ok=true";
+      const sources = payload?.sources || {};
+      if (typeof sources.goldRush !== "string") return "GoldRush response missing goldRush source state";
+      if (sources.zerion !== "live") return `GoldRush fallback Zerion state mismatch: ${sources.zerion}`;
+      if (sources.solanaRpc !== "live") return `GoldRush fallback Solana RPC state mismatch: ${sources.solanaRpc}`;
+      if (typeof payload?.summary?.previewTransactionCount !== "number") return "GoldRush response missing transaction preview count";
+      return null;
+    },
   },
   {
     name: "zerion-portfolio-post",
@@ -252,6 +291,25 @@ const API_CHECKS: ApiCheck[] = [
       const routeId = payload?.routeId || payload?.plan?.routeId;
       if (payload?.ok !== true) return "Ika approval prepare did not return ok=true";
       if (typeof routeId !== "string" || !routeId.startsWith("ika-approval-")) return "Ika approval prepare missing route id";
+      return null;
+    },
+  },
+  {
+    name: "ika-custody-prepare",
+    method: "POST",
+    url: `${API}/api/v1/ika/custody/prepare`,
+    body: {
+      network: "testnet",
+      curve: "SECP256K1",
+      custodyMode: "shared-dwallet",
+      operationLabel: "PrivateDAO live matrix dWallet custody check",
+    },
+    validate: (payload) => {
+      if (payload?.ok !== true) return "Ika custody prepare did not return ok=true";
+      if (payload?.source !== "ika-sdk-live-readiness") return `Ika custody source mismatch: ${payload?.source}`;
+      if (payload?.network !== "testnet") return `Ika custody network mismatch: ${payload?.network}`;
+      if (payload?.sdk?.initialized !== true) return "Ika custody SDK not initialized";
+      if (typeof payload?.routeId !== "string" || !payload.routeId.startsWith("ika-custody-")) return "Ika custody route id missing";
       return null;
     },
   },

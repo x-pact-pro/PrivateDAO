@@ -31,10 +31,10 @@ without exposing private payroll rows, private balances, strategy text, provider
 | Private governance | commit-reveal, ZK verifier companion, nullifier-ready primitive | `/govern/` | `/api/v1/runtime`, `/api/v1/cryptographic-readiness` |
 | Confidential payroll | REFHE envelope, encrypted manifest hash, selective disclosure receipt | `/payroll/` | `/api/v1/refhe/payroll/proof` |
 | Private payments | MagicBlock private corridor and receipt proof | `/services/magicblock-private-payments/` | `/api/v1/magicblock/onchain-proof?refresh=1` |
-| Umbra payout | recipient-private claim intent and relayer health | `/services/umbra-confidential-payout/` | `/api/v1/umbra/relayer/info`, `/api/v1/umbra/relayer/health` |
-| Ika custody | Solana approval preparation for Ika dWallet / 2PC-MPC route | `/services/encrypt-ika-operations/` | `/api/v1/ika/solana-prealpha/readiness`, `/api/v1/ika/solana-prealpha/approval/prepare` |
+| Umbra payout | recipient-private claim intent and relayer health | `/services/umbra-confidential-payout/` | `/api/v1/umbra/relayer/info`, `/api/v1/umbra/relayer/health`, `/api/v1/private-settlement/intent` |
+| Ika custody | Solana approval preparation for Ika dWallet / 2PC-MPC route | `/services/encrypt-ika-operations/` | `/api/v1/ika/solana-prealpha/readiness`, `/api/v1/ika/solana-prealpha/approval/prepare`, `/api/v1/ika/custody/prepare` |
 | Intelligence | GoldRush, Zerion, QVAC, QuickNode Stream telemetry | `/intelligence/` | `/api/v1/provider-integrations/status`, `/api/v1/goldrush/query`, `/api/v1/zerion/portfolio`, `/api/v1/qvac/runtime-proof`, `/api/v1/quicknode/stream/stats` |
-| Treasury / growth | Jupiter order preview and Torque custom event relay | `/services/jupiter-treasury-route/`, `/services/torque-growth-loop/` | `/api/v1/provider-integrations/status`, `/api/v1/jupiter/order`, `/api/v1/torque/custom-event` |
+| Treasury / growth | Jupiter order preview, Torque custom event relay, execution event stats | `/services/jupiter-treasury-route/`, `/services/torque-growth-loop/` | `/api/v1/provider-integrations/status`, `/api/v1/jupiter/order`, `/api/v1/torque/custom-event`, `/api/v1/execution-events/stats` |
 
 ## Provider Execution Gate
 
@@ -48,6 +48,13 @@ Torque has one extra boundary: MCP auth tokens are not automatically ingestion A
 - Custom event: `private_treasury_execution` (`cmpm5lolt00iajq1jjluy5a3m`)
 - Accepted ingestion proof: `4e660492-af75-4a28-9cb2-a81f7779be38`
 - Live verification field: `/api/v1/provider-integrations/status -> providers.torque.deliveryVerified`
+
+2026-05-26 expanded live-service gate:
+
+- Umbra private settlement intent: `/api/v1/private-settlement/intent` returns a Testnet intent receipt with a recipient-private rail and live relayer context.
+- Ika dWallet custody preparation: `/api/v1/ika/custody/prepare` initializes `@ika.xyz/sdk`, reads the live Ika network encryption key, and returns an `ika-custody-*` route for funded dWallet execution.
+- GoldRush intelligence: `/api/v1/goldrush/query` checks Covalent GoldRush Warehouse and falls back to Zerion plus Solana RPC for wallet-level preview when the current GoldRush key cannot access the wallet-specific v1 endpoint.
+- Torque growth delivery: `/api/v1/torque/custom-event` posts a real `private_treasury_execution` event to Torque and requires an accepted ingestion response in `verify:live-service-execution`.
 
 ## Boundary
 
