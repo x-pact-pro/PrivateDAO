@@ -2578,6 +2578,102 @@ function privacyExecutionClaimsStatus() {
   };
 }
 
+function frontierPrivacyProtocolSpineStatus() {
+  const matrix = privacyExecutionMatrixStatus();
+  const crypto = cryptographicReadinessStatus();
+  const claimLayer = privacyExecutionClaimsStatus().universalClaimAttestation;
+  const findService = (service: string) => matrix.serviceMatrix.find((entry) => entry.service === service);
+  const confidentialPayroll = findService("confidential-payroll");
+  const privatePayments = findService("private-payments");
+  const ikaCustody = findService("ika-custody-and-interoperability");
+  const txUrl = (signature: string) => "https://explorer.solana.com/tx/" + signature + "?cluster=testnet";
+
+  return {
+    ok: true,
+    source: "privatedao-frontier-privacy-protocol-spine",
+    generatedAt: new Date().toISOString(),
+    cluster: "testnet",
+    posture: "protocol-native-first-with-visitor-repeatable-onchain-claim",
+    standard:
+      "Every Frontier privacy rail must expose a native live proof endpoint, a visitor-repeatable Solana Testnet Memo claim, and a clear next native on-chain gate when final settlement is not yet recorded.",
+    universalVisitorClaim: claimLayer,
+    protocols: [
+      {
+        id: "encrypt-refhe-confidential-payroll",
+        track: "Encrypt / REFHE encrypted capital markets",
+        productRoute: "https://privatedao.org/services/encrypt-ika-operations/",
+        nativeStatus: "testnet-refhe-envelope-settled-and-evidence-gated-payout-executed",
+        nativeProofClass: confidentialPayroll?.executionProofClass || "onchain-signature",
+        visitorRepeatableOnchainClaim: true,
+        nativeProofEndpoints: ["/api/v1/refhe/payroll/proof", "/api/v1/cryptographic-readiness"],
+        blockchainVerificationUrls: [
+          txUrl("3fygnmHzFpRQEbHq9q6u3djBnkTEcYz9y1TSwxDmbnuemshrMwLmy9CqpjifjRb7SmW3DbmXrkyq35cnjU7mMSPi"),
+          txUrl("5TmS2AcpAmifcoG97U63Unzy7wt7B2NfyhBRs8Z6C4r1eqcWthEqf3GLcZXQ33sVYHf9YwfvBNhZD8ZZdt4HRwEY"),
+          txUrl("2a8sHWgiVCZkstybMff2M9R6DVU4Y96Rfsg8mqYs7K3xcYSEG1zMcq2iSTNwLD6FgfXvxxxWpwEP9Tbyin47RXvE"),
+        ],
+        coreIntegration: [
+          "encrypted manifest hash",
+          "REFHE envelope configure and settle receipts",
+          "evidence-gated payout execution",
+          "selective-disclosure receipt",
+        ],
+        visitorAction: "Run REFHE payroll proof, generate an encrypted receipt, then anchor a fresh visitor memo claim from the wallet.",
+        nextNativeOnchainGate: "production FHE verifier boundary and audited confidential computation policy",
+      },
+      {
+        id: "magicblock-private-payments-per",
+        track: "MagicBlock ER / PER / Private Payments API",
+        productRoute: "https://privatedao.org/services/magicblock-private-payments/",
+        nativeStatus: "testnet-private-corridor-settled-with-finalized-solana-receipts",
+        nativeProofClass: privatePayments?.executionProofClass || "onchain-signature",
+        visitorRepeatableOnchainClaim: true,
+        nativeProofEndpoints: ["/api/v1/magicblock/onchain-proof?refresh=1", "/api/v1/magicblock/health", "/api/v1/magicblock/challenge?pubkey=<wallet>"],
+        blockchainVerificationUrls: [
+          txUrl("4UiUumtuGeDciojDA26PkQby7RFiTNb12UG4ACcvGMGfQj24PUPxK5Apeno7EY8mbCvq8nR6h6nfxDcBpjPvGvPj"),
+          txUrl("22XW8XVhWwQtChNQK2aEqXv5BVBbckxUmu4NsisoZQW21KA5ii87gVNUTcNoZ9e1vYKnHmm62qP1girpzVXWN1WY"),
+          txUrl("2a8sHWgiVCZkstybMff2M9R6DVU4Y96Rfsg8mqYs7K3xcYSEG1zMcq2iSTNwLD6FgfXvxxxWpwEP9Tbyin47RXvE"),
+        ],
+        coreIntegration: [
+          "MagicBlock private payment corridor",
+          "challenge/login authenticated private reads",
+          "private balance boundary",
+          "wallet-signed continuation",
+        ],
+        visitorAction: "Open the MagicBlock lane, start challenge/login for private reads, and anchor a fresh payment-rail claim from the visitor wallet.",
+        nextNativeOnchainGate: "PER delegated permission account session with commit or commit-and-undelegate transcript",
+      },
+      {
+        id: "ika-2pc-mpc-dwallet-custody",
+        track: "Ika 2PC-MPC / dWallet bridgeless custody",
+        productRoute: "https://privatedao.org/services/encrypt-ika-operations/",
+        nativeStatus: "live-ika-sdk-readiness-solana-prealpha-program-and-funded-operator",
+        nativeProofClass: ikaCustody?.executionProofClass || "readiness-receipt",
+        visitorRepeatableOnchainClaim: true,
+        nativeProofEndpoints: ["/api/v1/ika/solana-prealpha/readiness", "/api/v1/ika/solana-prealpha/approval/prepare", "/api/v1/ika/custody/prepare"],
+        blockchainVerificationUrls: ["https://explorer.solana.com/address/87W54kGYFQ1rgWqMeu4XTPHWXWmXSQCcjm8vCTfiq1oY?cluster=testnet"],
+        coreIntegration: [
+          "@ika.xyz/sdk initialization",
+          "live Ika network encryption key read",
+          "Solana pre-alpha approval digest route",
+          "dWallet DKG and sign transaction plan",
+        ],
+        visitorAction: "Run Ika readiness and custody preparation, then anchor a fresh 2PC-MPC route claim from the visitor wallet.",
+        nextNativeOnchainGate: "funded dWallet DKG plus final Ika 2PC-MPC signature receipt",
+        boundary: "Final funded Ika 2PC-MPC signature is not claimed until that signature receipt exists.",
+      },
+    ],
+    mustPass: [
+      "REFHE must keep finalized Solana Testnet transaction evidence",
+      "MagicBlock must keep finalized Solana Testnet corridor and payout receipts",
+      "Ika must keep SDK readiness, live network encryption key, Solana pre-alpha program read, and explicit final-signature gate",
+      "Every protocol must expose visitorRepeatableOnchainClaim === true",
+      "Every protocol must expose nativeProofEndpoints and blockchainVerificationUrls",
+      "Every protocol routes to the browser claim console for a fresh PDAO_ENCRYPTED_CLAIM_V1 Memo transaction",
+    ],
+    claimBoundary: crypto.claimBoundary,
+  };
+}
+
 function privacyExecutionClaimPrepare(searchParams: URLSearchParams) {
   const matrix = privacyExecutionMatrixStatus();
   const claimId = searchParams.get("claim") || "private-governance";
@@ -2857,6 +2953,7 @@ async function handle(req: http.IncomingMessage, res: http.ServerResponse) {
           cryptographicReadiness: "/api/v1/cryptographic-readiness",
           privacyExecutionMatrix: "/api/v1/privacy-execution-matrix",
           privacyExecutionClaims: "/api/v1/privacy-execution-claims",
+          frontierPrivacyProtocolSpine: "/api/v1/frontier/privacy-protocol-spine",
           providerIntegrationStatus: "/api/v1/provider-integrations/status",
           jupiterOrder: "/api/v1/jupiter/order",
           readiness: "/api/v1/readiness",
@@ -2877,6 +2974,11 @@ async function handle(req: http.IncomingMessage, res: http.ServerResponse) {
 
     if (pathname === "/api/v1/privacy-execution-claims") {
       writeJson(res, 200, privacyExecutionClaimsStatus());
+      return;
+    }
+
+    if (pathname === "/api/v1/frontier/privacy-protocol-spine") {
+      writeJson(res, 200, frontierPrivacyProtocolSpineStatus());
       return;
     }
 

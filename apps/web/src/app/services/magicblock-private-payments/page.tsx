@@ -30,6 +30,23 @@ export default function MagicBlockPrivatePaymentsPage() {
     >
       <LocalizedRouteSummary routeKey="services" />
 
+      <section className="rounded-[28px] border border-cyan-300/18 bg-cyan-300/[0.055] p-5">
+        <div className="text-[11px] uppercase tracking-[0.28em] text-cyan-100/72">Frontier protocol spine</div>
+        <h2 className="mt-3 text-2xl font-semibold text-white">MagicBlock is bound to the same visitor-repeatable on-chain claim layer</h2>
+        <p className="mt-3 max-w-4xl text-sm leading-7 text-white/66">
+          The corridor keeps its native MagicBlock proof endpoint and finalized Solana Testnet receipts, while every visitor can create a fresh
+          PDAO_ENCRYPTED_CLAIM_V1 Memo claim from the browser and verify the signature on Explorer. Building and development continue without interruption as PER delegation evidence is deepened.
+        </p>
+        <div className="mt-4 flex flex-wrap gap-3">
+          <a href="https://api.privatedao.org/api/v1/frontier/privacy-protocol-spine" target="_blank" rel="noreferrer" className={cn(buttonVariants({ size: "sm" }))}>
+            Verify protocol spine
+          </a>
+          <a href="https://api.privatedao.org/api/v1/privacy-execution-claims/prepare?claim=private-payments" target="_blank" rel="noreferrer" className={cn(buttonVariants({ size: "sm", variant: "secondary" }))}>
+            Prepare MagicBlock claim
+          </a>
+        </div>
+      </section>
+
       <div className="rounded-[28px] border border-white/10 bg-white/[0.04] p-6">
         <div className="text-[11px] uppercase tracking-[0.28em] text-white/44">Reviewer route</div>
         <h2 className="mt-3 text-2xl font-semibold text-white">MagicBlock proof starts on-chain, then protects private reads</h2>

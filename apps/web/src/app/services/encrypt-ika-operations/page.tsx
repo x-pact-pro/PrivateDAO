@@ -73,6 +73,26 @@ export default function EncryptIkaOperationsPage() {
     >
       <LocalizedRouteSummary routeKey="services" />
       <LocalizedRouteBrief routeKey="servicesCore" />
+      <section className="rounded-[28px] border border-emerald-300/18 bg-emerald-300/[0.055] p-5">
+        <div className="text-[11px] uppercase tracking-[0.28em] text-emerald-100/72">Frontier protocol spine</div>
+        <h2 className="mt-3 text-2xl font-semibold text-white">REFHE, MagicBlock, and Ika are tracked as protocol-native rails</h2>
+        <p className="mt-3 max-w-4xl text-sm leading-7 text-white/66">
+          The live read-node now exposes one spine for the Frontier privacy stack: REFHE finalized Testnet receipts,
+          MagicBlock private corridor receipts, Ika SDK and pre-alpha custody readiness, and the visitor-repeatable
+          Solana Memo claim that every reviewer can create fresh from their own wallet. Building and development continue without interruption while each rail moves toward deeper native execution.
+        </p>
+        <div className="mt-4 flex flex-wrap gap-3">
+          <a href="https://api.privatedao.org/api/v1/frontier/privacy-protocol-spine" target="_blank" rel="noreferrer" className={cn(buttonVariants({ size: "sm" }))}>
+            Verify protocol spine
+          </a>
+          <a href="https://api.privatedao.org/api/v1/privacy-execution-claims/prepare?claim=ika-custody-and-interoperability" target="_blank" rel="noreferrer" className={cn(buttonVariants({ size: "sm", variant: "secondary" }))}>
+            Prepare Ika claim
+          </a>
+          <a href="https://api.privatedao.org/api/v1/privacy-execution-claims/prepare?claim=confidential-payroll" target="_blank" rel="noreferrer" className={cn(buttonVariants({ size: "sm", variant: "outline" }))}>
+            Prepare REFHE claim
+          </a>
+        </div>
+      </section>
       <OperationStateLegend
         description="This route separates what is runnable today from the final production gates: REFHE and client encryption execute now; Ika/2PC-MPC is a live readiness, approval-preparation, and custody-preparation lane until funded dWallet DKG and final 2PC-MPC signatures are recorded."
       />

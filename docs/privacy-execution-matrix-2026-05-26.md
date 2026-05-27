@@ -82,3 +82,15 @@ This matrix does not claim mainnet funds are live. It does not claim final funde
 It does prove the operating shape of the product: sensitive services are routed through private/intelligent preparation, wallet-controlled execution, and public-safe proof. The current engineering direction is stricter than the old copy: every privacy or encryption promise must move toward a repeatable Solana Testnet action with a visitor-openable verification URL.
 
 No private keys, provider API keys, RPC tokens, PEM contents, or wallet secret keys are included.
+
+## Frontier Protocol Spine
+
+Live endpoint: `https://api.privatedao.org/api/v1/frontier/privacy-protocol-spine`
+
+PrivateDAO now exposes REFHE, MagicBlock, and Ika as one Frontier protocol spine instead of scattered claims. The spine requires a native live proof endpoint, a Solana Testnet blockchain verification URL, and the visitor-repeatable `PDAO_ENCRYPTED_CLAIM_V1` Memo claim path for every protocol rail.
+
+- REFHE / Encrypt: finalized Solana Testnet configure, settle, and payout execution signatures remain the native proof for confidential payroll and encrypted capital-market flows.
+- MagicBlock: finalized Solana Testnet private corridor receipts remain the native proof for the Private Payments API lane, with challenge/login private reads kept behind wallet authentication.
+- Ika / 2PC-MPC: the hosted route initializes `@ika.xyz/sdk`, reads live Ika network encryption key material, checks the Solana pre-alpha program/operator route, and keeps final funded dWallet DKG plus final 2PC-MPC signature as the explicit next native on-chain gate.
+
+Building and development continue without interruption: each protocol rail can be tested by a fresh visitor claim today, while native protocol evidence is deepened without publishing private keys, provider API keys, RPC tokens, PEM contents, wallet secret keys, or hidden custody material.

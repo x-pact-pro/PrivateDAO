@@ -441,6 +441,42 @@ const API_CHECKS: ApiCheck[] = [
     },
   },
   {
+    name: "frontier-privacy-protocol-spine",
+    method: "GET",
+    url: `${API}/api/v1/frontier/privacy-protocol-spine`,
+    validate: (payload) => {
+      if (payload?.ok !== true) return "Frontier privacy protocol spine did not return ok=true";
+      if (payload?.cluster !== "testnet") return `Frontier privacy protocol spine cluster mismatch: ${payload?.cluster}`;
+      if (payload?.posture !== "protocol-native-first-with-visitor-repeatable-onchain-claim") return "Frontier privacy spine posture mismatch";
+      const protocols = Array.isArray(payload?.protocols) ? payload.protocols : [];
+      const required = [
+        "encrypt-refhe-confidential-payroll",
+        "magicblock-private-payments-per",
+        "ika-2pc-mpc-dwallet-custody",
+      ];
+      const missing = required.filter((id) => !protocols.some((entry: any) => entry?.id === id));
+      if (missing.length) return `Frontier privacy spine missing ${missing.join(", ")}`;
+      for (const protocol of protocols) {
+        if (protocol?.visitorRepeatableOnchainClaim !== true) return `${protocol?.id} is not visitor-repeatable on-chain`;
+        if (!Array.isArray(protocol?.nativeProofEndpoints) || protocol.nativeProofEndpoints.length === 0) return `${protocol?.id} missing native proof endpoints`;
+        if (!Array.isArray(protocol?.blockchainVerificationUrls) || !protocol.blockchainVerificationUrls.some((url: string) => url.includes("cluster=testnet"))) {
+          return `${protocol?.id} missing Testnet blockchain verification URL`;
+        }
+        if (typeof protocol?.nativeProofClass !== "string" || protocol.nativeProofClass.length < 8) return `${protocol?.id} missing native proof class`;
+      }
+      const magicblock = protocols.find((entry: any) => entry?.id === "magicblock-private-payments-per");
+      if (!magicblock?.nativeProofEndpoints?.some((endpoint: string) => endpoint.includes("/api/v1/magicblock/onchain-proof"))) return "MagicBlock spine must include on-chain proof endpoint";
+      const refhe = protocols.find((entry: any) => entry?.id === "encrypt-refhe-confidential-payroll");
+      if (!refhe?.blockchainVerificationUrls?.some((url: string) => url.includes("2a8sHWgi"))) return "REFHE spine must include payout execution signature";
+      const ika = protocols.find((entry: any) => entry?.id === "ika-2pc-mpc-dwallet-custody");
+      if (typeof ika?.boundary !== "string" || !ika.boundary.includes("not claimed")) return "Ika spine must preserve final-signature boundary";
+      if (!Array.isArray(payload?.mustPass) || !payload.mustPass.some((entry: string) => entry.includes("PDAO_ENCRYPTED_CLAIM_V1"))) {
+        return "Frontier privacy spine must enforce visitor Memo claim route";
+      }
+      return null;
+    },
+  },
+  {
     name: "provider-integrations-status",
     method: "GET",
     url: `${API}/api/v1/provider-integrations/status`,

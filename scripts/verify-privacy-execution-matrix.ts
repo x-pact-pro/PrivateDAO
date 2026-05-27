@@ -24,7 +24,9 @@ function main() {
 
   for (const required of [
     "function privacyExecutionMatrixStatus()",
+    "function frontierPrivacyProtocolSpineStatus()",
     'pathname === "/api/v1/privacy-execution-matrix"',
+    'pathname === "/api/v1/frontier/privacy-protocol-spine"',
     'pathname === "/api/v1/privacy-execution-claims/prepare"',
     'pathname === "/api/v1/provider-integrations/status"',
     "function providerIntegrationStatus()",
@@ -40,6 +42,9 @@ function main() {
     "nativeProofClass",
     "visitor-wallet-memo-attestation",
     "universalClaimAttestation",
+    "protocol-native-first-with-visitor-repeatable-onchain-claim",
+    "magicblock-private-payments-per",
+    "ika-2pc-mpc-dwallet-custody",
     "visitorClaimRepeatable",
     "claimPrepareUrl",
     "claimMemoTemplate",
@@ -93,6 +98,9 @@ function main() {
     "public attestation",
     "private disclosure receipt",
     "No private keys, provider API keys, RPC tokens, PEM contents, or wallet secret keys are included",
+    "Frontier Protocol Spine",
+    "https://api.privatedao.org/api/v1/frontier/privacy-protocol-spine",
+    "Building and development continue without interruption",
   ]) {
     includes(doc, required, "privacy execution matrix doc");
   }
