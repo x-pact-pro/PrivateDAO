@@ -19,6 +19,7 @@
     "web:verify:live:github": "bash scripts/verify-web-live-surface.sh github",
     "web:verify:live:root": "bash scripts/verify-web-live-surface.sh root",
     "verify:live-entry-links": "node scripts/verify-live-entry-links.mjs",
+    "verify:site-execution-route-inventory": "node scripts/verify-site-execution-route-inventory.mjs",
     "deploy:primary-host:prepare": "bash scripts/prepare-primary-host-stack.sh",
     "deploy:primary-host:up": "bash scripts/up-primary-host-stack.sh",
     "deploy:primary-host:down": "bash scripts/down-primary-host-stack.sh",

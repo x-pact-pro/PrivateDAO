@@ -76,14 +76,14 @@ const SUBMISSION_LINKS = [
   {
     label: "Encrypt / Ika operations",
     href: "https://privatedao.org/services/encrypt-ika-operations/",
-    detail: "Encrypted operations, REFHE proof receipts, Ika readiness, and confidential payroll preparation.",
+    detail: "Encrypted operations, REFHE proof receipts, Ika Solana final approval, and confidential payroll preparation.",
   },
 ] as const;
 
 const judgeTrackLaunchPaths = [
   {
     track: "Encrypt / Ika",
-    status: "REFHE Testnet receipts live; Ika readiness route live; final funded dWallet signature not claimed yet.",
+    status: "REFHE Testnet receipts live; Ika Solana final approval signature live; custody preparation and Ika SDK readiness remain open for native dWallet continuation.",
     runHref: "/services?claim=ika-custody-and-interoperability#privacy-claim-console",
     proofHref: "/documents/mainnet-cryptographic-readiness-ladder-2026-05-25",
   },
@@ -123,7 +123,7 @@ const encryptionStatusNotes = [
   "REFHE envelope: configured and settled on Solana Testnet.",
   "MagicBlock corridor: 3/3 Solana Testnet receipts finalized and the corridor PDA is owned by the PrivateDAO program.",
   "ZK verifier: standalone BN254/Groth16 receipt is live; integrated path waits for Squads proposal 3.",
-  "Ika / 2PC-MPC: SDK readiness, Solana approval preparation, and custody preparation route are live; final funded dWallet signature is not claimed.",
+  "Ika / 2PC-MPC: Solana pre-alpha final approval signature is live; SDK readiness, approval preparation, and custody preparation routes remain visitor-open for native continuation.",
   "Umbra: recipient-private product lane is live; full claim settlement waits for SDK proof account data.",
   "Torque: protected read-node relay delivered a real private_treasury_execution custom_event and keeps the ingestion key server-side.",
   "GoldRush + Zerion: wallet intelligence and policy portfolio checks are included in the live service gate.",
@@ -141,16 +141,16 @@ const canonicalReviewPaths = [
 
 const liveServiceGate = {
   command: "npm run verify:live-service-execution",
-  completedAt: "2026-05-26T07:46:03Z",
-  hostsChecked: 3,
-  pagesChecked: 46,
-  apisChecked: 16,
+  completedAt: "2026-05-27T14:26:29Z",
+  hostsChecked: 4,
+  pagesChecked: 60,
+  apisChecked: 20,
   failures: 0,
   routes: [
     ["Privacy matrix", "Every service is mapped to rail, proof, and boundary.", "https://api.privatedao.org/api/v1/privacy-execution-matrix"],
     ["Provider status", "GoldRush, Zerion, Torque, Jupiter, QVAC, and QuickNode are exposed as live provider state.", "https://api.privatedao.org/api/v1/provider-integrations/status"],
     ["MagicBlock Testnet proof", "3/3 corridor receipts are finalized on Solana Testnet and the corridor PDA is owned by the PrivateDAO program.", "https://api.privatedao.org/api/v1/magicblock/onchain-proof"],
-    ["Ika custody", "Ika SDK live-readiness and custody preparation are available from the hosted read-node.", "https://api.privatedao.org/api/v1/ika/custody/prepare"],
+    ["Ika final approval", "Ika Solana final approval signature, SDK live-readiness, and custody preparation are available from the hosted read-node.", "https://api.privatedao.org/api/v1/ika/solana-prealpha/final-approval"],
     ["Torque event", "A protected server relay delivers private_treasury_execution to Torque with accepted ingestion evidence.", "/services/torque-growth-loop"],
     ["GoldRush intelligence", "Wallet intelligence uses GoldRush Warehouse state with Zerion and Solana RPC fallback visibility.", "/services/goldrush-decision-intelligence"],
     ["Zerion policy", "Portfolio intelligence is normalized for the governed agent policy lane.", "/services/zerion-agent-policy"],

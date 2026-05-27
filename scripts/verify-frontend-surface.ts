@@ -26,6 +26,7 @@ const TRACK_COMMERCIALIZATION = path.resolve("apps/web/src/lib/track-commerciali
 const TECHNICAL_ELIGIBILITY = path.resolve("apps/web/src/lib/technical-eligibility.ts");
 const RPCFAST_INFRASTRUCTURE = path.resolve("apps/web/src/lib/rpcfast-infrastructure.ts");
 const LEGACY_ROUTE_REDIRECT = path.resolve("apps/web/src/components/legacy-route-redirect.tsx");
+const EXECUTION_COMMAND_SURFACE = path.resolve("apps/web/src/components/execution-command-surface.tsx");
 const OLD_SQUADS_PROPOSAL_DOC = path.resolve("docs/squads-testnet-upgrade-proposal-2026-05-23.md");
 const OLD_TIMELOCK_DOC = path.resolve("docs/timelock-enforcement-proof-2026-05-23.md");
 const OLD_ARENA_SUBMISSION_DOC = path.resolve("docs/arena-frontier-submission-2026-05-23.md");
@@ -60,6 +61,7 @@ function main() {
   const technicalEligibility = fs.readFileSync(TECHNICAL_ELIGIBILITY, "utf8");
   const rpcfastInfrastructure = fs.readFileSync(RPCFAST_INFRASTRUCTURE, "utf8");
   const legacyRouteRedirect = fs.readFileSync(LEGACY_ROUTE_REDIRECT, "utf8");
+  const executionCommandSurface = fs.readFileSync(EXECUTION_COMMAND_SURFACE, "utf8");
   const oldSquadsProposalDoc = fs.readFileSync(OLD_SQUADS_PROPOSAL_DOC, "utf8");
   const oldTimelockDoc = fs.readFileSync(OLD_TIMELOCK_DOC, "utf8");
   const oldArenaSubmissionDoc = fs.readFileSync(OLD_ARENA_SUBMISSION_DOC, "utf8");
@@ -93,6 +95,9 @@ function main() {
 
   const checks: Array<[string, string, string]> = [
     [rootIndex, "__next_f.push", "root live surface is missing the exported Next.js app payload"],
+    [fs.readFileSync(path.resolve("README.md"), "utf8"), "/documents/site-execution-route-inventory-2026-05-27/", "README is missing the site execution route inventory"],
+    [fs.readFileSync(path.resolve("README.md"), "utf8"), "historical links stay alive as bridges", "README is missing historical link preservation language"],
+    [fs.readFileSync(path.resolve("README.md"), "utf8"), "signs from a Solana Testnet wallet", "README is missing wallet-first Testnet execution language"],
     [siteHeader, 'href: "/documents"', "site header is missing the Documents route"],
     [siteHeader, 'href: "/learn"', "site header is missing the Learn route"],
     [siteHeader, 'href: "/story"', "site header is missing the Story route"],
@@ -109,6 +114,8 @@ function main() {
     [securityCenter, "Security architecture", "security center surface is missing"],
     [diagnosticsCenter, "Operational diagnostics", "diagnostics center surface is missing"],
     [servicesSurface, "content.commercialTitle", "services surface is missing"],
+    [fs.readFileSync(path.resolve("apps/web/src/app/services/page.tsx"), "utf8"), "Canonical payment lane", "services page still frames encrypted payments as a new duplicated section"],
+    [fs.readFileSync(path.resolve("apps/web/src/app/services/page.tsx"), "utf8"), "do not chase duplicate pages", "services page is missing duplicate-reduction language"],
     [siteData, "Governance Hardening V3", "site data is missing Governance V3"],
     [siteData, "Settlement Hardening V3", "site data is missing Settlement V3"],
     [siteData, "Core integrations", "site data is missing the integrations packet surface"],
@@ -125,6 +132,7 @@ function main() {
     [curatedDocuments, 'slug: "service-catalog"', "curated documents are missing service catalog"],
     [curatedDocuments, 'slug: "frontier-integrations"', "curated documents are missing frontier integrations"],
     [curatedDocuments, 'slug: "frontier-track-closure-matrix-2026-05-25"', "curated documents are missing the Frontier track closure matrix"],
+    [curatedDocuments, 'slug: "site-execution-route-inventory-2026-05-27"', "curated documents are missing the site execution route inventory"],
     [curatedDocuments, 'slug: "mainnet-cryptographic-readiness-ladder-2026-05-25"', "curated documents are missing the mainnet cryptographic readiness ladder"],
     [curatedDocuments, 'slug: "mainnet-proof-package"', "curated documents are missing mainnet proof package"],
     [curatedDocuments, 'slug: "mainnet-acceptance-matrix"', "curated documents are missing mainnet acceptance matrix"],
@@ -160,6 +168,9 @@ function main() {
     [securityPage, "/documents/mainnet-cryptographic-readiness-ladder-2026-05-25", "security route is missing the mainnet cryptographic readiness ladder link"],
     [securityPage, "https://api.privatedao.org/api/v1/readiness", "security route is missing the stable readiness API link"],
     [proofPage, "finalized Testnet private payment receipts", "proof route is missing Testnet private-payment receipt language"],
+    [proofPage, "Ika Solana final approval signature", "proof route is missing Ika Solana final approval proof language"],
+    [proofPage, "ExecutionCommandSurface", "proof route is missing the executable command surface"],
+    [proofPage, "/documents/site-execution-route-inventory-2026-05-27", "proof route is missing the route inventory link"],
     [proofPage, "/documents/frontier-track-closure-matrix-2026-05-25", "proof route is missing the Frontier track closure matrix link"],
     [jupiterTreasuryRoutePage, "Jupiter Developer Platform /order", "Jupiter service page is missing static Developer Platform order copy"],
     [encryptIkaOperationsPage, "Run the encrypted operations stack from one Testnet page", "Encrypt/Ika page is missing the runnable Testnet entry title"],
@@ -169,6 +180,15 @@ function main() {
     [encryptIkaOperationsPage, "https://api.privatedao.org/api/v1/ika/solana-prealpha/readiness", "Encrypt/Ika page is missing the live Ika readiness endpoint"],
     [encryptIkaOperationsPage, "https://api.privatedao.org/api/v1/ika/solana-prealpha/final-approval", "Encrypt/Ika page is missing the Ika Solana final approval endpoint"],
     [encryptIkaOperationsPage, "https://api.privatedao.org/api/v1/ika/custody/prepare", "Encrypt/Ika page is missing the live Ika custody endpoint"],
+    [executionCommandSurface, "Every major route must lead to review, execution, or verification", "execution command surface is missing the operating-path mandate"],
+    [executionCommandSurface, "Governance treasury", "execution command surface is missing governance treasury positioning"],
+    [executionCommandSurface, "Anchor 1.0.1", "execution command surface is missing Anchor 1.0.1 proof positioning"],
+    [executionCommandSurface, "should not need code or a terminal", "execution command surface is missing no-terminal UX boundary"],
+    [executionCommandSurface, "https://api.privatedao.org/api/v1/ika/solana-prealpha/final-approval", "execution command surface is missing Ika final approval verification"],
+    [executionCommandSurface, "https://api.privatedao.org/api/v1/qvac/runtime-proof", "execution command surface is missing QVAC runtime verification"],
+    [executionCommandSurface, "/services/qvac-sovereign-ai", "execution command surface is missing the QVAC service route"],
+    [fs.readFileSync(path.resolve("apps/web/src/app/intelligence/page.tsx"), "utf8"), "ExecutionCommandSurface", "intelligence route is missing the executable command surface"],
+    [fs.readFileSync(path.resolve("apps/web/src/app/services/page.tsx"), "utf8"), "ExecutionCommandSurface", "services route is missing the executable command surface"],
     [apiStatusPage, "MagicBlock receipts", "API status route is missing MagicBlock receipt evidence"],
     [apiStatusPage, "Ika readiness", "API status route is missing Ika readiness evidence"],
     [apiStatusPage, "REFHE proof", "API status route is missing REFHE proof evidence"],
@@ -215,6 +235,20 @@ function main() {
     [fs.readFileSync(path.resolve("apps/web/src/app/payments/page.tsx"), "utf8"), 'target="/services/confidential-payments"', "legacy /payments route is not preserved"],
     [fs.readFileSync(path.resolve("apps/web/src/app/business-model/page.tsx"), "utf8"), 'target="/revenue"', "legacy /business-model route is not preserved"],
     [fs.readFileSync(path.resolve("apps/web/src/app/integrations/page.tsx"), "utf8"), 'target="/services"', "legacy /integrations route is not preserved"],
+    [fs.readFileSync(path.resolve("apps/web/src/app/inttelignce/page.tsx"), "utf8"), 'target="/intelligence"', "legacy typo /inttelignce route is not preserved"],
+    [fs.readFileSync(path.resolve("apps/web/src/app/inteligence/page.tsx"), "utf8"), 'target="/intelligence"', "legacy typo /inteligence route is not preserved"],
+    [fs.readFileSync(path.resolve("apps/web/src/app/intelignce/page.tsx"), "utf8"), 'target="/intelligence"', "legacy typo /intelignce route is not preserved"],
+    [fs.readFileSync(path.resolve("apps/web/src/app/services/ika/page.tsx"), "utf8"), 'target="/services/encrypt-ika-operations"', "legacy /services/ika route is not preserved"],
+    [fs.readFileSync(path.resolve("apps/web/src/app/services/encrypt-ika/page.tsx"), "utf8"), 'target="/services/encrypt-ika-operations"', "legacy /services/encrypt-ika route is not preserved"],
+    [fs.readFileSync(path.resolve("apps/web/src/app/services/palmusd/page.tsx"), "utf8"), 'target="/services/pusd-stablecoin"', "legacy /services/palmusd route is not preserved"],
+    [fs.readFileSync(path.resolve("apps/web/src/app/services/palm-usd/page.tsx"), "utf8"), 'target="/services/pusd-stablecoin"', "legacy /services/palm-usd route is not preserved"],
+    [fs.readFileSync(path.resolve("apps/web/src/app/services/pusd/page.tsx"), "utf8"), 'target="/services/pusd-stablecoin"', "legacy /services/pusd route is not preserved"],
+    [fs.readFileSync(path.resolve("apps/web/src/app/services/torque/page.tsx"), "utf8"), 'target="/services/torque-growth-loop"', "legacy /services/torque route is not preserved"],
+    [fs.readFileSync(path.resolve("apps/web/src/app/services/zerion/page.tsx"), "utf8"), 'target="/services/zerion-agent-policy"', "legacy /services/zerion route is not preserved"],
+    [fs.readFileSync(path.resolve("apps/web/src/app/services/goldrush/page.tsx"), "utf8"), 'target="/services/goldrush-decision-intelligence"', "legacy /services/goldrush route is not preserved"],
+    [fs.readFileSync(path.resolve("apps/web/src/app/services/quicknode/page.tsx"), "utf8"), 'target="/services/runtime-infrastructure"', "legacy /services/quicknode route is not preserved"],
+    [fs.readFileSync(path.resolve("apps/web/src/app/services/magicblock/page.tsx"), "utf8"), 'target="/services/magicblock-private-payments"', "legacy /services/magicblock route is not preserved"],
+    [fs.readFileSync(path.resolve("apps/web/src/app/services/devnet-billing-rehearsal/page.tsx"), "utf8"), 'target="/services/testnet-billing-rehearsal"', "legacy /services/devnet-billing-rehearsal route is not preserved"],
   ];
 
   const forbiddenChecks: Array<[string, string, string]> = [

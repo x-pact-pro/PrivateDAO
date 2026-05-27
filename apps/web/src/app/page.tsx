@@ -23,7 +23,7 @@ export default function HomePage() {
       <div className="mx-auto w-full max-w-7xl space-y-5 px-4 pb-12 sm:px-6 lg:px-8">
         <ProductCommandCenter />
         <ProjectOperatingMap
-          description="PrivateDAO should read as one connected system from the first viewport: governance creates decisions, intelligence explains them, treasury and payroll prepare execution, confidential payment rails move value privately, wallet-first execution keeps the signer in control, and proof makes the result inspectable."
+          description="PrivateDAO should read as one connected system from the first viewport: private on-chain governance creates decisions, intelligence explains them before signing, treasury and payroll prepare execution, encrypted payment rails move value privately, wallet-first UX keeps the signer in control, and proof makes the result inspectable for normal users, organizations, communities, competitions, and judges."
         />
         <HomeVisitorCounter />
         <LiveSiteActivityPanel />

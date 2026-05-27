@@ -11,34 +11,34 @@ type ProjectOperatingMapProps = {
 
 const platformLanes = [
   {
-    title: "Governance",
-    body: "Private proposals, selective disclosure, and signer-safe decision flow for organizations that cannot expose every internal coordination step.",
+    title: "Private governance",
+    body: "DAO creation, proposal preparation, commit/reveal voting, wallet execution, PDAO governance-token context, and immediate Testnet proof.",
     href: "/govern",
   },
   {
-    title: "Intelligence",
-    body: "Covalent GoldRush, QVAC, SNS, Zerion, and SolRouter turn wallet data, treasury context, and proposal signals into review-grade operational context before approval.",
-    href: "/intelligence",
-  },
-  {
-    title: "Confidential payments",
-    body: "Cloak, Umbra, and MagicBlock cover shielded settlement, recipient-private payouts, and high-frequency private payment execution.",
+    title: "Encrypted payments",
+    body: "Cloak, Umbra, MagicBlock, and stablecoin billing stay grouped as one private money-movement corridor instead of scattered payment pages.",
     href: "/services/confidential-payments",
   },
   {
-    title: "Private payroll",
-    body: "Encrypt, IKA, and REFHE keep payroll instructions encrypted before execution while preserving commitment-safe proof continuity.",
+    title: "Confidential payroll",
+    body: "Encrypt, Ika, REFHE, and 2PC-MPC preparation keep payroll instructions private while preserving receipt and proof continuity.",
     href: "/services/encrypt-ika-operations",
   },
   {
     title: "Treasury rails",
-    body: "Jupiter, stablecoin routes, and governed payout selection connect treasury planning with execution-ready movement on Solana.",
+    body: "Jupiter route preview, PUSD/AUDD activation paths, policy checks, and wallet signatures connect treasury planning to Testnet execution.",
     href: "/services/jupiter-treasury-route",
   },
   {
-    title: "Wallet-first execution",
-    body: "Users still review, sign, and verify through a clean wallet-first path instead of being forced into opaque automation.",
-    href: "/services/consumer-governance-ux",
+    title: "GamingDAO and community rewards",
+    body: "Tournament, community, and competition reward operations use the same governance, private payout, and proof rails.",
+    href: "/gaming",
+  },
+  {
+    title: "Intelligence before signing",
+    body: "QVAC, GoldRush/Covalent, SNS, Zerion, QuickNode, and policy context explain risk before a normal user approves.",
+    href: "/intelligence",
   },
 ] as const;
 
@@ -51,8 +51,8 @@ const intelligenceFeeds = [
 ] as const;
 
 export function ProjectOperatingMap({
-  title = "One product surface, multiple operational lanes, one intelligence core",
-  description = "PrivateDAO is structured as an operating layer: governance decides, intelligence explains, treasury routes prepare, confidential rails execute, payroll stays encrypted, and wallet-first flows keep users in control. This keeps the site coherent because every route plays a distinct role inside the same system.",
+  title = "One product surface, four corridors, one proof-backed operating path",
+  description = "PrivateDAO is structured around private on-chain governance first. Governance decides, intelligence explains, treasury and private payout rails prepare execution, wallet-first UX keeps the signer in control, and proof records what happened. Integrations are provider rails inside this path, not separate products competing for attention.",
   compact = false,
 }: ProjectOperatingMapProps) {
   return (
@@ -87,8 +87,8 @@ export function ProjectOperatingMap({
           <Link href="/intelligence" className={cn(buttonVariants({ size: "sm" }))}>
             Open intelligence core
           </Link>
-          <Link href="/services/confidential-payments" className={cn(buttonVariants({ size: "sm", variant: "outline" }))}>
-            Open payment rails
+          <Link href="/govern" className={cn(buttonVariants({ size: "sm", variant: "outline" }))}>
+            Start governance
           </Link>
           <Link href="/proof" className={cn(buttonVariants({ size: "sm", variant: "outline" }))}>
             Open proof continuity

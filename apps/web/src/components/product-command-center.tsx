@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowUpRight, BrainCircuit, Gamepad2, Gavel, KeyRound, LockKeyhole, ReceiptText, ShieldCheck, WalletCards } from "lucide-react";
+import { ArrowUpRight, BrainCircuit, Gamepad2, Gavel, LockKeyhole, ReceiptText, ShieldCheck, WalletCards } from "lucide-react";
 
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -7,51 +7,45 @@ import { cn } from "@/lib/utils";
 const capabilityLanes = [
   {
     icon: Gavel,
-    title: "Private governance",
-    body: "Create proposals, protect voting intent, execute through wallet-signed Testnet operations, and inspect proof immediately.",
+    title: "1. Private on-chain governance",
+    body: "Create a DAO, prepare a proposal, commit, reveal, execute, inspect PDAO governance-token context, and verify the action on Solana Testnet.",
     href: "/govern",
   },
   {
-    icon: BrainCircuit,
-    title: "Decision intelligence",
-    body: "Use GoldRush, QVAC-style local review, and policy context before a signer approves treasury or governance action.",
-    href: "/intelligence",
-  },
-  {
-    icon: KeyRound,
-    title: "Treasury policy",
-    body: "Review stablecoin lanes, Token-2022 identity, route context, and controlled treasury execution before settlement.",
-    href: "/treasury",
-  },
-  {
-    icon: LockKeyhole,
-    title: "Confidential payroll",
-    body: "Package payroll and payout operations as privacy-aware, proof-linked workflows instead of public spreadsheet operations.",
-    href: "/payroll",
-  },
-  {
     icon: ShieldCheck,
-    title: "Encrypted payments",
-    body: "Route confidential settlement lanes through proof, receipts, and security surfaces without exposing sensitive intent first.",
-    href: "/services/cloak-private-settlement",
+    title: "2. Treasury and private money movement",
+    body: "Run encrypted payments, confidential payroll, stablecoin billing, Jupiter treasury routing, and receipt-backed settlement from one execution path.",
+    href: "/execute",
   },
   {
     icon: Gamepad2,
-    title: "GamingDAO rewards",
-    body: "Connect tournaments, reward pools, and player-friendly governance to the same wallet-first proof system.",
+    title: "3. Communities, competitions, and GamingDAO",
+    body: "Use the same governance and treasury rails for communities, prize pools, tournaments, rewards, and reviewer-visible competition flows.",
     href: "/gaming",
   },
   {
-    icon: WalletCards,
-    title: "Wallet-first web + Android",
-    body: "Start from a browser or APK, connect a Testnet wallet, sign, verify, and keep the same operating language.",
-    href: "/start",
+    icon: BrainCircuit,
+    title: "4. Intelligence before every signature",
+    body: "Use QVAC, GoldRush/Covalent, SNS, Zerion, QuickNode status, and policy context before approving governance or treasury operations.",
+    href: "/intelligence",
   },
   {
     icon: ReceiptText,
     title: "Proof and judge route",
-    body: "Open live evidence, timelock enforcement, ZK verifier receipt, Token-2022 proof, and runtime logs from one route.",
+    body: "Open live API evidence, explorer signatures, ZK/Groth16 proof packets, Token-2022/PDAO context, and repository evidence from one route.",
     href: "/judge",
+  },
+  {
+    icon: LockKeyhole,
+    title: "Encrypted provider stack",
+    body: "Ika, Encrypt, REFHE, 2PC-MPC, MagicBlock, Umbra, Cloak, Torque, Zerion, and GoldRush are provider rails inside the four product corridors.",
+    href: "/services",
+  },
+  {
+    icon: WalletCards,
+    title: "Wallet-first web + Android",
+    body: "Start from a browser or APK, connect a Testnet wallet, sign, verify, and keep normal users away from terminal-only operations.",
+    href: "/start",
   },
 ] as const;
 
@@ -62,11 +56,12 @@ export function ProductCommandCenter({ compact = false }: { compact?: boolean })
         <div>
           <div className="text-[11px] uppercase tracking-[0.3em] text-cyan-100/78">One product operating layer</div>
           <h2 className="mt-3 max-w-4xl text-2xl font-semibold tracking-[-0.035em] text-white md:text-3xl">
-            Governance, intelligence, confidential money movement, wallet execution, and proof now converge into one usable product.
+            PrivateDAO is an on-chain private governance system, not a crowded integration directory.
           </h2>
           <p className="mt-3 max-w-4xl text-sm leading-7 text-white/64">
-            PrivateDAO is not a collection of pages. It is a browser-first Testnet operating system for Solana organizations:
-            review the decision, sign from the wallet, run the operation, and verify the evidence from the same interface.
+            The product path is simple: a normal visitor connects a Solana Testnet wallet, reviews a governance or treasury
+            action, prepares the private operation, signs from the wallet, and verifies the receipt on-chain, through the API,
+            or in reviewer documents. Provider integrations only stay visible when they make that path easier to run or verify.
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -103,10 +98,10 @@ export function ProductCommandCenter({ compact = false }: { compact?: boolean })
       {!compact ? (
         <div className="mt-5 grid gap-3 md:grid-cols-4">
           {[
-            ["Live evidence", "ZK verifier, Squads timelock, Token-2022, runtime logs", "/judge"],
+            ["Live evidence", "Explorer signatures, API receipts, ZK/Groth16 proof, Squads timelock, PDAO/Token-2022 context", "/judge"],
             ["Trust and security", "Custody gates, remediation, audit packets, monitoring surfaces", "/security"],
             ["Learn by doing", "Short lessons that open the matching live product route", "/learn"],
-            ["Generate action", "Use assistant and intelligence lanes to prepare decisions and task files", "/assistant"],
+            ["Colosseum entry", "Three-minute purpose, demo video, test paths, repo, proof, and route inventory", "/judge"],
           ].map(([title, detail, href]) => (
             <Link key={title} href={href} className="rounded-2xl border border-white/8 bg-white/[0.045] p-4 transition hover:border-emerald-300/20 hover:bg-white/[0.065]">
               <div className="text-sm font-semibold text-white">{title}</div>

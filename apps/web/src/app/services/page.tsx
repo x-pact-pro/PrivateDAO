@@ -11,6 +11,7 @@ import { DataCorridorQuickLinks } from "@/components/data-corridor-quick-links";
 import { DevnetServiceMetricsPanel } from "@/components/devnet-service-metrics-panel";
 import { EcosystemFocusAlignmentStrip } from "@/components/ecosystem-focus-alignment-strip";
 import { EncryptedOperationsWorkbench } from "@/components/encrypted-operations-workbench";
+import { ExecutionCommandSurface } from "@/components/execution-command-surface";
 import { ExecutionSpineSurface } from "@/components/execution-spine-surface";
 import { GuidedOperationRail } from "@/components/guided-operation-rail";
 import { HostedReadProofStrip } from "@/components/hosted-read-proof-strip";
@@ -83,6 +84,7 @@ export default function ServicesPage() {
         title="Service buyers should see the same operating truth a signer sees"
         description="Commercial packaging stays grounded only when it reflects the live wallet-first cycle: connect, review, sign, and verify with the same Testnet evidence and proof continuity."
       />
+      <ExecutionCommandSurface compact />
       <ExecutionSpineSurface context="services" compact />
       <CryptographicExecutionSpine compact context="services" />
       <PrivacyExecutionClaimConsole />
@@ -92,11 +94,12 @@ export default function ServicesPage() {
       <ServiceConstellationSurface />
       <LocalizedServicesPrimer />
       <div className="rounded-[28px] border border-emerald-300/16 bg-emerald-300/[0.07] p-5">
-        <div className="text-[11px] uppercase tracking-[0.24em] text-emerald-100/76">New section</div>
-        <h2 className="mt-3 text-2xl font-semibold text-white">Fully encrypted payments section</h2>
+        <div className="text-[11px] uppercase tracking-[0.24em] text-emerald-100/76">Canonical payment lane</div>
+        <h2 className="mt-3 text-2xl font-semibold text-white">Encrypted payments, private payroll, and confidential settlement belong in one operating path</h2>
         <p className="mt-2 max-w-4xl text-sm leading-7 text-white/66">
-          A dedicated confidential payments surface is now available with Cloak, Umbra, MagicBlock, and Encrypt/IKA
-          coordination, connected to payroll, intelligence, and proof continuity lanes.
+          This is the canonical route family for private value movement. Cloak, Umbra, MagicBlock, Encrypt/IKA, REFHE,
+          and payroll receipts are grouped here so visitors do not chase duplicate pages before reaching a wallet-first
+          Testnet action and proof route.
         </p>
         <div className="mt-4 flex flex-wrap gap-3">
           <Link href="/services/confidential-payments" className={cn(buttonVariants({ size: "sm" }))}>

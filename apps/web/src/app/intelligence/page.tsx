@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { CryptographicExecutionSpine } from "@/components/cryptographic-execution-spine";
+import { ExecutionCommandSurface } from "@/components/execution-command-surface";
 import { GuidedOperationRail } from "@/components/guided-operation-rail";
 import { GoldRushIntelligenceSurface } from "@/components/goldrush-intelligence-surface";
 import { IntelligenceLayerSurface } from "@/components/intelligence-layer-surface";
@@ -45,6 +46,7 @@ export default function IntelligencePage() {
         title="Review is the decision gate before any signer approves treasury or governance actions"
         description="This route exists between wallet connection and signature approval. Read the risk context here, then move to execution only when the policy, route quality, and proof path are clear."
       />
+      <ExecutionCommandSurface compact />
       <div className="rounded-[28px] border border-cyan-300/16 bg-cyan-300/[0.08] p-6 text-sm leading-7 text-white/68">
         This route is easiest to understand after <a className="text-cyan-100 underline underline-offset-4" href="/learn">/learn</a> and a real Testnet action from <a className="text-cyan-100 underline underline-offset-4" href="/govern">/govern</a>. The goal is simple: help the signer understand risk, treasury context, RPC quality, and gaming consequences before pressing approve and moving to <a className="text-cyan-100 underline underline-offset-4" href="/execute">/execute</a>.
       </div>

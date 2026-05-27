@@ -13,6 +13,21 @@
   <strong>Private governance, confidential treasury operations, and audit-grade runtime evidence for Solana organizations.</strong>
 </p>
 
+PrivateDAO is organized around one product path: a normal visitor opens the browser, reviews governance and treasury context, prepares private intent or an encrypted operation, signs from a Solana Testnet wallet, and verifies the result through explorer links, live APIs, Supabase-backed receipts, or proof documents. The product is private on-chain governance first: DAO creation, proposal flow, commit/reveal voting, treasury execution, and PDAO governance-token context. Encrypted payments, confidential payroll, GamingDAO rewards, QVAC/GoldRush/Zerion intelligence, Ika/Encrypt/REFHE/2PC-MPC preparation, MagicBlock receipts, and QuickNode runtime checks are provider rails inside that path, not separate empty integrations.
+
+The site is being de-duplicated around canonical execution routes so historical links stay alive as bridges instead of becoming empty or competing integration pages.
+
+Core routes:
+
+- `/judge/` - 3-minute reviewer hub with demo video, live tracks, and proof entry points.
+- `/govern/` - wallet-first governance path for DAO, proposal, commit/reveal, execution, and PDAO governance-token context.
+- `/intelligence/` - QVAC, GoldRush, Zerion, QuickNode, SNS, and proposal/treasury review before signing.
+- `/execute/` - private payroll, settlement, treasury route, and reward execution center.
+- `/services/` - indexed service router for encrypted payments, payroll, MagicBlock, Ika/Encrypt/REFHE, PUSD, Torque, Zerion, and runtime infrastructure.
+- `/proof/` - verification layer for on-chain signatures, live API receipts, Supabase timelines, and reviewer packets.
+- `/documents/site-execution-route-inventory-2026-05-27/` - canonical route inventory used to prevent duplicate or empty integrations.
+
+
 <p align="center">
   <a href="https://privatedao.org/"><img src="https://img.shields.io/badge/Live%20Product-Open-14F195?logo=solana" alt="Live product" /></a>
   <a href="https://github.com/X-PACT/PrivateDAO/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/X-PACT/PrivateDAO/ci.yml?branch=main&label=CI" alt="CI status" /></a>

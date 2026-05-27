@@ -16,17 +16,17 @@ import { cn } from "@/lib/utils";
 export const metadata: Metadata = buildRouteMetadata({
   title: "Govern",
   description:
-    "Simple wallet-first governance flow for creating a DAO, creating proposals, voting, and executing on Testnet.",
+    "Simple wallet-first private governance flow for DAO creation, proposals, commit/reveal voting, treasury execution, PDAO context, and Testnet proof.",
   path: "/govern",
-  keywords: ["govern", "create dao", "create proposal", "vote", "execute", "testnet governance"],
+  keywords: ["govern", "create dao", "create proposal", "commit reveal", "pdao", "treasury", "testnet governance"],
 });
 
 export default function GovernPage() {
   return (
     <OperationsShell
       eyebrow="Govern"
-      title="Create a DAO, submit a proposal, vote, and execute from one simple flow"
-      description="This route is the user-first governance path. Connect a Testnet wallet, run the full DAO lifecycle yourself, and use logs, proof, and diagnostics when you want to inspect how the product keeps vote privacy, cryptographic boundaries, execution fairness, and RPC speed visible in practice."
+      title="Run private on-chain governance from the browser"
+      description="This is the core product path. Connect a Solana Testnet wallet, create or review a DAO, prepare a proposal, commit, reveal, execute treasury intent, inspect PDAO governance-token context, and verify the result without terminal work or developer-only steps."
       navigationMode="guided"
       badges={[
         { label: "Wallet-first", variant: "cyan" },
@@ -54,8 +54,8 @@ export default function GovernPage() {
       <NormalUserOperationPath />
       <ProjectOperatingMap
         compact
-        title="Governance is the first lane, not the only lane"
-        description="Governance creates the policy state. Intelligence reviews the proposal and treasury context before signing, execution turns approved actions into private payroll or settlement flow, and proof records the result. This keeps governance connected to the rest of the product instead of isolated as a voting-only screen."
+        title="Governance is the spine of the product"
+        description="Every other corridor exists to make private governance useful: intelligence explains the decision before signing, treasury routes turn approved policy into action, encrypted payments and payroll protect sensitive intent, GamingDAO rewards use the same primitives, and proof lets the visitor verify what happened on Testnet."
       />
       <ExecutionSpineSurface context="govern" compact />
       <GovernWorkbenchClient />

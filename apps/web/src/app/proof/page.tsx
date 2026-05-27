@@ -26,6 +26,7 @@ import { QuickNodeStreamIntelligenceSurface } from "@/components/quicknode-strea
 import { RuntimeEvidenceContinuityPanel } from "@/components/runtime-evidence-continuity-panel";
 import { AuthoritativeExecutionTrail } from "@/components/authoritative-execution-trail";
 import { ExecutionOperationsStrip } from "@/components/execution-operations-strip";
+import { ExecutionCommandSurface } from "@/components/execution-command-surface";
 import { DevnetExecutionScreenshotsStrip } from "@/components/devnet-execution-screenshots-strip";
 import { SupabaseOperationTimeline } from "@/components/supabase-operation-timeline";
 import { PrivacyProofExplainer } from "@/components/privacy-proof-explainer";
@@ -124,7 +125,7 @@ export default function ProofPage() {
     },
     {
       title: "Encrypt / IKA operations",
-      summary: "For users: confidential execution commitments stay behind a simple proof badge. For judges: inspect the settled Testnet REFHE envelope.",
+      summary: "For users: run the encrypted operations stack. For judges: inspect REFHE receipts and the Ika Solana final approval signature.",
       featureHref: "/services/encrypt-ika-operations",
       proofHref: "/proof",
     },
@@ -173,6 +174,7 @@ export default function ProofPage() {
         pendingNote="Proof continuity stays explicit across governance, intelligence, execution, and receipt export lanes."
       />
       <LocalizedRouteSummary routeKey="proof" />
+      <ExecutionCommandSurface compact />
       <OperationStateLegend
         description="Proof is the truth boundary for the product. It separates executed on-chain activity, live service health, encrypted intent receipts, and final private settlement evidence so judges and users do not confuse one for another."
       />
@@ -216,6 +218,9 @@ export default function ProofPage() {
           </Link>
           <Link href="/documents/frontier-track-closure-matrix-2026-05-25" className={cn(buttonVariants({ size: "sm", variant: "secondary" }))}>
             Open track closure matrix
+          </Link>
+          <Link href="/documents/site-execution-route-inventory-2026-05-27" className={cn(buttonVariants({ size: "sm", variant: "outline" }))}>
+            Open route inventory
           </Link>
         </div>
       </div>

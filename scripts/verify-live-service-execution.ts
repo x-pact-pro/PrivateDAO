@@ -159,7 +159,77 @@ const PAGE_CHECKS: PageCheck[] = [
   {
     name: "services-claim-console",
     url: `${ROOT}/services/`,
-    requiredFragments: ["On-chain claim console", "Encrypt + anchor on-chain", "Verify receipt locally", "Copy public attestation", "Get Testnet SOL"],
+    requiredFragments: ["On-chain claim console", "Encrypt + anchor on-chain", "Verify receipt locally", "Copy public attestation", "Get Testnet SOL", "Execution command surface", "QVAC", "Governance treasury"],
+  },
+  {
+    name: "legacy-inttelignce",
+    url: `${ROOT}/inttelignce/`,
+    requiredFragments: ["Preserved legacy link", "Open intelligence"],
+  },
+  {
+    name: "legacy-inteligence",
+    url: `${ROOT}/inteligence/`,
+    requiredFragments: ["Preserved legacy link", "Open intelligence"],
+  },
+  {
+    name: "legacy-intelignce",
+    url: `${ROOT}/intelignce/`,
+    requiredFragments: ["Preserved legacy link", "Open intelligence"],
+  },
+  {
+    name: "legacy-services-ika",
+    url: `${ROOT}/services/ika/`,
+    requiredFragments: ["Preserved legacy link", "Open Encrypt / Ika"],
+  },
+  {
+    name: "legacy-services-encrypt-ika",
+    url: `${ROOT}/services/encrypt-ika/`,
+    requiredFragments: ["Preserved legacy link", "Open Encrypt / Ika operations"],
+  },
+  {
+    name: "legacy-services-palmusd",
+    url: `${ROOT}/services/palmusd/`,
+    requiredFragments: ["Preserved legacy link", "Open PUSD stablecoin lane"],
+  },
+  {
+    name: "legacy-services-palm-usd",
+    url: `${ROOT}/services/palm-usd/`,
+    requiredFragments: ["Preserved legacy link", "Open PUSD stablecoin lane"],
+  },
+  {
+    name: "legacy-services-pusd",
+    url: `${ROOT}/services/pusd/`,
+    requiredFragments: ["Preserved legacy link", "Open PUSD stablecoin lane"],
+  },
+  {
+    name: "legacy-services-torque",
+    url: `${ROOT}/services/torque/`,
+    requiredFragments: ["Preserved legacy link", "Open Torque growth loop"],
+  },
+  {
+    name: "legacy-services-zerion",
+    url: `${ROOT}/services/zerion/`,
+    requiredFragments: ["Preserved legacy link", "Open Zerion policy"],
+  },
+  {
+    name: "legacy-services-goldrush",
+    url: `${ROOT}/services/goldrush/`,
+    requiredFragments: ["Preserved legacy link", "Open GoldRush intelligence"],
+  },
+  {
+    name: "legacy-services-quicknode",
+    url: `${ROOT}/services/quicknode/`,
+    requiredFragments: ["Preserved legacy link", "Open runtime infrastructure"],
+  },
+  {
+    name: "legacy-services-magicblock",
+    url: `${ROOT}/services/magicblock/`,
+    requiredFragments: ["Preserved legacy link", "Open MagicBlock private payments"],
+  },
+  {
+    name: "legacy-services-devnet-billing-rehearsal",
+    url: `${ROOT}/services/devnet-billing-rehearsal/`,
+    requiredFragments: ["Preserved legacy link", "Open current billing route"],
   },
   {
     name: "runtime-infrastructure",

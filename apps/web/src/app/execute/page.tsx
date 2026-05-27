@@ -72,8 +72,8 @@ export default function ExecutePage() {
   return (
     <OperationsShell
       eyebrow="Execute"
-      title="Run governed operations from one wallet-first execution center"
-      description="This is the operating surface where policy-approved actions become real on-chain flow: private payroll rehearsals, vendor settlement, treasury rebalance planning, and reward distribution with proof-linked continuity."
+      title="Turn approved governance into private treasury, payroll, payment, and reward execution"
+      description="This is the operating surface where a normal user moves from approved policy into Testnet action: encrypted payroll, private settlement, treasury routing, stablecoin billing, and community or GamingDAO rewards with wallet signatures and proof-linked continuity."
       navigationMode="guided"
       badges={[
         { label: "Execution center", variant: "cyan" },
@@ -89,10 +89,10 @@ export default function ExecutePage() {
       />
       <div className="rounded-[28px] border border-cyan-300/16 bg-cyan-300/[0.08] p-6">
         <div className="text-[11px] uppercase tracking-[0.28em] text-cyan-100/74">Operating flow</div>
-        <h2 className="mt-3 text-2xl font-semibold text-white">Govern → Intelligence → Execute → Proof</h2>
+        <h2 className="mt-3 text-2xl font-semibold text-white">Review → Intelligence → Prepare → Wallet sign → Verify</h2>
         <p className="mt-3 max-w-4xl text-sm leading-7 text-white/64">
-          Before signing, review proposal and treasury context in <Link className="text-cyan-100 underline underline-offset-4" href="/intelligence">Intelligence</Link>.
-          Execution then happens here from the connected wallet, and the resulting receipt path stays verifiable in{" "}
+          Before signing, review proposal, treasury, counterparty, privacy, and route context in <Link className="text-cyan-100 underline underline-offset-4" href="/intelligence">Intelligence</Link>.
+          Execution then happens here from the connected Testnet wallet, and the resulting receipt path stays verifiable in{" "}
           <Link className="text-cyan-100 underline underline-offset-4" href="/proof">Proof</Link>.
         </p>
       </div>
@@ -118,8 +118,8 @@ export default function ExecutePage() {
           <QvacSovereignAiSurface compact />
           <ProjectOperatingMap
             compact
-            title="Execution is where the product converges"
-            description="Execution is the meeting point of the whole system: governance authorizes, intelligence prepares, treasury and payroll choose the route, confidential rails settle privately, and proof records the outcome. This is why execute must stay connected to every other major section."
+            title="Execution is where integrations become product behavior"
+            description="Ika, Encrypt, REFHE, 2PC-MPC, MagicBlock, Umbra, Cloak, Jupiter, Torque, Zerion, GoldRush, QVAC, and QuickNode are not separate site stories here. They are rails inside one user path: protect intent, prepare a safe operation, sign from a wallet, and verify the Testnet result."
           />
 
           <section id="private-payroll" className="space-y-4">

@@ -12,11 +12,8 @@ const legacyRedirects: Record<string, string> = {
   "/wallet-template": "/start",
   "/whiteprint": "/whitepaper",
   "/tracks": "/judge",
-  "/services/confidential-payments": "/services/cloak-private-settlement",
   "/services/umbra-private-payments": "/services/umbra-confidential-payout",
-  "/services/refhe-payroll-proof": "/payroll",
-  "/services/devnet-billing-rehearsal": "/pricing",
-  "/services/testnet-billing-rehearsal": "/pricing",
+  "/services/devnet-billing-rehearsal": "/services/testnet-billing-rehearsal",
 };
 
 export function proxy(request: NextRequest) {

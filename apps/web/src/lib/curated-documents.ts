@@ -54,6 +54,18 @@ const curatedDocuments: CuratedDocument[] = [
     rawHref: `${repositoryBlobBase}/docs/live-service-execution-gate-2026-05-26.md`,
   },
   {
+    slug: "site-execution-route-inventory-2026-05-27",
+    title: "Site Execution Route Inventory",
+    category: "Reviewer core",
+    summary:
+      "Canonical route map for arranging PrivateDAO's 600+ generated public pages around governance, treasury, private intent, intelligence, execution, proof, and preserved historical links.",
+    audience: "Judges, operators, investors, maintainers",
+    boundary:
+      "Route inventory only; it de-duplicates and orders existing product surfaces before new build work so incomplete duplicate pages do not compete with complete execution routes.",
+    docPath: "docs/site-execution-route-inventory-2026-05-27.md",
+    rawHref: `${repositoryBlobBase}/docs/site-execution-route-inventory-2026-05-27.md`,
+  },
+  {
     slug: "mainnet-cryptographic-readiness-ladder-2026-05-25",
     title: "Mainnet Cryptographic Readiness Ladder",
     category: "Release",
