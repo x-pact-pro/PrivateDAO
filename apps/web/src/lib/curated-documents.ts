@@ -42,6 +42,18 @@ export function getIndexableCuratedDocuments() {
 
 const curatedDocuments: CuratedDocument[] = [
   {
+    slug: "futardio-launch-ip-details-2026-05-28",
+    title: "Futardio Launch IP Details",
+    category: "Legal",
+    summary:
+      "Public IP and control packet for the PrivateDAO Futardio and MetaDAO launch workflow, covering repository, domains, brand assets, program authorities, infrastructure, and DAO entity rights.",
+    audience: "Futardio participants, MetaDAO reviewers, Colosseum reviewers, legal reviewers, DAO operators",
+    boundary:
+      "Launch IP packet only; it does not publish private keys, seed phrases, API secrets, local wallet material, personal operator links, or completed mainnet control claims.",
+    docPath: "docs/futardio-launch-ip-details-2026-05-28.md",
+    rawHref: `${repositoryBlobBase}/docs/futardio-launch-ip-details-2026-05-28.md`,
+  },
+  {
     slug: "live-service-execution-gate-2026-05-26",
     title: "Live Service Execution Gate",
     category: "Reviewer core",

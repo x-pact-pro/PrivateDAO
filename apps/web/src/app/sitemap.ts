@@ -10,6 +10,7 @@ const coreRoutes = [
   "/start",
   "/about",
   "/judge",
+  "/futardio",
   "/trust",
   "/whitepaper",
   "/govern",

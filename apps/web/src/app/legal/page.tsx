@@ -33,6 +33,10 @@ const notices = [
     "Coordination path",
     "PrivateDAO is open to ecosystem collaboration, audits, pilots, and official integration work. Open-source forks must respect the repository license; brand use, official-looking derivative deployments, commercial packaging, or government/institutional reuse should be coordinated through official PrivateDAO channels first.",
   ],
+  [
+    "DAO entity and IP package",
+    "The Futardio and MetaDAO launch path uses a DAO entity workflow so PDAO ownership can be tied to enforceable project control. The future entity should hold or control repository administration, domains, brand assets, official launch materials, deployed program authorities, infrastructure administration, proof materials, and future production deployment rights.",
+  ],
 ] as const;
 
 export default function LegalNoticePage() {
@@ -81,6 +85,24 @@ export default function LegalNoticePage() {
           <div className="mt-4 text-base font-semibold text-white">Repository</div>
           <div className="mt-2 text-sm leading-6 text-white/58">Review the source with the repository notice attached.</div>
         </a>
+      </section>
+
+      <section className="rounded-[28px] border border-cyan-300/16 bg-cyan-300/[0.06] p-6">
+        <div className="text-[11px] uppercase tracking-[0.24em] text-cyan-100/76">Futardio launch legal route</div>
+        <h2 className="mt-3 text-2xl font-semibold text-white">Public terms URL and IP packet for launch review</h2>
+        <p className="mt-3 max-w-4xl text-sm leading-7 text-white/66">
+          Use this page as the public legal terms URL for launch review. The companion IP packet lists the repository,
+          domains, brand assets, deployed program boundaries, infrastructure controls, and DAO entity rights that should
+          be administered for the benefit of the future PDAO ownership community.
+        </p>
+        <div className="mt-5 flex flex-wrap gap-3">
+          <Link href="/futardio" className={cn(buttonVariants({ size: "sm" }))}>
+            Open launch packet
+          </Link>
+          <Link href="/documents/futardio-launch-ip-details-2026-05-28" className={cn(buttonVariants({ size: "sm", variant: "outline" }))}>
+            Open IP details
+          </Link>
+        </div>
       </section>
 
       <div className="flex flex-wrap gap-3">

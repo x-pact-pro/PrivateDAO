@@ -20,6 +20,7 @@ The site is being de-duplicated around canonical execution routes so historical 
 Core routes:
 
 - `/judge/` - 3-minute reviewer hub with demo video, live tracks, and proof entry points.
+- `/futardio/` - PDAO launch packet with token image, banner, raise fields, legal terms, and IP details.
 - `/govern/` - wallet-first governance path for DAO, proposal, commit/reveal, execution, and PDAO governance-token context.
 - `/intelligence/` - QVAC, GoldRush, Zerion, QuickNode, SNS, and proposal/treasury review before signing.
 - `/execute/` - private payroll, settlement, treasury route, and reward execution center.
