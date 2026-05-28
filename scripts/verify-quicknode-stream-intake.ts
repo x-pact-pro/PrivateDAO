@@ -47,7 +47,7 @@ async function waitForReadNode(child: ChildProcessWithoutNullStreams) {
       throw new Error(`read-node exited early with code ${child.exitCode}`);
     }
     try {
-      const response = await fetch(`${BASE_URL}/healthz`);
+      const response = await fetch(`${BASE_URL}/api/v1/quicknode/stream/stats`);
       if (response.ok) return;
       lastError = `HTTP ${response.status}`;
     } catch (error) {
@@ -55,7 +55,7 @@ async function waitForReadNode(child: ChildProcessWithoutNullStreams) {
     }
     await new Promise((resolve) => setTimeout(resolve, 500));
   }
-  throw new Error(`read-node did not become healthy: ${lastError}`);
+  throw new Error(`read-node QuickNode stream route did not become ready: ${lastError}`);
 }
 
 async function expectJson(url: string, init: RequestInit, expectedStatus: number) {

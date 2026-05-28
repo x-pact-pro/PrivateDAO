@@ -145,10 +145,16 @@ if [[ "${CI:-}" == "true" ]]; then
   run_parallel_group \
     "read-node snapshot" "npm run verify:read-node-snapshot >/dev/null" \
     "read-node ops snapshot" "npm run verify:read-node-ops >/dev/null"
-else
+elif [[ "${PRIVATE_DAO_RUN_NETWORK_CHECKS:-}" == "1" ]]; then
+  echo "[verify-all] live network checks enabled; validating read-node against current RPC providers"
   run_parallel_group \
     "read node" "npm run verify:read-node >/dev/null" \
     "read node http surface" "run_with_retry 3 npm run verify:read-node:http >/dev/null" \
+    "read-node snapshot" "npm run verify:read-node-snapshot >/dev/null" \
+    "read-node ops snapshot" "npm run verify:read-node-ops >/dev/null"
+else
+  echo "[verify-all] local default; validating committed read-node snapshots. Set PRIVATE_DAO_RUN_NETWORK_CHECKS=1 for live RPC/read-node HTTP checks."
+  run_parallel_group \
     "read-node snapshot" "npm run verify:read-node-snapshot >/dev/null" \
     "read-node ops snapshot" "npm run verify:read-node-ops >/dev/null"
 fi
