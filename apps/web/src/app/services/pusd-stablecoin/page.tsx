@@ -72,19 +72,19 @@ const prototypeRows = [
   {
     title: "PUSD confidential payroll",
     detail: "Create a payroll-mode request, encrypt the claim, sign a Testnet memo commitment, and export a public attestation without exposing salary context.",
-    href: "/services/pusd-stablecoin?claim=confidential-payroll#privacy-claim-console",
+    href: "/services/pusd-stablecoin?claim=pusd-stablecoin-treasury#privacy-claim-console",
     icon: LockKeyhole,
   },
   {
     title: "PUSD grants and treasury",
     detail: "Route stable grant payouts through governance approval, treasury context, Jupiter/Torque proof surfaces, and the integration matrix anchor.",
-    href: "/services/pusd-stablecoin?claim=treasury-routing-and-growth#privacy-claim-console",
+    href: "/services/pusd-stablecoin?claim=pusd-stablecoin-treasury#privacy-claim-console",
     icon: DollarSign,
   },
   {
     title: "PUSD gaming rewards",
     detail: "Prepare reward-pool settlement for guilds and tournaments, then anchor the payment rail claim for explorer-visible proof.",
-    href: "/services/pusd-stablecoin?claim=private-payments#privacy-claim-console",
+    href: "/services/pusd-stablecoin?claim=pusd-stablecoin-treasury#privacy-claim-console",
     icon: Gamepad2,
   },
 ] as const;
@@ -167,7 +167,7 @@ export default function PusdStablecoinPage() {
           <a href="https://api.privatedao.org/api/v1/integration-matrix/anchor" target="_blank" rel="noreferrer" className={cn(buttonVariants({ size: "sm", variant: "secondary" }))}>
             Matrix anchor
           </a>
-          <Link href="/services/pusd-stablecoin?claim=confidential-payroll#privacy-claim-console" className={cn(buttonVariants({ size: "sm", variant: "outline" }))}>
+          <Link href="/services/pusd-stablecoin?claim=pusd-stablecoin-treasury#privacy-claim-console" className={cn(buttonVariants({ size: "sm", variant: "outline" }))}>
             Encrypt + claim PUSD payroll
           </Link>
         </div>

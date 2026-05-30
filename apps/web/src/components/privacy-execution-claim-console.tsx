@@ -212,6 +212,14 @@ const privacyClaims: PrivacyClaim[] = [
     claimProofClass: "visitor-wallet-memo-attestation",
     claim: "Jupiter route preview and Torque growth event around governed execution.",
   },
+  {
+    id: "pusd-stablecoin-treasury",
+    label: "PUSD stablecoin treasury",
+    route: "/services/pusd-stablecoin",
+    nativeProofClass: "wallet-reviewed-stablecoin-utility-plus-visitor-attestation",
+    claimProofClass: "visitor-wallet-memo-attestation",
+    claim: "PUSD utility layer for private payroll, grants, gaming rewards, and treasury operations.",
+  },
 ];
 
 const privacyClaimIds = new Set(privacyClaims.map((claim) => claim.id));

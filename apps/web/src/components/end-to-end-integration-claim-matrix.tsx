@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { ArrowUpRight, BrainCircuit, CheckCircle2, KeyRound, LockKeyhole, ReceiptText, Route, ShieldCheck, Zap } from "lucide-react";
+import { ArrowUpRight, Banknote, BrainCircuit, CheckCircle2, KeyRound, LockKeyhole, ReceiptText, Route, ShieldCheck, Zap } from "lucide-react";
 
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -67,6 +67,16 @@ const integrationRows = [
     route: "/services/jupiter-treasury-route",
     api: "https://api.privatedao.org/api/v1/provider-integrations/status",
     icon: Route,
+  },
+  {
+    claim: "pusd-stablecoin-treasury",
+    rail: "Palm USD Utility Layer",
+    pain: "Stablecoin payroll, grants, and rewards usually expose operational context or sit outside governance proof.",
+    treatment: "PUSD becomes a governed settlement rail: prepare private payroll/grant/reward context, encrypt the claim, sign from wallet, and verify public-safe evidence.",
+    proof: "Open the PUSD route, anchor the PUSD utility claim, inspect the utility API, then verify the matrix anchor.",
+    route: "/services/pusd-stablecoin?claim=pusd-stablecoin-treasury#privacy-claim-console",
+    api: "https://api.privatedao.org/api/v1/pusd/utility-layer",
+    icon: Banknote,
   },
   {
     claim: "intelligence-and-risk",
