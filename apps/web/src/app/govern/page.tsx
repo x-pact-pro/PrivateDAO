@@ -11,6 +11,7 @@ import { OperationsShell } from "@/components/operations-shell";
 import { PrivateDaoStackSurface } from "@/components/private-dao-stack-surface";
 import { ProjectOperatingMap } from "@/components/project-operating-map";
 import { buttonVariants } from "@/components/ui/button";
+import { VisitorTestnetFastPath } from "@/components/visitor-testnet-fast-path";
 import { buildRouteMetadata } from "@/lib/route-metadata";
 import { cn } from "@/lib/utils";
 
@@ -38,6 +39,7 @@ export default function GovernPage() {
       <GuidedOperationRail current="review" reviewHref="/intelligence" verifyHref="/proof" />
       <PrivateDaoStackSurface compact />
       <LocalizedGovernIntroSurface />
+      <VisitorTestnetFastPath focus="govern" />
       <div className="rounded-[28px] border border-emerald-300/16 bg-emerald-300/[0.08] p-5">
         <div className="text-[11px] uppercase tracking-[0.28em] text-emerald-100/78">Need test funds?</div>
         <div className="mt-2 max-w-3xl text-sm leading-7 text-white/70">

@@ -10,6 +10,7 @@ import { OperationsShell } from "@/components/operations-shell";
 import { PrivacyPolicySelector } from "@/components/privacy-policy-selector";
 import { ProductCommandCenter } from "@/components/product-command-center";
 import { buttonVariants } from "@/components/ui/button";
+import { VisitorTestnetFastPath } from "@/components/visitor-testnet-fast-path";
 import { getExecutionSurfaceSnapshot } from "@/lib/devnet-service-metrics";
 import { buildRouteMetadata } from "@/lib/route-metadata";
 import { cn } from "@/lib/utils";
@@ -94,6 +95,7 @@ export default function StartPage() {
           </a>
         </div>
       </section>
+      <VisitorTestnetFastPath focus="govern" />
       <NormalUserOperationPath />
       <ExecutionSpineSurface context="start" />
       <GettingStartedWorkspace executionSnapshot={executionSnapshot} />

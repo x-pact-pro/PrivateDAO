@@ -8,6 +8,18 @@ import { persistOperationReceipt } from "@/lib/supabase/operation-receipts";
 import { cn } from "@/lib/utils";
 
 const encoder = new TextEncoder();
+const samplePayrollPayload = JSON.stringify(
+  {
+    operation: "confidential-payroll-reward",
+    recipient: "B3STL1akxLGLvPpKd6Grz19jjVySkWrGgHFwGNK8yEZ",
+    amount: "0.004 SOL rehearsal / 1 PUSD target",
+    reason: "Contributor reward after approved DAO proposal",
+    visibility: "encrypt sensitive payroll reason and internal notes before settlement",
+    proofPath: "commitment hash + wallet-signed Testnet receipt + PrivateDAO proof route",
+  },
+  null,
+  2,
+);
 
 function toArrayBuffer(bytes: Uint8Array): ArrayBuffer {
   const { buffer, byteOffset, byteLength } = bytes;
@@ -52,7 +64,7 @@ export function PrivatePayrollEncryptionWorkbench() {
   const [plainText, setPlainText] = useState("");
   const [passphrase, setPassphrase] = useState("");
   const [asset, setAsset] = useState<"PUSD" | "AUDD" | "USDC" | "USDT" | "SOL">("PUSD");
-  const [status, setStatus] = useState("Prepare a payroll/vendor payload, encrypt locally, and keep only encrypted output.");
+  const [status, setStatus] = useState("Prepare a payroll/vendor payload, encrypt locally, then run the wallet-signed payment rehearsal below.");
   const [encrypting, setEncrypting] = useState(false);
   const [encryptedBundle, setEncryptedBundle] = useState<string>("");
   const [commitmentHash, setCommitmentHash] = useState<string>("");
@@ -91,7 +103,7 @@ export function PrivatePayrollEncryptionWorkbench() {
       const serialized = JSON.stringify(bundle, null, 2);
       setEncryptedBundle(serialized);
       setCommitmentHash(commitment);
-      setStatus("Encrypted bundle ready. Save the encrypted file and use the commitment in proof/audit flow.");
+      setStatus("Encrypted bundle ready. Use this commitment as the private payroll manifest reference, then run the wallet-signed Testnet payment rehearsal below.");
 
       void persistOperationReceipt({
         operationType: "encrypted_payload_prepare",
@@ -134,7 +146,7 @@ export function PrivatePayrollEncryptionWorkbench() {
       </div>
       <h3 className="mt-3 text-xl font-semibold text-white">Client-side encrypted payroll/vendor payload</h3>
       <p className="mt-2 text-sm leading-7 text-white/70">
-        This step runs encryption in-browser before execution. Only encrypted payload + commitment moves forward to receipts and audit flow.
+        This step runs encryption in-browser before execution. Only encrypted payload + commitment moves forward to receipts and audit flow; the payment proof is produced by the wallet-signed Testnet rehearsal below.
       </p>
 
       <div className="mt-4 grid gap-3">
@@ -165,6 +177,17 @@ export function PrivatePayrollEncryptionWorkbench() {
       </div>
 
       <div className="mt-4 flex flex-wrap gap-2">
+        <button
+          type="button"
+          className={cn(buttonVariants({ size: "sm", variant: "secondary" }))}
+          onClick={() => {
+            setPlainText(samplePayrollPayload);
+            setPassphrase((current) => current || "privatedao-testnet");
+            setStatus("Sample payroll payload loaded. Encrypt it, then run the Testnet payment rehearsal below.");
+          }}
+        >
+          Use sample payroll payload
+        </button>
         <button
           type="button"
           className={cn(buttonVariants({ size: "sm" }))}

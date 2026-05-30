@@ -31,7 +31,7 @@ import {
 } from "@/lib/dao-bootstrap";
 import { buildServiceHandoffQuery } from "@/lib/service-handoff-state";
 import { getProposalById, type ProposalCardModel } from "@/lib/site-data";
-import { SOLANA_NETWORK_LABEL } from "@/lib/solana-network";
+import { buildSolanaTxUrl, SOLANA_NETWORK_LABEL } from "@/lib/solana-network";
 import { persistOperationReceipt } from "@/lib/supabase/operation-receipts";
 import { getTreasuryReceiveConfig } from "@/lib/treasury-receive-config";
 import { useServiceHandoffSnapshot } from "@/lib/use-service-handoff-snapshot";
@@ -404,11 +404,23 @@ function RuntimeStatusPanel({
         </div>
       ))}
       {signature ? (
-        <div className="mt-1 break-all text-xs text-white/70">
-          Signature: {signature}
+        <div className="mt-2 rounded-xl border border-white/10 bg-black/20 px-3 py-2">
+          <div className="text-[10px] uppercase tracking-[0.18em] text-white/44">Confirmed Testnet signature</div>
+          <div className="mt-1 break-all text-xs text-white/74">{signature}</div>
         </div>
       ) : null}
       <div className="mt-3 flex flex-wrap gap-3">
+        {signature ? (
+          <a
+            href={buildSolanaTxUrl(signature)}
+            target="_blank"
+            rel="noreferrer"
+            className={cn(buttonVariants({ size: "sm" }))}
+          >
+            Open on Solscan
+            <ArrowUpRight className="h-4 w-4" />
+          </a>
+        ) : null}
         <Link href={reviewHref} className={cn(buttonVariants({ size: "sm", variant: "secondary" }))}>
           {reviewLabel}
         </Link>
@@ -1789,7 +1801,7 @@ export function GovernanceActionWorkbench() {
               </div>
             ) : null}
           </div>
-          <div className="rounded-[24px] border border-white/10 bg-white/[0.03] p-5 md:col-span-2">
+          <div id="live-dao" className="scroll-mt-28 rounded-[24px] border border-white/10 bg-white/[0.03] p-5 md:col-span-2">
             <div className="flex items-center justify-between gap-3">
               <div className="flex items-center gap-3">
                 <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-white/10 bg-black/20 text-cyan-200">
@@ -2024,6 +2036,7 @@ export function GovernanceActionWorkbench() {
 
           {showProposalCard ? (
           <div id="proposal-review-action" className="scroll-mt-28 rounded-[24px] border border-white/10 bg-white/[0.03] p-5 md:col-span-2">
+            <span id="live-proposal" className="block scroll-mt-28" />
             <div className="flex items-center gap-3">
               <FilePlus2 className="h-4 w-4 text-cyan-300" />
               <div className="text-base font-medium text-white">Step 2 · Create Proposal</div>
@@ -2320,6 +2333,7 @@ export function GovernanceActionWorkbench() {
 
           {showCommitCard ? (
           <div id="commit-vote-action" className="scroll-mt-28 rounded-[24px] border border-white/10 bg-white/[0.03] p-5 md:col-span-2">
+            <span id="live-vote" className="block scroll-mt-28" />
                 <div className="flex items-center gap-3">
                   <Vote className="h-4 w-4 text-fuchsia-300" />
                   <div className="text-base font-medium text-white">Step 3 · Commit Vote</div>

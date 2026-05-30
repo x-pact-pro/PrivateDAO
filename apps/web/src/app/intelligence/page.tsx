@@ -2,12 +2,14 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { CryptographicExecutionSpine } from "@/components/cryptographic-execution-spine";
+import { EndToEndIntegrationClaimMatrix } from "@/components/end-to-end-integration-claim-matrix";
 import { ExecutionCommandSurface } from "@/components/execution-command-surface";
 import { GuidedOperationRail } from "@/components/guided-operation-rail";
 import { GoldRushIntelligenceSurface } from "@/components/goldrush-intelligence-surface";
 import { IntelligenceLayerSurface } from "@/components/intelligence-layer-surface";
 import { MetricsStrip } from "@/components/metrics-strip";
 import { OperatingJourneyStrip } from "@/components/operating-journey-strip";
+import { OperationalGravityObservatory } from "@/components/operational-gravity-observatory";
 import { OperationsShell } from "@/components/operations-shell";
 import { PrivateDaoStackSurface } from "@/components/private-dao-stack-surface";
 import { ProjectOperatingMap } from "@/components/project-operating-map";
@@ -43,6 +45,8 @@ export default function IntelligencePage() {
     >
       <GuidedOperationRail current="review" reviewHref="/intelligence" verifyHref="/proof" />
       <PrivateDaoStackSurface compact />
+      <OperationalGravityObservatory />
+      <EndToEndIntegrationClaimMatrix />
       <OperatingJourneyStrip
         snapshot={runtimeSnapshot}
         title="Review is the decision gate before any signer approves treasury or governance actions"

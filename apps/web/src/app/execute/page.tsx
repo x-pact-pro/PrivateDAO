@@ -6,6 +6,7 @@ import { TestnetBillingRehearsal } from "@/components/devnet-billing-rehearsal";
 import { ExecuteCurrentOperationPanel } from "@/components/execute-current-operation-panel";
 import { ExecuteGrowthPanel } from "@/components/execute-growth-panel";
 import { ExecuteLatestReceiptsPanel } from "@/components/execute-latest-receipts-panel";
+import { EndToEndIntegrationClaimMatrix } from "@/components/end-to-end-integration-claim-matrix";
 import { ExecutionSpineSurface } from "@/components/execution-spine-surface";
 import { GovernWorkbenchClient } from "@/components/govern/govern-workbench-client";
 import { GuidedOperationRail } from "@/components/guided-operation-rail";
@@ -13,10 +14,12 @@ import { JupiterTreasuryRouteSurface } from "@/components/jupiter-treasury-route
 import { OperationsShell } from "@/components/operations-shell";
 import { PrivateSettlementRailWorkbench } from "@/components/private-settlement-rail-workbench";
 import { PrivacyPolicySelector } from "@/components/privacy-policy-selector";
+import { PrivacyExecutionClaimConsole } from "@/components/privacy-execution-claim-console";
 import { PrivacySdkApiStarter } from "@/components/privacy-sdk-api-starter";
 import { PrivatePayrollEncryptionWorkbench } from "@/components/private-payroll-encryption-workbench";
 import { ProjectOperatingMap } from "@/components/project-operating-map";
 import { QvacSovereignAiSurface } from "@/components/qvac-sovereign-ai-surface";
+import { VisitorTestnetFastPath } from "@/components/visitor-testnet-fast-path";
 import { getExecutionSurfaceSnapshot } from "@/lib/devnet-service-metrics";
 import { getJudgeRuntimeLogsSnapshot } from "@/lib/judge-runtime-logs";
 import { buildRouteMetadata } from "@/lib/route-metadata";
@@ -87,6 +90,7 @@ export default function ExecutePage() {
         verifyHref="/proof"
         pendingNote="Wallet-first execution, rail proxy forwarding, and proof routes are live on one continuous operating surface."
       />
+      <VisitorTestnetFastPath focus="execute" />
       <div className="rounded-[28px] border border-cyan-300/16 bg-cyan-300/[0.08] p-6">
         <div className="text-[11px] uppercase tracking-[0.28em] text-cyan-100/74">Operating flow</div>
         <h2 className="mt-3 text-2xl font-semibold text-white">Review → Intelligence → Prepare → Wallet sign → Verify</h2>
@@ -110,10 +114,12 @@ export default function ExecutePage() {
           </a>
         ))}
       </div>
+      <EndToEndIntegrationClaimMatrix />
 
       <div className="grid items-start gap-5 xl:grid-cols-[minmax(0,1fr)_360px]">
         <div className="space-y-5">
           <ExecutionSpineSurface context="execute" compact />
+          <PrivacyExecutionClaimConsole compact />
           <CryptographicExecutionSpine compact context="execute" />
           <QvacSovereignAiSurface compact />
           <ProjectOperatingMap
