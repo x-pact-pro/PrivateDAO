@@ -3,16 +3,16 @@ import { supportedLocales } from "@/lib/i18n";
 export const siteName = "PrivateDAO";
 export const siteTitle = "PrivateDAO | Private Governance, Payroll, and Treasury on Solana";
 export const siteDescription =
-  "Your DAO votes, payroll, and treasury are public. They shouldn't be. PrivateDAO enables private governance, payroll, and treasury operations while outcomes remain cryptographically verifiable on Solana.";
+  "Your DAO votes, payroll, and treasury are public. They shouldn't be. PrivateDAO bridges organizational privacy and onchain verifiability with confidential governance, encrypted treasury coordination, and Solana-native operational infrastructure.";
 export const siteUrl = process.env.NEXT_PUBLIC_LIVE_SITE_URL?.replace(/\/+$/, "") ?? "https://privatedao.org";
 export const defaultOgImage = `${siteUrl}/opengraph-image.png`;
 
 export const siteKeywords = [
   "PrivateDAO",
   "Private DAO",
-  "confidential coordination",
-  "agent governance infrastructure",
-  "encrypted operational layer",
+  "confidential governance",
+  "encrypted treasury coordination",
+  "organizational infrastructure",
   "private governance",
   "confidential treasury",
   "treasury policy",
