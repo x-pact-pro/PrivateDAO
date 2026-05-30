@@ -8,12 +8,12 @@ const ROOT = process.cwd();
 const SURFACE_DIR = path.resolve(ROOT);
 const REQUIRED_DOM_FRAGMENT_GROUPS = [
   ["PrivateDAO"],
-  ["Confidential treasury and market operations on Solana"],
+  ["Privacy, secrecy, and proof for Solana organizations"],
   ["Powered by the live stack"],
   ["Open Judge"],
   ["Create a private Solana DAO", "Private governance on Solana"],
   ["Your DAO votes, payroll, and treasury are public"],
-  ["Start building"],
+  ["Try the 3-minute Testnet flow"],
   ["Private processes. Verifiable outcomes."],
   ["Review Proof", "Open verification view", "Open proof"],
 ];

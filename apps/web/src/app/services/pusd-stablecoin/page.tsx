@@ -3,6 +3,7 @@ import Link from "next/link";
 
 import { LocalizedRouteSummary } from "@/components/localized-route-summary";
 import { OperationsShell } from "@/components/operations-shell";
+import { TestnetBillingRehearsal } from "@/components/devnet-billing-rehearsal";
 import { buttonVariants } from "@/components/ui/button";
 import { buildRouteMetadata } from "@/lib/route-metadata";
 import { cn } from "@/lib/utils";
@@ -73,11 +74,11 @@ export default function PusdStablecoinPage() {
         <div className="text-[11px] uppercase tracking-[0.28em] text-emerald-100/78">Operating model</div>
         <h2 className="mt-3 text-2xl font-semibold text-white">Payroll, grants, and reward pools under governed stablecoin flow</h2>
         <p className="mt-3 max-w-4xl text-sm leading-7 text-white/66">
-          PUSD is integrated as a practical treasury rail. Operators can run billing and payout rehearsals from the
-          browser, then validate execution context through judge and proof surfaces. The product does not hardcode an
-          unverified mint; the official PUSD Solana mint and receive account are injected through environment
-          configuration, so the same wallet-first flow can move from Testnet rehearsal to production policy when the
-          activation inputs are present.
+          PUSD is integrated as a practical treasury rail. Operators can run payroll and reward rehearsals from the
+          browser, inspect the wallet request, and validate execution context through Judge and Proof. The stablecoin
+          lane does not hardcode an unverified mint. It is configuration-driven: when the official PUSD mint and receive
+          account are present, the same UI executes the SPL TransferChecked rail; until then, the page keeps the Testnet
+          proof route alive through the SOL fallback with memo-coded payroll or reward intent.
         </p>
         <div className="mt-5 flex flex-wrap gap-3">
           <Link href="/services/testnet-billing-rehearsal" className={cn(buttonVariants({ size: "sm" }))}>
@@ -126,6 +127,21 @@ export default function PusdStablecoinPage() {
               <p className="mt-3 text-sm leading-6 text-white/62">{detail}</p>
             </div>
           ))}
+        </div>
+      </section>
+
+      <section className="rounded-[30px] border border-emerald-300/18 bg-[linear-gradient(135deg,rgba(20,241,149,0.12),rgba(34,211,238,0.07),rgba(8,13,28,0.96))] p-6">
+        <div className="text-[11px] uppercase tracking-[0.28em] text-emerald-100/78">Try the PUSD lane now</div>
+        <h2 className="mt-3 max-w-4xl text-2xl font-semibold text-white">
+          Select PUSD payroll or PUSD gaming reward, sign from a Testnet wallet, then open the explorer proof
+        </h2>
+        <p className="mt-3 max-w-4xl text-sm leading-7 text-white/66">
+          This puts the stablecoin story where a normal visitor can test it: choose the Palm USD payroll or reward SKU,
+          connect a Testnet wallet, send the rehearsal transaction, and inspect the memo, signature, logs, and proof
+          route without using a terminal.
+        </p>
+        <div className="mt-6">
+          <TestnetBillingRehearsal />
         </div>
       </section>
 

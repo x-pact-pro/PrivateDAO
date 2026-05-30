@@ -9,9 +9,9 @@ import { buildRouteMetadata } from "@/lib/route-metadata";
 import { cn } from "@/lib/utils";
 
 const executionSteps = [
-  ["Govern", "A DAO or treasury operator defines the rebalance or payout-funding intent before market data is requested."],
-  ["Preview", "Jupiter quote data is fetched only when the operator clicks Run route preview, keeping first load light."],
-  ["Decide", "The signer compares output amount, price impact, slippage posture, and route plan before approving."],
+  ["Pain", "Public swaps expose treasury intent, timing, size, and operational pressure before the organization can explain the decision."],
+  ["Preview", "Jupiter quote data is fetched only when the operator clicks Run route preview, keeping first load light and inspectable."],
+  ["Govern", "The route becomes a governed treasury decision instead of an isolated swap, with slippage and route quality visible before signing."],
   ["Verify", "The decision path points back to Judge, Proof, and the route brief so reviewers can inspect why the move made sense."],
 ] as const;
 
@@ -39,10 +39,12 @@ export default function JupiterTreasuryRoutePage() {
       <LocalizedRouteSummary routeKey="services" />
       <div className="rounded-[28px] border border-cyan-300/16 bg-cyan-300/[0.08] p-6">
         <div className="text-[11px] uppercase tracking-[0.28em] text-cyan-100/78">Route discipline</div>
-        <h2 className="mt-3 text-2xl font-semibold text-white">Preview first. Govern second. Verify third.</h2>
+        <h2 className="mt-3 text-2xl font-semibold text-white">Preview first. Govern the route. Prove the reason.</h2>
         <p className="mt-3 max-w-4xl text-sm leading-7 text-white/66">
           Jupiter routing is used as an execution-quality layer in treasury context, not as a detached trading widget.
           The operator sees quote posture first, then carries that context into governed actions and proof surfaces.
+          A normal visitor can click the preview button, see live route data, then understand why the treasury action is
+          private in process but verifiable in outcome.
           When the server key is configured, this lane uses Jupiter Developer Platform /order through the PrivateDAO
           backend; the public Lite Quote route remains as a safe fallback for static review.
         </p>

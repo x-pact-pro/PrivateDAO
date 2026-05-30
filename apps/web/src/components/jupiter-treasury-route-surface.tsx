@@ -207,7 +207,7 @@ export function JupiterTreasuryRouteSurface() {
         <div className="text-[11px] uppercase tracking-[0.3em] text-cyan-100/78">
           Jupiter-backed treasury route
         </div>
-        <CardTitle>Treasury swaps and rebalances now have a live preview lane</CardTitle>
+        <CardTitle>Run a live Jupiter route preview before the treasury signs</CardTitle>
         <div className="max-w-4xl text-sm leading-7 text-white/60">
           PrivateDAO turns treasury routing into a governed operator flow: review the route, inspect price and slippage
           posture, then carry the same context into treasury action and proof. The preview is click-to-run so the page
@@ -273,7 +273,7 @@ export function JupiterTreasuryRouteSurface() {
                 </div>
                 <div className="flex flex-wrap gap-3">
                   <button type="button" className={cn(buttonVariants({ size: "sm" }))} onClick={() => void handlePreview()} disabled={running}>
-                    {running ? "Loading..." : "Run route preview"}
+                    {running ? "Loading..." : "Run live Jupiter preview"}
                   </button>
                   <button
                     type="button"

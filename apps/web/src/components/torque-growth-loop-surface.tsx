@@ -250,7 +250,7 @@ export function TorqueGrowthLoopSurface() {
           </div>
           <div className="mt-5 flex flex-wrap gap-3">
             <button type="button" onClick={() => void recordEvent()} className={cn(buttonVariants({ size: "sm" }))}>
-              Record event
+              Send Torque event
             </button>
             <button
               type="button"

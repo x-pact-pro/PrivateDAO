@@ -59,14 +59,14 @@ const homeCopyByLocale: Record<
     title: "Your DAO votes, payroll, and treasury are public. They shouldn't be.",
     body:
       "Most DAOs expose everything: votes, salaries, treasury activity, and internal operations. PrivateDAO enables organizations to operate privately while remaining cryptographically verifiable on Solana.",
-    launch: "Start building",
+    launch: "Try the 3-minute Testnet flow",
     android: "Install Android APK",
     verify: "Open verification view",
     judge: "Open Judge",
     workflow: "View Workflow",
-    startAnywhere: "Start anywhere",
-    startAnywhereTitle: "Every core operating lane is available from the first product view.",
-    guidedStart: "Guided start",
+    startAnywhere: "Try it without code",
+    startAnywhereTitle: "Create a DAO, submit a proposal, commit/reveal, execute, and verify from the browser.",
+    guidedStart: "Open the guided flow",
     stackLabel: "Powered by the live stack",
     thesisTitle: "Private. Verified. Informed.",
     thesisBody:
@@ -85,14 +85,14 @@ const homeCopyByLocale: Record<
     title: "تصويت DAO والرواتب والخزانة عندك مكشوفة. المفروض لا.",
     body:
       "معظم الـ DAOs تكشف كل شيء: التصويت، الرواتب، حركة الخزانة، والعمليات الداخلية. PrivateDAO يمكّن المؤسسات أن تعمل بخصوصية مع بقاء النتائج قابلة للتحقق تشفيرياً على سولانا.",
-    launch: "ابدأ البناء",
+    launch: "جرّب Testnet في 3 دقائق",
     android: "ثبّت تطبيق أندرويد",
     verify: "افتح التحقق",
     judge: "افتح مسار الحكام",
     workflow: "شاهد المسار",
-    startAnywhere: "ابدأ من أي مكان",
-    startAnywhereTitle: "كل مسار تشغيلي رئيسي متاح مباشرة من واجهة المنتج الأولى.",
-    guidedStart: "بداية موجهة",
+    startAnywhere: "جرّب بدون كود",
+    startAnywhereTitle: "أنشئ DAO، أرسل مقترحاً، نفّذ commit/reveal، ثم افتح إثبات Solscan من المتصفح.",
+    guidedStart: "افتح المسار الموجه",
     stackLabel: "مدعوم بالطبقة الحية",
     thesisTitle: "خاص. قابل للتحقق. واعٍ بالسياق.",
     thesisBody:
@@ -111,14 +111,14 @@ const homeCopyByLocale: Record<
     title: "Голоса DAO, зарплаты и казна публичны. Так быть не должно.",
     body:
       "Большинство DAO раскрывают все: голоса, зарплаты, активность казны и внутренние операции. PrivateDAO позволяет организациям работать приватно, оставаясь криптографически проверяемыми на Solana.",
-    launch: "Start building",
+    launch: "Try the 3-minute Testnet flow",
     android: "Install Android APK",
     verify: "Открыть proof",
     judge: "Открыть Judge",
     workflow: "Смотреть workflow",
-    startAnywhere: "Начните с любого места",
-    startAnywhereTitle: "Каждый ключевой операционный маршрут доступен с первого продуктового экрана.",
-    guidedStart: "Guided start",
+    startAnywhere: "Try it without code",
+    startAnywhereTitle: "Create a DAO, submit a proposal, commit/reveal, execute, and verify from the browser.",
+    guidedStart: "Open the guided flow",
     stackLabel: "Работает на live stack",
     thesisTitle: "Private. Verified. Informed.",
     thesisBody:
@@ -136,14 +136,14 @@ const homeCopyByLocale: Record<
     title: "Голоси DAO, зарплати й казна публічні. Так не має бути.",
     body:
       "Більшість DAO відкривають усе: голоси, зарплати, рух казни та внутрішні операції. PrivateDAO дозволяє організаціям працювати приватно й залишатися криптографічно перевірюваними на Solana.",
-    launch: "Start building",
+    launch: "Try the 3-minute Testnet flow",
     android: "Install Android APK",
     verify: "Відкрити proof",
     judge: "Відкрити Judge",
     workflow: "Переглянути workflow",
-    startAnywhere: "Почніть з будь-якого місця",
-    startAnywhereTitle: "Кожен ключовий операційний маршрут доступний з першого продуктового екрана.",
-    guidedStart: "Guided start",
+    startAnywhere: "Try it without code",
+    startAnywhereTitle: "Create a DAO, submit a proposal, commit/reveal, execute, and verify from the browser.",
+    guidedStart: "Open the guided flow",
     stackLabel: "Працює на live stack",
     thesisTitle: "Private. Verified. Informed.",
     thesisBody:
@@ -161,14 +161,14 @@ const homeCopyByLocale: Record<
     title: "Głosy DAO, payroll i treasury są publiczne. Nie powinny być.",
     body:
       "Większość DAO ujawnia wszystko: głosy, pensje, aktywność treasury i operacje wewnętrzne. PrivateDAO pozwala organizacjom działać prywatnie, pozostając kryptograficznie weryfikowalnymi na Solana.",
-    launch: "Start building",
+    launch: "Try the 3-minute Testnet flow",
     android: "Install Android APK",
     verify: "Otwórz proof",
     judge: "Otwórz Judge",
     workflow: "Zobacz workflow",
-    startAnywhere: "Zacznij gdzie chcesz",
-    startAnywhereTitle: "Każdy kluczowy tor operacyjny jest dostępny już z pierwszego widoku produktu.",
-    guidedStart: "Guided start",
+    startAnywhere: "Try it without code",
+    startAnywhereTitle: "Create a DAO, submit a proposal, commit/reveal, execute, and verify from the browser.",
+    guidedStart: "Open the guided flow",
     stackLabel: "Powered by live stack",
     thesisTitle: "Private. Verified. Informed.",
     thesisBody:
@@ -186,14 +186,14 @@ const homeCopyByLocale: Record<
     title: "आपके DAO votes, payroll और treasury public हैं. ऐसा नहीं होना चाहिए.",
     body:
       "Most DAOs सब कुछ expose करते हैं: votes, salaries, treasury activity और internal operations. PrivateDAO organizations को privately operate करने देता है while remaining cryptographically verifiable on Solana.",
-    launch: "Start building",
+    launch: "Try the 3-minute Testnet flow",
     android: "Android APK install करें",
     verify: "Proof खोलें",
     judge: "Judge खोलें",
     workflow: "Workflow देखें",
-    startAnywhere: "कहीं से भी शुरू करें",
-    startAnywhereTitle: "हर मुख्य operating lane पहले product view से सीधे उपलब्ध है.",
-    guidedStart: "Guided start",
+    startAnywhere: "Try it without code",
+    startAnywhereTitle: "Create a DAO, submit a proposal, commit/reveal, execute, and verify from the browser.",
+    guidedStart: "Open the guided flow",
     stackLabel: "Live stack द्वारा संचालित",
     thesisTitle: "Private. Verified. Informed.",
     thesisBody:
@@ -211,14 +211,14 @@ const homeCopyByLocale: Record<
     title: "DAO 투표, 급여, treasury가 공개되어 있습니다. 그래서는 안 됩니다.",
     body:
       "Most DAOs expose everything: votes, salaries, treasury activity, and internal operations. PrivateDAO enables organizations to operate privately while remaining cryptographically verifiable on Solana.",
-    launch: "Start building",
+    launch: "Try the 3-minute Testnet flow",
     android: "Install Android APK",
     verify: "Proof 열기",
     judge: "Judge 열기",
     workflow: "Workflow 보기",
-    startAnywhere: "어디서나 시작",
-    startAnywhereTitle: "주요 operating lane은 첫 제품 화면에서 바로 접근할 수 있습니다.",
-    guidedStart: "Guided start",
+    startAnywhere: "Try it without code",
+    startAnywhereTitle: "Create a DAO, submit a proposal, commit/reveal, execute, and verify from the browser.",
+    guidedStart: "Open the guided flow",
     stackLabel: "Live stack 기반",
     thesisTitle: "Private. Verified. Informed.",
     thesisBody:
@@ -236,14 +236,14 @@ const homeCopyByLocale: Record<
     title: "Los votos, payroll y treasury de tu DAO son públicos. No deberían serlo.",
     body:
       "La mayoría de DAOs exponen todo: votos, salarios, actividad de treasury y operaciones internas. PrivateDAO permite que las organizaciones operen en privado y sigan siendo criptográficamente verificables en Solana.",
-    launch: "Start building",
+    launch: "Try the 3-minute Testnet flow",
     android: "Instalar Android APK",
     verify: "Abrir proof",
     judge: "Abrir Judge",
     workflow: "Ver workflow",
-    startAnywhere: "Empieza donde quieras",
-    startAnywhereTitle: "Cada carril operativo principal está a un clic desde la página inicial.",
-    guidedStart: "Guided start",
+    startAnywhere: "Try it without code",
+    startAnywhereTitle: "Create a DAO, submit a proposal, commit/reveal, execute, and verify from the browser.",
+    guidedStart: "Open the guided flow",
     stackLabel: "Impulsado por el live stack",
     thesisTitle: "Private. Verified. Informed.",
     thesisBody:
@@ -261,14 +261,14 @@ const homeCopyByLocale: Record<
     title: "I voti, il payroll e la treasury della tua DAO sono pubblici. Non dovrebbero esserlo.",
     body:
       "La maggior parte delle DAO espone tutto: voti, stipendi, attività di treasury e operazioni interne. PrivateDAO consente alle organizzazioni di operare privatamente restando crittograficamente verificabili su Solana.",
-    launch: "Start building",
+    launch: "Try the 3-minute Testnet flow",
     android: "Installa Android APK",
     verify: "Apri proof",
     judge: "Apri Judge",
     workflow: "Vedi workflow",
-    startAnywhere: "Inizia dove vuoi",
-    startAnywhereTitle: "Ogni corsia operativa principale è accessibile dal primo livello del prodotto.",
-    guidedStart: "Guided start",
+    startAnywhere: "Try it without code",
+    startAnywhereTitle: "Create a DAO, submit a proposal, commit/reveal, execute, and verify from the browser.",
+    guidedStart: "Open the guided flow",
     stackLabel: "Basato sul live stack",
     thesisTitle: "Private. Verified. Informed.",
     thesisBody:
@@ -344,7 +344,7 @@ export function HomeShell() {
     {
       title: "Govern",
       eyebrow: "DAO lifecycle",
-      description: "Create DAO, create proposal, vote, reveal, finalize, and execute from the wallet.",
+      description: "Create DAO, create proposal, commit/reveal, finalize, execute, and open Solscan from the wallet.",
       href: "/govern",
       icon: Gavel,
       badge: "Core flow",
@@ -395,7 +395,7 @@ export function HomeShell() {
       description: "Integration docs, privacy SDK starter, read-node lanes, and builder entry points.",
       href: "/documents",
       icon: Code2,
-      badge: "Build",
+      badge: "Docs",
     },
     {
       title: "RPC Services",
@@ -549,21 +549,21 @@ export function HomeShell() {
     {
       label: "Minute 1",
       title: "Understand the problem",
-      body: "Public DAO votes, payroll, rewards, and treasury moves expose intent too early. PrivateDAO keeps the signer in control while reducing what the public sees before execution.",
+      body: "Public DAO votes, payroll, rewards, and treasury moves expose intent too early. PrivateDAO shows the problem in plain language before asking anyone to sign.",
       href: "/learn",
       cta: "Learn the problem",
     },
     {
       label: "Minute 2",
       title: "Try the product",
-      body: "Connect a Testnet wallet, fund it, open web or Android, review a plain-English action, and sign from the same operating shell.",
-      href: "/start",
-      cta: "Start now",
+      body: "Connect a Testnet wallet, create a DAO, submit a proposal, commit/reveal, finalize, and execute from the same operating shell.",
+      href: "/govern#live-dao",
+      cta: "Run governance",
     },
     {
       label: "Minute 3",
       title: "Verify the proof",
-      body: "Open the judge route to inspect Testnet receipts: ZK verifier, encrypted integrations, Token-2022, Squads custody, and timelock enforcement.",
+      body: "Open Judge and Proof to inspect Testnet receipts, Solscan links, encrypted payment evidence, intelligence context, and runtime logs.",
       href: "/judge",
       cta: "Verify evidence",
     },
@@ -585,7 +585,7 @@ export function HomeShell() {
             <div className="space-y-4 sm:space-y-5">
               <div className="text-[11px] uppercase tracking-[0.34em] text-emerald-300/80">{homeCopy.eyebrow}</div>
               <div className="text-sm font-semibold uppercase tracking-[0.24em] text-cyan-100/82">
-                Confidential treasury and market operations on Solana
+                  Privacy, secrecy, and proof for Solana organizations
               </div>
               <div className="max-w-3xl text-3xl font-semibold tracking-[-0.045em] text-white sm:text-5xl lg:text-[4rem] xl:text-[4.35rem]">
                 {homeCopy.title}
@@ -596,12 +596,12 @@ export function HomeShell() {
               <div className="max-w-3xl rounded-[26px] border border-emerald-300/18 bg-emerald-300/[0.08] p-5 text-sm leading-7 text-white/72">
                 <div className="text-[11px] uppercase tracking-[0.28em] text-emerald-100/80">No code operating layer</div>
                 <div className="mt-2 text-lg font-semibold text-white">
-                  Connect a Testnet wallet, fund it, act, and verify. No code. No terminal. No broken handoff.
+                  Create a DAO, propose, commit/reveal, execute, and verify. No code. No terminal.
                 </div>
                 <p className="mt-2">
-                  A normal user can learn the concepts in
+                  A normal user can learn why public Solana operations expose sensitive work in
                   <Link href="/learn" className="px-1 font-semibold text-cyan-100 underline decoration-cyan-300/50 underline-offset-4">Learn</Link>,
-                  connect a wallet, review the plain-English action, sign the exact request, then inspect when intent became visible, where the salary moved, and how encrypted IKA / REFHE-style payment evidence stays linked to proof.
+                  connect a wallet, review the plain-English action, sign the exact request, then inspect when intent became visible, where payroll or treasury movement is proven, and how encrypted IKA / REFHE-style payment evidence stays linked to proof.
                 </p>
               </div>
               <div className="max-w-3xl rounded-[26px] border border-violet-300/18 bg-[radial-gradient(circle_at_top_right,rgba(153,69,255,0.20),transparent_36%),rgba(153,69,255,0.08)] p-5 text-sm leading-7 text-white/72">
@@ -660,7 +660,7 @@ export function HomeShell() {
             </div>
 
             <div className="flex flex-wrap gap-3">
-              <Link className={cn(buttonVariants({ size: "lg" }))} href="/start">
+              <Link className={cn(buttonVariants({ size: "lg" }))} href="/govern#live-dao">
                 {homeCopy.launch}
                 <ArrowRight className="h-4 w-4" />
               </Link>
