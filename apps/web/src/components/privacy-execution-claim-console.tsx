@@ -16,6 +16,11 @@ type PrivacyClaim = {
   id: string;
   label: string;
   route: string;
+  tier?: "tier-1" | "tier-2" | "tier-3";
+  requestUseCase?: string;
+  phases?: string[];
+  privacyBoundary?: string;
+  auditSurface?: string;
   nativeProofClass: string;
   claimProofClass: "visitor-wallet-memo-attestation";
   claim: string;
@@ -70,6 +75,11 @@ async function buildEncryptedClaimPacket(input: {
     proofClass: input.claim.claimProofClass,
     claim: input.claim.claim,
     route: input.claim.route,
+    tier: input.claim.tier ?? "execution-rail",
+    requestUseCase: input.claim.requestUseCase ?? input.claim.label,
+    phases: input.claim.phases ?? ["Review", "Encrypt", "Sign", "Verify"],
+    privacyBoundary: input.claim.privacyBoundary ?? "Sensitive context stays encrypted in the local claim packet.",
+    auditSurface: input.claim.auditSurface ?? "Public audit surface exposes the digest commitment and explorer signature.",
     network: SOLANA_NETWORK_LABEL,
     visitor: input.visitor,
     createdAt: input.createdAt,
@@ -123,6 +133,11 @@ async function verifyEncryptedClaimPacket(packet: EncryptedClaimPacket) {
     proofClass: string;
     claim: string;
     route: string;
+    tier?: string;
+    requestUseCase?: string;
+    phases?: string[];
+    privacyBoundary?: string;
+    auditSurface?: string;
     network: string;
     visitor: string;
     createdAt: string;
@@ -156,6 +171,162 @@ function getVisitorSessionId() {
 }
 
 const privacyClaims: PrivacyClaim[] = [
+  {
+    id: "confidential-treasury-request",
+    label: "Confidential treasury request",
+    route: "/treasury",
+    tier: "tier-1",
+    requestUseCase: "Ask for treasury funds without exposing strategy, vendor terms, negotiation context, or supporting documents before approval.",
+    phases: ["Discuss", "Review", "Approve", "Execute", "Audit"],
+    privacyBoundary: "Request memo, docs, vendor context, and negotiation details stay encrypted before execution.",
+    auditSurface: "Approved amount, digest, wallet signature, and final settlement proof become reviewer-visible.",
+    nativeProofClass: "encrypted-treasury-request-plus-visitor-wallet-memo-attestation",
+    claimProofClass: "visitor-wallet-memo-attestation",
+    claim: "Confidential treasury request with encrypted justification, staged approval, and public-safe audit trail.",
+  },
+  {
+    id: "confidential-payroll-request",
+    label: "Confidential payroll request",
+    route: "/payroll",
+    tier: "tier-1",
+    requestUseCase: "Run contributor salary, bonus, or reward approvals without exposing every compensation row to the whole organization.",
+    phases: ["Prepare payroll", "Encrypt rows", "Approve batch", "Execute payout", "Audit integrity"],
+    privacyBoundary: "Contributor names, row-level amounts, and bonus reasons stay in selective-disclosure receipts.",
+    auditSurface: "Payroll batch digest, signed memo, REFHE proof route, and payout evidence remain inspectable.",
+    nativeProofClass: "refhe-payroll-request-plus-visitor-wallet-memo-attestation",
+    claimProofClass: "visitor-wallet-memo-attestation",
+    claim: "Confidential payroll request that binds encrypted compensation context to a wallet-signed Testnet commitment.",
+  },
+  {
+    id: "security-incident-room-request",
+    label: "Security incident room",
+    route: "/security",
+    tier: "tier-1",
+    requestUseCase: "Coordinate a vulnerability response, freeze recommendation, remediation plan, and disclosure timing before attackers see the details.",
+    phases: ["Open room", "Encrypt findings", "Approve response", "Execute mitigation", "Publish audit"],
+    privacyBoundary: "Exploit notes, affected components, patch plan, and responder discussion stay private until disclosure.",
+    auditSurface: "Incident digest, signer set, decision timestamp, and mitigation transaction/proof route are public-safe.",
+    nativeProofClass: "incident-room-digest-plus-visitor-wallet-memo-attestation",
+    claimProofClass: "visitor-wallet-memo-attestation",
+    claim: "Security incident coordination room with encrypted response context and on-chain decision attestation.",
+  },
+  {
+    id: "emergency-governance-request",
+    label: "Emergency governance request",
+    route: "/govern",
+    tier: "tier-1",
+    requestUseCase: "Run a fast private decision path for exploit, oracle attack, key-loss, or treasury-defense events.",
+    phases: ["Trigger", "Review evidence", "Approve emergency action", "Execute", "Postmortem audit"],
+    privacyBoundary: "Evidence, attack hypothesis, and signer debate stay encrypted before action.",
+    auditSurface: "Emergency digest, execution authority, final action, and postmortem evidence become verifiable.",
+    nativeProofClass: "emergency-governance-plus-visitor-wallet-memo-attestation",
+    claimProofClass: "visitor-wallet-memo-attestation",
+    claim: "Emergency governance request with private deliberation and public-safe execution accountability.",
+  },
+  {
+    id: "confidential-grant-review-request",
+    label: "Confidential grant review",
+    route: "/review",
+    tier: "tier-1",
+    requestUseCase: "Review many grant applications with hidden reviewer notes, blinded scoring, and final award accountability.",
+    phases: ["Intake", "Blind review", "Approve awards", "Execute grants", "Audit outcomes"],
+    privacyBoundary: "Reviewer notes, applicant weaknesses, scoring disputes, and committee debate stay private.",
+    auditSurface: "Award decision digest, reviewer quorum proof, final amount, and grant execution receipt are inspectable.",
+    nativeProofClass: "grant-review-digest-plus-visitor-wallet-memo-attestation",
+    claimProofClass: "visitor-wallet-memo-attestation",
+    claim: "Confidential grant review request with blinded evaluation and public-safe award verification.",
+  },
+  {
+    id: "partnership-negotiation-request",
+    label: "Partnership negotiation room",
+    route: "/services",
+    tier: "tier-2",
+    requestUseCase: "Coordinate deal terms, revenue splits, integration milestones, and announcement timing before public launch.",
+    phases: ["Draft terms", "Review risk", "Approve partnership", "Execute integration", "Audit commitments"],
+    privacyBoundary: "Terms, counterparties, revenue splits, and negotiation notes stay encrypted until disclosure.",
+    auditSurface: "Final approval digest, milestone state, signer evidence, and public announcement proof are preserved.",
+    nativeProofClass: "partnership-room-digest-plus-visitor-wallet-memo-attestation",
+    claimProofClass: "visitor-wallet-memo-attestation",
+    claim: "Confidential partnership room that keeps negotiation private while proving final authorization.",
+  },
+  {
+    id: "ma-discussion-request",
+    label: "M&A discussion room",
+    route: "/treasury",
+    tier: "tier-2",
+    requestUseCase: "Handle acquisition or merger proposals with private valuation, offer terms, diligence, and staged approvals.",
+    phases: ["Open diligence", "Encrypt valuation", "Approve mandate", "Execute transaction path", "Audit decision"],
+    privacyBoundary: "Valuation, offers, diligence notes, and negotiation strategy stay private.",
+    auditSurface: "Mandate digest, approval threshold, final decision state, and execution evidence are verifier-visible.",
+    nativeProofClass: "ma-room-digest-plus-visitor-wallet-memo-attestation",
+    claimProofClass: "visitor-wallet-memo-attestation",
+    claim: "M&A coordination request with encrypted diligence and on-chain authorization proof.",
+  },
+  {
+    id: "hiring-committee-request",
+    label: "Hiring committee request",
+    route: "/payroll",
+    tier: "tier-2",
+    requestUseCase: "Review candidates, compensation bands, committee notes, and offer approvals without exposing private hiring context.",
+    phases: ["Review candidates", "Encrypt notes", "Approve offer", "Execute payroll setup", "Audit fairness"],
+    privacyBoundary: "Candidate data, compensation bands, notes, and offer negotiation stay private.",
+    auditSurface: "Offer approval digest, committee quorum, payroll setup claim, and disclosure receipt are available.",
+    nativeProofClass: "hiring-committee-digest-plus-visitor-wallet-memo-attestation",
+    claimProofClass: "visitor-wallet-memo-attestation",
+    claim: "Confidential hiring committee request connected to payroll setup and audit-safe authorization.",
+  },
+  {
+    id: "research-coordination-request",
+    label: "Research coordination request",
+    route: "/intelligence",
+    tier: "tier-2",
+    requestUseCase: "Coordinate hypotheses, private findings, reviewer notes, and publication timing before research is ready.",
+    phases: ["Collect evidence", "Encrypt findings", "Review internally", "Approve release", "Audit provenance"],
+    privacyBoundary: "Hypotheses, early results, failures, and review notes remain encrypted.",
+    auditSurface: "Research digest, reviewer approval, release timestamp, and provenance proof become inspectable.",
+    nativeProofClass: "research-vault-digest-plus-visitor-wallet-memo-attestation",
+    claimProofClass: "visitor-wallet-memo-attestation",
+    claim: "Research coordination request with encrypted memory vault and public-safe provenance.",
+  },
+  {
+    id: "reviewer-coordination-request",
+    label: "Reviewer coordination request",
+    route: "/judge",
+    tier: "tier-2",
+    requestUseCase: "Coordinate reviewers for hackathons, grants, or committees while limiting bias, leakage, and duplicated review paths.",
+    phases: ["Assign reviewers", "Encrypt notes", "Compare signals", "Approve outcome", "Audit bias controls"],
+    privacyBoundary: "Reviewer assignments, comments, conflicts, and draft scores stay confidential.",
+    auditSurface: "Assignment digest, quorum proof, final score state, and bias-control evidence are verifier-visible.",
+    nativeProofClass: "reviewer-coordination-digest-plus-visitor-wallet-memo-attestation",
+    claimProofClass: "visitor-wallet-memo-attestation",
+    claim: "Reviewer coordination request that proves review integrity without exposing sensitive reviewer behavior.",
+  },
+  {
+    id: "organizational-memory-vault",
+    label: "Organizational memory vault",
+    route: "/documents/privacy-execution-matrix-2026-05-26",
+    tier: "tier-3",
+    requestUseCase: "Store decision reasons, evidence, documents, and proofs with progressive disclosure by authority and review stage.",
+    phases: ["Capture decision", "Encrypt memory", "Approve disclosure", "Execute outcome", "Audit history"],
+    privacyBoundary: "Reasons, source documents, and internal memory stay in selective-disclosure vault packets.",
+    auditSurface: "Decision digest, disclosure policy, and proof references preserve continuity across future sessions.",
+    nativeProofClass: "memory-vault-digest-plus-visitor-wallet-memo-attestation",
+    claimProofClass: "visitor-wallet-memo-attestation",
+    claim: "Organizational memory vault that turns private decision history into verifiable continuity.",
+  },
+  {
+    id: "agent-governance-request",
+    label: "Agent governance request",
+    route: "/intelligence",
+    tier: "tier-3",
+    requestUseCase: "Let AI agents propose budgets, review grants, prepare treasury actions, and leave an auditable execution lineage.",
+    phases: ["Agent proposes", "Human reviews", "Approve intent", "Execute action", "Audit lineage"],
+    privacyBoundary: "Agent reasoning, draft analysis, sensitive context, and rejected paths stay encrypted.",
+    auditSurface: "Intent digest, human approval, action outcome, and lineage receipt become verifier-visible.",
+    nativeProofClass: "agent-governance-lineage-plus-visitor-wallet-memo-attestation",
+    claimProofClass: "visitor-wallet-memo-attestation",
+    claim: "Agent governance request that binds AI-prepared work to human approval and on-chain auditability.",
+  },
   {
     id: "private-governance",
     label: "Private governance",
@@ -515,8 +686,35 @@ export function PrivacyExecutionClaimConsole({ compact = false }: { compact?: bo
             </select>
           </label>
           <div className="solana-rail-card mt-4 rounded-2xl p-4">
-            <div className="text-sm font-semibold text-white">{selectedClaim.label}</div>
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <div className="text-sm font-semibold text-white">{selectedClaim.label}</div>
+              {selectedClaim.tier ? (
+                <span className="rounded-full border border-emerald-300/18 bg-emerald-300/10 px-2.5 py-1 text-[10px] uppercase tracking-[0.18em] text-emerald-100">
+                  {selectedClaim.tier.replace("-", " ")}
+                </span>
+              ) : null}
+            </div>
             <p className="mt-2 text-xs leading-6 text-white/58">{selectedClaim.claim}</p>
+            {selectedClaim.requestUseCase ? (
+              <p className="mt-3 rounded-xl border border-cyan-300/12 bg-cyan-300/[0.055] p-3 text-xs leading-6 text-white/62">
+                {selectedClaim.requestUseCase}
+              </p>
+            ) : null}
+            {selectedClaim.phases ? (
+              <div className="mt-3 flex flex-wrap gap-2">
+                {selectedClaim.phases.map((phase) => (
+                  <span key={phase} className="rounded-full border border-white/10 bg-white/[0.04] px-2.5 py-1 text-[10px] uppercase tracking-[0.14em] text-white/58">
+                    {phase}
+                  </span>
+                ))}
+              </div>
+            ) : null}
+            {selectedClaim.privacyBoundary || selectedClaim.auditSurface ? (
+              <div className="mt-3 grid gap-2 text-[11px] leading-5 text-white/55">
+                {selectedClaim.privacyBoundary ? <div>Private: {selectedClaim.privacyBoundary}</div> : null}
+                {selectedClaim.auditSurface ? <div>Audit: {selectedClaim.auditSurface}</div> : null}
+              </div>
+            ) : null}
             <div className="mt-3 space-y-1 font-mono text-[11px] text-cyan-100/70">
               <div>claim: {selectedClaim.claimProofClass}</div>
               <div className="text-white/45">native: {selectedClaim.nativeProofClass}</div>

@@ -2657,6 +2657,145 @@ function cryptographicReadinessStatus() {
   };
 }
 
+function buildConfidentialRequestServiceMatrix(cryptographicReadiness: ReturnType<typeof cryptographicReadinessStatus>) {
+  const memoProgram = "MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr";
+  const requestClaims = [
+    {
+      service: "confidential-treasury-request",
+      route: "https://privatedao.org/services/?claim=confidential-treasury-request#privacy-claim-console",
+      executionMode: "confidential treasury request with encrypted justification, staged approval, and public-safe audit trail",
+      executionProofClass: "encrypted-treasury-request-plus-visitor-wallet-memo-attestation",
+      currentOnchainStatus: "visitor-repeatable-encrypted-request-claim-on-testnet",
+      privacyRails: ["encrypted treasury memo", "private supporting documents", "approval digest", "public-safe payout audit"],
+      proofEndpoints: ["/api/v1/privacy-execution-claims/prepare?claim=confidential-treasury-request", "/api/v1/readiness"],
+      privacyBoundary: "Request justification, vendor context, and negotiation details stay encrypted; approved amount and digest become auditable.",
+    },
+    {
+      service: "confidential-payroll-request",
+      route: "https://privatedao.org/payroll/?claim=confidential-payroll-request#privacy-claim-console",
+      executionMode: "confidential payroll request with encrypted row context and REFHE proof path",
+      executionProofClass: "refhe-payroll-request-plus-visitor-wallet-memo-attestation",
+      currentOnchainStatus: "visitor-repeatable-payroll-request-claim-on-testnet",
+      privacyRails: ["encrypted payroll rows", "REFHE computation context", "batch digest", "selective-disclosure receipt"],
+      proofEndpoints: ["/api/v1/privacy-execution-claims/prepare?claim=confidential-payroll-request", "/api/v1/refhe/payroll/proof"],
+      privacyBoundary: "Contributor salary rows and bonus reasons stay private; batch digest and payout proof remain inspectable.",
+    },
+    {
+      service: "security-incident-room-request",
+      route: "https://privatedao.org/security/?claim=security-incident-room-request#privacy-claim-console",
+      executionMode: "security incident room with encrypted response context and on-chain decision attestation",
+      executionProofClass: "incident-room-digest-plus-visitor-wallet-memo-attestation",
+      currentOnchainStatus: "visitor-repeatable-incident-room-claim-on-testnet",
+      privacyRails: ["encrypted vulnerability notes", "responder quorum", "mitigation digest", "post-disclosure audit"],
+      proofEndpoints: ["/api/v1/privacy-execution-claims/prepare?claim=security-incident-room-request", "/api/v1/security"],
+      privacyBoundary: "Exploit details and patch planning stay private until the team is ready to disclose.",
+    },
+    {
+      service: "emergency-governance-request",
+      route: "https://privatedao.org/govern/?claim=emergency-governance-request#privacy-claim-console",
+      executionMode: "emergency governance request with private deliberation and public-safe execution accountability",
+      executionProofClass: "emergency-governance-plus-visitor-wallet-memo-attestation",
+      currentOnchainStatus: "visitor-repeatable-emergency-governance-claim-on-testnet",
+      privacyRails: ["private evidence review", "fast approval digest", "execution handoff", "postmortem receipt"],
+      proofEndpoints: ["/api/v1/privacy-execution-claims/prepare?claim=emergency-governance-request", "/api/v1/proposals", "/api/v1/runtime"],
+      privacyBoundary: "Attack hypotheses and signer debate stay encrypted; final action and postmortem are auditable.",
+    },
+    {
+      service: "confidential-grant-review-request",
+      route: "https://privatedao.org/review/?claim=confidential-grant-review-request#privacy-claim-console",
+      executionMode: "confidential grant review request with blinded evaluation and public-safe award verification",
+      executionProofClass: "grant-review-digest-plus-visitor-wallet-memo-attestation",
+      currentOnchainStatus: "visitor-repeatable-grant-review-claim-on-testnet",
+      privacyRails: ["blind review notes", "committee quorum", "award digest", "grant execution receipt"],
+      proofEndpoints: ["/api/v1/privacy-execution-claims/prepare?claim=confidential-grant-review-request", "/api/v1/readiness"],
+      privacyBoundary: "Reviewer notes, draft scores, and committee debate stay private; award decisions remain verifiable.",
+    },
+    {
+      service: "partnership-negotiation-request",
+      route: "https://privatedao.org/services/?claim=partnership-negotiation-request#privacy-claim-console",
+      executionMode: "confidential partnership room that keeps negotiation private while proving final authorization",
+      executionProofClass: "partnership-room-digest-plus-visitor-wallet-memo-attestation",
+      currentOnchainStatus: "visitor-repeatable-partnership-room-claim-on-testnet",
+      privacyRails: ["encrypted deal terms", "revenue split context", "integration milestones", "approval digest"],
+      proofEndpoints: ["/api/v1/privacy-execution-claims/prepare?claim=partnership-negotiation-request", "/api/v1/provider-integrations/status"],
+      privacyBoundary: "Terms and counterparties stay encrypted until announcement; final authorization remains auditable.",
+    },
+    {
+      service: "ma-discussion-request",
+      route: "https://privatedao.org/treasury/?claim=ma-discussion-request#privacy-claim-console",
+      executionMode: "M&A coordination request with encrypted diligence and on-chain authorization proof",
+      executionProofClass: "ma-room-digest-plus-visitor-wallet-memo-attestation",
+      currentOnchainStatus: "visitor-repeatable-ma-room-claim-on-testnet",
+      privacyRails: ["private valuation", "offer terms", "diligence packet", "mandate digest"],
+      proofEndpoints: ["/api/v1/privacy-execution-claims/prepare?claim=ma-discussion-request", "/api/v1/readiness"],
+      privacyBoundary: "Valuations, offers, and diligence stay private; mandate and final decision are verifier-visible.",
+    },
+    {
+      service: "hiring-committee-request",
+      route: "https://privatedao.org/payroll/?claim=hiring-committee-request#privacy-claim-console",
+      executionMode: "confidential hiring committee request connected to payroll setup and audit-safe authorization",
+      executionProofClass: "hiring-committee-digest-plus-visitor-wallet-memo-attestation",
+      currentOnchainStatus: "visitor-repeatable-hiring-committee-claim-on-testnet",
+      privacyRails: ["candidate review", "encrypted notes", "compensation band", "offer approval digest"],
+      proofEndpoints: ["/api/v1/privacy-execution-claims/prepare?claim=hiring-committee-request", "/api/v1/refhe/payroll/proof"],
+      privacyBoundary: "Candidate data and compensation bands stay encrypted; approved offer setup is auditable.",
+    },
+    {
+      service: "research-coordination-request",
+      route: "https://privatedao.org/intelligence/?claim=research-coordination-request#privacy-claim-console",
+      executionMode: "research coordination request with encrypted memory vault and public-safe provenance",
+      executionProofClass: "research-vault-digest-plus-visitor-wallet-memo-attestation",
+      currentOnchainStatus: "visitor-repeatable-research-coordination-claim-on-testnet",
+      privacyRails: ["private hypotheses", "early findings", "internal review", "release provenance digest"],
+      proofEndpoints: ["/api/v1/privacy-execution-claims/prepare?claim=research-coordination-request", "/api/v1/qvac/runtime-proof"],
+      privacyBoundary: "Early results and review notes stay encrypted until the organization approves release.",
+    },
+    {
+      service: "reviewer-coordination-request",
+      route: "https://privatedao.org/judge/?claim=reviewer-coordination-request#privacy-claim-console",
+      executionMode: "reviewer coordination request that proves review integrity without exposing sensitive reviewer behavior",
+      executionProofClass: "reviewer-coordination-digest-plus-visitor-wallet-memo-attestation",
+      currentOnchainStatus: "visitor-repeatable-reviewer-coordination-claim-on-testnet",
+      privacyRails: ["reviewer assignment", "conflict notes", "draft scoring", "bias-control digest"],
+      proofEndpoints: ["/api/v1/privacy-execution-claims/prepare?claim=reviewer-coordination-request", "/api/v1/readiness"],
+      privacyBoundary: "Reviewer assignments and comments stay private; final integrity controls remain inspectable.",
+    },
+    {
+      service: "organizational-memory-vault",
+      route: "https://privatedao.org/services/?claim=organizational-memory-vault#privacy-claim-console",
+      executionMode: "organizational memory vault that turns private decision history into verifiable continuity",
+      executionProofClass: "memory-vault-digest-plus-visitor-wallet-memo-attestation",
+      currentOnchainStatus: "visitor-repeatable-memory-vault-claim-on-testnet",
+      privacyRails: ["encrypted decision history", "progressive disclosure", "evidence packet", "continuity digest"],
+      proofEndpoints: ["/api/v1/privacy-execution-claims/prepare?claim=organizational-memory-vault", "/api/v1/privacy-execution-matrix"],
+      privacyBoundary: "Reasons, source documents, and internal memory stay in selective-disclosure vault packets.",
+    },
+    {
+      service: "agent-governance-request",
+      route: "https://privatedao.org/intelligence/?claim=agent-governance-request#privacy-claim-console",
+      executionMode: "agent governance request that binds AI-prepared work to human approval and on-chain auditability",
+      executionProofClass: "agent-governance-lineage-plus-visitor-wallet-memo-attestation",
+      currentOnchainStatus: "visitor-repeatable-agent-governance-claim-on-testnet",
+      privacyRails: ["agent intent", "human approval", "execution lineage", "outcome digest"],
+      proofEndpoints: ["/api/v1/privacy-execution-claims/prepare?claim=agent-governance-request", "/api/v1/qvac/runtime-proof"],
+      privacyBoundary: "Agent reasoning and rejected paths stay encrypted; approved intent and outcome remain auditable.",
+    },
+  ];
+
+  return requestClaims.map((request) => ({
+    ...request,
+    visitorRepeatable: true,
+    blockchainVerificationUrl: `https://explorer.solana.com/address/${cryptographicReadiness.programId}?cluster=testnet`,
+    onchainEvidence: {
+      memoProgram,
+      programId: cryptographicReadiness.programId,
+      flow: "Discuss -> Review -> Approve -> Execute -> Audit",
+      signingBoundary: "visitor wallet signs only a digest commitment; private payload stays in the encrypted browser receipt",
+    },
+    testnetExecutable: true,
+  }));
+}
+
 function privacyExecutionMatrixStatus() {
   const cryptographicReadiness = cryptographicReadinessStatus();
   const generatedAt = new Date().toISOString();
@@ -2670,6 +2809,7 @@ function privacyExecutionMatrixStatus() {
     summary:
       "PrivateDAO routes every sensitive service through review, encryption or privacy intent, wallet execution, and public-safe verification. Public outputs prove state transitions without exposing payroll rows, recipient context, private balances, or strategy intent.",
     serviceMatrix: [
+      ...buildConfidentialRequestServiceMatrix(cryptographicReadiness),
       {
         service: "private-governance",
         route: "https://privatedao.org/govern/",
