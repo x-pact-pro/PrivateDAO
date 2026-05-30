@@ -3,6 +3,10 @@
 :root {
   --background: #030510;
   --foreground: #f4f7fb;
+  --solana-mint: #14f195;
+  --solana-purple: #9945ff;
+  --solana-cyan: #00c2ff;
+  --solana-magenta: #e746ff;
 }
 
 @theme inline {
@@ -30,6 +34,93 @@ body::before {
     radial-gradient(circle at 38% 76%, rgba(0, 194, 255, 0.07), transparent 24%),
     linear-gradient(180deg, rgba(255,255,255,0.03), transparent 24%);
   z-index: -1;
+}
+
+.solana-claim-shell {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(20, 241, 149, 0.18);
+  background:
+    linear-gradient(120deg, rgba(20, 241, 149, 0.11), rgba(0, 194, 255, 0.055) 35%, rgba(153, 69, 255, 0.12)),
+    radial-gradient(circle at 0% 0%, rgba(20, 241, 149, 0.18), transparent 32%),
+    radial-gradient(circle at 100% 12%, rgba(153, 69, 255, 0.2), transparent 34%),
+    linear-gradient(180deg, rgba(5, 10, 23, 0.98), rgba(2, 4, 12, 0.98));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 24px 80px rgba(0, 0, 0, 0.28);
+}
+
+.solana-claim-shell::before {
+  content: "";
+  position: absolute;
+  inset: -40% -20%;
+  pointer-events: none;
+  background:
+    linear-gradient(115deg, transparent 34%, rgba(20, 241, 149, 0.12) 36%, transparent 38%),
+    linear-gradient(115deg, transparent 56%, rgba(0, 194, 255, 0.1) 58%, transparent 60%),
+    linear-gradient(115deg, transparent 72%, rgba(153, 69, 255, 0.12) 74%, transparent 76%);
+  transform: translate3d(-5%, 0, 0);
+  animation: solana-drift 18s linear infinite;
+}
+
+.solana-scanline {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.022) 1px, transparent 1px);
+  background-size: 44px 44px;
+  mask-image: linear-gradient(90deg, transparent, black 18%, black 82%, transparent);
+}
+
+.solana-rail-card {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.025)),
+    linear-gradient(135deg, rgba(20, 241, 149, 0.045), rgba(153, 69, 255, 0.055));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07);
+}
+
+.solana-rail-card::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--solana-mint), var(--solana-cyan), var(--solana-purple));
+  opacity: 0.62;
+}
+
+.solana-progress {
+  position: relative;
+}
+
+.solana-progress::before {
+  content: "";
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  top: 15px;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(20, 241, 149, 0.72), rgba(0, 194, 255, 0.5), rgba(153, 69, 255, 0.68));
+  opacity: 0.76;
+}
+
+.solana-matrix-card {
+  content-visibility: auto;
+  contain-intrinsic-size: 320px;
+}
+
+@keyframes solana-drift {
+  from {
+    transform: translate3d(-6%, 0, 0);
+  }
+  to {
+    transform: translate3d(6%, 0, 0);
+  }
 }
 
 body::after {

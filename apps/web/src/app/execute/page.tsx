@@ -14,7 +14,7 @@ import { JupiterTreasuryRouteSurface } from "@/components/jupiter-treasury-route
 import { OperationsShell } from "@/components/operations-shell";
 import { PrivateSettlementRailWorkbench } from "@/components/private-settlement-rail-workbench";
 import { PrivacyPolicySelector } from "@/components/privacy-policy-selector";
-import { PrivacyExecutionClaimConsole } from "@/components/privacy-execution-claim-console";
+import { PrivacyExecutionClaimConsoleLazy } from "@/components/privacy-execution-claim-console-lazy";
 import { PrivacySdkApiStarter } from "@/components/privacy-sdk-api-starter";
 import { PrivatePayrollEncryptionWorkbench } from "@/components/private-payroll-encryption-workbench";
 import { ProjectOperatingMap } from "@/components/project-operating-map";
@@ -119,7 +119,7 @@ export default function ExecutePage() {
       <div className="grid items-start gap-5 xl:grid-cols-[minmax(0,1fr)_360px]">
         <div className="space-y-5">
           <ExecutionSpineSurface context="execute" compact />
-          <PrivacyExecutionClaimConsole compact />
+          <PrivacyExecutionClaimConsoleLazy compact />
           <CryptographicExecutionSpine compact context="execute" />
           <QvacSovereignAiSurface compact />
           <ProjectOperatingMap

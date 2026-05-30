@@ -32,7 +32,7 @@ import { LocalizedServicesPrimer } from "@/components/localized-services-primer"
 import { LocalizedRouteSummary } from "@/components/localized-route-summary";
 import { ConfidentialPaymentsSystemSurface } from "@/components/confidential-payments-system-surface";
 import { PrivacyPolicySelector } from "@/components/privacy-policy-selector";
-import { PrivacyExecutionClaimConsole } from "@/components/privacy-execution-claim-console";
+import { PrivacyExecutionClaimConsoleLazy } from "@/components/privacy-execution-claim-console-lazy";
 import { PrivacySdkApiStarter } from "@/components/privacy-sdk-api-starter";
 import { PrivateDaoStackSurface } from "@/components/private-dao-stack-surface";
 import { SectionHeader } from "@/components/section-header";
@@ -89,7 +89,7 @@ export default function ServicesPage() {
       <ExecutionCommandSurface compact />
       <ExecutionSpineSurface context="services" compact />
       <CryptographicExecutionSpine compact context="services" />
-      <PrivacyExecutionClaimConsole />
+      <PrivacyExecutionClaimConsoleLazy />
       <div>
         <ServicesSurface />
       </div>

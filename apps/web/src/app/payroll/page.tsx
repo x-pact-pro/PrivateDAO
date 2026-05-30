@@ -7,7 +7,7 @@ import { GuidedOperationRail } from "@/components/guided-operation-rail";
 import { OperationsShell } from "@/components/operations-shell";
 import { PrivatePayrollEncryptionWorkbench } from "@/components/private-payroll-encryption-workbench";
 import { PrivateSettlementRailWorkbench } from "@/components/private-settlement-rail-workbench";
-import { PrivacyExecutionClaimConsole } from "@/components/privacy-execution-claim-console";
+import { PrivacyExecutionClaimConsoleLazy } from "@/components/privacy-execution-claim-console-lazy";
 import { ProjectOperatingMap } from "@/components/project-operating-map";
 import { VisitorTestnetFastPath } from "@/components/visitor-testnet-fast-path";
 import { buildRouteMetadata } from "@/lib/route-metadata";
@@ -65,7 +65,7 @@ export default function PayrollPage() {
       />
       <EndToEndIntegrationClaimMatrix />
       <PrivatePayrollEncryptionWorkbench />
-      <PrivacyExecutionClaimConsole compact />
+      <PrivacyExecutionClaimConsoleLazy compact />
       <TestnetBillingRehearsal />
       <PrivateSettlementRailWorkbench initialRail="cloak" lockRail />
     </OperationsShell>

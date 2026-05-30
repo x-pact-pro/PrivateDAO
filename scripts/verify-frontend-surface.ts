@@ -27,6 +27,10 @@ const TECHNICAL_ELIGIBILITY = path.resolve("apps/web/src/lib/technical-eligibili
 const RPCFAST_INFRASTRUCTURE = path.resolve("apps/web/src/lib/rpcfast-infrastructure.ts");
 const LEGACY_ROUTE_REDIRECT = path.resolve("apps/web/src/components/legacy-route-redirect.tsx");
 const EXECUTION_COMMAND_SURFACE = path.resolve("apps/web/src/components/execution-command-surface.tsx");
+const PRIVACY_CLAIM_CONSOLE = path.resolve("apps/web/src/components/privacy-execution-claim-console.tsx");
+const PRIVACY_CLAIM_CONSOLE_LAZY = path.resolve("apps/web/src/components/privacy-execution-claim-console-lazy.tsx");
+const INTEGRATION_CLAIM_MATRIX = path.resolve("apps/web/src/components/end-to-end-integration-claim-matrix.tsx");
+const GLOBALS_CSS = path.resolve("apps/web/src/app/globals.css");
 const OLD_SQUADS_PROPOSAL_DOC = path.resolve("docs/squads-testnet-upgrade-proposal-2026-05-23.md");
 const OLD_TIMELOCK_DOC = path.resolve("docs/timelock-enforcement-proof-2026-05-23.md");
 const OLD_ARENA_SUBMISSION_DOC = path.resolve("docs/arena-frontier-submission-2026-05-23.md");
@@ -62,6 +66,10 @@ function main() {
   const rpcfastInfrastructure = fs.readFileSync(RPCFAST_INFRASTRUCTURE, "utf8");
   const legacyRouteRedirect = fs.readFileSync(LEGACY_ROUTE_REDIRECT, "utf8");
   const executionCommandSurface = fs.readFileSync(EXECUTION_COMMAND_SURFACE, "utf8");
+  const privacyClaimConsole = fs.readFileSync(PRIVACY_CLAIM_CONSOLE, "utf8");
+  const privacyClaimConsoleLazy = fs.readFileSync(PRIVACY_CLAIM_CONSOLE_LAZY, "utf8");
+  const integrationClaimMatrix = fs.readFileSync(INTEGRATION_CLAIM_MATRIX, "utf8");
+  const globalsCss = fs.readFileSync(GLOBALS_CSS, "utf8");
   const oldSquadsProposalDoc = fs.readFileSync(OLD_SQUADS_PROPOSAL_DOC, "utf8");
   const oldTimelockDoc = fs.readFileSync(OLD_TIMELOCK_DOC, "utf8");
   const oldArenaSubmissionDoc = fs.readFileSync(OLD_ARENA_SUBMISSION_DOC, "utf8");
@@ -213,18 +221,24 @@ function main() {
     [fs.readFileSync(path.resolve("apps/web/src/app/services/pusd-stablecoin/page.tsx"), "utf8"), "Palm USD judging map", "PUSD page is missing the track rubric map"],
     [fs.readFileSync(path.resolve("apps/web/src/app/services/pusd-stablecoin/page.tsx"), "utf8"), "https://api.privatedao.org/api/v1/pusd/utility-layer", "PUSD page is missing the live utility API link"],
     [fs.readFileSync(path.resolve("apps/web/src/app/services/pusd-stablecoin/page.tsx"), "utf8"), "PrivacyExecutionClaimConsole", "PUSD page is missing the visitor claim console"],
-    [fs.readFileSync(path.resolve("apps/web/src/components/privacy-execution-claim-console.tsx"), "utf8"), "zk-commit-reveal-governance", "claim console is missing the ZK commit/reveal claim"],
-    [fs.readFileSync(path.resolve("apps/web/src/components/privacy-execution-claim-console.tsx"), "utf8"), "refhe-payroll-computation", "claim console is missing the REFHE payroll claim"],
-    [fs.readFileSync(path.resolve("apps/web/src/components/privacy-execution-claim-console.tsx"), "utf8"), "browser-encrypt-manifest", "claim console is missing the browser encrypt claim"],
-    [fs.readFileSync(path.resolve("apps/web/src/components/privacy-execution-claim-console.tsx"), "utf8"), "magicblock-private-payments", "claim console is missing the MagicBlock claim"],
-    [fs.readFileSync(path.resolve("apps/web/src/components/privacy-execution-claim-console.tsx"), "utf8"), "ika-2pc-mpc-final-approval", "claim console is missing the Ika 2PC-MPC claim"],
-    [fs.readFileSync(path.resolve("apps/web/src/components/privacy-execution-claim-console.tsx"), "utf8"), "torque-mcp-growth-loop", "claim console is missing the Torque MCP claim"],
-    [fs.readFileSync(path.resolve("apps/web/src/components/end-to-end-integration-claim-matrix.tsx"), "utf8"), "zk-commit-reveal-governance", "integration claim matrix is missing the ZK commit/reveal rail"],
-    [fs.readFileSync(path.resolve("apps/web/src/components/end-to-end-integration-claim-matrix.tsx"), "utf8"), "refhe-payroll-computation", "integration claim matrix is missing the REFHE rail"],
-    [fs.readFileSync(path.resolve("apps/web/src/components/end-to-end-integration-claim-matrix.tsx"), "utf8"), "browser-encrypt-manifest", "integration claim matrix is missing the browser encrypt rail"],
-    [fs.readFileSync(path.resolve("apps/web/src/components/end-to-end-integration-claim-matrix.tsx"), "utf8"), "magicblock-private-payments", "integration claim matrix is missing the MagicBlock rail"],
-    [fs.readFileSync(path.resolve("apps/web/src/components/end-to-end-integration-claim-matrix.tsx"), "utf8"), "ika-2pc-mpc-final-approval", "integration claim matrix is missing the Ika 2PC-MPC rail"],
-    [fs.readFileSync(path.resolve("apps/web/src/components/end-to-end-integration-claim-matrix.tsx"), "utf8"), "torque-mcp-growth-loop", "integration claim matrix is missing the Torque MCP rail"],
+    [privacyClaimConsole, "zk-commit-reveal-governance", "claim console is missing the ZK commit/reveal claim"],
+    [privacyClaimConsole, "refhe-payroll-computation", "claim console is missing the REFHE payroll claim"],
+    [privacyClaimConsole, "browser-encrypt-manifest", "claim console is missing the browser encrypt claim"],
+    [privacyClaimConsole, "magicblock-private-payments", "claim console is missing the MagicBlock claim"],
+    [privacyClaimConsole, "ika-2pc-mpc-final-approval", "claim console is missing the Ika 2PC-MPC claim"],
+    [privacyClaimConsole, "torque-mcp-growth-loop", "claim console is missing the Torque MCP claim"],
+    [privacyClaimConsoleLazy, "dynamic(", "lazy claim console is missing Next dynamic import"],
+    [privacyClaimConsoleLazy, "Launch claim console", "lazy claim console is missing the deferred runtime CTA"],
+    [privacyClaimConsoleLazy, "params.has(\"claim\")", "lazy claim console is missing query-activated runtime loading"],
+    [integrationClaimMatrix, "zk-commit-reveal-governance", "integration claim matrix is missing the ZK commit/reveal rail"],
+    [integrationClaimMatrix, "refhe-payroll-computation", "integration claim matrix is missing the REFHE rail"],
+    [integrationClaimMatrix, "browser-encrypt-manifest", "integration claim matrix is missing the browser encrypt rail"],
+    [integrationClaimMatrix, "magicblock-private-payments", "integration claim matrix is missing the MagicBlock rail"],
+    [integrationClaimMatrix, "ika-2pc-mpc-final-approval", "integration claim matrix is missing the Ika 2PC-MPC rail"],
+    [integrationClaimMatrix, "torque-mcp-growth-loop", "integration claim matrix is missing the Torque MCP rail"],
+    [globalsCss, "--solana-mint", "global CSS is missing Solana mint token"],
+    [globalsCss, ".solana-claim-shell", "global CSS is missing the Solana claim shell"],
+    [globalsCss, "content-visibility: auto", "global CSS is missing claim/matrix content-visibility optimization"],
     [curatedDocuments, "archived canary evidence", "runtime evidence document summary still presents old canary language as current"],
     [oldSquadsProposalDoc, "This is a historical custody packet", "old Squads proposal doc is missing historical status"],
     [oldSquadsProposalDoc, "Current proposal index `3`", "old Squads proposal doc is missing the current proposal index 3 pointer"],

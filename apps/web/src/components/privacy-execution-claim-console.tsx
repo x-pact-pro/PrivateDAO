@@ -445,8 +445,12 @@ export function PrivacyExecutionClaimConsole({ compact = false }: { compact?: bo
   }
 
   return (
-    <section id="privacy-claim-console" className="rounded-[30px] border border-cyan-300/18 bg-cyan-300/[0.07] p-5">
-      <div className="text-[11px] uppercase tracking-[0.3em] text-cyan-100/78">On-chain claim console</div>
+    <section id="privacy-claim-console-runtime" className="solana-claim-shell rounded-[30px] p-5">
+      <div className="solana-scanline" />
+      <div className="relative z-10">
+      <div className="inline-flex items-center rounded-full border border-emerald-300/20 bg-emerald-300/10 px-3 py-1 text-[11px] uppercase tracking-[0.3em] text-emerald-100">
+        On-chain claim console
+      </div>
       <div className={cn("mt-3 grid gap-5", compact ? "lg:grid-cols-[0.95fr_1.05fr]" : "xl:grid-cols-[0.9fr_1.1fr]")}>
         <div>
           <h2 className="text-2xl font-semibold text-white">Anchor any privacy rail as a visitor-signed Testnet claim</h2>
@@ -461,10 +465,10 @@ export function PrivacyExecutionClaimConsole({ compact = false }: { compact?: bo
             claim packet and a new wallet-signed Testnet commitment from that visitor wallet, not a replay of an old
             project signature.
           </p>
-          <div className="mt-4 grid gap-3 sm:grid-cols-3">
-            {["Encrypt locally", "Anchor digest", "Verify receipt"].map((step, index) => (
-              <div key={step} className="rounded-2xl border border-cyan-300/14 bg-black/20 px-4 py-3">
-                <div className="text-[10px] uppercase tracking-[0.22em] text-cyan-100/58">Step {index + 1}</div>
+          <div className="solana-progress mt-4 grid gap-3 sm:grid-cols-4">
+            {["Review rail", "Encrypt locally", "Sign digest", "Verify receipt"].map((step, index) => (
+              <div key={step} className="solana-rail-card rounded-2xl px-4 py-3">
+                <div className="text-[10px] uppercase tracking-[0.22em] text-cyan-100/58">0{index + 1}</div>
                 <div className="mt-1 text-sm font-semibold text-white">{step}</div>
               </div>
             ))}
@@ -495,7 +499,7 @@ export function PrivacyExecutionClaimConsole({ compact = false }: { compact?: bo
           </div>
         </div>
 
-        <div className="rounded-[24px] border border-white/10 bg-black/24 p-4">
+        <div className="rounded-[24px] border border-white/10 bg-black/24 p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]">
           <label className="block text-sm text-white/70">
             <span>Privacy rail</span>
             <select
@@ -510,7 +514,7 @@ export function PrivacyExecutionClaimConsole({ compact = false }: { compact?: bo
               ))}
             </select>
           </label>
-          <div className="mt-4 rounded-2xl border border-white/10 bg-white/[0.04] p-4">
+          <div className="solana-rail-card mt-4 rounded-2xl p-4">
             <div className="text-sm font-semibold text-white">{selectedClaim.label}</div>
             <p className="mt-2 text-xs leading-6 text-white/58">{selectedClaim.claim}</p>
             <div className="mt-3 space-y-1 font-mono text-[11px] text-cyan-100/70">
@@ -526,7 +530,7 @@ export function PrivacyExecutionClaimConsole({ compact = false }: { compact?: bo
               Open service
             </a>
           </div>
-          <div className="mt-4 rounded-2xl border border-white/10 bg-black/30 p-3 text-xs leading-6 text-white/62">
+          <div className="mt-4 rounded-2xl border border-cyan-300/14 bg-black/30 p-3 text-xs leading-6 text-white/66">
             {status}
           </div>
           {signature ? <div className="mt-3 break-all font-mono text-xs text-cyan-100">{signature}</div> : null}
@@ -568,6 +572,7 @@ export function PrivacyExecutionClaimConsole({ compact = false }: { compact?: bo
             </div>
           ) : null}
         </div>
+      </div>
       </div>
     </section>
   );

@@ -185,7 +185,9 @@ export function EndToEndIntegrationClaimMatrix() {
   const latestAnchor = anchorStatus?.latest;
 
   return (
-    <section className="rounded-[30px] border border-white/10 bg-[radial-gradient(circle_at_12%_0%,rgba(20,241,149,0.16),transparent_34%),radial-gradient(circle_at_88%_0%,rgba(0,194,255,0.14),transparent_30%),linear-gradient(180deg,rgba(7,14,27,0.96),rgba(4,7,16,0.98))] p-5 md:p-6">
+    <section className="solana-claim-shell rounded-[30px] p-5 md:p-6">
+      <div className="solana-scanline" />
+      <div className="relative z-10">
       <div className="flex flex-wrap items-center gap-3">
         <span className="rounded-full border border-emerald-300/22 bg-emerald-300/10 px-3 py-1 text-[11px] uppercase tracking-[0.24em] text-emerald-100">
           End-to-end Testnet claim matrix
@@ -218,7 +220,7 @@ export function EndToEndIntegrationClaimMatrix() {
               Matrix anchor
             </a>
           </div>
-          <div className="mt-5 rounded-[22px] border border-emerald-300/18 bg-emerald-300/[0.07] p-4">
+          <div className="solana-rail-card mt-5 rounded-[22px] p-4">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
                 <div className="text-[10px] uppercase tracking-[0.22em] text-emerald-100/66">Live matrix anchor</div>
@@ -253,10 +255,10 @@ export function EndToEndIntegrationClaimMatrix() {
             const Icon = row.icon;
             const external = row.api.startsWith("https://");
             return (
-              <div key={row.rail} className="rounded-[24px] border border-white/10 bg-black/22 p-4">
+              <div key={row.rail} className="solana-matrix-card rounded-[24px] border border-white/10 bg-black/22 p-4 transition duration-300 hover:border-emerald-300/24 hover:bg-white/[0.045]">
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <div className="flex items-center gap-3">
-                    <span className="flex h-10 w-10 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.06] text-emerald-100">
+                    <span className="flex h-10 w-10 items-center justify-center rounded-2xl border border-emerald-300/16 bg-[linear-gradient(135deg,rgba(20,241,149,0.12),rgba(153,69,255,0.13))] text-emerald-100 shadow-[0_0_24px_rgba(20,241,149,0.08)]">
                       <Icon className="h-4 w-4" />
                     </span>
                     <div className="text-base font-semibold text-white">{row.rail}</div>
@@ -305,6 +307,7 @@ export function EndToEndIntegrationClaimMatrix() {
             );
           })}
         </div>
+      </div>
       </div>
     </section>
   );

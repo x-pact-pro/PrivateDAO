@@ -4,7 +4,7 @@ import { ArrowUpRight, CheckCircle2, Code2, DollarSign, Gamepad2, Landmark, Lock
 
 import { LocalizedRouteSummary } from "@/components/localized-route-summary";
 import { OperationsShell } from "@/components/operations-shell";
-import { PrivacyExecutionClaimConsole } from "@/components/privacy-execution-claim-console";
+import { PrivacyExecutionClaimConsoleLazy } from "@/components/privacy-execution-claim-console-lazy";
 import { TestnetBillingRehearsal } from "@/components/devnet-billing-rehearsal";
 import { buttonVariants } from "@/components/ui/button";
 import { buildRouteMetadata } from "@/lib/route-metadata";
@@ -279,7 +279,7 @@ export default function PusdStablecoinPage() {
         </div>
       </section>
 
-      <PrivacyExecutionClaimConsole compact />
+      <PrivacyExecutionClaimConsoleLazy compact />
 
       <section className="rounded-[30px] border border-amber-300/18 bg-amber-300/[0.07] p-6">
         <div className="text-[11px] uppercase tracking-[0.28em] text-amber-100/78">Activation inputs</div>
