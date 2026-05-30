@@ -12,9 +12,10 @@ const REQUIRED_DOM_FRAGMENT_GROUPS = [
   ["Powered by the live stack"],
   ["Open Judge"],
   ["Create a private Solana DAO", "Private governance on Solana"],
-  ["PrivateDAO OS", "Launch OS"],
+  ["Your DAO votes, payroll, and treasury are public"],
+  ["Start building"],
+  ["Private processes. Verifiable outcomes."],
   ["Review Proof", "Open verification view", "Open proof"],
-  ["PrivateDAO OS"],
 ];
 
 const CONTENT_TYPES: Record<string, string> = {
