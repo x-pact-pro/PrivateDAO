@@ -16,6 +16,7 @@ import { ProjectOperatingMap } from "@/components/project-operating-map";
 import { QuickNodeStreamIntelligenceSurface } from "@/components/quicknode-stream-intelligence-surface";
 import { QvacSovereignAiSurface } from "@/components/qvac-sovereign-ai-surface";
 import { SectionHeader } from "@/components/section-header";
+import { SectionExplainerVideo } from "@/components/post-governance-brander-video";
 import { SnsDomainLookup } from "@/components/sns-domain-lookup";
 import { getJudgeRuntimeLogsSnapshot } from "@/lib/judge-runtime-logs";
 import { buildRouteMetadata } from "@/lib/route-metadata";
@@ -45,6 +46,7 @@ export default function IntelligencePage() {
     >
       <GuidedOperationRail current="review" reviewHref="/intelligence" verifyHref="/proof" />
       <PrivateDaoStackSurface compact />
+      <SectionExplainerVideo variant="intelligence" compact />
       <OperationalGravityObservatory />
       <EndToEndIntegrationClaimMatrix />
       <OperatingJourneyStrip

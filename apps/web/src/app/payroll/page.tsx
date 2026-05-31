@@ -9,6 +9,7 @@ import { PrivatePayrollEncryptionWorkbench } from "@/components/private-payroll-
 import { PrivateSettlementRailWorkbench } from "@/components/private-settlement-rail-workbench";
 import { PrivacyExecutionClaimConsoleLazy } from "@/components/privacy-execution-claim-console-lazy";
 import { ProjectOperatingMap } from "@/components/project-operating-map";
+import { SectionExplainerVideo } from "@/components/post-governance-brander-video";
 import { VisitorTestnetFastPath } from "@/components/visitor-testnet-fast-path";
 import { buildRouteMetadata } from "@/lib/route-metadata";
 
@@ -40,6 +41,7 @@ export default function PayrollPage() {
         pendingNote="Payroll privacy starts with local encryption; payment proof lands through the wallet-signed Testnet rehearsal and settlement receipt lanes."
       />
       <VisitorTestnetFastPath focus="payroll" />
+      <SectionExplainerVideo variant="payroll" compact />
       <section className="rounded-[28px] border border-emerald-300/16 bg-emerald-300/[0.08] p-6">
         <div className="text-[11px] uppercase tracking-[0.26em] text-emerald-100/78">Operator sequence</div>
         <h2 className="mt-3 text-2xl font-semibold text-white">Encrypt → Sign payout rehearsal → Forward private intent → Verify</h2>

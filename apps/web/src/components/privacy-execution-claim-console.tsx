@@ -182,7 +182,7 @@ function getVisitorSessionId() {
 const privacyClaims: PrivacyClaim[] = [
   {
     id: "metadao-grant-review-workflow",
-    label: "MetaDAO grant review workflow",
+    label: "PrivateDAO grant review workflow",
     route: "/review",
     tier: "tier-1",
     requestUseCase: "A market decision passes, grant reviewers are assigned, a private scoring room opens, treasury approves the award, payout executes, and the public receives an audit receipt.",
@@ -194,7 +194,7 @@ const privacyClaims: PrivacyClaim[] = [
     auditSurface: "Market state, reviewer quorum digest, treasury approval digest, payout reference, and final audit receipt become verifiable.",
     nativeProofClass: "metadao-market-to-grant-workflow-plus-visitor-wallet-memo-attestation",
     claimProofClass: "visitor-wallet-memo-attestation",
-    claim: "MetaDAO-native grant review workflow that turns a market-passed decision into confidential review, treasury approval, payout, prove layer, and public audit receipt.",
+    claim: "PrivateDAO-native grant review workflow that turns a market-passed decision into confidential review, treasury approval, payout, prove layer, and public audit receipt.",
   },
   {
     id: "confidential-treasury-request",

@@ -19,6 +19,7 @@ import { PrivacySdkApiStarter } from "@/components/privacy-sdk-api-starter";
 import { PrivatePayrollEncryptionWorkbench } from "@/components/private-payroll-encryption-workbench";
 import { ProjectOperatingMap } from "@/components/project-operating-map";
 import { QvacSovereignAiSurface } from "@/components/qvac-sovereign-ai-surface";
+import { SectionExplainerVideo } from "@/components/post-governance-brander-video";
 import { VisitorTestnetFastPath } from "@/components/visitor-testnet-fast-path";
 import { getExecutionSurfaceSnapshot } from "@/lib/devnet-service-metrics";
 import { getJudgeRuntimeLogsSnapshot } from "@/lib/judge-runtime-logs";
@@ -90,6 +91,7 @@ export default function ExecutePage() {
         verifyHref="/proof"
         pendingNote="Wallet-first execution, rail proxy forwarding, and proof routes are live on one continuous operating surface."
       />
+      <SectionExplainerVideo variant="execute" compact />
       <VisitorTestnetFastPath focus="execute" />
       <div className="rounded-[28px] border border-cyan-300/16 bg-cyan-300/[0.08] p-6">
         <div className="text-[11px] uppercase tracking-[0.28em] text-cyan-100/74">Operating flow</div>

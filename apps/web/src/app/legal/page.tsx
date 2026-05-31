@@ -35,7 +35,7 @@ const notices = [
   ],
   [
     "DAO entity and IP package",
-    "The Futardio and MetaDAO launch path uses a DAO entity workflow so PDAO ownership can be tied to enforceable project control. The future entity should hold or control repository administration, domains, brand assets, official launch materials, deployed program authorities, infrastructure administration, proof materials, and future production deployment rights.",
+    "The Futardio and PrivateDAO launch path uses a DAO entity workflow so PDAO ownership can be tied to enforceable project control. The future entity should hold or control repository administration, domains, brand assets, official launch materials, deployed program authorities, infrastructure administration, proof materials, and future production deployment rights.",
   ],
 ] as const;
 

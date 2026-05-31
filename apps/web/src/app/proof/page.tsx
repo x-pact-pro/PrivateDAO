@@ -27,6 +27,7 @@ import { RuntimeEvidenceContinuityPanel } from "@/components/runtime-evidence-co
 import { AuthoritativeExecutionTrail } from "@/components/authoritative-execution-trail";
 import { ExecutionOperationsStrip } from "@/components/execution-operations-strip";
 import { ExecutionCommandSurface } from "@/components/execution-command-surface";
+import { SectionExplainerVideo } from "@/components/post-governance-brander-video";
 import { DevnetExecutionScreenshotsStrip } from "@/components/devnet-execution-screenshots-strip";
 import { SupabaseOperationTimeline } from "@/components/supabase-operation-timeline";
 import { PrivacyProofExplainer } from "@/components/privacy-proof-explainer";
@@ -173,6 +174,7 @@ export default function ProofPage() {
         compact
         pendingNote="Proof continuity stays explicit across governance, intelligence, execution, and receipt export lanes."
       />
+      <SectionExplainerVideo variant="proof" compact />
       <LocalizedRouteSummary routeKey="proof" />
       <ExecutionCommandSurface compact />
       <OperationStateLegend

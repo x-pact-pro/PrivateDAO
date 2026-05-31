@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ArrowUpRight, CheckCircle2, Download, Github, PlayCircle, QrCode, ShieldCheck, Smartphone, Trophy, Wallet } from "lucide-react";
 
 import { OperationsShell } from "@/components/operations-shell";
+import { SectionExplainerVideo } from "@/components/post-governance-brander-video";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { buttonVariants } from "@/components/ui/button";
 import {
@@ -76,6 +77,7 @@ export default function AndroidPage() {
         { label: "Live web + native signing", variant: "violet" },
       ]}
     >
+      <SectionExplainerVideo variant="android" compact />
       <Card className="border-emerald-300/16 bg-[radial-gradient(circle_at_top_left,rgba(20,241,149,0.16),transparent_34%),rgba(255,255,255,0.04)]">
         <CardContent className="grid gap-5 p-5 lg:grid-cols-[0.75fr_1.25fr_auto] lg:items-center">
           <div className="flex items-center gap-3">

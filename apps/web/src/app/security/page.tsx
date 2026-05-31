@@ -19,6 +19,7 @@ import { OperationsShell } from "@/components/operations-shell";
 import { RealDeviceWalletMatrixPanel } from "@/components/real-device-wallet-matrix-panel";
 import { RealDeviceCaptureClosurePanel } from "@/components/real-device-capture-closure-panel";
 import { RuntimeOperationsReadinessPanel } from "@/components/runtime-operations-readiness-panel";
+import { SectionExplainerVideo } from "@/components/post-governance-brander-video";
 import { SecurityCenter } from "@/components/security-center";
 import { SelectiveDisclosureSurface } from "@/components/selective-disclosure-surface";
 import { ZkMatrixSurface } from "@/components/zk-matrix-surface";
@@ -72,6 +73,7 @@ export default function SecurityPage() {
       <div>
         <MetricsStrip />
       </div>
+      <SectionExplainerVideo variant="security" compact />
       <div>
         <LocalizedRouteBrief routeKey="security" />
       </div>

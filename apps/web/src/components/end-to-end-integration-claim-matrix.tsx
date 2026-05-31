@@ -10,10 +10,10 @@ import { cn } from "@/lib/utils";
 const integrationRows = [
   {
     claim: "metadao-grant-review-workflow",
-    rail: "MetaDAO Grant Review Workflow",
+    rail: "PrivateDAO Grant Review Workflow",
     pain: "A market-passed decision still needs private reviewer assignment, private scoring, treasury approval, payout execution, and a public audit receipt.",
-    treatment: "PrivateDAO turns the MetaDAO path into one confidential coordination graph: Market Decision -> Grant Review -> Treasury Approval -> Payroll Allocation -> Execution -> Prove -> Audit Proof.",
-    proof: "Open the MetaDAO workflow, encrypt the private scoring room, sign the Testnet digest, export public attestation, then verify who reviewed, approved, executed, and proved the outcome without exposing the private notes.",
+    treatment: "PrivateDAO turns the post-governance path into one confidential coordination graph: Market Decision -> Grant Review -> Treasury Approval -> Payroll Allocation -> Execution -> Prove -> Audit Proof.",
+    proof: "Open the PrivateDAO workflow, encrypt the private scoring room, sign the Testnet digest, export public attestation, then verify who reviewed, approved, executed, and proved the outcome without exposing the private notes.",
     route: "/services?claim=metadao-grant-review-workflow#privacy-claim-console",
     api: "https://api.privatedao.org/api/v1/privacy-execution-claims/prepare?claim=metadao-grant-review-workflow",
     icon: BrainCircuit,
@@ -287,7 +287,7 @@ export function EndToEndIntegrationClaimMatrix() {
             connects both: private preparation, wallet-controlled Testnet execution, and public-safe proof.
           </p>
           <div className="mt-4 rounded-[22px] border border-emerald-300/14 bg-emerald-300/[0.055] p-4">
-            <div className="text-[10px] uppercase tracking-[0.22em] text-emerald-100/70">MetaDAO-native workflow</div>
+            <div className="text-[10px] uppercase tracking-[0.22em] text-emerald-100/70">PrivateDAO-native workflow</div>
             <div className="mt-3 grid min-w-0 grid-cols-1 gap-2 text-xs text-white/62 sm:grid-cols-2 lg:grid-cols-3">
               {["Market passes", "Grant reviewers assigned", "Private review room", "Private scoring", "Treasury approval", "Grant payout", "Prove", "Public audit receipt"].map((node, index) => (
                 <span key={node} className="flex min-w-0 items-center gap-2">

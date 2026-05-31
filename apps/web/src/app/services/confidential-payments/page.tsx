@@ -9,6 +9,7 @@ import { MagicBlockPrivatePaymentsStatus } from "@/components/magicblock-private
 import { OperationsShell } from "@/components/operations-shell";
 import { OperationStateLegend } from "@/components/operation-state-legend";
 import { PrivateDaoStackSurface } from "@/components/private-dao-stack-surface";
+import { SectionExplainerVideo } from "@/components/post-governance-brander-video";
 import { UmbraSdkIntegrationStatus } from "@/components/umbra-sdk-integration-status";
 import { buttonVariants } from "@/components/ui/button";
 import { buildRouteMetadata } from "@/lib/route-metadata";
@@ -36,6 +37,7 @@ export default function ConfidentialPaymentsPage() {
     >
       <LocalizedRouteSummary routeKey="services" />
       <PrivateDaoStackSurface compact />
+      <SectionExplainerVideo variant="payments" compact />
       <OperationStateLegend description="This section combines multiple rails. Some cards execute live flows, others expose health or receipt continuity. The boundaries stay explicit so visitors know what has already moved on-chain and what is still a review or readiness step." />
       <ConfidentialPaymentsSystemSurface />
       <IkaUserShareOpsGuardrail />

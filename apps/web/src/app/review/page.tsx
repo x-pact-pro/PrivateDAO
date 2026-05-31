@@ -10,11 +10,11 @@ import { buildRouteMetadata } from "@/lib/route-metadata";
 import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = buildRouteMetadata({
-  title: "MetaDAO Grant Review",
+  title: "PrivateDAO Workflow Review",
   description:
-    "Create a MetaDAO workflow that starts from existing community tools, assigns reviewers, records private reviews, approves treasury execution, and produces proof.",
+    "Create a PrivateDAO workflow that starts from existing community tools, assigns reviewers, records private reviews, approves treasury execution, and produces proof.",
   path: "/review",
-  keywords: ["MetaDAO", "grant review", "coordination room", "private review", "treasury approval"],
+  keywords: ["PrivateDAO workflow", "grant review", "coordination room", "private review", "treasury approval"],
 });
 
 const coordinationSources = [
@@ -56,7 +56,7 @@ const coordinationSources = [
 ] as const;
 
 const privateDaoLayer = [
-  "Paste MetaDAO proposal link",
+  "Paste PrivateDAO proposal link",
   "Create coordination room",
   "Invite reviewers",
   "Record encrypted reviews",
@@ -71,12 +71,12 @@ const privateDaoPath = ["Proposal Passed", "Review", "Approve", "Execute", "Audi
 export default function ReviewPage() {
   return (
     <OperationsShell
-      eyebrow="MetaDAO execution layer"
+      eyebrow="PrivateDAO execution layer"
       title="PrivateDAO is the operating system for everything that happens after governance"
       description="DAO communities do not need to abandon Telegram or Discord on day one. They need a private, verifiable path for what happens after a proposal passes: review, approval, treasury execution, and audit proof."
       navigationMode="guided"
       badges={[
-        { label: "MetaDAO Grant Review", variant: "success" },
+        { label: "PrivateDAO Workflow Review", variant: "success" },
         { label: "Community-native intake", variant: "cyan" },
         { label: "Review -> Approve -> Execute -> Proof", variant: "violet" },
       ]}
@@ -84,7 +84,7 @@ export default function ReviewPage() {
       <section className="min-w-0 overflow-hidden rounded-[28px] border border-emerald-300/18 bg-[radial-gradient(circle_at_top_left,rgba(20,241,149,0.18),transparent_34%),radial-gradient(circle_at_92%_0%,rgba(153,69,255,0.18),transparent_32%),linear-gradient(135deg,rgba(7,13,26,0.97),rgba(4,7,18,0.98))] p-5 sm:p-6">
         <div className="grid gap-6 xl:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] xl:items-center">
           <div className="min-w-0">
-            <div className="text-[11px] uppercase tracking-[0.22em] text-emerald-100/78">Create MetaDAO Workflow</div>
+            <div className="text-[11px] uppercase tracking-[0.22em] text-emerald-100/78">Create PrivateDAO Workflow</div>
             <h2 className="mt-3 max-w-4xl text-2xl font-semibold tracking-[-0.03em] text-white sm:text-3xl">
               Proposal passes. The real operational pain starts next.
             </h2>
@@ -95,7 +95,7 @@ export default function ReviewPage() {
             </p>
             <div className="mt-5 flex flex-wrap gap-3">
               <Link href="/review?claim=metadao-grant-review-workflow#privacy-claim-console" className={cn(buttonVariants({ size: "sm" }))}>
-                Start MetaDAO workflow
+                Start PrivateDAO workflow
                 <ArrowUpRight className="h-4 w-4" />
               </Link>
               <a

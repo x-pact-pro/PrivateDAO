@@ -6,6 +6,7 @@ import { OperationsShell } from "@/components/operations-shell";
 import { PrivateDaoStackSurface } from "@/components/private-dao-stack-surface";
 import { ReadNodeActivationStrip } from "@/components/read-node-activation-strip";
 import { ReadNodeHostReadinessStrip } from "@/components/read-node-host-readiness-strip";
+import { SectionExplainerVideo } from "@/components/post-governance-brander-video";
 import { TreasuryRiskInline } from "@/components/treasury-risk-inline";
 import { TreasuryTable } from "@/components/treasury-table";
 import { proposalCards } from "@/lib/site-data";
@@ -36,6 +37,7 @@ export default function TreasuryPage() {
       ]}
     >
       <PrivateDaoStackSurface compact />
+      <SectionExplainerVideo variant="treasury" compact />
       <div className="rounded-[28px] border border-white/10 bg-white/[0.04] p-5 text-sm leading-7 text-white/68">
         Start from treasury context, then continue to execution only after reviewing risk and route quality.
         <div className="mt-4 flex flex-wrap gap-3">

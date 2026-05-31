@@ -36,6 +36,7 @@ import { PrivacyExecutionClaimConsoleLazy } from "@/components/privacy-execution
 import { PrivacySdkApiStarter } from "@/components/privacy-sdk-api-starter";
 import { PrivateDaoStackSurface } from "@/components/private-dao-stack-surface";
 import { SectionHeader } from "@/components/section-header";
+import { SectionExplainerVideo } from "@/components/post-governance-brander-video";
 import { SettlementReceiptSurface } from "@/components/settlement-receipt-surface";
 import { SettlementReceiptClosurePanel } from "@/components/settlement-receipt-closure-panel";
 import { ServiceOperationalCards } from "@/components/service-operational-cards";
@@ -80,6 +81,7 @@ export default function ServicesPage() {
       <LocalizedRouteSummary routeKey="services" />
       <LocalizedRouteBrief routeKey="servicesCore" />
       <PrivateDaoStackSurface compact />
+      <SectionExplainerVideo variant="services" compact />
       <GuidedOperationRail current="verify" reviewHref="/intelligence" verifyHref="/proof" />
       <OperatingJourneyStrip
         snapshot={runtimeSnapshot}
