@@ -151,11 +151,11 @@ export function SiteHeader() {
           </div>
         </div>
 
-          <nav className="no-scrollbar flex items-center gap-1.5 overflow-x-auto border-t border-white/6 pt-3 pb-1">
+          <nav className="no-scrollbar flex min-w-0 items-center justify-between gap-1 overflow-x-auto border-t border-white/6 pt-3 pb-1 sm:justify-start sm:gap-1.5">
             {navItems.map((item) => {
               return (
               <Link
-                className={cn(buttonVariants({ size: "sm", variant: "ghost" }), "shrink-0 px-3 text-white/72")}
+                className={cn(buttonVariants({ size: "sm", variant: "ghost" }), "shrink-0 px-1.5 text-[11px] text-white/72 sm:px-3 sm:text-sm")}
                 href={item.href}
                 key={item.href}
                 rel={item.rel}
