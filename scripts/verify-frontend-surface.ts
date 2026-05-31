@@ -276,7 +276,7 @@ function main() {
     [documentRenderer, 'target={isExternal ? "_blank" : undefined}', "document renderer is missing safe external link handling"],
     [documentRenderer, "rounded-3xl border border-white/10", "document renderer is missing readable table styling"],
     [legacyRouteRedirect, "Preserved legacy link", "legacy route redirect component is missing preserved-link copy"],
-    [fs.readFileSync(path.resolve("apps/web/src/app/review/page.tsx"), "utf8"), 'target="/judge"', "legacy /review route is not preserved"],
+    [fs.readFileSync(path.resolve("apps/web/src/app/review/page.tsx"), "utf8"), 'href="/judge"', "legacy /review route is not preserved"],
     [fs.readFileSync(path.resolve("apps/web/src/app/reviewer/page.tsx"), "utf8"), 'target="/judge"', "legacy /reviewer route is not preserved"],
     [fs.readFileSync(path.resolve("apps/web/src/app/submission/page.tsx"), "utf8"), 'target="/judge"', "legacy /submission route is not preserved"],
     [fs.readFileSync(path.resolve("apps/web/src/app/arena/page.tsx"), "utf8"), 'target="/judge"', "legacy /arena route is not preserved"],
