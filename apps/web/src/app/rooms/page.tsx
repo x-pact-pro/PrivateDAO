@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { OperationsShell } from "@/components/operations-shell";
+import { AssetContextCard } from "@/components/asset-context-card";
+import { PrivatePayoutModes } from "@/components/private-payout-modes";
+import { TransparencyReportPreview } from "@/components/transparency-report-preview";
 import { buttonVariants } from "@/components/ui/button";
 import { buildRouteMetadata } from "@/lib/route-metadata";
 import { cn } from "@/lib/utils";
@@ -39,6 +42,9 @@ export default function RoomsPage() {
           <Link href="/rooms/new" className={cn(buttonVariants({ size: "sm" }))}>Create private room</Link>
         </div>
       </section>
+      <AssetContextCard symbol="USDC" amount="3500" useCase="vesting" />
+      <PrivatePayoutModes />
+      <TransparencyReportPreview compact />
     </OperationsShell>
   );
 }

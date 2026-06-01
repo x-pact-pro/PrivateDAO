@@ -30,6 +30,7 @@ import { ExecutionCommandSurface } from "@/components/execution-command-surface"
 import { SectionExplainerVideo } from "@/components/post-governance-brander-video";
 import { DevnetExecutionScreenshotsStrip } from "@/components/devnet-execution-screenshots-strip";
 import { SupabaseOperationTimeline } from "@/components/supabase-operation-timeline";
+import { TransparencyReportPreview } from "@/components/transparency-report-preview";
 import { PrivacyProofExplainer } from "@/components/privacy-proof-explainer";
 import { TestnetProofMatrix } from "@/components/testnet-proof-matrix";
 import { VideoCenter } from "@/components/video-center";
@@ -177,6 +178,7 @@ export default function ProofPage() {
       <SectionExplainerVideo variant="proof" compact />
       <LocalizedRouteSummary routeKey="proof" />
       <ExecutionCommandSurface compact />
+      <TransparencyReportPreview />
       <OperationStateLegend
         description="Proof is the truth boundary for the product. It separates executed on-chain activity, live service health, encrypted intent receipts, and final private settlement evidence so judges and users do not confuse one for another."
       />

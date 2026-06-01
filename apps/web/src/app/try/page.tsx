@@ -2,7 +2,10 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 
+import { AssetContextCard } from "@/components/asset-context-card";
 import { OperationsShell } from "@/components/operations-shell";
+import { PrivatePayoutModes } from "@/components/private-payout-modes";
+import { TransparencyReportPreview } from "@/components/transparency-report-preview";
 import { WalletConnectButton } from "@/components/wallet-connect-button";
 import { buttonVariants } from "@/components/ui/button";
 import { buildRouteMetadata } from "@/lib/route-metadata";
@@ -69,6 +72,9 @@ export default function TryPage() {
           </div>
         </div>
       </section>
+      <AssetContextCard symbol="USDC" amount="10000" useCase="treasury" />
+      <PrivatePayoutModes />
+      <TransparencyReportPreview compact />
     </OperationsShell>
   );
 }

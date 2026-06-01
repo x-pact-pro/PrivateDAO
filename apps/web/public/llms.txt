@@ -1,6 +1,6 @@
 # PrivateDAO
 
-PrivateDAO is the operating system for everything that happens after governance on Solana.
+PrivateDAO is the private coordination layer for DAOs with public verification on Solana.
 
 Organizations need privacy. Blockchains need verifiability. PrivateDAO bridges both with wallet-first confidential governance, encrypted treasury coordination, confidential payroll, private rooms, intelligence, and proof routes on Solana Testnet.
 
@@ -15,6 +15,7 @@ Organizations need privacy. Blockchains need verifiability. PrivateDAO bridges b
 
 - Quick start: https://privatedao.org/start/
 - Try Testnet vote: https://privatedao.org/try/
+- Why PrivateDAO: https://privatedao.org/value/
 - Governance: https://privatedao.org/govern/
 - Private rooms: https://privatedao.org/rooms/
 - Intelligence provider settings: https://privatedao.org/settings/intelligence/
@@ -41,10 +42,11 @@ Organizations need privacy. Blockchains need verifiability. PrivateDAO bridges b
 - QuickNode stream stats: https://api.privatedao.org/api/v1/quicknode/stream/stats
 - Frontend private payout status route: https://privatedao.org/api/private-payout/status
 - Frontend intelligence provider status route: https://privatedao.org/api/intelligence/providers/status
+- Coordination provider status route: https://privatedao.org/api/coordination/providers/status
 
 ## Search Concepts
 
-PrivateDAO, Private DAO, Solana private governance, Solana Testnet governance, confidential governance, private DAO voting, private room DAO, public DAO private voting, encrypted treasury coordination, confidential payroll, encrypted payments, DAO intelligence, QVAC, GoldRush, Covalent, QuickNode Streams, Jupiter treasury, PUSD stablecoin, Torque MCP, MagicBlock, IKA, REFHE, ZK commit reveal, onchain proof, wallet-first DAO, Solana Android DAO.
+PrivateDAO, Private DAO, Solana private governance, Solana Testnet governance, confidential governance, private DAO voting, private coordination layer, public verification, transparency report, asset context, token risk context, price context, confidential vesting, private room DAO, public DAO private voting, encrypted treasury coordination, confidential payroll, encrypted payments, DAO intelligence, QVAC, GoldRush, Covalent, QuickNode Streams, Jupiter treasury, PUSD stablecoin, Torque MCP, MagicBlock, IKA, REFHE, ZK commit reveal, onchain proof, wallet-first DAO, Solana Android DAO.
 
 ## Language Coverage
 

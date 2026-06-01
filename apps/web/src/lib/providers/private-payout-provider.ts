@@ -6,11 +6,14 @@ export type PrivatePayoutPrivacyMode =
   | "private-room"
   | "vip-private-room";
 
+export type PrivatePayoutMode = "public-payout" | "private-payout" | "confidential-vesting";
+
 export type PrivatePayoutIntentInput = {
   provider?: PrivatePayoutProviderId | "default";
   daoId: string;
   proposalId: string;
   operationType: "payroll" | "vendor" | "reward" | "treasury";
+  payoutMode?: PrivatePayoutMode;
   asset: "USDC" | "USDT" | "SOL" | "PUSD" | "AUDD";
   amount: string;
   recipientAddress: string;
@@ -25,6 +28,7 @@ export type PrivatePayoutIntent = {
   daoId: string;
   proposalId: string;
   operationType: PrivatePayoutIntentInput["operationType"];
+  payoutMode: PrivatePayoutMode;
   asset: PrivatePayoutIntentInput["asset"];
   amount: string;
   recipientHash: string;
@@ -53,6 +57,7 @@ export type PrivatePayoutReceipt = {
   timestamp: string;
   privacyMode: PrivatePayoutPrivacyMode;
   publicOutcome: string;
+  labels: string[];
   proofUrl?: string;
   explorerUrl?: string;
   sandbox: boolean;

@@ -13,6 +13,7 @@ import { cn } from "@/lib/utils";
 
 const navItems = [
   { href: "/try", label: "Start", rel: "nofollow" },
+  { href: "/value", label: "Why" },
   { href: "/learn", label: "Learn" },
   { href: "/govern", label: "Govern", rel: "nofollow" },
   { href: "/treasury", label: "Treasury", rel: "nofollow" },

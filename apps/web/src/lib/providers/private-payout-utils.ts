@@ -24,6 +24,7 @@ export function hashPrivatePayoutIntent(input: PrivatePayoutIntentInput, provide
     daoId: input.daoId,
     proposalId: input.proposalId,
     operationType: input.operationType,
+    payoutMode: input.payoutMode ?? "private-payout",
     asset: input.asset,
     amount: input.amount,
     recipientHash,

@@ -76,6 +76,18 @@ export default function IntelligenceSettingsPage() {
         <div className="mt-5 rounded-2xl border border-emerald-300/16 bg-emerald-300/[0.08] p-4 text-sm leading-7 text-white/70">
           Data sent to providers: proposal public metadata, treasury address only if enabled, counterparty address only if enabled. Hidden vote intent, encrypted vote contents, private voter identities, and private room transcripts stay out by default.
         </div>
+        <div className="mt-5 grid gap-3 md:grid-cols-3">
+          {[
+            ["Asset context", "Checks whether a proposal token looks verified, has price context, or needs review before voting."],
+            ["Price context", "Adds treasury valuation, payout USD equivalent, and vesting preview context only when relevant."],
+            ["Private payout / vesting", "Keeps recipient details out of coordination while preserving a public proof route after completion."],
+          ].map(([title, body]) => (
+            <div key={title} className="rounded-[22px] border border-white/10 bg-black/22 p-4">
+              <div className="text-base font-semibold text-white">{title}</div>
+              <p className="mt-2 text-sm leading-6 text-white/58">{body}</p>
+            </div>
+          ))}
+        </div>
         <div className="mt-5 flex flex-wrap gap-3">
           <button type="button" className={cn(buttonVariants({ size: "sm" }))} onClick={() => void handleSave()}>Save provider settings</button>
           <Link href="/intelligence" className={cn(buttonVariants({ size: "sm", variant: "outline" }))}>Back to intelligence</Link>
