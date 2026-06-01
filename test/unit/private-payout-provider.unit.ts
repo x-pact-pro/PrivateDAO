@@ -7,12 +7,12 @@ describe("private payout provider", () => {
     const provider = await getPrivatePayoutProvider("default");
     const status = await provider.getProviderStatus();
 
-    assert.equal(status.provider, "mock-testnet");
+    assert.equal(status.provider, "sandbox-testnet");
     assert.equal(status.sandbox, true);
   });
 
   it("hashes intents deterministically and excludes raw recipient metadata from receipts", async () => {
-    const provider = await getPrivatePayoutProvider("mock-testnet");
+    const provider = await getPrivatePayoutProvider("sandbox-testnet");
     const input = {
       daoId: "dao-1",
       proposalId: "proposal-1",

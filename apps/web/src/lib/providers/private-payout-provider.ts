@@ -1,4 +1,4 @@
-export type PrivatePayoutProviderId = "umbra" | "mock-testnet";
+export type PrivatePayoutProviderId = "umbra" | "sandbox-testnet";
 
 export type PrivatePayoutPrivacyMode =
   | "proof-only"
@@ -78,7 +78,7 @@ export type PrivatePayoutProvider = {
 };
 
 export function assertKnownPrivatePayoutProvider(value: unknown): asserts value is PrivatePayoutProviderId | "default" | undefined {
-  if (value === undefined || value === "default" || value === "umbra" || value === "mock-testnet") {
+  if (value === undefined || value === "default" || value === "umbra" || value === "sandbox-testnet") {
     return;
   }
   throw new Error("Unknown private payout provider.");

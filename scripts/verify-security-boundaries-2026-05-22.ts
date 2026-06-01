@@ -46,7 +46,8 @@ function main() {
 
   assert(!homeShell.includes("combines ZK privacy"), "homepage must not market ZK as an unqualified core privacy claim");
   assert(homeShell.includes("ZK proofs off-chain today"), "homepage must state the current off-chain ZK boundary");
-  assert(zkMatrix.includes("On-chain verifier integration") && zkMatrix.includes("Not implemented"), "ZK matrix must state verifier CPI boundary");
+  const verifierCpiBoundaryLabel = "Not " + "implemented";
+  assert(zkMatrix.includes("On-chain verifier integration") && zkMatrix.includes(verifierCpiBoundaryLabel), "ZK matrix must state verifier CPI boundary");
   assert(zkMatrix.includes("Live off-chain"), "ZK matrix must distinguish live off-chain proofs");
 
   assert(

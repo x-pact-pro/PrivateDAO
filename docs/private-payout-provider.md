@@ -40,6 +40,6 @@ Raw recipient metadata, raw recipient address, and private notes do not belong i
 
 ## Sandbox Fallback
 
-If Umbra-compatible env is missing, the system uses `mock-testnet`.
+If Umbra-compatible env is missing, the system uses `sandbox-testnet`.
 
-The mock provider is deterministic and always marks receipts as `sandbox: true`. It must never be described as real settlement.
+The sandbox provider is deterministic and always marks receipts as `sandbox: true`. It must never be described as real settlement.

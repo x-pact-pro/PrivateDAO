@@ -7,14 +7,14 @@ import type {
 } from "@/lib/providers/private-payout-provider";
 import { hashPrivatePayoutIntent, validatePrivatePayoutIntentShape } from "@/lib/providers/private-payout-utils";
 
-export const mockPrivatePayoutProvider: PrivatePayoutProvider = {
-  id: "mock-testnet",
+export const sandboxPrivatePayoutProvider: PrivatePayoutProvider = {
+  id: "sandbox-testnet",
 
   async prepareIntent(input: PrivatePayoutIntentInput): Promise<PrivatePayoutIntent> {
     const network = process.env.UMBRA_NETWORK?.trim() || "testnet";
-    const hashes = hashPrivatePayoutIntent(input, "mock-testnet", network);
+    const hashes = hashPrivatePayoutIntent(input, "sandbox-testnet", network);
     return {
-      provider: "mock-testnet",
+      provider: "sandbox-testnet",
       network,
       daoId: input.daoId,
       proposalId: input.proposalId,
@@ -46,7 +46,7 @@ export const mockPrivatePayoutProvider: PrivatePayoutProvider = {
 
   async buildReceipt(intent: PrivatePayoutIntent, executionResult: PrivatePayoutExecutionResult): Promise<PrivatePayoutReceipt> {
     return {
-      provider: "mock-testnet",
+      provider: "sandbox-testnet",
       network: intent.network,
       intentHash: intent.intentHash,
       proposalId: intent.proposalId,
@@ -62,7 +62,7 @@ export const mockPrivatePayoutProvider: PrivatePayoutProvider = {
 
   async getProviderStatus() {
     return {
-      provider: "mock-testnet",
+      provider: "sandbox-testnet",
       enabled: true,
       configured: true,
       network: process.env.UMBRA_NETWORK?.trim() || "testnet",
