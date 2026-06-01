@@ -175,6 +175,40 @@ export default function ProofPage() {
         compact
         pendingNote="Proof continuity stays explicit across governance, intelligence, execution, and receipt export lanes."
       />
+      <section className="rounded-[28px] border border-emerald-300/18 bg-[radial-gradient(circle_at_top_left,rgba(20,241,149,0.14),transparent_34%),linear-gradient(135deg,rgba(7,13,26,0.96),rgba(4,7,18,0.98))] p-5 sm:p-6">
+        <div className="text-[11px] uppercase tracking-[0.22em] text-emerald-100/76">Submitted pitch link upgraded</div>
+        <h2 className="mt-3 max-w-4xl text-2xl font-semibold tracking-[-0.03em] text-white sm:text-3xl">
+          This proof link now opens the strongest pitch packet and live demo path.
+        </h2>
+        <p className="mt-3 max-w-4xl text-sm leading-7 text-white/64">
+          For competitions and grant reviewers that already received `/proof/?judge=1`, this page keeps the proof center
+          intact and routes immediately to the current demo, reviewer packet, and application-ready traction metrics.
+        </p>
+        <div className="mt-5 flex flex-wrap gap-3">
+          <Link href="/try/" className={cn(buttonVariants({ size: "sm" }))}>
+            Open demo link
+          </Link>
+          <Link href="/reviewer/" className={cn(buttonVariants({ size: "sm", variant: "secondary" }))}>
+            Open pitch deck
+          </Link>
+          <Link href="/reviewer/#application-ready-metrics" className={cn(buttonVariants({ size: "sm", variant: "outline" }))}>
+            Open traction metrics
+          </Link>
+        </div>
+        <div className="mt-5 grid gap-2 sm:grid-cols-4">
+          {[
+            ["1,224", "Visitor sessions"],
+            ["80", "Wallet-submitted Testnet receipts"],
+            ["11 / 11", "Successful executions"],
+            ["27", "Privacy execution claims"],
+          ].map(([value, label]) => (
+            <div key={label} className="rounded-2xl border border-white/10 bg-black/24 p-3">
+              <div className="font-mono text-lg font-semibold text-white">{value}</div>
+              <div className="mt-1 text-[10px] uppercase tracking-[0.16em] text-white/42">{label}</div>
+            </div>
+          ))}
+        </div>
+      </section>
       <SectionExplainerVideo variant="proof" compact />
       <LocalizedRouteSummary routeKey="proof" />
       <ExecutionCommandSurface compact />

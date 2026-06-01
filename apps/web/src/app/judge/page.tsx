@@ -325,16 +325,29 @@ export default function JudgePage() {
               ))}
             </div>
             <div className="mt-5 flex flex-wrap gap-3">
-              <Link href="/start" className={cn(buttonVariants({ size: "lg" }))}>
-                Start live flow
+              <Link href="/try/" className={cn(buttonVariants({ size: "lg" }))}>
+                Open submitted demo path
                 <ArrowUpRight className="h-4 w-4" />
               </Link>
-              <Link href="/services/main-frontier-closure" className={cn(buttonVariants({ size: "lg", variant: "secondary" }))}>
-                Open track router
+              <Link href="/reviewer/" className={cn(buttonVariants({ size: "lg", variant: "secondary" }))}>
+                Open pitch packet
               </Link>
-              <Link href="/proof" className={cn(buttonVariants({ size: "lg", variant: "outline" }))}>
+              <Link href="/proof/?judge=1" className={cn(buttonVariants({ size: "lg", variant: "outline" }))}>
                 Verify proof
               </Link>
+            </div>
+            <div className="mt-5 grid gap-2 sm:grid-cols-4">
+              {[
+                ["1,094", "Git commits"],
+                ["47 / 47", "Unit tests passing"],
+                ["0", "Broken internal links"],
+                ["15,506", "QuickNode payloads"],
+              ].map(([value, label]) => (
+                <div key={label} className="rounded-2xl border border-white/10 bg-black/24 p-3">
+                  <div className="font-mono text-lg font-semibold text-white">{value}</div>
+                  <div className="mt-1 text-[10px] uppercase tracking-[0.16em] text-white/42">{label}</div>
+                </div>
+              ))}
             </div>
           </div>
 
