@@ -21,7 +21,7 @@ PrivateDAO solves that by separating **private coordination** from **public acco
 
 During an active decision, PrivateDAO hides the signals that bias voters: vote counts, percentages, leading side, voter identity, voting intent, sensitive room notes, payout recipients, payroll details, and treasury preparation. After the decision ends, PrivateDAO reveals the final outcome, proof, receipt, audit trail, and execution reference so the organization can stay accountable.
 
-PrivateDAO is a live Solana Testnet product for private DAO coordination with public verification. It helps organizations understand context before signing, vote without influence while it matters, protect confidential governance and treasury workflows with encryption boundaries, then reveal final outcomes and proofs when transparency counts.
+PrivateDAO is a live Solana Testnet product for private DAO coordination with public verification. A normal visitor opens the browser, understands governance and treasury context, signs from a Solana Testnet wallet, votes without influence while it matters, protects confidential governance and treasury workflows with encryption boundaries, then verifies final outcomes and proofs when transparency counts.
 
 The user-facing flow is intentionally simple:
 
@@ -49,6 +49,7 @@ Primary routes:
 - `/payroll/` - confidential payroll and payout review paths.
 - `/android/` - mobile wallet-first access to the same product routes.
 - `/services/` - service router for QVAC, GoldRush, Jupiter, PUSD, Torque, MagicBlock, Cloak, Umbra, Ika/Encrypt, REFHE, Zerion, and runtime infrastructure.
+- `/documents/site-execution-route-inventory-2026-05-27/` - canonical route inventory used to prevent duplicate or empty integrations while historical links stay alive as bridges.
 
 AI-readable evaluation layer:
 
