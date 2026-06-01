@@ -14,6 +14,10 @@ X: https://x.com/privateDAOOS
 Telegram: https://t.me/privateDAOOS
 Discord: https://discord.gg/dpD5c7Gfcc
 Judge Route: https://privatedao.org/judge
+Demo Link: https://privatedao.org/try/
+Pitch Deck Link: https://privatedao.org/reviewer/
+Reviewer Packet: https://privatedao.org/reviewer/
+Application Ready Metrics: https://privatedao.org/reviewer/#application-ready-metrics
 AI Judge Summary: https://privatedao.org/judge-ai
 Proof Center: https://privatedao.org/proof/?judge=1
 Value Route: https://privatedao.org/value/
@@ -34,7 +38,9 @@ This is not a concept-only project. PrivateDAO has a live website, public GitHub
 - Machine-readable manifest: https://privatedao.org/ai.json
 - Evidence manifest: https://privatedao.org/evidence.json
 - Start the live governance flow: https://privatedao.org/govern#live-dao
-- Try the simplified flow: https://privatedao.org/try/
+- Demo link / try the simplified flow: https://privatedao.org/try/
+- Pitch deck / reviewer packet: https://privatedao.org/reviewer/
+- Application ready metrics: https://privatedao.org/reviewer/#application-ready-metrics
 - Verify proof: https://privatedao.org/proof/?judge=1
 - Public observer posture during live voting: only live status and time remaining are visible. Vote ratios, addresses, intent, momentum, whale behavior, and option tallies remain hidden until the reveal/finalization window.
 
@@ -87,6 +93,7 @@ This is not a concept-only project. PrivateDAO has a live website, public GitHub
 - Home: https://privatedao.org/
 - Why PrivateDAO: https://privatedao.org/value/
 - Try Testnet vote: https://privatedao.org/try/
+- Pitch deck / reviewer packet: https://privatedao.org/reviewer/
 - Judge route: https://privatedao.org/judge
 - AI judge route: https://privatedao.org/judge-ai
 - Proof center: https://privatedao.org/proof/?judge=1

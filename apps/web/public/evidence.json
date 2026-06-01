@@ -21,6 +21,21 @@
       "evidence": "https://privatedao.org/judge"
     },
     {
+      "claim": "PrivateDAO has a direct demo link for reviewers",
+      "status": "verified",
+      "evidence": "https://privatedao.org/try/"
+    },
+    {
+      "claim": "PrivateDAO has a direct pitch deck / reviewer packet link",
+      "status": "verified",
+      "evidence": "https://privatedao.org/reviewer/"
+    },
+    {
+      "claim": "PrivateDAO exposes application-ready traction metrics for reviewers",
+      "status": "verified",
+      "evidence": "https://privatedao.org/reviewer/#application-ready-metrics"
+    },
+    {
       "claim": "PrivateDAO has live Testnet proof evidence",
       "status": "verified",
       "evidence": "https://privatedao.org/proof/?judge=1"
@@ -65,6 +80,8 @@
     "https://privatedao.org/",
     "https://privatedao.org/value/",
     "https://privatedao.org/try/",
+    "https://privatedao.org/reviewer/",
+    "https://privatedao.org/reviewer/#application-ready-metrics",
     "https://privatedao.org/judge",
     "https://privatedao.org/judge-ai",
     "https://privatedao.org/proof/?judge=1",
