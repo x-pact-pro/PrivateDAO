@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowUpRight, ClipboardCheck, FileText, PlayCircle, ShieldCheck } from "lucide-react";
+import { ArrowUpRight, ClipboardCheck, FileText, PlayCircle } from "lucide-react";
 
 import { buttonVariants } from "@/components/ui/button";
 import { buildRouteMetadata } from "@/lib/route-metadata";
@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
 export const metadata: Metadata = buildRouteMetadata({
   title: "Judges Fast Path",
   description:
-    "PrivateDAO judge fast path: demo link, pitch deck link, proof center, AI-readable summary, and live Solana Testnet evidence.",
+    "PrivateDAO judge fast path: demo link, pitch deck link, proof center, and live Solana Testnet evidence.",
   path: "/judges",
   keywords: ["judges", "demo link", "pitch deck", "proof center", "PrivateDAO"],
 });
@@ -34,13 +34,6 @@ const primaryLinks = [
     body: "Canonical reviewer hub with technology guide, launch paths, runtime logs, and Testnet proof.",
     href: "/judge/",
     icon: ClipboardCheck,
-    primary: false,
-  },
-  {
-    title: "AI / judge summary",
-    body: "Plain AI-readable explanation for automated reviewers and human judges who need context fast.",
-    href: "/judge-ai",
-    icon: ShieldCheck,
     primary: false,
   },
 ] as const;

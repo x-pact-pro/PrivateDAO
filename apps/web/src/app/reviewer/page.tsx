@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowUpRight, BadgeCheck, Bot, FileText, PlayCircle, ShieldCheck } from "lucide-react";
+import { ArrowUpRight, BadgeCheck, FileText, PlayCircle, ShieldCheck } from "lucide-react";
 
 import { OperationsShell } from "@/components/operations-shell";
 import { buttonVariants } from "@/components/ui/button";
@@ -36,13 +36,6 @@ const reviewerLinks = [
     icon: ShieldCheck,
     description: "Verify Testnet evidence, transparency reports, runtime proof, and public accountability routes.",
     cta: "Verify proof",
-  },
-  {
-    title: "AI judge summary",
-    href: "/judge-ai",
-    icon: Bot,
-    description: "Machine-readable summary for AI reviewers, scrapers, and automated startup application checks.",
-    cta: "Read summary",
   },
 ] as const;
 
@@ -80,7 +73,7 @@ const milestoneMetrics = [
   "Latest GitHub Pages deployment succeeded on commit 5d7ffc430f5cf219e5407c4d85f5d9fe9907cf22.",
   "Live readiness API reports the Solana Testnet program executable.",
   "The internal link verifier checked 609 HTML files and reported missingCount 0.",
-  "The AI-readable layer includes llms.txt, ai.json, evidence.json, judge-ai, Schema.org, and OpenGraph metadata.",
+  "The AI-readable layer includes llms.txt, ai.json, evidence.json, the AI guide route, Schema.org, and OpenGraph metadata.",
 ] as const;
 
 const verifierLinks = [

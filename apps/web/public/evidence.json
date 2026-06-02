@@ -41,7 +41,7 @@
       "evidence": "https://privatedao.org/proof/?judge=1"
     },
     {
-      "claim": "PrivateDAO exposes an AI-readable judge summary",
+      "claim": "PrivateDAO exposes an AI-readable guide for automated evaluation tools",
       "status": "verified",
       "evidence": "https://privatedao.org/judge-ai"
     },
@@ -59,6 +59,16 @@
       "claim": "PrivateDAO integrates QVAC as a local-first AI capability",
       "status": "verified",
       "evidence": "https://api.privatedao.org/api/v1/qvac/runtime-proof"
+    },
+    {
+      "claim": "PrivateDAO exposes a QVAC Hackathon I evidence bundle",
+      "status": "verified",
+      "evidence": "https://privatedao.org/qvac-hackathon-i-evidence.json"
+    },
+    {
+      "claim": "PrivateDAO hosts a QVAC submission explainer video",
+      "status": "verified",
+      "evidence": "https://privatedao.org/assets/private-dao-qvac-hackathon-brander.mp4"
     },
     {
       "claim": "PrivateDAO exposes privacy execution claims",
@@ -88,6 +98,8 @@
     "https://privatedao.org/rooms/",
     "https://privatedao.org/android/",
     "https://privatedao.org/services/qvac-sovereign-ai/",
+    "https://privatedao.org/qvac-hackathon-i-evidence.json",
+    "https://privatedao.org/assets/private-dao-qvac-hackathon-brander.mp4",
     "https://privatedao.org/services/jupiter-treasury-route/",
     "https://privatedao.org/services/pusd-stablecoin/",
     "https://privatedao.org/services/torque-growth-loop/"

@@ -18,13 +18,15 @@ Demo Link: https://privatedao.org/try/
 Pitch Deck Link: https://privatedao.org/reviewer/
 Reviewer Packet: https://privatedao.org/reviewer/
 Application Ready Metrics: https://privatedao.org/reviewer/#application-ready-metrics
-AI Judge Summary: https://privatedao.org/judge-ai
+AI Guide: https://privatedao.org/judge-ai
 Proof Center: https://privatedao.org/proof/?judge=1
 Value Route: https://privatedao.org/value/
 Try Route: https://privatedao.org/try/
 Private Rooms: https://privatedao.org/rooms/
 Android: https://privatedao.org/android/
 QVAC Route: https://privatedao.org/services/qvac-sovereign-ai/
+QVAC Hackathon Evidence: https://privatedao.org/qvac-hackathon-i-evidence.json
+QVAC Hackathon Video: https://privatedao.org/assets/private-dao-qvac-hackathon-brander.mp4
 Runtime Proof: https://api.privatedao.org/api/v1/qvac/runtime-proof
 Privacy Claims: https://api.privatedao.org/api/v1/privacy-execution-claims
 Provider Status: https://api.privatedao.org/api/v1/provider-integrations/status
@@ -34,7 +36,7 @@ This is not a concept-only project. PrivateDAO has a live website, public GitHub
 
 ## Primary Reviewer Path
 
-- AI-readable summary: https://privatedao.org/judge-ai
+- AI-readable guide: https://privatedao.org/judge-ai
 - Machine-readable manifest: https://privatedao.org/ai.json
 - Evidence manifest: https://privatedao.org/evidence.json
 - Start the live governance flow: https://privatedao.org/govern#live-dao
@@ -95,7 +97,7 @@ This is not a concept-only project. PrivateDAO has a live website, public GitHub
 - Try Testnet vote: https://privatedao.org/try/
 - Pitch deck / reviewer packet: https://privatedao.org/reviewer/
 - Judge route: https://privatedao.org/judge
-- AI judge route: https://privatedao.org/judge-ai
+- AI guide route: https://privatedao.org/judge-ai
 - Proof center: https://privatedao.org/proof/?judge=1
 - Governance: https://privatedao.org/govern/
 - Private rooms: https://privatedao.org/rooms/
@@ -130,6 +132,8 @@ This is not a concept-only project. PrivateDAO has a live website, public GitHub
 
 - Readiness: https://api.privatedao.org/api/v1/readiness
 - QVAC runtime proof: https://api.privatedao.org/api/v1/qvac/runtime-proof
+- QVAC Hackathon I evidence bundle: https://privatedao.org/qvac-hackathon-i-evidence.json
+- QVAC Hackathon I brander video: https://privatedao.org/assets/private-dao-qvac-hackathon-brander.mp4
 - Privacy execution matrix: https://api.privatedao.org/api/v1/privacy-execution-matrix
 - Privacy claims index: https://api.privatedao.org/api/v1/privacy-execution-claims
 - Provider integrations status: https://api.privatedao.org/api/v1/provider-integrations/status

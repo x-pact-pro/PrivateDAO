@@ -71,7 +71,7 @@ export const metadata: Metadata = {
     "llms-txt": "/llms.txt",
     "ai-manifest": "/ai.json",
     "evidence-manifest": "/evidence.json",
-    "ai-judge-summary": "/judge-ai",
+    "ai-guide": "/judge-ai",
     "reviewer-entry": "/govern#live-dao",
     "wallet-network": "Solana Testnet",
     "product-surface":

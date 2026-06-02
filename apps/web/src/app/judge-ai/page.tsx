@@ -3,10 +3,10 @@ import type { Metadata } from "next";
 import { buildRouteMetadata } from "@/lib/route-metadata";
 
 export const metadata: Metadata = buildRouteMetadata({
-  title: "PrivateDAO AI Judge Summary",
-  description: "AI-readable judge summary for PrivateDAO: live Solana Testnet product, proof routes, GitHub repository, QVAC runtime evidence, web and Android UX.",
+  title: "PrivateDAO AI Guide",
+  description: "AI-readable guide for PrivateDAO: live Solana Testnet product, proof routes, GitHub repository, QVAC runtime evidence, web and Android UX.",
   path: "/judge-ai",
-  keywords: ["PrivateDAO AI judge summary", "PrivateDAO evidence", "Solana Testnet proof", "QVAC runtime proof"],
+  keywords: ["PrivateDAO AI guide", "PrivateDAO evidence", "Solana Testnet proof", "QVAC runtime proof"],
 });
 
 const primaryLinks = [
@@ -48,7 +48,7 @@ const evidence = [
 export default function JudgeAiPage() {
   return (
     <main className="mx-auto max-w-4xl px-4 py-10 text-white sm:px-6 lg:px-8">
-      <h1 className="text-3xl font-semibold tracking-[-0.04em] sm:text-4xl">PrivateDAO - AI Judge Summary</h1>
+      <h1 className="text-3xl font-semibold tracking-[-0.04em] sm:text-4xl">PrivateDAO - AI Guide</h1>
       <p className="mt-5 text-base leading-8 text-white/72">
         PrivateDAO is a live confidential governance and treasury coordination operating system on Solana. It is not a concept-only project. It includes live Testnet execution, public proof routes, a GitHub repository, web and Android interfaces, and runtime verification endpoints.
       </p>
