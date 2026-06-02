@@ -43,6 +43,7 @@ import { ServiceOperationalCards } from "@/components/service-operational-cards"
 import { ServiceConstellationSurface } from "@/components/service-constellation-surface";
 import { ServiceReadinessLadder } from "@/components/service-readiness-ladder";
 import { ServiceHandoffStrip } from "@/components/service-handoff-strip";
+import { ServiceLauncher } from "@/components/service-launcher";
 import { ServicesSurface } from "@/components/services-surface";
 import { QvacSovereignAiSurface } from "@/components/qvac-sovereign-ai-surface";
 import { SolutionCorridors } from "@/components/solution-corridors";
@@ -80,6 +81,7 @@ export default function ServicesPage() {
     >
       <LocalizedRouteSummary routeKey="services" />
       <LocalizedRouteBrief routeKey="servicesCore" />
+      <ServiceLauncher />
       <PrivateDaoStackSurface compact />
       <SectionExplainerVideo variant="services" compact />
       <GuidedOperationRail current="verify" reviewHref="/intelligence" verifyHref="/proof" />
