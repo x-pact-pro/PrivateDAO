@@ -72,6 +72,45 @@ const priorWork = [
   ["Confidential Payroll GitHub", "https://github.com/X-PACT/confidential-payroll"],
 ] as const;
 
+const colosseumResources = [
+  [
+    "Phantom Connect",
+    "Immediate wallet UX lane",
+    "Use embedded/email onboarding to make the Testnet flow easier for non-crypto operators while preserving wallet-first signing.",
+    "https://docs.phantom.com/phantom-connect",
+  ],
+  [
+    "Squads Multisig / Altitude",
+    "Treasury authority lane",
+    "Map treasury execution and upgrade authority into multisig-backed organizational controls for serious teams.",
+    "https://squads.xyz/multisig",
+  ],
+  [
+    "Arcium",
+    "Encrypted computation rail",
+    "Evaluate encrypted computation for private voting, sealed scoring, treasury review, and future confidential workflows.",
+    "https://docs.arcium.com/developers",
+  ],
+  [
+    "World ID",
+    "Human reviewer proof",
+    "Add optional proof-of-human gating for reviewers or private rooms without exposing a user's full identity across apps.",
+    "https://docs.world.org/world-id/idkit/integrate",
+  ],
+  [
+    "Vanish",
+    "Private execution research lane",
+    "Study private swap and wallet unlinking patterns for treasury privacy and private execution without changing the public UX.",
+    "https://core.vanish.trade",
+  ],
+  [
+    "Helius / Triton / FluxRPC",
+    "RPC redundancy lane",
+    "Keep QuickNode as the current runtime path while preparing provider redundancy for reads, streams, and reviewer telemetry.",
+    "https://www.helius.dev/pricing",
+  ],
+] as const;
+
 export default function DeckPage() {
   return (
     <OperationsShell
@@ -141,6 +180,24 @@ export default function DeckPage() {
         <p className="mt-3 text-2xl font-semibold tracking-[-0.03em] text-white">
           PrivateDAO is the layer for everything that happens before and after governance.
         </p>
+      </section>
+
+      <section className="rounded-[28px] border border-emerald-300/16 bg-emerald-300/[0.06] p-5 sm:p-6">
+        <div className="text-[11px] uppercase tracking-[0.25em] text-emerald-100/76">Colosseum resource alignment</div>
+        <h2 className="mt-3 text-2xl font-semibold text-white">Sponsor tools are mapped to product lanes, not pasted as logos.</h2>
+        <p className="mt-3 max-w-4xl text-sm leading-7 text-white/64">
+          PrivateDAO keeps the user journey simple while using Colosseum resources as modular rails behind wallet UX,
+          treasury authority, encrypted computation, reviewer identity, private execution research, and RPC redundancy.
+        </p>
+        <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+          {colosseumResources.map(([name, lane, body, href]) => (
+            <a key={name} href={href} className="rounded-2xl border border-white/10 bg-black/22 p-4 transition hover:border-emerald-200/32">
+              <div className="text-base font-semibold text-white">{name}</div>
+              <div className="mt-1 text-xs uppercase tracking-[0.16em] text-emerald-100/62">{lane}</div>
+              <p className="mt-3 text-sm leading-6 text-white/62">{body}</p>
+            </a>
+          ))}
+        </div>
       </section>
 
       <section className="rounded-[28px] border border-white/10 bg-white/[0.035] p-5 sm:p-6">

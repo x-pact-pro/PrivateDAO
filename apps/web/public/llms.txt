@@ -95,6 +95,17 @@ This is not a concept-only project. PrivateDAO has a live website, public GitHub
 - Pyth-compatible price boundary
 - Tokens-compatible asset context boundary
 
+## Colosseum Resource Alignment
+
+PrivateDAO uses Colosseum sponsor resources as modular product lanes, not as homepage branding:
+
+- Phantom Connect: wallet onboarding candidate lane for easier Connect -> Intelligence -> Private Vote -> Reveal -> Verify UX.
+- Squads Multisig / Altitude: treasury authority and organizational finance lane.
+- Arcium: encrypted computation research lane for sealed reviews, private voting, and confidential workflows.
+- World ID: optional proof-of-human reviewer and private-room gating lane.
+- Vanish: private execution and treasury privacy research lane.
+- Helius / Triton / FluxRPC: RPC redundancy lane around the current QuickNode-backed runtime.
+
 ## Product Map
 
 - Home: https://privatedao.org/

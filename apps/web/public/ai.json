@@ -77,6 +77,44 @@
     "Pyth-compatible price boundary",
     "Tokens-compatible asset context boundary"
   ],
+  "colosseum_resource_alignment": [
+    {
+      "tool": "Phantom Connect",
+      "lane": "wallet onboarding",
+      "status": "candidate integration lane",
+      "docs": "https://docs.phantom.com/phantom-connect"
+    },
+    {
+      "tool": "Squads Multisig / Altitude",
+      "lane": "treasury authority and organizational finance",
+      "status": "candidate integration lane",
+      "docs": "https://squads.xyz/multisig"
+    },
+    {
+      "tool": "Arcium",
+      "lane": "encrypted computation",
+      "status": "research and future confidential workflow lane",
+      "docs": "https://docs.arcium.com/developers"
+    },
+    {
+      "tool": "World ID",
+      "lane": "proof-of-human reviewer and room gating",
+      "status": "optional identity boundary",
+      "docs": "https://docs.world.org/world-id/idkit/integrate"
+    },
+    {
+      "tool": "Vanish",
+      "lane": "private execution and treasury privacy research",
+      "status": "research lane",
+      "docs": "https://core.vanish.trade"
+    },
+    {
+      "tool": "Helius / Triton / FluxRPC",
+      "lane": "RPC redundancy",
+      "status": "runtime resilience planning",
+      "docs": "https://www.helius.dev/pricing"
+    }
+  ],
   "primary_routes": {
     "home": "https://privatedao.org/",
     "value": "https://privatedao.org/value/",

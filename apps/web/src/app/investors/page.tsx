@@ -59,6 +59,15 @@ const founderPriorWork = [
   ],
 ] as const;
 
+const resourceStrategy = [
+  ["Wallet onboarding", "Phantom Connect", "Reduce wallet friction for normal users entering the Testnet flow."],
+  ["Treasury control", "Squads Multisig / Altitude", "Connect confidential coordination to institutional treasury authority."],
+  ["Encrypted compute", "Arcium", "Explore private computation for sealed reviews, votes, and treasury context."],
+  ["Human review", "World ID", "Optional proof-of-human reviewer gating without public identity leakage."],
+  ["Private execution", "Vanish", "Research privacy-preserving execution patterns for treasury and payment routes."],
+  ["Runtime resilience", "Helius / Triton / FluxRPC", "Prepare RPC redundancy around the current QuickNode-backed runtime."],
+] as const;
+
 export default function InvestorsPage() {
   return (
     <OperationsShell
@@ -148,6 +157,24 @@ export default function InvestorsPage() {
             <div key={title} className="rounded-2xl border border-white/10 bg-black/22 p-4">
               <div className="text-base font-semibold text-white">{title}</div>
               <p className="mt-2 text-sm leading-6 text-white/62">{body}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="rounded-[28px] border border-emerald-300/16 bg-emerald-300/[0.06] p-5 sm:p-6">
+        <div className="text-[11px] uppercase tracking-[0.25em] text-emerald-100/76">Colosseum resource strategy</div>
+        <h2 className="mt-3 text-2xl font-semibold text-white">Provider rails are modular; the workflow remains PrivateDAO-owned.</h2>
+        <p className="mt-3 max-w-4xl text-sm leading-7 text-white/64">
+          Colosseum sponsor resources strengthen specific lanes without changing the core product thesis. PrivateDAO
+          owns coordination, privacy, authority, execution, and proof; providers remain replaceable.
+        </p>
+        <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+          {resourceStrategy.map(([lane, tool, body]) => (
+            <div key={lane} className="rounded-2xl border border-white/10 bg-black/22 p-4">
+              <div className="text-base font-semibold text-white">{lane}</div>
+              <div className="mt-1 text-xs uppercase tracking-[0.16em] text-emerald-100/62">{tool}</div>
+              <p className="mt-3 text-sm leading-6 text-white/62">{body}</p>
             </div>
           ))}
         </div>
