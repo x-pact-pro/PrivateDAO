@@ -1,321 +1,341 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowDownToLine, ArrowUpRight, Globe2, KeyRound, LockKeyhole, Network, ShieldCheck, Sparkles } from "lucide-react";
+import { ArrowDownToLine, ArrowUpRight, BadgeCheck, Layers3, ShieldCheck } from "lucide-react";
 
 import { OperationsShell } from "@/components/operations-shell";
-import { JudgeFoundationMessageCard } from "@/components/judge-foundation-message-card";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { buildRouteMetadata } from "@/lib/route-metadata";
 import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = buildRouteMetadata({
-  title: "Whitepaper",
+  title: "PrivateDAO Whitepaper Version 2.0",
   description:
-    "PrivateDAO whitepaper: confidential coordination infrastructure for organizations on Solana, with governance, treasury, payroll, intelligence, agent workflows, and public proof.",
+    "PrivateDAO whitepaper: confidential coordination infrastructure for onchain organizations, with privacy, accountability, verifiable execution, selective disclosure, and operational continuity.",
   path: "/whiteprint",
-  keywords: ["Whitepaper", "PrivateDAO roadmap", "confidential coordination infrastructure", "Solana organizations", "encrypted treasury", "confidential payroll"],
+  keywords: [
+    "PrivateDAO whitepaper",
+    "confidential coordination infrastructure",
+    "onchain organizations",
+    "Solana organizations",
+    "selective disclosure",
+    "verifiable execution",
+  ],
 });
 
 const downloadHref = "/assets/private-dao-founder-whiteprint.md";
 
-const languages = [
-  {
-    code: "EN",
-    title: "Whitepaper",
-    founder: "Founder-built project",
-    thesis:
-      "PrivateDAO treats blockchain as durable civilization infrastructure: governance, payments, supply-chain records, institutional proof, and treaty-grade coordination become credible only when privacy and verification advance together.",
-    authorship:
-      "PrivateDAO is the work of a solo founder-builder. It is not presented as the output of a development team, studio, or lab; the integrations and infrastructure partners are acknowledged as ecosystem rails used by one founder to build a complete Testnet product.",
-    phase2:
-      "After judging, Phase 2 turns every customer request into an encrypted lane: intake, package selection, provider routing, on-chain payment reference, time-bound license key, delivery, renewal, and upgrade controls.",
-    mainnet:
-      "After Phase 2, PrivateDAO begins Mainnet deployment preparation and external security reviews before sensitive source, policy matrices, and anti-tamper logic move into production.",
-    phase3:
-      "Phase 3 expands the infrastructure cross-chain while Solana remains the guardian chain, first proof home, and decision layer that anchors the system.",
-  },
-  {
-    code: "AR",
-    title: "وثيقة المؤسس التقنية",
-    founder: "مشروع بناه مؤسس واحد",
-    thesis:
-      "PrivateDAO لا يرى البلوك تشين كأموال رقمية فقط، بل كبنية دائمة لتسجيل الحوكمة، المدفوعات، سلاسل الإمداد، التوثيق الدولي، والمعاهدات عندما تتطور الخصوصية والإثبات معا.",
-    authorship:
-      "PrivateDAO عمل فردي من مؤسس واحد، وليس مخرجا لفريق تطوير أو معمل أو استوديو. التكاملات والبنية الداعمة هي أدوات منظومة استخدمها المؤسس لبناء منتج Testnet مكتمل وقابل للمراجعة.",
-    phase2:
-      "بعد التحكيم، تحول Phase 2 كل طلب عميل إلى مسار مشفر: إدخال المتطلبات، اختيار الباقة، توجيه المزودين، مرجع دفع على السلسلة، مفتاح محدود المدة، التسليم، التجديد، والترقية.",
-    mainnet:
-      "بعد Phase 2 تبدأ PrivateDAO تجهيز نشر Mainnet والمراجعات الأمنية الخارجية قبل نقل الكود الحساس، مصفوفات السياسات، ومنطق مقاومة العبث إلى الإنتاج.",
-    phase3:
-      "تفتح Phase 3 التوسع cross-chain مع بقاء Solana سلسلة الحراسة، وبيت الإثبات الأول، وطبقة القرار التي تثبت النظام.",
-  },
-  {
-    code: "ES",
-    title: "Whitepaper",
-    founder: "Proyecto construido por un fundador",
-    thesis:
-      "PrivateDAO ve blockchain como infraestructura duradera para gobernanza, pagos, registros de suministro, prueba institucional y coordinación internacional cuando privacidad y verificación avanzan juntas.",
-    authorship:
-      "PrivateDAO is founder-built work, not the output of a separate development team, studio, or lab.",
-    phase2:
-      "Después del jurado, Phase 2 convierte cada solicitud del cliente en un carril cifrado con intake, paquete, proveedores, pago on-chain, licencia temporal, entrega, renovación y upgrades.",
-    mainnet:
-      "Después de Phase 2, PrivateDAO inicia preparación Mainnet y revisiones externas de seguridad antes de producción sensible.",
-    phase3:
-      "Phase 3 expande la infraestructura cross-chain mientras Solana permanece como guardian chain y hogar inicial de prueba y decisión.",
-  },
-  {
-    code: "KO",
-    title: "Whitepaper",
-    founder: "Founder-built project",
-    thesis:
-      "PrivateDAO는 블록체인을 단순한 디지털 자산이 아니라 거버넌스, 결제, 공급망, 기관 증명, 국제 조정의 지속 가능한 기록 인프라로 봅니다.",
-    authorship:
-      "PrivateDAO is founder-built work, not the output of a separate development team, studio, or lab.",
-    phase2:
-      "심사 이후 Phase 2는 모든 고객 요청을 암호화된 전달 경로로 전환합니다: 입력, 패키지, 제공자 라우팅, 온체인 결제 참조, 기간 제한 키, 전달, 갱신, 업그레이드.",
-    mainnet:
-      "Phase 2 이후 PrivateDAO는 Mainnet 준비와 외부 보안 리뷰를 시작한 뒤 민감한 소스와 정책 매트릭스를 프로덕션으로 이동합니다.",
-    phase3:
-      "Phase 3는 cross-chain 확장을 열며 Solana는 guardian chain, 최초 proof home, decision layer로 남습니다.",
-  },
-];
-
-const architectureCards = [
-  ["Encrypted intake", "Every service starts from an encrypted requirement form tied to package, duration, delivery method, and customer-selected integrations.", LockKeyhole],
-  ["Payment-bound access", "The on-chain transaction hash can become the activation reference after settlement confirmation and license issuance.", KeyRound],
-  ["Intelligence routing", "QVAC handles local private briefs; Covalent GoldRush, Zerion, SNS, and related rails add external context when selected.", Sparkles],
-  ["Security boundary", "Sensitive source, cryptographic matrices, and anti-tamper details are reserved for auditors and selected partners.", ShieldCheck],
-  ["Mainnet review", "Production deployment follows the active judging phase and external security review, not unreviewed claims.", Globe2],
-  ["Phase 3 cross-chain", "The infrastructure expands beyond Solana while Solana remains the guardian chain and first decision home.", Network],
+const coordinationActivity = [
+  "Treasury planning",
+  "Contributor evaluation",
+  "Reviewer assignment",
+  "Payroll workflows",
+  "Sensitive discussions",
+  "Emergency response",
+  "Operational approvals",
 ] as const;
 
-const coordinationLayers = [
-  ["Coordination Layer", "The operating layer for context, review, approval, execution, continuity, and proof."],
-  ["Governance Layer", "The first use case: private voting while influence signals matter, public reveal when accountability matters."],
-  ["Treasury Layer", "Confidential treasury requests, payout routing, stablecoin context, and execution receipts."],
-  ["Payroll Layer", "Contributor compensation and confidential payroll workflows linked to the earlier founder-built payroll lineage."],
-  ["Intelligence Layer", "QVAC and provider-routed intelligence before signing, without sending hidden vote intent to external providers."],
-  ["Agent Layer", "Future AI-assisted organizational operations where agents prepare work but authority remains wallet-first and auditable."],
+const beforeAfter = [
+  [
+    "Before a proposal appears",
+    ["Research happens.", "Discussions happen.", "Reviews happen.", "Treasury analysis happens.", "Stakeholder alignment happens."],
+  ],
+  [
+    "After a proposal passes",
+    ["Execution happens.", "Resource allocation happens.", "Reporting happens.", "Accountability happens."],
+  ],
 ] as const;
 
-const documentStack = [
-  ["Whitepaper", "How the system works: encryption layers, QVAC/local intelligence, ZK direction, treasury logic, emergency continuity, wallet-first execution, and threat-aware operations."],
-  ["Vision Paper", "Why the system exists: privacy as the condition for honest coordination, blockchain as civilization record, and Solana as the first guardian chain."],
-  ["Roadmap", "How execution unfolds: Phase 1 core proof, Phase 2 encrypted customer infrastructure, Mainnet/security reviews, then Phase 3 cross-chain expansion."],
-  ["Project Letter", "A quiet project signature on an ecosystem-first commitment: the delivered core was the hardest psychological and technical part; the remaining work is a continuously improving protection matrix."],
+const governanceLimits = [
+  "Confidential operations",
+  "Treasury workflows",
+  "Sensitive contributor data",
+  "Internal organizational processes",
+  "Private approvals",
+  "Selective disclosure",
+  "Recovery procedures",
+  "Operational continuity",
 ] as const;
 
-const founderBuildNotes = [
-  "PrivateDAO is built and directed by a solo founder-builder.",
-  "The project uses hackathon ecosystem rails, SDKs, read nodes, wallets, and partner infrastructure as integrations, not as a claim of a larger internal team.",
-  "Reviewers should read the shipped Testnet product as individual execution with public proof, open-source review, and community feedback around it.",
+const corePrinciples = [
+  ["Privacy by Default", "Sensitive information should not become public simply because an organization operates onchain."],
+  ["Verifiable Execution", "Actions should be provably executed according to organizational rules."],
+  ["Selective Disclosure", "Organizations should reveal outcomes without exposing unnecessary operational details."],
+  ["Operational Continuity", "Coordination systems must continue through leadership changes, contributor turnover, and organizational stress."],
+  ["Composability", "PrivateDAO should integrate naturally with the broader Solana ecosystem."],
 ] as const;
 
-const programLineage = [
-  ["Legacy Devnet program", "5AhUsbQ4mJ8Xh7QJEomuS85qGgmK9iNvFqzF669Y7Psx", "Preserved evidence baseline before the Anchor 1.0.1 migration."],
-  ["Current Anchor 1.0.1 Testnet program", "EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva", "Current reviewer-facing deployment, web constants, Android constants, IDL posture, and read-node checks."],
+const architectureLayers = [
+  ["Governance Layer", "Proposal creation, voting mechanisms, quorum enforcement, and approval logic."],
+  ["Treasury Layer", "Treasury authorization, delegated execution, and operational accountability."],
+  ["Coordination Layer", "Confidential approvals, reviewer workflows, and contributor coordination."],
+  ["Intelligence Layer", "Operational visibility, organizational analytics, and governance intelligence."],
+  ["Execution Layer", "Integration with treasury systems and downstream infrastructure."],
 ] as const;
+
+const initialUseCases = [
+  ["Confidential Governance", "Private organizational decisions with verifiable outcomes."],
+  ["Treasury Coordination", "Managing treasury operations without exposing sensitive strategy."],
+  ["Reviewer Networks", "Coordinating reviewers, evaluators, and committees."],
+  ["Contributor Operations", "Managing contributor activity and accountability workflows."],
+  ["Grant Committees", "Evaluating applications while preserving reviewer independence."],
+  ["Emergency Coordination", "Maintaining operational continuity during crises."],
+] as const;
+
+const ecosystemStrategy = [
+  ["Phantom", "Wallet onboarding"],
+  ["Squads and Altitude", "Treasury coordination"],
+  ["Arcium", "Encrypted computation research"],
+  ["World ID", "Proof-of-human coordination"],
+  ["Vanish", "Privacy-preserving execution"],
+  ["Helius, Triton, and FluxRPC", "Infrastructure resilience"],
+] as const;
+
+const whyNow = [
+  "Organizations are moving onchain.",
+  "Treasuries are growing.",
+  "Global contributor networks are expanding.",
+  "AI agents are beginning to participate in workflows.",
+  "Privacy requirements are increasing.",
+] as const;
+
+const longTermCapabilities = [
+  "Coordinating humans",
+  "Coordinating AI agents",
+  "Managing treasury operations",
+  "Preserving confidentiality",
+  "Maintaining accountability",
+  "Producing verifiable outcomes",
+  "Expanding cross-chain only after proving the operating model on Solana",
+] as const;
+
+function BulletList({ items }: { items: readonly string[] }) {
+  return (
+    <div className="grid gap-2">
+      {items.map((item) => (
+        <div key={item} className="flex gap-3 rounded-2xl border border-white/8 bg-black/20 px-4 py-3">
+          <BadgeCheck className="mt-0.5 h-4 w-4 shrink-0 text-emerald-100/78" />
+          <p className="text-sm leading-6 text-white/66">{item}</p>
+        </div>
+      ))}
+    </div>
+  );
+}
 
 export default function WhitepaperPage() {
   return (
     <OperationsShell
-      eyebrow="Whitepaper"
-      title="PrivateDAO Confidential Coordination Infrastructure"
-      description="Organizations need more than voting. They need secure coordination, authority routing, execution, continuity, and proof. Governance is only the first use case."
+      eyebrow="Whitepaper · Version 2.0"
+      title="Confidential Coordination Infrastructure for Onchain Organizations"
+      description="PrivateDAO enables organizations to coordinate, approve, execute, audit, and evolve while preserving confidentiality and maintaining verifiability."
       badges={[
-        { label: "Coordination layer", variant: "cyan" },
-        { label: "Solana organizations", variant: "success" },
+        { label: "Version 2.0", variant: "cyan" },
+        { label: "Onchain organizations", variant: "success" },
         { label: "Governance is first", variant: "violet" },
       ]}
     >
-      <section className="rounded-[30px] border border-cyan-300/18 bg-cyan-300/[0.07] p-6">
+      <section className="rounded-[30px] border border-emerald-300/18 bg-[radial-gradient(circle_at_top_left,rgba(20,241,149,0.16),transparent_34%),linear-gradient(135deg,rgba(7,13,26,0.98),rgba(4,7,18,0.98))] p-5 sm:p-7">
         <div className="flex flex-wrap gap-2">
-          <Badge variant="cyan">Founder-built</Badge>
-          <Badge variant="warning">Whitepaper, not marketing copy</Badge>
-          <Badge variant="success">Reviewer-downloadable</Badge>
+          <Badge variant="cyan">PrivateDAO</Badge>
+          <Badge variant="success">Confidential coordination</Badge>
+          <Badge variant="violet">Public verification</Badge>
         </div>
-        <h2 className="mt-5 max-w-4xl text-3xl font-semibold tracking-tight text-white">
-          The least decentralized part of every DAO is not voting. It is everything before and after the vote.
-        </h2>
-        <p className="mt-4 max-w-5xl text-sm leading-7 text-white/68">
-          PrivateDAO provides the infrastructure layer required for confidential organizational operations on Solana:
-          coordination, governance, treasury operations, payroll, grants, security response, AI-assisted workflows, and
-          public proof. Governance is the first use case; secure coordination is the larger system.
+        <h1 className="mt-5 max-w-5xl text-3xl font-semibold tracking-[-0.045em] text-white sm:text-5xl">
+          Governance is the first application. Coordination is the destination.
+        </h1>
+        <p className="mt-4 max-w-4xl text-base leading-8 text-white/68">
+          Onchain organizations have solved ownership. They have partially solved governance. They have not solved
+          coordination.
         </p>
         <div className="mt-6 flex flex-wrap gap-3">
           <a href={downloadHref} download className={cn(buttonVariants({ size: "sm" }))}>
             Download whitepaper
             <ArrowDownToLine className="h-4 w-4" />
           </a>
-          <Link href="/trust#whitepaper" className={cn(buttonVariants({ size: "sm", variant: "secondary" }))}>
-            Open trust route
-          </Link>
           <Link href="/thesis" className={cn(buttonVariants({ size: "sm", variant: "secondary" }))}>
             Read coordination thesis
           </Link>
-          <Link href="/deck" className={cn(buttonVariants({ size: "sm", variant: "secondary" }))}>
+          <Link href="/deck" className={cn(buttonVariants({ size: "sm", variant: "outline" }))}>
             Open pitch deck
-          </Link>
-          <Link href="/intelligence" className={cn(buttonVariants({ size: "sm", variant: "secondary" }))}>
-            Open intelligence
-          </Link>
-          <Link href="/services/qvac-sovereign-ai" className={cn(buttonVariants({ size: "sm", variant: "secondary" }))}>
-            Open QVAC proof
-          </Link>
-          <Link href="/proof" className={cn(buttonVariants({ size: "sm", variant: "outline" }))}>
-            Open runtime proof
             <ArrowUpRight className="h-4 w-4" />
           </Link>
         </div>
       </section>
 
-      <section className="rounded-[30px] border border-amber-300/18 bg-amber-300/[0.07] p-6">
-        <div className="text-[11px] uppercase tracking-[0.28em] text-amber-100/78">Authorship boundary</div>
-        <h2 className="mt-3 text-2xl font-semibold text-white">PrivateDAO is a founder-built project, not a team or lab output</h2>
-        <p className="mt-3 max-w-5xl text-sm leading-7 text-white/66">
-          This whitepaper should be read with a clear authorship boundary: the strategy, product structure, implementation
-          direction, documentation, and public Testnet surface are the work of one founder-builder. The ecosystem tools,
-          wallets, SDKs, read-node infrastructure, and hackathon integrations are real product rails used inside the build;
-          they do not imply that PrivateDAO is backed by a separate internal development team, studio, or research lab.
-        </p>
-        <div className="mt-5 grid gap-3 md:grid-cols-3">
-          {founderBuildNotes.map((item) => (
-            <div key={item} className="rounded-2xl border border-white/10 bg-black/20 p-4 text-sm leading-7 text-white/64">
+      <section className="rounded-[28px] border border-cyan-300/16 bg-cyan-300/[0.06] p-5 sm:p-6">
+        <div className="text-[11px] uppercase tracking-[0.25em] text-cyan-100/76">Abstract</div>
+        <h2 className="mt-3 text-2xl font-semibold text-white">The coordination gap is becoming the limiting layer.</h2>
+        <div className="mt-4 max-w-5xl space-y-3 text-sm leading-7 text-white/66">
+          <p>
+            Critical organizational activity still happens outside governance systems. As organizations grow, an
+            increasing percentage of important decisions migrate into private chats, spreadsheets, informal processes,
+            and trusted operators.
+          </p>
+          <p>
+            Governance becomes visible. Operations remain invisible. PrivateDAO is building confidential coordination
+            infrastructure for organizations operating on Solana.
+          </p>
+          <p>
+            The objective is not simply enabling voting. The objective is enabling organizations to coordinate, approve,
+            execute, audit, and evolve while preserving confidentiality and maintaining verifiability.
+          </p>
+        </div>
+        <div className="mt-5 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+          {coordinationActivity.map((item) => (
+            <div key={item} className="rounded-2xl border border-white/10 bg-black/22 px-4 py-3 text-sm text-white/68">
               {item}
             </div>
           ))}
         </div>
       </section>
 
-      <section className="rounded-[30px] border border-emerald-300/18 bg-emerald-300/[0.07] p-6">
-        <div className="text-[11px] uppercase tracking-[0.28em] text-emerald-100/78">Core thesis</div>
-        <h2 className="mt-3 text-2xl font-semibold text-white">Organizations need secure coordination before they need another voting screen.</h2>
-        <p className="mt-3 max-w-5xl text-sm leading-7 text-white/66">
-          PrivateDAO starts with governance because voting exposes the coordination problem clearly. The durable product
-          is broader: a confidential infrastructure layer for organizations that need to coordinate, authorize, execute,
-          and audit sensitive operations without leaking the process before the result is ready.
+      <section className="rounded-[28px] border border-white/10 bg-white/[0.035] p-5 sm:p-6">
+        <div className="text-[11px] uppercase tracking-[0.25em] text-white/46">The Coordination Problem</div>
+        <h2 className="mt-3 text-2xl font-semibold text-white">Organizations spend most of their time outside voting.</h2>
+        <p className="mt-3 max-w-5xl text-sm leading-7 text-white/64">
+          Most governance systems focus on a single event: a vote. Operational processes before and after that event are
+          frequently disconnected from governance systems. The result is hidden centralization.
         </p>
-        <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-          {coordinationLayers.map(([title, body]) => (
-            <div key={title} className="rounded-2xl border border-white/10 bg-black/20 p-4">
-              <div className="text-base font-semibold text-white">{title}</div>
-              <p className="mt-2 text-sm leading-6 text-white/62">{body}</p>
-            </div>
+        <div className="mt-5 grid gap-4 lg:grid-cols-2">
+          {beforeAfter.map(([title, items]) => (
+            <article key={title} className="rounded-[24px] border border-white/10 bg-black/22 p-5">
+              <h3 className="text-lg font-semibold text-white">{title}</h3>
+              <div className="mt-4">
+                <BulletList items={items} />
+              </div>
+            </article>
           ))}
         </div>
+        <p className="mt-5 text-sm leading-7 text-white/66">
+          Organizations may appear decentralized while depending on invisible coordination structures. PrivateDAO is
+          designed to make coordination itself a first-class organizational primitive.
+        </p>
       </section>
 
-      <JudgeFoundationMessageCard />
-
-      <section id="phase-roadmap" className="rounded-[30px] border border-emerald-300/18 bg-emerald-300/[0.07] p-6">
-        <div className="text-[11px] uppercase tracking-[0.28em] text-emerald-100/78">Connected roadmap</div>
-        <h2 className="mt-3 text-2xl font-semibold text-white">Each roadmap phase already maps to a live section of the product</h2>
-        <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
-          {[
-            ["Phase 1: governance and proof", "/govern", "Wallet-first governance, execution continuity, and reviewer-visible proof already define the current system core."],
-            ["Phase 2: encrypted customer delivery", "/services/confidential-payments", "Confidential payroll, recipient-private payouts, and protected settlement rails express the customer delivery path."],
-            ["Mainnet and external review", "/trust", "Trust, security, proof, and reviewer routes keep the release boundaries and audit posture explicit."],
-            ["Phase 3: cross-chain expansion", "/services/encrypt-ika-operations", "Encrypted coordination, 2PC-MPC, and protected execution prep show how the system expands without losing Solana as the decision home."],
-          ].map(([title, href, body]) => (
-            <Link key={title} href={href} className="rounded-[22px] border border-white/10 bg-black/20 p-4 transition hover:border-emerald-200/30">
-              <div className="text-base font-medium text-white">{title}</div>
-              <div className="mt-2 text-sm leading-6 text-white/62">{body}</div>
-            </Link>
-          ))}
-        </div>
-      </section>
-
-      <section className="rounded-[30px] border border-violet-300/18 bg-violet-300/[0.07] p-6">
-        <div className="text-[11px] uppercase tracking-[0.28em] text-violet-100/78">Project letter</div>
-        <h2 className="mt-3 text-2xl font-semibold text-white">PrivateDAO is a privacy protocol civilization narrative, not only an app</h2>
-        <div className="mt-4 space-y-3 text-sm leading-7 text-white/66">
-          <p>
-            Blockchain is not only a rail for trading value. It can become the strongest civilizational record we have:
-            governance, agreements, payroll, supply-chain truth, institutional decisions, treaties, and public memory
-            that cannot be quietly erased, altered, or stolen when the privacy layer is strong enough.
+      <section className="grid gap-4 lg:grid-cols-2">
+        <article className="rounded-[28px] border border-amber-300/16 bg-amber-300/[0.06] p-5 sm:p-6">
+          <div className="text-[11px] uppercase tracking-[0.25em] text-amber-100/76">Why Existing Governance Is Not Enough</div>
+          <h2 className="mt-3 text-2xl font-semibold text-white">The future challenge is not voting.</h2>
+          <p className="mt-3 text-sm leading-7 text-white/64">
+            Current governance tools generally optimize for proposal creation, voting, and result publication. As
+            treasury sizes and organizational complexity grow, the missing operational layers become critical.
           </p>
-          <p>
-            Private governance lets people decide without pressure. The right to reveal intent should belong to the
-            governed participants, not to the infrastructure around them. This protects vote tokens, treasuries,
-            payroll, rewards, and sensitive institutional decisions with the same seriousness.
-          </p>
-          <p>
-            The core shipped today is the hardest part: psychologically first, then technically. The remaining phases are
-            not a dream; they are a protection matrix that can evolve forever: encrypted intake, local QVAC emergency
-            intelligence, external data rails when selected, security reviews, license continuity, and proof that expired
-            or non-renewed packages are actually disabled and locally sealed material is erased.
-          </p>
-          <p>
-            PrivateDAO is treated as a public-good system before a personal asset. The mission is to serve the
-            Solana ecosystem with a privacy product strong enough for developers, startups, organizations, governments,
-            sensitive institutions, and future cross-chain infrastructure. This is a quiet signature on a larger duty:
-            help the ecosystem repair a hidden structural gap before it becomes harder and more expensive to correct.
-            When the current mission is complete, PrivateDAO should be able to protect itself through its
-            community, review process, protocol rules, and guardian-chain proof.
-          </p>
-          <p className="text-right text-sm text-white/52">PrivateDAO Project Signature</p>
-        </div>
-      </section>
-
-      <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        {documentStack.map(([title, body]) => (
-          <article key={title} className="rounded-[24px] border border-white/10 bg-white/[0.035] p-5">
-            <h3 className="text-lg font-semibold text-white">{title}</h3>
-            <p className="mt-3 text-sm leading-7 text-white/62">{body}</p>
-          </article>
-        ))}
-      </section>
-
-      <section className="grid gap-4 xl:grid-cols-2">
-        {languages.map((item) => (
-          <article key={item.code} className="rounded-[26px] border border-white/10 bg-white/[0.035] p-5">
-            <div className="flex items-center justify-between gap-3">
-              <Badge variant={item.code === "AR" ? "success" : "cyan"}>{item.code}</Badge>
-              <div className="text-xs text-white/42">{item.founder}</div>
-            </div>
-            <h3 className="mt-4 text-xl font-semibold text-white">{item.title}</h3>
-            <div className="mt-4 space-y-3 text-sm leading-7 text-white/66">
-              <p>{item.thesis}</p>
-              <p>{item.authorship}</p>
-              <p>{item.phase2}</p>
-              <p>{item.mainnet}</p>
-              <p>{item.phase3}</p>
-            </div>
-          </article>
-        ))}
-      </section>
-
-      <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-        {architectureCards.map(([title, body, Icon]) => (
-          <div key={title} className="rounded-[24px] border border-white/10 bg-black/20 p-5">
-            <Icon className="h-5 w-5 text-cyan-100" />
-            <h3 className="mt-4 text-lg font-semibold text-white">{title}</h3>
-            <p className="mt-2 text-sm leading-7 text-white/62">{body}</p>
+          <div className="mt-5">
+            <BulletList items={governanceLimits} />
           </div>
-        ))}
+        </article>
+
+        <article className="rounded-[28px] border border-emerald-300/16 bg-emerald-300/[0.06] p-5 sm:p-6">
+          <div className="text-[11px] uppercase tracking-[0.25em] text-emerald-100/76">The PrivateDAO Thesis</div>
+          <h2 className="mt-3 text-2xl font-semibold text-white">Selective disclosure, not complete secrecy.</h2>
+          <p className="mt-3 text-sm leading-7 text-white/64">
+            Organizations require infrastructure capable of balancing privacy, accountability, verifiability, and
+            operational efficiency. Historically these objectives conflicted.
+          </p>
+          <p className="mt-4 text-sm leading-7 text-white/64">
+            PrivateDAO introduces a framework where organizations can preserve sensitive operational information while
+            still proving that processes occurred correctly.
+          </p>
+        </article>
       </section>
 
-      <section className="rounded-[28px] border border-emerald-300/16 bg-emerald-300/[0.07] p-6">
-        <div className="text-[11px] uppercase tracking-[0.28em] text-emerald-100/78">Program ID lineage</div>
-        <h2 className="mt-3 text-2xl font-semibold text-white">The program ID change is part of the migration evidence</h2>
-        <p className="mt-3 max-w-4xl text-sm leading-7 text-white/64">
-          PrivateDAO preserves the older Devnet proof path and the current Anchor 1.0.1 Testnet deployment as a documented
-          lineage, not as a contradiction. The new program ID came with the Anchor 1.0.1 migration and clean Testnet deploy target.
-        </p>
-        <div className="mt-5 grid gap-3 lg:grid-cols-2">
-          {programLineage.map(([label, value, body]) => (
-            <div key={value} className="rounded-2xl border border-white/10 bg-black/20 p-4">
-              <div className="text-sm font-medium text-white">{label}</div>
-              <div className="mt-2 break-all font-mono text-xs leading-6 text-cyan-100">{value}</div>
-              <div className="mt-2 text-sm leading-6 text-white/58">{body}</div>
+      <section className="rounded-[28px] border border-violet-300/16 bg-violet-300/[0.06] p-5 sm:p-6">
+        <div className="flex items-center gap-3 text-violet-100">
+          <ShieldCheck className="h-5 w-5" />
+          <div className="text-[11px] uppercase tracking-[0.25em]">Core Principles</div>
+        </div>
+        <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+          {corePrinciples.map(([title, body]) => (
+            <article key={title} className="rounded-2xl border border-white/10 bg-black/22 p-4">
+              <h3 className="text-base font-semibold text-white">{title}</h3>
+              <p className="mt-2 text-sm leading-6 text-white/62">{body}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="rounded-[28px] border border-cyan-300/16 bg-cyan-300/[0.06] p-5 sm:p-6">
+        <div className="flex items-center gap-3 text-cyan-100">
+          <Layers3 className="h-5 w-5" />
+          <div className="text-[11px] uppercase tracking-[0.25em]">Architecture Overview</div>
+        </div>
+        <h2 className="mt-3 text-2xl font-semibold text-white">Several coordination layers, one organizational workflow.</h2>
+        <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+          {architectureLayers.map(([title, body]) => (
+            <article key={title} className="rounded-2xl border border-white/10 bg-black/22 p-4">
+              <h3 className="text-base font-semibold text-white">{title}</h3>
+              <p className="mt-2 text-sm leading-6 text-white/62">{body}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="rounded-[28px] border border-white/10 bg-white/[0.035] p-5 sm:p-6">
+        <div className="text-[11px] uppercase tracking-[0.25em] text-white/46">Initial Use Cases</div>
+        <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+          {initialUseCases.map(([title, body]) => (
+            <article key={title} className="rounded-2xl border border-white/10 bg-black/22 p-4">
+              <h3 className="text-base font-semibold text-white">{title}</h3>
+              <p className="mt-2 text-sm leading-6 text-white/62">{body}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="rounded-[28px] border border-emerald-300/16 bg-emerald-300/[0.06] p-5 sm:p-6">
+        <div className="text-[11px] uppercase tracking-[0.25em] text-emerald-100/76">Ecosystem Integration Strategy</div>
+        <h2 className="mt-3 text-2xl font-semibold text-white">PrivateDAO does not attempt to replace ecosystem infrastructure. It coordinates it.</h2>
+        <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+          {ecosystemStrategy.map(([tool, role]) => (
+            <div key={tool} className="rounded-2xl border border-white/10 bg-black/22 p-4">
+              <div className="text-base font-semibold text-white">{tool}</div>
+              <div className="mt-2 text-sm leading-6 text-white/62">{role}</div>
             </div>
           ))}
         </div>
-        <Link href="/documents/anchor-1-migration-evidence-2026-04-30" className={cn(buttonVariants({ size: "sm", variant: "outline" }), "mt-5")}>
-          Open Anchor 1 migration evidence
-        </Link>
+      </section>
+
+      <section className="grid gap-4 lg:grid-cols-2">
+        <article className="rounded-[28px] border border-cyan-300/16 bg-cyan-300/[0.06] p-5 sm:p-6">
+          <div className="text-[11px] uppercase tracking-[0.25em] text-cyan-100/76">Why Now</div>
+          <h2 className="mt-3 text-2xl font-semibold text-white">A new organizational coordination layer is becoming necessary infrastructure.</h2>
+          <div className="mt-5">
+            <BulletList items={whyNow} />
+          </div>
+        </article>
+
+        <article className="rounded-[28px] border border-violet-300/16 bg-violet-300/[0.06] p-5 sm:p-6">
+          <div className="text-[11px] uppercase tracking-[0.25em] text-violet-100/76">Long-Term Vision</div>
+          <h2 className="mt-3 text-2xl font-semibold text-white">The coordination operating layer for onchain organizations.</h2>
+          <p className="mt-3 text-sm leading-7 text-white/64">
+            Future organizations will require infrastructure capable of coordinating humans and AI agents while
+            preserving confidentiality, maintaining accountability, and producing verifiable outcomes.
+          </p>
+          <p className="mt-3 text-sm leading-7 text-white/64">
+            PrivateDAO is Solana-first. Cross-chain expansion is a future direction only after the coordination,
+            execution, and proof model has been demonstrated through real operating use on Solana.
+          </p>
+          <div className="mt-5">
+            <BulletList items={longTermCapabilities} />
+          </div>
+        </article>
+      </section>
+
+      <section className="rounded-[30px] border border-emerald-300/18 bg-[linear-gradient(135deg,rgba(20,241,149,0.12),rgba(0,194,255,0.08),rgba(153,69,255,0.10))] p-5 sm:p-7">
+        <div className="text-[11px] uppercase tracking-[0.25em] text-emerald-100/76">Conclusion</div>
+        <h2 className="mt-3 max-w-5xl text-3xl font-semibold tracking-[-0.04em] text-white">
+          The next generation of organizations will not be limited by ownership systems. They will be limited by coordination systems.
+        </h2>
+        <div className="mt-4 max-w-4xl space-y-3 text-sm leading-7 text-white/66">
+          <p>The organizations that coordinate effectively will outperform those that merely govern effectively.</p>
+          <p>PrivateDAO exists to provide the infrastructure required for that transition.</p>
+          <p className="font-semibold text-white">Not a governance application. Not a voting interface. A confidential coordination layer for the future of onchain organizations.</p>
+        </div>
+        <div className="mt-6 flex flex-wrap gap-3">
+          <Link href="/try" className={cn(buttonVariants({ size: "sm" }))}>Try the live flow</Link>
+          <Link href="/proof/?judge=1" className={cn(buttonVariants({ size: "sm", variant: "secondary" }))}>Verify proof</Link>
+          <Link href="/investors" className={cn(buttonVariants({ size: "sm", variant: "outline" }))}>Investor page</Link>
+        </div>
       </section>
     </OperationsShell>
   );

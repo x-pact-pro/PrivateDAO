@@ -46,7 +46,7 @@ const slides = [
   },
   {
     title: "8. Roadmap",
-    body: "Short term: clearer product entry and stronger Testnet proof. Next: deeper private rooms, treasury execution, QVAC local intelligence, and partner pilots. Later: production security review and broader organization infrastructure.",
+    body: "Short term: clearer product entry and stronger Testnet proof. Next: deeper private rooms, treasury execution, QVAC local intelligence, and partner pilots. Later: production security review, real operating use on Solana, then disciplined cross-chain expansion.",
   },
   {
     title: "9. Team",
