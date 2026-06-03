@@ -23,14 +23,14 @@ const navItems = [
 ];
 
 const utilityNav = [
-  { href: "/intelligence", label: "Intelligence", rel: "nofollow" },
   { href: "/services", label: "Services" },
-  { href: "/api-status", label: "API Status", rel: "nofollow" },
-  { href: "/rpc-services", label: "RPC" },
+  { href: "/pilots", label: "Pilots" },
+  { href: "/pricing", label: "Pricing" },
+  { href: "/investors", label: "Investors" },
   { href: "/documents", label: "Docs" },
   { href: "/whitepaper", label: "Whitepaper" },
-  { href: "/story", label: "Story" },
   { href: "/community", label: "Community" },
+  { href: "/story", label: "Story" },
   { href: "/products", label: "Products" },
   { href: "/network", label: "Network" },
   { href: "/search", label: "Search", rel: "nofollow" },

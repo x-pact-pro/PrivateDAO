@@ -1,7 +1,7 @@
 {
   "name": "PrivateDAO",
   "status": "live-testnet",
-  "category": "confidential-governance-infrastructure",
+  "category": "confidential-coordination-infrastructure",
   "positioning": "Confidential Coordination Infrastructure for Organizations on Solana.",
   "chain": "Solana",
   "founder": "Fahd Kotb",
@@ -18,6 +18,9 @@
   "reviewer_packet": "https://privatedao.org/reviewer/",
   "traction_metrics_route": "https://privatedao.org/reviewer/#application-ready-metrics",
   "investor_page": "https://privatedao.org/investors/",
+  "pricing": "https://privatedao.org/pricing/",
+  "pilot_program": "https://privatedao.org/pilots/",
+  "business_model": "https://privatedao.org/business-model/",
   "coordination_thesis": "https://privatedao.org/thesis/",
   "whitepaper": "https://privatedao.org/whitepaper/",
   "whitepaper_version": "2.0",

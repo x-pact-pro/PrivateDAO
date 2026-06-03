@@ -46,6 +46,26 @@ const progress = [
   ["Ecosystem involvement", "MetaDAO-style post-governance workflow framing and Solana organization use cases."],
 ] as const;
 
+const commercialPath = [
+  ["Open Testnet product", "Build trust through a product that teams can inspect and use before a sales conversation."],
+  ["$2,500 fixed pilot", "Prove one governance, grant, treasury, payroll, or payout workflow over four weeks."],
+  ["$750/month managed operations", "Support teams that repeat workflows and need hosted reads, proof exports, telemetry, and operator help."],
+  ["Sovereign deployment", "Serve organizations that require dedicated infrastructure, custom controls, and customer-cloud operation."],
+] as const;
+
+const assurancePath = [
+  ["Public proof", "Wallet signatures, Testnet references, proof routes, and runtime evidence remain inspectable."],
+  ["Audit-ready repository", "The repository includes a defined external audit scope, handoff packet, threat model, and closure standard."],
+  ["Production release discipline", "Custody, monitoring, authority, and audit gates are treated as explicit release requirements."],
+] as const;
+
+const collaborationPath = [
+  ["Design partners", "DAOs, grant programs, and protocol teams that want to prove one sensitive workflow."],
+  ["Technical contributors", "Solana, privacy, wallet, mobile, and infrastructure builders who want to strengthen an open product."],
+  ["Security reviewers", "Independent reviewers and audit partners who can validate the production release path."],
+  ["Infrastructure partners", "Providers that improve wallet onboarding, encrypted compute, treasury control, or runtime resilience."],
+] as const;
+
 const founderPriorWork = [
   [
     "Confidential Payroll",
@@ -159,6 +179,81 @@ export default function InvestorsPage() {
               <p className="mt-2 text-sm leading-6 text-white/62">{body}</p>
             </div>
           ))}
+        </div>
+      </section>
+
+      <section className="rounded-[28px] border border-cyan-300/16 bg-cyan-300/[0.06] p-5 sm:p-6">
+        <div className="text-[11px] uppercase tracking-[0.25em] text-cyan-100/76">Commercial path</div>
+        <h2 className="mt-3 text-2xl font-semibold text-white">A clear first purchase, then recurring operational value.</h2>
+        <p className="mt-3 max-w-4xl text-sm leading-7 text-white/64">
+          PrivateDAO does not require a buyer to adopt every feature at once. The entry point is one painful workflow,
+          one measurable pilot, and one proof packet that shows whether repeated use is justified.
+        </p>
+        <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+          {commercialPath.map(([title, body]) => (
+            <div key={title} className="rounded-2xl border border-white/10 bg-black/22 p-4">
+              <div className="text-base font-semibold text-white">{title}</div>
+              <p className="mt-2 text-sm leading-6 text-white/62">{body}</p>
+            </div>
+          ))}
+        </div>
+        <div className="mt-5 flex flex-wrap gap-3">
+          <Link href="/pricing" className={cn(buttonVariants({ size: "sm" }))}>
+            View pricing
+          </Link>
+          <Link href="/business-model" className={cn(buttonVariants({ size: "sm", variant: "secondary" }))}>
+            View business model
+          </Link>
+        </div>
+      </section>
+
+      <section className="rounded-[28px] border border-emerald-300/16 bg-emerald-300/[0.06] p-5 sm:p-6">
+        <div className="text-[11px] uppercase tracking-[0.25em] text-emerald-100/76">Assurance path</div>
+        <h2 className="mt-3 text-2xl font-semibold text-white">Trust is built through evidence and independent review.</h2>
+        <div className="mt-5 grid gap-3 md:grid-cols-3">
+          {assurancePath.map(([title, body]) => (
+            <div key={title} className="rounded-2xl border border-white/10 bg-black/22 p-4">
+              <div className="text-base font-semibold text-white">{title}</div>
+              <p className="mt-2 text-sm leading-6 text-white/62">{body}</p>
+            </div>
+          ))}
+        </div>
+        <div className="mt-5 flex flex-wrap gap-3">
+          <Link href="/security" className={cn(buttonVariants({ size: "sm", variant: "secondary" }))}>
+            Open security center
+          </Link>
+          <Link href="/documents/external-audit-engagement" className={cn(buttonVariants({ size: "sm", variant: "outline" }))}>
+            Open audit engagement scope
+          </Link>
+        </div>
+      </section>
+
+      <section className="rounded-[28px] border border-white/10 bg-white/[0.035] p-5 sm:p-6">
+        <div className="text-[11px] uppercase tracking-[0.25em] text-white/46">Collaboration path</div>
+        <h2 className="mt-3 text-2xl font-semibold text-white">Founder-built, open to the partners required for scale.</h2>
+        <p className="mt-3 max-w-4xl text-sm leading-7 text-white/64">
+          The next stage is designed around real collaboration: design partners create validated use cases, technical
+          contributors expand delivery capacity, security reviewers strengthen trust, and infrastructure partners improve
+          the operating layer.
+        </p>
+        <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+          {collaborationPath.map(([title, body]) => (
+            <div key={title} className="rounded-2xl border border-white/10 bg-black/22 p-4">
+              <div className="text-base font-semibold text-white">{title}</div>
+              <p className="mt-2 text-sm leading-6 text-white/62">{body}</p>
+            </div>
+          ))}
+        </div>
+        <div className="mt-5 flex flex-wrap gap-3">
+          <Link href="/pilots" className={cn(buttonVariants({ size: "sm" }))}>
+            Open pilot program
+          </Link>
+          <Link href="/community" className={cn(buttonVariants({ size: "sm", variant: "secondary" }))}>
+            Join the community
+          </Link>
+          <a href="https://github.com/X-PACT/PrivateDAO" className={cn(buttonVariants({ size: "sm", variant: "outline" }))}>
+            Open GitHub
+          </a>
         </div>
       </section>
 

@@ -1,9 +1,9 @@
 # PrivateDAO
 
-PrivateDAO is a live confidential governance and treasury coordination operating system on Solana.
+PrivateDAO is live confidential coordination infrastructure for organizations on Solana.
 
 Status: Live Testnet
-Category: Confidential Governance Infrastructure
+Category: Confidential Coordination Infrastructure
 Positioning: Confidential Coordination Infrastructure for Organizations on Solana.
 Chain Strategy: Solana-first. Cross-chain expansion is planned only after real operating use and proof on Solana.
 Founder: Fahd Kotb
@@ -22,6 +22,9 @@ Application Ready Metrics: https://privatedao.org/reviewer/#application-ready-me
 AI Guide: https://privatedao.org/judge-ai
 Proof Center: https://privatedao.org/proof/?judge=1
 Investor Page: https://privatedao.org/investors/
+Pricing: https://privatedao.org/pricing/
+Pilot Program: https://privatedao.org/pilots/
+Business Model: https://privatedao.org/business-model/
 Coordination Thesis: https://privatedao.org/thesis/
 Whitepaper Version 2.0: https://privatedao.org/whitepaper/
 Value Route: https://privatedao.org/value/
@@ -48,6 +51,9 @@ This is not a concept-only project. PrivateDAO has a live website, public GitHub
 - Pitch deck: https://privatedao.org/deck/
 - Reviewer packet: https://privatedao.org/reviewer/
 - Investor page: https://privatedao.org/investors/
+- Pricing: https://privatedao.org/pricing/
+- Pilot program: https://privatedao.org/pilots/
+- Business model: https://privatedao.org/business-model/
 - Coordination thesis: https://privatedao.org/thesis/
 - Application ready metrics: https://privatedao.org/reviewer/#application-ready-metrics
 - Verify proof: https://privatedao.org/proof/?judge=1

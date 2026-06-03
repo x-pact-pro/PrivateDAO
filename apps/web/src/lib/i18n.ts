@@ -365,9 +365,9 @@ const englishCopy: LocalizedCopy = {
     search: "Search",
     openApp: "Open App",
     searchSite: "Search the app, docs, or live proof",
-    createPrivateDaoTagline: "Create a private Solana DAO, propose, vote, and execute in one wallet-first flow",
+    createPrivateDaoTagline: "Coordinate, approve, execute, and verify sensitive operations on Solana",
     footerSummary:
-      "PrivateDAO is a privacy-focused governance and treasury product on Solana with additive hardening, runtime evidence, and clear verification surfaces.",
+      "PrivateDAO is confidential coordination infrastructure for organizations on Solana, connecting private operations to verifiable outcomes.",
     footerSupport:
       "Developed in public through github.com/X-PACT/PrivateDAO with product proof, runtime evidence, and final security hardening moving in parallel.",
     verificationView: "Verification view",
@@ -1002,8 +1002,8 @@ export const localizedCopy: Record<SupportedLocale, LocalizedCopy> = {
       search: "بحث",
       openApp: "افتح التطبيق",
       searchSite: "ابحث في التطبيق أو الوثائق أو الإثبات الحي",
-      createPrivateDaoTagline: "أنشئ DAO خاصًا على سولانا، ثم اقترح وصوّت ونفّذ من مسار واحد يبدأ بالمحفظة",
-      footerSummary: "PrivateDAO منتج حوكمة وخزانة يركز على الخصوصية فوق سولانا مع hardening تدريجي وأدلة تشغيلية وأسـطح تحقق واضحة.",
+      createPrivateDaoTagline: "نسّق ووافق ونفّذ وتحقق من العمليات الحساسة على سولانا",
+      footerSummary: "PrivateDAO بنية تنسيق سرية للمنظمات على سولانا، تربط العمليات الخاصة بنتائج قابلة للتحقق.",
       footerSupport: "يُبنى بدعم تنفيذي من فريق تقني متعدد الجنسيات. اتجاه المنتج والمساءلة التنفيذية والتنسيق الخارجي يقودها فهد قطب.",
       verificationView: "واجهة التحقق",
       fastPath: "المسار السريع",

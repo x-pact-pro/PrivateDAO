@@ -11,6 +11,7 @@ const coreRoutes = [
   "/value",
   "/thesis",
   "/investors",
+  "/business-model",
   "/deck",
   "/reviewer",
   "/judges",
@@ -80,6 +81,7 @@ const coreRoutes = [
   "/versus",
   "/revenue",
   "/pricing",
+  "/pilots",
   "/onboard",
   "/onboard/confirmed",
   "/story",
@@ -105,6 +107,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
             path === "/judge" ||
             path === "/deck" ||
             path === "/investors" ||
+            path === "/pricing" ||
+            path === "/pilots" ||
+            path === "/business-model" ||
             path === "/thesis" ||
             path === "/rpc-services" ||
             path === "/api-status" ||

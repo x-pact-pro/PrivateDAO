@@ -58,7 +58,7 @@ export function BusinessModelSurface() {
     <section className="rounded-[32px] border border-white/10 bg-white/[0.04] p-6 sm:p-7">
       <div className="text-[11px] uppercase tracking-[0.28em] text-emerald-200/82">Business model</div>
       <h2 className="mt-3 max-w-4xl text-2xl font-semibold tracking-tight text-white sm:text-3xl">
-        Turn the live Testnet product into a sustainable infrastructure business without faking mainnet maturity
+        Turn a live Testnet product into a sustainable infrastructure business
       </h2>
       <p className="mt-4 max-w-4xl text-sm leading-7 text-white/66">
         The commercial model stays simple and defensible: open-source adoption creates trust, a fixed pilot creates the
@@ -76,10 +76,10 @@ export function BusinessModelSurface() {
       </div>
 
       <div className="mt-6 rounded-[24px] border border-cyan-300/16 bg-cyan-300/[0.08] p-5 text-sm leading-7 text-white/70">
-        The current truthful commercial rail is a <span className="font-semibold text-white">Testnet billing rehearsal</span>:
+        The current commercial proof rail is a <span className="font-semibold text-white">Testnet billing rehearsal</span>:
         a visitor with Testnet SOL can pay a small on-chain amount from the same wallet-first product, then inspect the
-        signature and logs in the explorer. That proves the business logic on-chain without pretending there is already
-        a finished mainnet checkout stack.
+        signature and logs in the explorer. This connects business logic, wallet UX, and public payment evidence in one
+        inspectable flow.
       </div>
 
       <div className="mt-6 rounded-[24px] border border-emerald-300/16 bg-emerald-300/[0.075] p-5">

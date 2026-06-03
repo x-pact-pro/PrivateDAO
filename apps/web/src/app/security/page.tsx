@@ -70,6 +70,35 @@ export default function SecurityPage() {
         { label: "ZK + REFHE + MagicBlock", variant: "cyan" },
       ]}
     >
+      <section className="rounded-[28px] border border-emerald-300/16 bg-emerald-300/[0.06] p-5 sm:p-6">
+        <div className="text-[11px] uppercase tracking-[0.25em] text-emerald-100/76">What security means for an organization</div>
+        <h2 className="mt-3 text-2xl font-semibold text-white">Private operations remain useful only when outcomes stay trustworthy.</h2>
+        <p className="mt-3 max-w-4xl text-sm leading-7 text-white/64">
+          PrivateDAO connects privacy to authority controls, wallet-signed execution, proof routes, and an audit-ready
+          release process. Organizations can protect sensitive coordination without asking stakeholders to accept an
+          unverifiable result.
+        </p>
+        <div className="mt-5 grid gap-3 md:grid-cols-3">
+          {[
+            ["Bound authority", "Approval and execution responsibilities remain explicit instead of disappearing into trusted operators."],
+            ["Verifiable outcomes", "Final results, receipts, and proof routes remain available after confidential coordination completes."],
+            ["Independent review path", "A defined external audit scope, handoff packet, and closure standard are ready for reviewer engagement."],
+          ].map(([title, body]) => (
+            <div key={title} className="rounded-2xl border border-white/10 bg-black/22 p-4">
+              <div className="text-base font-semibold text-white">{title}</div>
+              <p className="mt-2 text-sm leading-6 text-white/62">{body}</p>
+            </div>
+          ))}
+        </div>
+        <div className="mt-5 flex flex-wrap gap-3">
+          <Link href="/documents/external-audit-engagement" className={cn(buttonVariants({ size: "sm" }))}>
+            Open audit engagement scope
+          </Link>
+          <Link href="/proof" className={cn(buttonVariants({ size: "sm", variant: "secondary" }))}>
+            Open proof center
+          </Link>
+        </div>
+      </section>
       <div>
         <MetricsStrip />
       </div>
