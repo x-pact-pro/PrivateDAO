@@ -40,13 +40,16 @@ jobs:
       - name: Build root web mirror bundle
         run: npm run web:bundle:root
 
+      - name: Build GitHub Pages redirect artifact
+        run: node scripts/build-github-pages-redirect.mjs
+
       - name: Setup Pages
         uses: actions/configure-pages@v6
 
-      - name: Upload root web artifact
+      - name: Upload GitHub Pages redirect artifact
         uses: actions/upload-pages-artifact@v5
         with:
-          path: ./dist/web-mirror-root
+          path: ./dist/github-pages-redirect
 
       - name: Deploy to GitHub Pages
         id: deployment
