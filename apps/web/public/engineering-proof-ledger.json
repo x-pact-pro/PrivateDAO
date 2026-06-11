@@ -1,0 +1,461 @@
+{
+  "project": "PrivateDAO",
+  "date": "2026-06-11",
+  "positioning": "Confidential Coordination Infrastructure for Organizations on Solana",
+  "primary_network": "Solana Testnet",
+  "product_spine": [
+    "Connect wallet",
+    "Intelligence before signing",
+    "Private vote while deciding",
+    "Reveal",
+    "Verify",
+    "Execute"
+  ],
+  "evidence_classes": [
+    "on-chain proof",
+    "runtime API proof",
+    "repository proof",
+    "boundary proof"
+  ],
+  "reviewer_principle": "Each specialist should review the lane that matches their protocol or provider. The ledger separates Ika/2PC-MPC, REFHE, ZK, commit-reveal, MagicBlock, QVAC, treasury, payout, RPC, Supabase, and hosted API evidence so one integration is not used to overclaim another.",
+  "ledger_url": "https://privatedao.org/documents/engineering-proof-ledger-2026-06-11/",
+  "reports": {
+    "magicblock": "https://privatedao.org/documents/magicblock-engineering-report-2026-06-11/",
+    "index": "https://privatedao.org/documents/integration-reports-index-2026-06-11/",
+    "intelligence": "https://privatedao.org/documents/intelligence-provider-engineering-report-2026-06-11/",
+    "privacy_encryption": "https://privatedao.org/documents/privacy-encryption-engineering-report-2026-06-11/",
+    "treasury_asset_oracle": "https://privatedao.org/documents/treasury-asset-oracle-engineering-report-2026-06-11/",
+    "infrastructure_telemetry": "https://privatedao.org/documents/infrastructure-telemetry-engineering-report-2026-06-11/"
+  },
+  "integrations": [
+    {
+      "name": "Solana Testnet",
+      "role": "Governance, proposal, vote, execution, proof network",
+      "evidence_class": "on-chain/runtime",
+      "proof": "https://privatedao.org/proof/?judge=1",
+      "code_refs": [
+        "apps/web/src/lib/solana-network.ts",
+        "docs/governance-runtime-proof.generated.md"
+      ],
+      "boundary": "Testnet-first; mainnet production custody is not claimed as complete."
+    },
+    {
+      "name": "Anchor",
+      "role": "PrivateDAO program account model and instruction surface",
+      "evidence_class": "repository/runtime",
+      "proof": "https://api.privatedao.org/api/v1/readiness",
+      "code_refs": [
+        "programs/private-dao/src/privacy.rs",
+        "docs/anchor-1-migration-evidence-2026-04-30.md"
+      ],
+      "boundary": "Program-readiness evidence does not replace independent external audit."
+    },
+    {
+      "name": "ZK commit-reveal",
+      "role": "Hide influence signals during active voting and reveal final outcome later",
+      "evidence_class": "repository/proof",
+      "proof": "https://privatedao.org/documents/privacy-encryption-engineering-report-2026-06-11/",
+      "code_refs": [
+        "docs/zk-proof-registry.json",
+        "docs/privacy-and-encryption-proof-guide.md",
+        "apps/web/src/lib/privacy-proof-snapshot.ts"
+      ],
+      "boundary": "Current posture documents proof artifacts and reveal flow; on-chain verifier CPI is a stronger future path."
+    },
+    {
+      "name": "Public-private-until-reveal voting",
+      "role": "Public proposal visibility with hidden counts, percentages, identities, intent, whale signals, and momentum during active voting",
+      "evidence_class": "product/repository",
+      "proof": "https://privatedao.org/try/",
+      "code_refs": [
+        "docs/solana-anonymous-governance-primitive.md",
+        "docs/privacy-and-encryption-proof-guide.md"
+      ],
+      "boundary": "The UX posture is the active product rule; proof strength depends on the selected route and signed Testnet receipt."
+    },
+    {
+      "name": "Private rooms / VIP rooms",
+      "role": "Invite-only coordination, private proposal notes, hidden member intent, reveal policy, proof export",
+      "evidence_class": "product/repository",
+      "proof": "https://privatedao.org/rooms/",
+      "code_refs": [
+        "docs/privacy-execution-matrix-2026-05-26.md",
+        "docs/provider-to-encrypted-execution-spine-2026-05-22.md"
+      ],
+      "boundary": "Room names and private metadata must not be public; proof packets reveal only policy-approved outcome data."
+    },
+    {
+      "name": "Proof Center / Transparency Reports",
+      "role": "Public verification after voting, payout, vesting, or execution completes",
+      "evidence_class": "runtime/product",
+      "proof": "https://privatedao.org/proof/?judge=1",
+      "code_refs": [
+        "docs/live-proof.md",
+        "docs/proof-registry.json",
+        "docs/privacy-execution-matrix-2026-05-26.md"
+      ],
+      "boundary": "Transparency after completion does not expose hidden active-vote signals or private-room notes."
+    },
+    {
+      "name": "REFHE",
+      "role": "Confidential payroll and encrypted execution proof lane",
+      "evidence_class": "repository/runtime receipt",
+      "proof": "https://privatedao.org/services/refhe-payroll-proof/",
+      "code_refs": [
+        "docs/refhe-protocol.md",
+        "docs/refhe-security-model.md",
+        "docs/refhe-audit-scope.md"
+      ],
+      "boundary": "Proof/receipt oriented unless backed by fresh signed transaction or configured provider receipt."
+    },
+    {
+      "name": "Ika / 2PC-MPC / Encrypt lane",
+      "role": "Future/optional approval and dWallet-style threshold-signing boundary for confidential operations",
+      "evidence_class": "repository/boundary",
+      "proof": "https://privatedao.org/services/encrypt-ika-operations/",
+      "code_refs": [
+        "docs/encrypt-ika-2pcmpc-refhe-desktop-report-2026-05-21.md",
+        "docs/testnet-refhe-encrypt-ika-commitment-2026-05-07.md"
+      ],
+      "boundary": "Ika/2PC-MPC is treated as a provider boundary and commitment lane unless final dWallet signing evidence is present."
+    },
+    {
+      "name": "MagicBlock",
+      "role": "Private payment corridor and future ER/PER runtime lane",
+      "evidence_class": "on-chain/runtime",
+      "proof": "https://api.privatedao.org/api/v1/magicblock/onchain-proof",
+      "code_refs": [
+        "docs/magicblock-engineering-report-2026-06-11.md",
+        "docs/magicblock/private-payments.md",
+        "docs/magicblock/runtime-evidence.md"
+      ],
+      "boundary": "Current proof is PrivateDAO corridor; ER/PER-native delegation is labelled as upgrade path."
+    },
+    {
+      "name": "QVAC",
+      "role": "Local/private decision intelligence before signing",
+      "evidence_class": "runtime/repository",
+      "proof": "https://api.privatedao.org/api/v1/qvac/runtime-proof",
+      "code_refs": [
+        "apps/web/src/lib/ai/qvac.ts",
+        "docs/intelligence-provider-engineering-report-2026-06-11.md"
+      ],
+      "boundary": "Decision support only; hidden vote intent and private room transcripts are not sent by default."
+    },
+    {
+      "name": "GoldRush/Covalent",
+      "role": "Treasury, wallet, and historical decision context",
+      "evidence_class": "runtime/repository",
+      "proof": "https://privatedao.org/services/goldrush-decision-intelligence/",
+      "code_refs": [
+        "apps/web/src/lib/api/goldrush.ts",
+        "apps/web/src/lib/intelligence/providers/goldrush-provider.ts",
+        "apps/web/src/app/api/goldrush/query/route.ts"
+      ],
+      "boundary": "Optional provider; unavailable provider does not break the vote flow."
+    },
+    {
+      "name": "Arkham provider slot",
+      "role": "Optional counterparty/entity risk context",
+      "evidence_class": "repository/boundary",
+      "proof": "https://api.privatedao.org/api/v1/provider-integrations/status",
+      "code_refs": [
+        "apps/web/src/lib/intelligence/providers/arkham-provider.ts",
+        "apps/web/src/lib/intelligence/providers/types.ts"
+      ],
+      "boundary": "Optional provider. No browser-exposed API key. Hidden vote data is excluded from provider requests."
+    },
+    {
+      "name": "Birdeye provider slot",
+      "role": "Optional market and token context in the provider-router model",
+      "evidence_class": "boundary",
+      "proof": "https://api.privatedao.org/api/v1/provider-integrations/status",
+      "code_refs": [
+        "apps/web/src/lib/intelligence/provider-registry.ts",
+        "apps/web/src/lib/intelligence/providers/types.ts"
+      ],
+      "boundary": "Provider slot is modular; unavailable state must not block governance."
+    },
+    {
+      "name": "Helius provider slot",
+      "role": "Optional Solana account/transaction context and RPC resilience lane",
+      "evidence_class": "boundary/runtime",
+      "proof": "https://api.privatedao.org/api/v1/provider-integrations/status",
+      "code_refs": [
+        "apps/web/src/lib/intelligence/provider-registry.ts",
+        "apps/web/src/lib/intelligence/providers/types.ts"
+      ],
+      "boundary": "Provider slot is future/optional unless configured."
+    },
+    {
+      "name": "Intelligence provider registry",
+      "role": "Swap intelligence providers without changing the primary UX",
+      "evidence_class": "repository",
+      "proof": "https://privatedao.org/settings/intelligence/",
+      "code_refs": [
+        "apps/web/src/lib/intelligence/provider-registry.ts",
+        "apps/web/src/lib/intelligence/providers/types.ts",
+        "apps/web/src/lib/intelligence/user-provider-config.ts"
+      ],
+      "boundary": "Provider failures are isolated; default safe intelligence should work without external keys."
+    },
+    {
+      "name": "Umbra-compatible private payout",
+      "role": "Private payout intent and receipt provider boundary",
+      "evidence_class": "runtime/repository",
+      "proof": "https://privatedao.org/services/umbra-confidential-payout/",
+      "code_refs": [
+        "apps/web/src/lib/providers/umbra-provider.ts",
+        "apps/web/src/lib/privacy/umbra.ts",
+        "docs/umbra-adapter-boundary.md"
+      ],
+      "boundary": "Sandbox fallback is labelled sandbox; no real Umbra settlement claim without configured receipt."
+    },
+    {
+      "name": "Cloak-style private settlement",
+      "role": "Confidential settlement narrative and proof lane",
+      "evidence_class": "runtime/repository",
+      "proof": "https://privatedao.org/services/cloak-private-settlement/",
+      "code_refs": [
+        "docs/cloak-devnet-sdk-live-probe.generated.md",
+        "docs/privacy-execution-matrix-2026-05-26.md"
+      ],
+      "boundary": "Provider rail; not final real-funds production settlement without current receipt evidence."
+    },
+    {
+      "name": "Streamflow-compatible vesting",
+      "role": "Confidential vesting rehearsal and future provider lane",
+      "evidence_class": "repository/boundary",
+      "proof": "https://privatedao.org/rooms/",
+      "code_refs": [
+        "apps/web/src/lib/providers/confidential-vesting-provider.ts",
+        "docs/treasury-asset-oracle-engineering-report-2026-06-11.md"
+      ],
+      "boundary": "Sandbox/provider boundary unless Streamflow config, signature, and receipt are present."
+    },
+    {
+      "name": "Private payout provider interface",
+      "role": "Provider abstraction for payroll, vendor payout, grant payout, and reward payout",
+      "evidence_class": "repository/API",
+      "proof": "https://privatedao.org/api/coordination/providers/status",
+      "code_refs": [
+        "apps/web/src/lib/providers/private-payout-provider.ts",
+        "apps/web/src/lib/providers/private-payout-registry.ts",
+        "apps/web/src/app/api/private-payout/prepare/route.ts",
+        "apps/web/src/app/api/private-payout/execute-testnet/route.ts",
+        "apps/web/src/app/api/private-payout/status/route.ts"
+      ],
+      "boundary": "Provider receipts must not leak raw recipient metadata; sandbox receipts must remain labelled sandbox."
+    },
+    {
+      "name": "Jupiter",
+      "role": "Treasury route preview and swap/liquidity corridor",
+      "evidence_class": "runtime/repository",
+      "proof": "https://privatedao.org/services/jupiter-treasury-route/",
+      "code_refs": [
+        "apps/web/src/app/api/jupiter/order/route.ts",
+        "docs/jupiter-treasury-route.md"
+      ],
+      "boundary": "Order preparation is separate from completed signed swap settlement."
+    },
+    {
+      "name": "PUSD / AUDD",
+      "role": "Stablecoin treasury and payout context",
+      "evidence_class": "repository/product",
+      "proof": "https://privatedao.org/services/pusd-stablecoin/",
+      "code_refs": [
+        "docs/treasury-asset-oracle-engineering-report-2026-06-11.md"
+      ],
+      "boundary": "Stablecoin support must be tied to configured mints, wallet signatures, and receipts for settlement claims."
+    },
+    {
+      "name": "Tokens-compatible asset context",
+      "role": "Verify asset context before a vote or payout",
+      "evidence_class": "repository/product",
+      "proof": "https://privatedao.org/try/",
+      "code_refs": [
+        "apps/web/src/lib/tokens/token-intelligence-provider.ts",
+        "docs/treasury-asset-oracle-engineering-report-2026-06-11.md"
+      ],
+      "boundary": "Never blocks governance if provider is unavailable; fallback labels unknown/sandbox context."
+    },
+    {
+      "name": "Pyth-compatible price boundary",
+      "role": "Price context for treasury, payout, and vesting decisions",
+      "evidence_class": "repository/product",
+      "proof": "https://privatedao.org/try/",
+      "code_refs": [
+        "apps/web/src/lib/oracle/oracle-price-provider.ts"
+      ],
+      "boundary": "Modular boundary; does not imply live oracle settlement unless configured."
+    },
+    {
+      "name": "Treasury coordination",
+      "role": "Private treasury request, approval, route selection, execution receipt, public audit",
+      "evidence_class": "product/repository",
+      "proof": "https://privatedao.org/treasury/",
+      "code_refs": [
+        "docs/treasury-asset-oracle-engineering-report-2026-06-11.md",
+        "docs/provider-to-encrypted-execution-spine-2026-05-22.md"
+      ],
+      "boundary": "Reveal public outcome and proof after completion, not active private coordination details."
+    },
+    {
+      "name": "Confidential payroll",
+      "role": "Contributor payroll and reward proof lane with private metadata posture",
+      "evidence_class": "product/repository",
+      "proof": "https://privatedao.org/payroll/",
+      "code_refs": [
+        "docs/refhe-protocol.md",
+        "docs/refhe-security-model.md",
+        "docs/privacy-execution-matrix-2026-05-26.md"
+      ],
+      "boundary": "Metadata/proof oriented unless live settlement receipt is attached."
+    },
+    {
+      "name": "GamingDAO rewards",
+      "role": "Community and game reward coordination with private payout/reward rehearsal",
+      "evidence_class": "product/repository",
+      "proof": "https://privatedao.org/gamingdao/",
+      "code_refs": [
+        "docs/privacy-execution-matrix-2026-05-26.md",
+        "docs/treasury-asset-oracle-engineering-report-2026-06-11.md"
+      ],
+      "boundary": "Reward proof must separate game/community outcome from private recipient metadata."
+    },
+    {
+      "name": "QuickNode",
+      "role": "RPC, stream telemetry, block/transaction ingestion and monitoring",
+      "evidence_class": "runtime/API",
+      "proof": "https://api.privatedao.org/api/v1/quicknode/stream/stats",
+      "code_refs": [
+        "apps/web/src/app/api/quicknode/stream/route.ts",
+        "docs/quicknode-stream-intelligence.md"
+      ],
+      "boundary": "Stream telemetry is monitoring evidence, not proposal-specific correctness proof."
+    },
+    {
+      "name": "Supabase",
+      "role": "Operation receipts, analytics, room/proposal metadata, telemetry",
+      "evidence_class": "repository/runtime",
+      "proof": "https://privatedao.org/reviewer/#application-ready-metrics",
+      "code_refs": [
+        "apps/web/src/lib/supabase/operation-receipts.ts",
+        "docs/supabase-operation-receipts.sql"
+      ],
+      "boundary": "Metrics must be reported only from returned data, not estimates."
+    },
+    {
+      "name": "AWS hosted API layer",
+      "role": "Readiness, runtime, proof, and provider routes",
+      "evidence_class": "runtime/API",
+      "proof": "https://api.privatedao.org/healthz",
+      "code_refs": [
+        "docs/infrastructure-telemetry-engineering-report-2026-06-11.md"
+      ],
+      "boundary": "Hosted API health is checked separately from static GitHub Pages mirrors."
+    },
+    {
+      "name": "Torque MCP",
+      "role": "Growth-loop and event telemetry integration route",
+      "evidence_class": "runtime/repository",
+      "proof": "https://privatedao.org/services/torque-growth-loop/",
+      "code_refs": [
+        "apps/web/src/app/api/torque/custom-event/route.ts",
+        "docs/torque-growth-loop.md"
+      ],
+      "boundary": "Engagement/growth infrastructure, not governance correctness proof."
+    },
+    {
+      "name": "AI-readable layer",
+      "role": "Machine-readable reviewer and crawler surface",
+      "evidence_class": "public static proof",
+      "proof": "https://privatedao.org/llms.txt",
+      "code_refs": [
+        "apps/web/public/llms.txt",
+        "apps/web/public/ai.json",
+        "apps/web/public/evidence.json",
+        "apps/web/public/engineering-proof-ledger.json"
+      ],
+      "boundary": "Manifests describe official surfaces and evidence; they do not replace source code or runtime verification."
+    }
+  ],
+  "reviewer_routing": [
+    {
+      "reviewer": "Ika / 2PC-MPC engineer",
+      "start": "https://privatedao.org/services/encrypt-ika-operations/",
+      "inspect": [
+        "docs/encrypt-ika-2pcmpc-refhe-desktop-report-2026-05-21.md"
+      ],
+      "question": "How PrivateDAO frames Ika/2PC-MPC as a threshold-approval and confidential-operation boundary."
+    },
+    {
+      "reviewer": "REFHE engineer",
+      "start": "https://privatedao.org/services/refhe-payroll-proof/",
+      "inspect": [
+        "docs/refhe-protocol.md",
+        "docs/refhe-security-model.md"
+      ],
+      "question": "How encrypted payroll/payment proofs are represented and where the receipt boundary sits."
+    },
+    {
+      "reviewer": "ZK engineer",
+      "start": "https://privatedao.org/documents/privacy-encryption-engineering-report-2026-06-11/",
+      "inspect": [
+        "docs/zk-proof-registry.json",
+        "docs/privacy-and-encryption-proof-guide.md"
+      ],
+      "question": "How the project separates commit, reveal, proof artifact, and future verifier CPI."
+    },
+    {
+      "reviewer": "Commit-reveal/governance engineer",
+      "start": "https://privatedao.org/try/",
+      "inspect": [
+        "docs/solana-anonymous-governance-primitive.md"
+      ],
+      "question": "How active-vote influence signals are hidden until reveal."
+    },
+    {
+      "reviewer": "MagicBlock engineer",
+      "start": "https://privatedao.org/documents/magicblock-engineering-report-2026-06-11/",
+      "inspect": [
+        "docs/magicblock/private-payments.md",
+        "docs/magicblock/runtime-evidence.md"
+      ],
+      "question": "How the current corridor works and what remains for ER/PER-native execution."
+    },
+    {
+      "reviewer": "QVAC/local-AI engineer",
+      "start": "https://privatedao.org/services/qvac-sovereign-ai/",
+      "inspect": [
+        "apps/web/src/lib/ai/qvac.ts",
+        "apps/web/src/lib/intelligence/llm/prompt-builder.ts"
+      ],
+      "question": "How intelligence runs before signing without hidden vote data."
+    },
+    {
+      "reviewer": "Treasury/stablecoin engineer",
+      "start": "https://privatedao.org/treasury/",
+      "inspect": [
+        "docs/treasury-asset-oracle-engineering-report-2026-06-11.md"
+      ],
+      "question": "How asset context, price context, routing, payout, and verification are connected."
+    },
+    {
+      "reviewer": "Security reviewer",
+      "start": "https://privatedao.org/proof/?judge=1",
+      "inspect": [
+        "docs/proof-registry.json",
+        "docs/privacy-and-encryption-proof-guide.md"
+      ],
+      "question": "Which proof is on-chain, runtime, repository, sandbox, or roadmap."
+    }
+  ],
+  "evaluation_rule": [
+    "Prefer live on-chain proof and runtime APIs when present.",
+    "Use repository code and tests to verify provider boundaries and non-leakage behavior.",
+    "Treat sandbox lanes as product-ready rehearsals, not production settlement.",
+    "Treat roadmap lanes as explicit upgrade paths, not current completion claims.",
+    "Treat public UX as the simplified operator path and docs/reports as reviewer-grade detail."
+  ]
+}

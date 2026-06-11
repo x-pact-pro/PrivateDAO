@@ -159,6 +159,8 @@ PrivateDAO uses Colosseum sponsor resources as modular product lanes, not as hom
 - MagicBlock private payments: https://privatedao.org/services/magicblock-private-payments/
 - MagicBlock engineering report: https://privatedao.org/documents/magicblock-engineering-report-2026-06-11/
 - Engineering integration reports index: https://privatedao.org/documents/integration-reports-index-2026-06-11/
+- Engineering proof ledger: https://privatedao.org/documents/engineering-proof-ledger-2026-06-11/
+- Engineering proof ledger JSON: https://privatedao.org/engineering-proof-ledger.json
 - Intelligence provider engineering report: https://privatedao.org/documents/intelligence-provider-engineering-report-2026-06-11/
 - Privacy and encryption engineering report: https://privatedao.org/documents/privacy-encryption-engineering-report-2026-06-11/
 - Treasury, asset, and oracle engineering report: https://privatedao.org/documents/treasury-asset-oracle-engineering-report-2026-06-11/

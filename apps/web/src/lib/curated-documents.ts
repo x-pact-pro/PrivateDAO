@@ -90,6 +90,18 @@ const curatedDocuments: CuratedDocument[] = [
     rawHref: `${repositoryBlobBase}/docs/integration-reports-index-2026-06-11.md`,
   },
   {
+    slug: "engineering-proof-ledger-2026-06-11",
+    title: "Engineering Proof Ledger",
+    category: "Reviewer core",
+    summary:
+      "Consolidated proof ledger mapping PrivateDAO's protocol, intelligence, privacy, treasury, and infrastructure integrations to product roles, public proof routes, repository references, evidence classes, and labelled boundaries.",
+    audience: "Protocol engineers, judges, AI reviewers, investors, provider teams, maintainers",
+    boundary:
+      "Proof ledger only; it consolidates evidence and boundaries across reports without converting sandbox, optional, or roadmap provider lanes into completed production settlement claims.",
+    docPath: "docs/engineering-proof-ledger-2026-06-11.md",
+    rawHref: `${repositoryBlobBase}/docs/engineering-proof-ledger-2026-06-11.md`,
+  },
+  {
     slug: "intelligence-provider-engineering-report-2026-06-11",
     title: "Intelligence Provider Engineering Report",
     category: "Intelligence",

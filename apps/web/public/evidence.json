@@ -131,6 +131,16 @@
       "evidence": "https://privatedao.org/documents/integration-reports-index-2026-06-11/"
     },
     {
+      "claim": "PrivateDAO exposes a consolidated engineering proof ledger that maps each core integration to product role, public proof route, repository reference, evidence class, and labelled boundary",
+      "status": "verified",
+      "evidence": "https://privatedao.org/documents/engineering-proof-ledger-2026-06-11/"
+    },
+    {
+      "claim": "PrivateDAO exposes a machine-readable engineering proof ledger for AI reviewers and automated evaluators",
+      "status": "verified",
+      "evidence": "https://privatedao.org/engineering-proof-ledger.json"
+    },
+    {
       "claim": "PrivateDAO documents its intelligence provider router, QVAC local boundary, LLM provider boundary, GoldRush/Covalent, Arkham, Birdeye, Helius, QuickNode, and Zerion-aligned decision context",
       "status": "verified",
       "evidence": "https://privatedao.org/documents/intelligence-provider-engineering-report-2026-06-11/"

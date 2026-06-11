@@ -38,6 +38,8 @@
   "magicblock_route": "https://privatedao.org/services/magicblock-private-payments/",
   "magicblock_engineering_report": "https://privatedao.org/documents/magicblock-engineering-report-2026-06-11/",
   "engineering_reports_index": "https://privatedao.org/documents/integration-reports-index-2026-06-11/",
+  "engineering_proof_ledger": "https://privatedao.org/documents/engineering-proof-ledger-2026-06-11/",
+  "engineering_proof_ledger_json": "https://privatedao.org/engineering-proof-ledger.json",
   "intelligence_engineering_report": "https://privatedao.org/documents/intelligence-provider-engineering-report-2026-06-11/",
   "privacy_encryption_engineering_report": "https://privatedao.org/documents/privacy-encryption-engineering-report-2026-06-11/",
   "treasury_asset_oracle_engineering_report": "https://privatedao.org/documents/treasury-asset-oracle-engineering-report-2026-06-11/",
