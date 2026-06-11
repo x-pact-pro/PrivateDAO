@@ -78,6 +78,66 @@ const curatedDocuments: CuratedDocument[] = [
     rawHref: `${repositoryBlobBase}/docs/magicblock-engineering-report-2026-06-11.md`,
   },
   {
+    slug: "integration-reports-index-2026-06-11",
+    title: "Engineering Integration Reports Index",
+    category: "Protocol",
+    summary:
+      "Index for PrivateDAO's protocol-grade engineering reports covering intelligence, privacy, encryption, treasury, stablecoins, oracle, infrastructure, telemetry, and provider-router integrations.",
+    audience: "Protocol engineers, integration teams, security reviewers, judges, investors",
+    boundary:
+      "Index only; each linked report separates current Testnet/runtime evidence from sandbox, optional, placeholder, or roadmap boundaries.",
+    docPath: "docs/integration-reports-index-2026-06-11.md",
+    rawHref: `${repositoryBlobBase}/docs/integration-reports-index-2026-06-11.md`,
+  },
+  {
+    slug: "intelligence-provider-engineering-report-2026-06-11",
+    title: "Intelligence Provider Engineering Report",
+    category: "Intelligence",
+    summary:
+      "Engineering report for PrivateDAO's intelligence provider router, QVAC local/runtime boundary, LLM provider settings, GoldRush/Covalent, Arkham, Birdeye, Helius, QuickNode, and Zerion-aligned decision context.",
+    audience: "AI engineers, data-provider teams, QVAC reviewers, Solana judges, security reviewers",
+    boundary:
+      "Intelligence report only; it documents pre-signing decision support and provider boundaries without claiming that external providers can see hidden vote intent or private room transcripts.",
+    docPath: "docs/intelligence-provider-engineering-report-2026-06-11.md",
+    rawHref: `${repositoryBlobBase}/docs/intelligence-provider-engineering-report-2026-06-11.md`,
+  },
+  {
+    slug: "privacy-encryption-engineering-report-2026-06-11",
+    title: "Privacy And Encryption Engineering Report",
+    category: "Security",
+    summary:
+      "Engineering report for PrivateDAO's privacy modes, ZK commit-reveal posture, local Groth16 artifacts, REFHE settlement gate, Ika/Encrypt lane, Umbra-compatible private payouts, Cloak-style settlement rail, Streamflow-compatible vesting, and private rooms.",
+    audience: "Cryptography reviewers, privacy protocol teams, Solana engineers, security reviewers, judges",
+    boundary:
+      "Privacy report only; it distinguishes shipped local proofs, settlement gates, and provider boundaries from future on-chain verifier CPI, final Ika dWallet signing, and external private-settlement production receipts.",
+    docPath: "docs/privacy-encryption-engineering-report-2026-06-11.md",
+    rawHref: `${repositoryBlobBase}/docs/privacy-encryption-engineering-report-2026-06-11.md`,
+  },
+  {
+    slug: "treasury-asset-oracle-engineering-report-2026-06-11",
+    title: "Treasury Asset And Oracle Engineering Report",
+    category: "Treasury",
+    summary:
+      "Engineering report for Token-2022, Tokens-compatible asset context, Pyth-compatible oracle pricing, Jupiter treasury routing, PUSD, AUDD, private payouts, confidential vesting, and wallet-first treasury proof.",
+    audience: "Treasury engineers, stablecoin partners, DeFi reviewers, payment teams, judges",
+    boundary:
+      "Treasury report only; it documents asset-context and price-context provider boundaries and does not claim live real-funds stablecoin settlement without configured mints, funded wallets, signatures, and proof evidence.",
+    docPath: "docs/treasury-asset-oracle-engineering-report-2026-06-11.md",
+    rawHref: `${repositoryBlobBase}/docs/treasury-asset-oracle-engineering-report-2026-06-11.md`,
+  },
+  {
+    slug: "infrastructure-telemetry-engineering-report-2026-06-11",
+    title: "Infrastructure And Telemetry Engineering Report",
+    category: "Infrastructure",
+    summary:
+      "Engineering report for the AWS hosted API layer, QuickNode RPC and Streams, Supabase telemetry, provider status routes, proof center, AI-readable layer, Torque MCP growth telemetry, and historical route preservation.",
+    audience: "Backend engineers, RPC providers, infrastructure partners, reliability reviewers, judges",
+    boundary:
+      "Infrastructure report only; it documents hosted runtime and telemetry proof routes without turning provider counters into private-governance correctness or audited commercial traction.",
+    docPath: "docs/infrastructure-telemetry-engineering-report-2026-06-11.md",
+    rawHref: `${repositoryBlobBase}/docs/infrastructure-telemetry-engineering-report-2026-06-11.md`,
+  },
+  {
     slug: "site-execution-route-inventory-2026-05-27",
     title: "Site Execution Route Inventory",
     category: "Reviewer core",

@@ -126,6 +126,31 @@
       "evidence": "https://api.privatedao.org/api/v1/magicblock/onchain-proof"
     },
     {
+      "claim": "PrivateDAO exposes protocol-grade engineering reports for intelligence, privacy, encryption, treasury, asset, oracle, infrastructure, telemetry, and provider integrations",
+      "status": "verified",
+      "evidence": "https://privatedao.org/documents/integration-reports-index-2026-06-11/"
+    },
+    {
+      "claim": "PrivateDAO documents its intelligence provider router, QVAC local boundary, LLM provider boundary, GoldRush/Covalent, Arkham, Birdeye, Helius, QuickNode, and Zerion-aligned decision context",
+      "status": "verified",
+      "evidence": "https://privatedao.org/documents/intelligence-provider-engineering-report-2026-06-11/"
+    },
+    {
+      "claim": "PrivateDAO documents its privacy and encryption architecture across ZK commit-reveal, REFHE, Ika/Encrypt, Umbra-compatible private payouts, Cloak-style settlement, Streamflow-compatible vesting, and private rooms",
+      "status": "verified",
+      "evidence": "https://privatedao.org/documents/privacy-encryption-engineering-report-2026-06-11/"
+    },
+    {
+      "claim": "PrivateDAO documents its treasury, asset, stablecoin, and oracle architecture across Token-2022, Tokens-compatible asset context, Pyth-compatible pricing, Jupiter, PUSD, and AUDD",
+      "status": "verified",
+      "evidence": "https://privatedao.org/documents/treasury-asset-oracle-engineering-report-2026-06-11/"
+    },
+    {
+      "claim": "PrivateDAO documents its infrastructure and telemetry architecture across AWS, QuickNode, Supabase, provider status, proof routes, AI-readable manifests, and Torque MCP growth telemetry",
+      "status": "verified",
+      "evidence": "https://privatedao.org/documents/infrastructure-telemetry-engineering-report-2026-06-11/"
+    },
+    {
       "claim": "PrivateDAO is not a concept-only or mock-only submission",
       "status": "verified",
       "evidence": "Live website, public GitHub repository, judge route, runtime proof, Testnet proof routes, and AI-readable manifests are public."
