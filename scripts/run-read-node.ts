@@ -2881,6 +2881,33 @@ function privacyExecutionMatrixStatus() {
         "Asset context, price context, and route preview are separated from final signed real-funds settlement.",
     },
     {
+      specialist: "MagicBlock engineer",
+      services: ["private-payments", "magicblock-private-payments"],
+      report: engineeringReports.magicblock,
+      reviewerStart: "https://privatedao.org/documents/magicblock-engineering-report-2026-06-11/",
+      proofEndpoints: ["/api/v1/magicblock/onchain-proof?refresh=1", "/api/v1/magicblock/health"],
+      boundary:
+        "MagicBlock private corridor evidence is active on Solana Testnet. ER/PER-native delegation, Magic Actions, and VRF remain explicit upgrade lanes unless separate receipts are attached.",
+    },
+    {
+      specialist: "Private settlement / payout engineer",
+      services: ["umbra-confidential-payout", "private-payments", "browser-encrypt-manifest"],
+      report: engineeringReports.privacyEncryption,
+      reviewerStart: "https://privatedao.org/services/umbra-confidential-payout/",
+      proofEndpoints: ["/api/v1/private-settlement/intent", "/api/v1/privacy-execution-claims"],
+      boundary:
+        "Umbra/Cloak-style private settlement is represented through intent, relayer health, and encrypted claim receipts unless a provider-specific full claim settlement receipt is recorded.",
+    },
+    {
+      specialist: "Governance / private-room engineer",
+      services: ["private-governance", "zk-commit-reveal-governance"],
+      report: engineeringReports.privacyEncryption,
+      reviewerStart: "https://privatedao.org/rooms/",
+      proofEndpoints: ["/api/v1/privacy-execution-matrix", "/api/v1/privacy-execution-claims"],
+      boundary:
+        "Public proposals can be visible while active vote counts, percentages, voter identity, vote intent, and private-room notes stay hidden until reveal policy permits disclosure.",
+    },
+    {
       specialist: "QVAC / intelligence-provider engineer",
       services: ["intelligence-and-risk"],
       report: engineeringReports.intelligence,
