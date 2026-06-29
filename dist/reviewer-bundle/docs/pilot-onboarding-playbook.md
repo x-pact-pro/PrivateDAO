@@ -13,7 +13,7 @@ Get one real organization through:
 3. Private vote
 4. Execute treasury
 
-on Devnet first, with an evidence packet that a non-builder stakeholder can understand.
+on Solana Testnet first, with preserved Devnet evidence available as rehearsal history and an evidence packet that a non-builder stakeholder can understand.
 
 ## Best First Pilot Segments
 
@@ -60,7 +60,7 @@ Before kickoff, record:
 - operator creates a DAO
 - operator submits a proposal
 - operator completes a private vote
-- operator executes the treasury step on Devnet
+- operator executes the treasury step on Solana Testnet
 
 ### Day 10-14 — review and next step
 

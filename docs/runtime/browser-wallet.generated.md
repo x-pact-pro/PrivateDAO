@@ -3,7 +3,7 @@
 ## Overview
 
 - project: `PrivateDAO`
-- generated at: `2026-05-26T03:06:10.015Z`
+- generated at: `2026-05-30T09:29:19.569Z`
 - network: `devnet`
 - status: `pending-browser-wallet-capture`
 - target count: `4`

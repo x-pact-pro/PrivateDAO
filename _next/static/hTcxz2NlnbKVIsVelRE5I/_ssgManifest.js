@@ -1,0 +1,1 @@
+self.__SSG_MANIFEST=new Set(["\u002Fdocuments\u002F[slug]","\u002Fproof-workflows\u002Fverify\u002F[proofId]","\u002Frooms\u002F[roomId]","\u002Frooms\u002F[roomId]\u002Fproposal\u002F[proposalId]","\u002Ftracks\u002F[slug]","\u002Ftxline-settlement\u002Fverify\u002F[proofId]","\u002Fviewer\u002F[...slug]"]);self.__SSG_MANIFEST_CB&&self.__SSG_MANIFEST_CB()

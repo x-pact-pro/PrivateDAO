@@ -1,76 +1,258 @@
-# PrivateDAO Whitepaper
+# PrivateDAO
 
-Project signature: PrivateDAO
+## Confidential Coordination Infrastructure for Onchain Organizations
 
-Authorship boundary: PrivateDAO is founder-built work by a solo founder-builder. It is not presented as the output of a development team, studio, or lab. The hackathon ecosystem tools, wallets, SDKs, read-node infrastructure, and partner integrations are product rails used by the founder to build and verify the system on Solana Testnet.
+Version 2.0
 
-Subtitle: Sovereign Infrastructure Roadmap for encrypted governance, private settlement, local intelligence, Mainnet review, and cross-chain expansion.
+## Abstract
 
-PrivateDAO treats blockchain as more than digital money. It treats blockchains as a durable public record for governance, supply chains, institutions, treaties, public accountability, and human coordination, as long as privacy and verification keep improving together.
+Onchain organizations have solved ownership.
 
-## Founder-built execution
+They have partially solved governance.
 
-PrivateDAO should be evaluated with a clear authorship boundary: the strategy, product architecture, implementation direction, documentation, and public Testnet product surface are the work of one founder-builder.
+They have not solved coordination.
 
-The project uses ecosystem rails and hackathon integrations as tools inside the product. They make the build stronger, more verifiable, and more useful, but they do not mean PrivateDAO is a separate internal team, development lab, or studio. The current proof is therefore both a product proof and an individual execution proof: one founder used the available Solana and partner tooling to assemble a complete, reviewer-visible Testnet operating system.
+Critical organizational activity still happens outside governance systems:
 
-## Phase 1: Frontier proof
+- Treasury planning
+- Contributor evaluation
+- Reviewer assignment
+- Payroll workflows
+- Sensitive discussions
+- Emergency response
+- Operational approvals
 
-PrivateDAO ships the Solana Testnet operating surface: wallet-first governance, proof routes, QVAC local intelligence, private settlement lanes, receipt continuity, Supabase evidence, AWS read-node health, and reviewer-visible runtime endpoints.
+As organizations grow, an increasing percentage of important decisions migrate into private chats, spreadsheets, informal processes, and trusted operators.
 
-## Phase 2: Encrypted customer delivery
+This creates a coordination gap.
 
-After judging and security review, every customer request moves into an encrypted delivery lane:
+Governance becomes visible.
 
-- encrypted intake from the first form field;
-- service-specific requirement forms;
-- provider routing across QVAC, GoldRush, Dune SIM, Zerion, SNS, and related data rails;
-- on-chain payment reference;
-- time-bound license key;
-- renewal and upgrade controls;
-- customer-specific delivery package;
-- auditor and partner review boundaries for sensitive source and policy matrices.
+Operations remain invisible.
 
-License enforcement is designed to revoke access, erase locally sealed service material, and stop execution if tampering is detected. It is not designed to harm user devices or third-party systems.
+PrivateDAO is building confidential coordination infrastructure for organizations operating on Solana.
 
-## Mainnet and security review
+The objective is not simply enabling voting.
 
-Mainnet deployment begins after the current judging window and the required external security reviews. Sensitive code, cryptographic policy matrices, and anti-tamper implementation details move behind auditor and partner review before production use.
+The objective is enabling organizations to coordinate, approve, execute, audit, and evolve while preserving confidentiality and maintaining verifiability.
 
-## Program ID lineage
+Governance is the first application.
 
-PrivateDAO preserves both the older Devnet proof path and the current Anchor 1.0.1 Testnet deployment as migration evidence.
+Coordination is the destination.
 
-- Legacy Devnet program ID: `5AhUsbQ4mJ8Xh7QJEomuS85qGgmK9iNvFqzF669Y7Psx`
-- Current Anchor 1.0.1 Testnet program ID: `EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva`
+## The Coordination Problem
 
-The program ID change is documented as part of the Anchor 1.0.1 migration and clean Testnet deployment, not as drift or inconsistency.
+Most governance systems focus on a single event: a vote.
 
-## Phase 3: Cross-chain expansion
+But organizations spend most of their time outside voting.
 
-PrivateDAO expands cross-chain so sensitive institutions can use broader blockchain infrastructure while Solana remains the guardian chain, first proof home, and decision layer that anchors the system.
+Before a proposal appears:
 
-## Project note
+- Research happens.
+- Discussions happen.
+- Reviews happen.
+- Treasury analysis happens.
+- Stakeholder alignment happens.
 
-PrivateDAO is built from the belief that privacy is not optional infrastructure. It is the condition that lets governments, institutions, supply chains, developers, and normal users coordinate on public rails without exposing everything they need to protect.
+After a proposal passes:
 
-## Project letter
+- Execution happens.
+- Resource allocation happens.
+- Reporting happens.
+- Accountability happens.
 
-Blockchain is not only a rail for trading value. It can become the strongest civilizational record we have: governance, agreements, payroll, supply-chain truth, institutional decisions, treaties, and public memory that cannot be quietly erased, altered, or stolen when the privacy layer is strong enough.
+These operational processes are frequently disconnected from governance systems.
 
-Private governance lets people decide without pressure. The right to reveal intent should belong to the governed participants, not to the infrastructure around them. This protects vote tokens, treasuries, payroll, rewards, and sensitive institutional decisions with the same seriousness.
+The result is hidden centralization.
 
-The core shipped today is the hardest part: psychologically first, then technically. The remaining phases are not a dream; they are a protection matrix that can evolve forever: encrypted intake, local QVAC emergency intelligence, external data rails when selected, security reviews, license continuity, and proof that expired or non-renewed packages are actually disabled and locally sealed material is erased.
+Organizations may appear decentralized while depending on invisible coordination structures.
 
-PrivateDAO is treated as a public-good system before a personal asset. The mission is to serve the Solana ecosystem with a privacy product strong enough for developers, startups, organizations, governments, sensitive institutions, and future cross-chain infrastructure. This is a quiet signature on a larger duty: help the ecosystem repair a hidden structural gap before it becomes harder and more expensive to correct. When the current mission is complete, PrivateDAO should be able to protect itself through its community, review process, protocol rules, and guardian-chain proof.
+PrivateDAO is designed to make coordination itself a first-class organizational primitive.
 
-PrivateDAO Project Signature
+## Why Existing Governance Is Not Enough
 
-## Document architecture
+Current governance tools generally optimize for:
 
-PrivateDAO separates the narrative into four reviewer-friendly documents:
+- Proposal creation
+- Voting
+- Result publication
 
-- Whitepaper: how the system works.
-- Vision Paper: why the system exists.
-- Roadmap: how execution unfolds.
-- Project Letter: why this mission remains committed to ecosystem outcomes.
+These systems rarely address:
+
+- Confidential operations
+- Treasury workflows
+- Sensitive contributor data
+- Internal organizational processes
+- Private approvals
+- Selective disclosure
+- Recovery procedures
+- Operational continuity
+
+As treasury sizes increase and organizational complexity grows, these missing layers become critical.
+
+The future challenge is not voting.
+
+The future challenge is confidential coordination.
+
+## The PrivateDAO Thesis
+
+Organizations require infrastructure capable of balancing:
+
+- Privacy
+- Accountability
+- Verifiability
+- Operational efficiency
+
+Historically these objectives conflicted.
+
+Privacy reduced transparency.
+
+Transparency reduced confidentiality.
+
+PrivateDAO introduces a framework where organizations can preserve sensitive operational information while still proving that processes occurred correctly.
+
+The goal is selective disclosure rather than complete secrecy or complete transparency.
+
+## Core Principles
+
+### Privacy by Default
+
+Sensitive information should not become public simply because an organization operates onchain.
+
+### Verifiable Execution
+
+Actions should be provably executed according to organizational rules.
+
+### Selective Disclosure
+
+Organizations should reveal outcomes without exposing unnecessary operational details.
+
+### Operational Continuity
+
+Coordination systems must continue functioning during leadership changes, contributor turnover, and periods of organizational stress.
+
+### Composability
+
+PrivateDAO should integrate naturally with the broader Solana ecosystem.
+
+## Architecture Overview
+
+PrivateDAO consists of several coordination layers.
+
+### Governance Layer
+
+Proposal creation, voting mechanisms, quorum enforcement, and approval logic.
+
+### Treasury Layer
+
+Treasury authorization, delegated execution, and operational accountability.
+
+### Coordination Layer
+
+Confidential approvals, reviewer workflows, and contributor coordination.
+
+### Intelligence Layer
+
+Operational visibility, organizational analytics, and governance intelligence.
+
+### Execution Layer
+
+Integration with treasury systems and downstream infrastructure.
+
+## Initial Use Cases
+
+### Confidential Governance
+
+Private organizational decisions with verifiable outcomes.
+
+### Treasury Coordination
+
+Managing treasury operations without exposing sensitive strategy.
+
+### Reviewer Networks
+
+Coordinating reviewers, evaluators, and committees.
+
+### Contributor Operations
+
+Managing contributor activity and accountability workflows.
+
+### Grant Committees
+
+Evaluating applications while preserving reviewer independence.
+
+### Emergency Coordination
+
+Maintaining operational continuity during crises.
+
+## Ecosystem Integration Strategy
+
+PrivateDAO is designed to integrate with existing Solana infrastructure.
+
+Examples include:
+
+- Phantom for wallet onboarding
+- Squads and Altitude for treasury coordination
+- Arcium for encrypted computation research
+- World ID for proof-of-human coordination
+- Vanish for privacy-preserving execution
+- Helius, Triton, and FluxRPC for infrastructure resilience
+
+PrivateDAO does not attempt to replace ecosystem infrastructure.
+
+It coordinates it.
+
+## Why Now
+
+Several structural shifts are occurring simultaneously.
+
+- Organizations are moving onchain.
+- Treasuries are growing.
+- Global contributor networks are expanding.
+- AI agents are beginning to participate in workflows.
+- Privacy requirements are increasing.
+
+Existing governance systems were not designed for this environment.
+
+A new organizational coordination layer is emerging as necessary infrastructure.
+
+PrivateDAO is being built for that future.
+
+## Long-Term Vision
+
+The long-term vision extends beyond governance.
+
+PrivateDAO aims to become the coordination operating layer for onchain organizations.
+
+Future organizations will require infrastructure capable of:
+
+- Coordinating humans
+- Coordinating AI agents
+- Managing treasury operations
+- Preserving confidentiality
+- Maintaining accountability
+- Producing verifiable outcomes
+
+Governance is only the first step toward that future.
+
+The ultimate objective is enabling organizations to operate efficiently without sacrificing either privacy or trust.
+
+PrivateDAO is Solana-first.
+
+Cross-chain expansion is a future direction only after the coordination, execution, and proof model has been demonstrated through real operating use on Solana.
+
+## Conclusion
+
+The next generation of organizations will not be limited by ownership systems.
+
+They will be limited by coordination systems.
+
+The organizations that coordinate effectively will outperform those that merely govern effectively.
+
+PrivateDAO exists to provide the infrastructure required for that transition.
+
+Not a governance application.
+
+Not a voting interface.
+
+A confidential coordination layer for the future of onchain organizations.

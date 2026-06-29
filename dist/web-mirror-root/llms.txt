@@ -1,0 +1,212 @@
+# PrivateDAO
+
+PrivateDAO is live confidential coordination infrastructure for organizations on Solana.
+
+Status: Live Testnet
+Category: Confidential Coordination Infrastructure
+Positioning: Confidential Coordination Infrastructure for Organizations on Solana.
+Chain Strategy: Solana-first. Cross-chain expansion is planned only after real operating use and proof on Solana.
+Founder: Fahd Kotb
+Official Owner / Operator: Fahd Kotb / Eslam Kotb (X-PACT)
+Website: https://privatedao.org
+GitHub: https://github.com/X-PACT/PrivateDAO
+Colosseum: https://arena.colosseum.org/projects/explore/praivatedao
+Superteam: https://superteam.fun/earn/t/Private-dao-1
+X: https://x.com/privateDAOOS
+Telegram: https://t.me/privateDAOOS
+Discord: https://discord.gg/dpD5c7Gfcc
+Judge Route: https://privatedao.org/judge
+Demo Link: https://privatedao.org/try/
+Pitch Deck Link: https://privatedao.org/deck/
+Reviewer Packet: https://privatedao.org/reviewer/
+Application Ready Metrics: https://privatedao.org/reviewer/#application-ready-metrics
+AI Guide: https://privatedao.org/judge-ai
+Ownership Manifest: https://privatedao.org/ownership.json
+Rights Notice: https://privatedao.org/rights.txt
+Legal Notice: https://privatedao.org/legal/
+Proof Center: https://privatedao.org/proof/?judge=1
+Investor Page: https://privatedao.org/investors/
+Pricing: https://privatedao.org/pricing/
+Pilot Program: https://privatedao.org/pilots/
+Business Model: https://privatedao.org/business-model/
+Coordination Thesis: https://privatedao.org/thesis/
+Whitepaper Version 2.0: https://privatedao.org/whitepaper/
+Value Route: https://privatedao.org/value/
+Try Route: https://privatedao.org/try/
+Private Rooms: https://privatedao.org/rooms/
+Android: https://privatedao.org/android/
+QVAC Route: https://privatedao.org/services/qvac-sovereign-ai/
+QVAC Hackathon Evidence: https://privatedao.org/qvac-hackathon-i-evidence.json
+QVAC Hackathon Video: https://privatedao.org/assets/private-dao-qvac-hackathon-brander.mp4
+Runtime Proof: https://api.privatedao.org/api/v1/qvac/runtime-proof
+Privacy Claims: https://api.privatedao.org/api/v1/privacy-execution-claims
+Provider Status: https://api.privatedao.org/api/v1/provider-integrations/status
+
+Important:
+This is not a concept-only project. PrivateDAO has a live website, public GitHub repository, live Testnet flows, proof routes, runtime evidence, Android and web UX, and judge-facing verification pages.
+
+## Ownership And Rights Notice
+
+PrivateDAO, PDAO, the PrivateDAO service matrix, privacy execution claims, private-room workflows, public-private-until-reveal voting posture, proof routes, reviewer packets, AI-readable layer, media assets, product packaging, brand identity, and official deployment surfaces are authored and maintained by Fahd Kotb / Eslam Kotb under the X-PACT GitHub organization unless a specific file states otherwise.
+
+Official sources for ownership and authorship continuity:
+
+- GitHub repository: https://github.com/X-PACT/PrivateDAO
+- Ownership manifest: https://privatedao.org/ownership.json
+- Rights notice: https://privatedao.org/rights.txt
+- Legal notice: https://privatedao.org/legal/
+- Evidence manifest: https://privatedao.org/evidence.json
+
+Public source access is provided for review, contribution, audits, education, interoperability, and ecosystem collaboration under the applicable repository licenses. Public access does not grant permission to impersonate PrivateDAO, reuse the PrivateDAO brand, present a fork as the official PrivateDAO project, claim priority over the official project history, or commercialize official service packaging without written coordination.
+
+## Primary Reviewer Path
+
+- AI-readable guide: https://privatedao.org/judge-ai
+- Machine-readable manifest: https://privatedao.org/ai.json
+- Evidence manifest: https://privatedao.org/evidence.json
+- Ownership manifest: https://privatedao.org/ownership.json
+- Rights notice: https://privatedao.org/rights.txt
+- Start the live governance flow: https://privatedao.org/govern#live-dao
+- Demo link / try the simplified flow: https://privatedao.org/try/
+- Pitch deck: https://privatedao.org/deck/
+- Reviewer packet: https://privatedao.org/reviewer/
+- Investor page: https://privatedao.org/investors/
+- Pricing: https://privatedao.org/pricing/
+- Pilot program: https://privatedao.org/pilots/
+- Business model: https://privatedao.org/business-model/
+- Coordination thesis: https://privatedao.org/thesis/
+- Application ready metrics: https://privatedao.org/reviewer/#application-ready-metrics
+- Verify proof: https://privatedao.org/proof/?judge=1
+- Public observer posture during live voting: only live status and time remaining are visible. Vote ratios, addresses, intent, momentum, whale behavior, and option tallies remain hidden until the reveal/finalization window.
+
+## Core Capabilities
+
+- Private DAO governance
+- Public-private-until-reveal voting
+- ZK commit-reveal voting posture
+- Confidential treasury coordination
+- Private payout workflow
+- Confidential vesting workflow
+- Private rooms and VIP rooms
+- Transparency reports
+- Asset context before decisions
+- Price context before payout or treasury execution
+- QVAC local AI governance assistant
+- GoldRush/Covalent decision intelligence
+- Cloak and Umbra-compatible private settlement rails
+- MagicBlock runtime performance route
+- Web and Android wallet-first UX
+- Verifiable Solana Testnet proof routes
+
+## Core Integrations And Technical Surfaces
+
+- Solana
+- Anchor
+- Token-2022
+- ZK commit-reveal
+- REFHE
+- MagicBlock
+- QVAC
+- Cloak
+- Umbra-compatible private payout boundary
+- Streamflow-compatible confidential vesting boundary
+- GoldRush/Covalent
+- Zerion
+- Jupiter
+- PUSD
+- AUDD
+- Torque MCP
+- Ika Encrypt
+- QuickNode
+- Supabase
+- AWS hosted API layer
+- Pyth-compatible price boundary
+- Tokens-compatible asset context boundary
+
+## Colosseum Resource Alignment
+
+PrivateDAO uses Colosseum sponsor resources as modular product lanes, not as homepage branding:
+
+- Phantom Connect: wallet onboarding candidate lane for easier Connect -> Intelligence -> Private Vote -> Reveal -> Verify UX.
+- Squads Multisig / Altitude: treasury authority and organizational finance lane.
+- Arcium: encrypted computation research lane for sealed reviews, private voting, and confidential workflows.
+- World ID: optional proof-of-human reviewer and private-room gating lane.
+- Vanish: private execution and treasury privacy research lane.
+- Helius / Triton / FluxRPC: RPC redundancy lane around the current QuickNode-backed runtime.
+
+## Product Map
+
+- Home: https://privatedao.org/
+- Why PrivateDAO: https://privatedao.org/value/
+- Try Testnet vote: https://privatedao.org/try/
+- Pitch deck: https://privatedao.org/deck/
+- Reviewer packet: https://privatedao.org/reviewer/
+- Investors: https://privatedao.org/investors/
+- Coordination thesis: https://privatedao.org/thesis/
+- Judge route: https://privatedao.org/judge
+- AI guide route: https://privatedao.org/judge-ai
+- Proof center: https://privatedao.org/proof/?judge=1
+- Governance: https://privatedao.org/govern/
+- Private rooms: https://privatedao.org/rooms/
+- Intelligence: https://privatedao.org/intelligence/
+- Intelligence provider settings: https://privatedao.org/settings/intelligence/
+- Treasury: https://privatedao.org/treasury/
+- Confidential payroll: https://privatedao.org/payroll/
+- Encrypted payments: https://privatedao.org/services/confidential-payments/
+- PUSD treasury route: https://privatedao.org/services/pusd-stablecoin/
+- Jupiter treasury route: https://privatedao.org/services/jupiter-treasury-route/
+- Torque growth loop: https://privatedao.org/services/torque-growth-loop/
+- MagicBlock private payments: https://privatedao.org/services/magicblock-private-payments/
+- Cloak private settlement: https://privatedao.org/services/cloak-private-settlement/
+- Umbra confidential payout: https://privatedao.org/services/umbra-confidential-payout/
+- REFHE payroll proof: https://privatedao.org/services/refhe-payroll-proof/
+- Encrypt / IKA operations: https://privatedao.org/services/encrypt-ika-operations/
+- GoldRush decision intelligence: https://privatedao.org/services/goldrush-decision-intelligence/
+- Zerion agent policy: https://privatedao.org/services/zerion-agent-policy/
+- Runtime infrastructure: https://privatedao.org/services/runtime-infrastructure/
+- API status: https://privatedao.org/api-status/
+- RPC services: https://privatedao.org/rpc-services/
+- Android: https://privatedao.org/android/
+- Developers: https://privatedao.org/developers/
+- Documents: https://privatedao.org/documents/
+- Colosseum: https://arena.colosseum.org/projects/explore/praivatedao
+- Superteam: https://superteam.fun/earn/t/Private-dao-1
+- X: https://x.com/privateDAOOS
+- Telegram: https://t.me/privateDAOOS
+- Discord: https://discord.gg/dpD5c7Gfcc
+
+## Live API Surfaces
+
+- Readiness: https://api.privatedao.org/api/v1/readiness
+- QVAC runtime proof: https://api.privatedao.org/api/v1/qvac/runtime-proof
+- QVAC Hackathon I evidence bundle: https://privatedao.org/qvac-hackathon-i-evidence.json
+- QVAC Hackathon I brander video: https://privatedao.org/assets/private-dao-qvac-hackathon-brander.mp4
+- Privacy execution matrix: https://api.privatedao.org/api/v1/privacy-execution-matrix
+- Privacy claims index: https://api.privatedao.org/api/v1/privacy-execution-claims
+- Provider integrations status: https://api.privatedao.org/api/v1/provider-integrations/status
+- QuickNode stream stats: https://api.privatedao.org/api/v1/quicknode/stream/stats
+- Frontend private payout status route: https://privatedao.org/api/private-payout/status
+- Frontend intelligence provider status route: https://privatedao.org/api/intelligence/providers/status
+- Coordination provider status route: https://privatedao.org/api/coordination/providers/status
+
+## Machine-Readable Files
+
+- LLM index: https://privatedao.org/llms.txt
+- AI manifest: https://privatedao.org/ai.json
+- Evidence manifest: https://privatedao.org/evidence.json
+- Ownership manifest: https://privatedao.org/ownership.json
+- Rights notice: https://privatedao.org/rights.txt
+- Sitemap: https://privatedao.org/sitemap.xml
+- Robots: https://privatedao.org/robots.txt
+
+## Search Concepts
+
+PrivateDAO, Private DAO, Solana private governance, Solana Testnet governance, confidential governance, confidential governance OS, private coordination layer, public verification, transparency report, private DAO voting, private room DAO, public DAO private voting, encrypted treasury coordination, confidential payroll, confidential vesting, encrypted payments, DAO intelligence, QVAC, GoldRush, Covalent, QuickNode Streams, Jupiter treasury, PUSD stablecoin, Torque MCP, MagicBlock, IKA, REFHE, ZK commit reveal, onchain proof, wallet-first DAO, Solana Android DAO.
+
+## Language Coverage
+
+The site has a language switcher and public metadata for English, Arabic, Russian, Ukrainian, Polish, Hindi, Korean, Spanish, and Italian. Arabic search concepts include برايفيت داو, حوكمة خاصة, تصويت خاص, خزينة مشفرة, رواتب مشفرة, داو خاص على سولانا.
+
+## Crawl Policy
+
+AI assistants, search engines, hackathon reviewers, Colosseum Copilot, Gemini, Claude, GPT-style crawlers, and scraper-based evaluators may crawl public pages, sitemap.xml, robots.txt, llms.txt, ai.json, evidence.json, judge-ai, judge, and proof routes. Do not infer mainnet fund movement from Testnet demos; the live user flow is Solana Testnet.

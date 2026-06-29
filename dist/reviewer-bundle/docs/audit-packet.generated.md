@@ -3,7 +3,8 @@
 ## Identity
 
 - Project: PrivateDAO
-- Program ID: `5AhUsbQ4mJ8Xh7QJEomuS85qGgmK9iNvFqzF669Y7Psx`
+- Current Testnet Program ID: `EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva`
+- Legacy Devnet Program ID: `5AhUsbQ4mJ8Xh7QJEomuS85qGgmK9iNvFqzF669Y7Psx`
 - Deploy transaction: `2CMEujY1CKnC8rH8BuLy4GvwYk3zfqMfAKaUjybcAvRhS1dnzg3Zd3GeMttBp4vkUbu69GkQtr3TWgbmBqGY8cyC`
 - Verification wallet: `4Mm5YTRbJuyA8NcWM85wTnx6ZQMXNph2DSnzCCKLhsMD`
 
@@ -15,7 +16,7 @@
 - Security page: https://privatedao.org/security/
 - YouTube pitch: https://youtu.be/iFTUe4CTWP0
 
-## Live Devnet Anchors
+## Legacy Devnet Anchors
 
 - DAO PDA: `FZV9KmpeY1B31XvszQypp5T6nQN5C44JDLM4QWBEDvhx`
 - Governance mint: `AZUkprJDfJPgAp7L4z3TpCV3KHqLiA8RjHAVhK9HCvDt`
@@ -24,9 +25,10 @@
 
 ## PDAO Token Surface
 
-- PDAO mint: `AZUkprJDfJPgAp7L4z3TpCV3KHqLiA8RjHAVhK9HCvDt`
+- Current PDAO mint: `DFYvBdivHCe4bSErgCiKm2RhwGEcZYbBPFQzLNr37Bie`
+- Legacy Devnet PDAO mint: `AZUkprJDfJPgAp7L4z3TpCV3KHqLiA8RjHAVhK9HCvDt`
 - PDAO program: `TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb`
-- PDAO token account: `F4q77ZMJdC7eoEUw3CCR7DbKGTggyExjuMGKBEiM2ct4`
+- PDAO token account: `CeXqKvdjrVYsPZEX2ysBNs6jubofEXEk4emE2qdS4pVg`
 - PDAO metadata URI: `https://privatedao.org/assets/pdao-token.json`
 - PDAO decimals: `9`
 - PDAO initial supply: `1000000`
@@ -34,17 +36,18 @@
 
 ### Program Boundary
 
-- PrivateDAO governance program: `5AhUsbQ4mJ8Xh7QJEomuS85qGgmK9iNvFqzF669Y7Psx`
+- Current PrivateDAO governance program: `EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva`
+- Legacy Devnet governance program: `5AhUsbQ4mJ8Xh7QJEomuS85qGgmK9iNvFqzF669Y7Psx`
 - PDAO token program: `TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb`
 - Boundary note: the Token-2022 program id belongs to the PDAO mint surface and does not indicate a second PrivateDAO governance program.
 
 ### PDAO Token Transactions
 
-- `create-token`: `5zGeSePpx2q3dFTNBi8Vmn8ucd9B3jEW6MKqrCUWtQQa3FipwDPFVKRrAoWQhJagBVqKMfUcWxVfpA6Q2vymanA6`
-- `create-account`: `45gM6Jo3SSbwxzqyGRSMhTmz47r8wsaAMikdkbSQ2AyoXMEA3JAJM9X6eufjwnKY5QYU6QCFTjAfR9cVExKu2rhn`
-- `initialize-metadata`: `4kgVoRGATdVAWVoYAYGqWnJBpDHiiRmFyQ3rgRz2uWEGdsx3Hosg5Ro7JGY7xSygD1vUUsGCduseCMWYx4MbXgur`
-- `mint-initial-supply`: `7LF3U3kooWfnRwaziceyRzKrHKhFQ6q6hfYeR6vU5gudjTPKYbw6kmXCxvvfurnQBnCBTCWH54rabcDqx1TBbLA`
-- `disable-mint-authority`: `dnv2vXPkFRM5fd42vgA4Cjkx85UCDTvFssYcS97ArZFQNGRVDd3DRzAUuvUVX1QFUAYcTpayJhbnomLCgjp2jj2`
+- `create-token`: `5hYpAkcK7h7sQBP8zCtejDi4F6z7wiurbuqDvgFbGNqjB6bPVu9BGab7iXiXUbBqLYT71VjCPwRjNyeVhqU7sCVE`
+- `initialize-metadata`: `5uH1aCevn3GCcrzAUdtWxdQ8e8DngYsFB49nQxNvebB9abzGaMR4e3i2V18jophnuaHEaYGwxgFVUKYJ5cn7jWKN`
+- `create-account`: `4TX4uB1YDYFPqyqA3krngaPNA8XWffWBU5gq5bEjAmWg7kv1ZoVFiZ8SdKyQewJGR2GqNxnj6fyYvzFMHs4EuizA`
+- `mint-initial-supply`: `2aCsyLrFy2myKd4YR1Sqg6SigvH2F6ivaw86CnRDtHUPoAAFeENkVCAKLVbZM9rsKaH7tPsmWc8JsjMN5G6KB4To`
+- `disable-mint-authority`: `2qFb2dKVEmD2hzmN9d6bajHuxLrk5aqKBvqM1Xb71VNTCfY39XgVV49koPigjoa2Vn41PNMmhp7qxK5KMBxNYvj4`
 
 ## Lifecycle Transactions
 
@@ -97,8 +100,8 @@
 - Release drill: `docs/release-drill.generated.json`
 - PDAO attestation: `docs/pdao-attestation.generated.json`
 - Algorithm: `sha256`
-- Manifest entries: `143`
-- Aggregate sha256: `c041cf2d4522fb46fb2fe9bc31f2673f4605d67b1214f1750ffa090066b94d1c`
+- Manifest entries: `145`
+- Aggregate sha256: `2b4987108ae9fd9f4671f5e2fb5a58c045090d4a4f9bd789028a151f0e861296`
 
 ## ZK Package
 

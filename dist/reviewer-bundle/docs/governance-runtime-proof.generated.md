@@ -2,10 +2,10 @@
 
 ## Overview
 
-- Generated at: `2026-04-22T07:48:42.999Z`
+- Generated at: `2026-05-26T03:07:20.014Z`
 - Project: `PrivateDAO`
 - Network: `devnet`
-- Program id: `5AhUsbQ4mJ8Xh7QJEomuS85qGgmK9iNvFqzF669Y7Psx`
+- Program id: `EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva`
 - Live wallet-first actions: `6`
 - Repo-script proofs captured: `6`
 - Browser-wallet proofs captured: `6`
@@ -53,7 +53,7 @@
 - Repo-script proof captured: `true`
 - Browser-wallet proof captured: `true`
 - Real-device proof captured: `false`
-- Note: Reveal vote is live in the web wallet lane once a live commit already exists in the same session. The full Solflare browser cycle is captured; Android capture expansion is still pending for this stage.
+- Note: Reveal vote is live in the web wallet lane once a live commit already exists in the same session. The full Solflare browser cycle is captured; Android remains in capture expansion for this stage.
 
 ### Finalize Proposal
 
@@ -62,7 +62,7 @@
 - Repo-script proof captured: `true`
 - Browser-wallet proof captured: `true`
 - Real-device proof captured: `false`
-- Note: Finalize proposal is live in the web wallet lane. Repo-script proof exists and the full Solflare browser cycle is captured; Android capture expansion is still pending for this stage.
+- Note: Finalize proposal is live in the web wallet lane. Repo-script proof exists and the full Solflare browser cycle is captured; Android remains in capture expansion for this stage.
 
 ### Execute Proposal
 

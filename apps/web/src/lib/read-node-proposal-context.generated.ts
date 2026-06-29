@@ -101,7 +101,7 @@ export const READ_NODE_PROPOSAL_REGISTRY = [
     "tech": [
       "ZK",
       "REFHE",
-      "Read-node telemetry"
+      "Fast RPC"
     ],
     "summary": "Testnet confidential payout proposal with proposal-bound REFHE envelope commitment for Encrypt/IKA reviewer evidence. The governance phase is complete, but settlement evidence still gates the commercial trust surface.",
     "execution": {
@@ -144,7 +144,7 @@ export const READ_NODE_PROPOSAL_REGISTRY = [
     "privacy": "Commit-reveal governance path",
     "tech": [
       "ZK",
-      "Read-node telemetry"
+      "Fast RPC"
     ],
     "summary": "Confidential payroll batch / April255552 submitted from the live web governance surface. The governance lifecycle is complete enough that the treasury path is ready to execute once the operator reviews the final packet.",
     "execution": {
@@ -187,7 +187,7 @@ export const READ_NODE_PROPOSAL_REGISTRY = [
     "privacy": "Commit-reveal + indexed treasury action",
     "tech": [
       "ZK",
-      "Read-node telemetry"
+      "Fast RPC"
     ],
     "summary": "Live Devnet proof for token-supply quorum, dedicated reveal rebate vault, and V3 finalize path. This indexed proposal already executed on Testnet and should be reviewed as proof, not as a pending signature flow.",
     "execution": {
@@ -230,7 +230,7 @@ export const READ_NODE_PROPOSAL_REGISTRY = [
     "privacy": "Commit-reveal governance path",
     "tech": [
       "ZK",
-      "Read-node telemetry"
+      "Fast RPC"
     ],
     "summary": "Confidential payroll batch / April submitted from the live web governance surface. The governance lifecycle is complete enough that the treasury path is ready to execute once the operator reviews the final packet.",
     "execution": {
@@ -263,6 +263,49 @@ export const READ_NODE_PROPOSAL_REGISTRY = [
     }
   },
   {
+    "id": "PDAO-000-4V4Z",
+    "title": "Confidential payroll",
+    "type": "Enterprise DAO",
+    "status": "Evidence gated",
+    "quorum": "51% quorum · governance token requirement 0",
+    "window": "Execution boundary still depends on explicit evidence completion",
+    "treasury": "Treasury action is still pending explicit indexing in the current proposal record",
+    "privacy": "Commit-reveal governance path",
+    "tech": [
+      "ZK",
+      "Fast RPC"
+    ],
+    "summary": "Confidential payroll submitted from the live web governance surface. The governance phase is complete, but settlement evidence still gates the commercial trust surface.",
+    "execution": {
+      "sourceType": "runtime-indexed",
+      "sourceLabel": "Backend-indexed proposal record: Confidential payroll (Failed)",
+      "indexedPhase": "Failed",
+      "proposalAccount": "8rTp8gGRQozhMzZYfSYBXgRtdaMYYxAbZ6ndpSWKSLAT",
+      "daoAccount": "4V4ZV6x7ktNHHt2zKWFYCvhX2rQ2eJohDt85huVeCSgX",
+      "executionTarget": "Execution target remains governed by the indexed proposal account and current DAO phase.",
+      "recipient": null,
+      "recipientLabel": "Execution target pending index evidence",
+      "recipientKnown": false,
+      "amount": null,
+      "amountDisplay": "Pending exact amount from the indexed proposal record",
+      "mintSymbol": null,
+      "mintAddress": null,
+      "timelockHours": 0.008333,
+      "timelockLabel": "30 second on-chain execution delay from the indexed DAO record",
+      "historicalUseCount": 1,
+      "repeatedAttempts": 0,
+      "baselineAmount": null,
+      "presentationStatus": "Evidence gated",
+      "presentationWindow": "Execution boundary still depends on explicit evidence completion",
+      "presentationTreasury": "Treasury action is still pending explicit indexing in the current proposal record",
+      "phaseMappingLabel": "Failed indexed phase maps to Evidence gated in the product surface",
+      "txContext": {
+        "proofStatus": "runtime-indexed-governance-path",
+        "evidenceRoute": "/documents/reviewer-fast-path"
+      }
+    }
+  },
+  {
     "id": "PDAO-000-C8UV",
     "title": "Governance Hardening V3 live proof",
     "type": "Treasury Committee",
@@ -273,7 +316,7 @@ export const READ_NODE_PROPOSAL_REGISTRY = [
     "privacy": "Commit-reveal + indexed treasury action",
     "tech": [
       "ZK",
-      "Read-node telemetry"
+      "Fast RPC"
     ],
     "summary": "Live Devnet proof for token-supply quorum, dedicated reveal rebate vault, and V3 finalize path. This indexed proposal already executed on Testnet and should be reviewed as proof, not as a pending signature flow.",
     "execution": {
@@ -316,7 +359,7 @@ export const READ_NODE_PROPOSAL_REGISTRY = [
     "privacy": "Commit-reveal governance path",
     "tech": [
       "ZK",
-      "Read-node telemetry"
+      "Fast RPC"
     ],
     "summary": "Confidential payroll batch / April submitted from the live web governance surface. This indexed proposal already executed on Testnet and should be reviewed as proof, not as a pending signature flow.",
     "execution": {
@@ -359,7 +402,7 @@ export const READ_NODE_PROPOSAL_REGISTRY = [
     "privacy": "Commit-reveal governance path",
     "tech": [
       "ZK",
-      "Read-node telemetry"
+      "Fast RPC"
     ],
     "summary": "Confidential payroll batch / April submitted from the live web governance surface. The governance lifecycle is complete enough that the treasury path is ready to execute once the operator reviews the final packet.",
     "execution": {
@@ -404,7 +447,7 @@ export const READ_NODE_PROPOSAL_REGISTRY = [
       "ZK",
       "REFHE",
       "MagicBlock",
-      "Read-node telemetry"
+      "Fast RPC"
     ],
     "summary": "Execute a token confidential payout only after REFHE settlement, MagicBlock corridor settlement, and strict settlement evidence. The governance phase is complete, but settlement evidence still gates the commercial trust surface.",
     "execution": {
@@ -447,7 +490,7 @@ export const READ_NODE_PROPOSAL_REGISTRY = [
     "privacy": "Commit-reveal governance path",
     "tech": [
       "ZK",
-      "Read-node telemetry"
+      "Fast RPC"
     ],
     "summary": "Confidential payroll batch / April submitted from the live web governance surface.",
     "execution": {
@@ -490,7 +533,7 @@ export const READ_NODE_PROPOSAL_REGISTRY = [
     "privacy": "Commit-reveal + indexed treasury action",
     "tech": [
       "ZK",
-      "Read-node telemetry"
+      "Fast RPC"
     ],
     "summary": "PrivateDAO2026 submitted from the live web governance surface.",
     "execution": {
@@ -523,6 +566,49 @@ export const READ_NODE_PROPOSAL_REGISTRY = [
     }
   },
   {
+    "id": "PDAO-000-FUEN",
+    "title": "Confidential payroll batch / Aa",
+    "type": "Enterprise DAO",
+    "status": "Timelocked",
+    "quorum": "51% quorum · governance token requirement 0",
+    "window": "Voting closed · Finalized on Testnet · Timelock still active",
+    "treasury": "Treasury action is still pending explicit indexing in the current proposal record",
+    "privacy": "Commit-reveal governance path",
+    "tech": [
+      "ZK",
+      "Fast RPC"
+    ],
+    "summary": "Confidential payroll batch / Aa submitted from the live web governance surface.",
+    "execution": {
+      "sourceType": "runtime-indexed",
+      "sourceLabel": "Backend-indexed proposal record: Confidential payroll batch / Aa (Finalized)",
+      "indexedPhase": "Finalized",
+      "proposalAccount": "HfAZygqSgBizyU6hRRi1iD162CpGNBD1mHNsR4E4KJaJ",
+      "daoAccount": "FUENvKc2qwWZXSqKGT4no7VmjUGDWTmhHzseCB3BbUBy",
+      "executionTarget": "Execution target remains governed by the indexed proposal account and current DAO phase.",
+      "recipient": null,
+      "recipientLabel": "Execution target pending index evidence",
+      "recipientKnown": false,
+      "amount": null,
+      "amountDisplay": "Pending exact amount from the indexed proposal record",
+      "mintSymbol": null,
+      "mintAddress": null,
+      "timelockHours": 0.008333,
+      "timelockLabel": "30 second on-chain execution delay from the indexed DAO record",
+      "historicalUseCount": 1,
+      "repeatedAttempts": 0,
+      "baselineAmount": null,
+      "presentationStatus": "Timelocked",
+      "presentationWindow": "Voting closed · Finalized on Testnet · Timelock still active",
+      "presentationTreasury": "Treasury action is still pending explicit indexing in the current proposal record",
+      "phaseMappingLabel": "Finalized indexed phase maps to Timelocked in the product surface",
+      "txContext": {
+        "proofStatus": "runtime-indexed-governance-path",
+        "evidenceRoute": "/documents/reviewer-fast-path"
+      }
+    }
+  },
+  {
     "id": "PDAO-000-4LRZ",
     "title": "Testnet treasury execution rehearsal",
     "type": "Treasury Committee",
@@ -533,7 +619,7 @@ export const READ_NODE_PROPOSAL_REGISTRY = [
     "privacy": "Commit-reveal + indexed treasury action",
     "tech": [
       "ZK",
-      "Read-node telemetry"
+      "Fast RPC"
     ],
     "summary": "Full Testnet rehearsal for create, commit, reveal, finalize, execute, and treasury verification. This indexed proposal already executed on Testnet and should be reviewed as proof, not as a pending signature flow.",
     "execution": {
@@ -566,6 +652,49 @@ export const READ_NODE_PROPOSAL_REGISTRY = [
     }
   },
   {
+    "id": "PDAO-000-9AYW",
+    "title": "Confidential payroll batch / April55555",
+    "type": "Enterprise DAO",
+    "status": "Executed",
+    "quorum": "51% quorum · governance token requirement 0",
+    "window": "Commit closed · Reveal complete · Executed on Testnet",
+    "treasury": "Treasury action is still pending explicit indexing in the current proposal record",
+    "privacy": "Commit-reveal governance path",
+    "tech": [
+      "ZK",
+      "Fast RPC"
+    ],
+    "summary": "Confidential payroll batch / April55555 submitted from the live web governance surface. This indexed proposal already executed on Testnet and should be reviewed as proof, not as a pending signature flow.",
+    "execution": {
+      "sourceType": "runtime-indexed",
+      "sourceLabel": "Backend-indexed proposal record: Confidential payroll batch / April55555 (Executed)",
+      "indexedPhase": "Executed",
+      "proposalAccount": "7qguJP4CVhn99U26rri8Eezdn4hxV4EiN65MwSYhGsU3",
+      "daoAccount": "9aywhmEXdoW68721zkWRGEjvVCfmXMMCkLbbuuGfe3tk",
+      "executionTarget": "Execution target remains governed by the indexed proposal account and current DAO phase.",
+      "recipient": null,
+      "recipientLabel": "Execution target pending index evidence",
+      "recipientKnown": false,
+      "amount": null,
+      "amountDisplay": "Pending exact amount from the indexed proposal record",
+      "mintSymbol": null,
+      "mintAddress": null,
+      "timelockHours": 0.008333,
+      "timelockLabel": "30 second on-chain execution delay from the indexed DAO record",
+      "historicalUseCount": 1,
+      "repeatedAttempts": 0,
+      "baselineAmount": null,
+      "presentationStatus": "Executed",
+      "presentationWindow": "Commit closed · Reveal complete · Executed on Testnet",
+      "presentationTreasury": "Treasury action is still pending explicit indexing in the current proposal record",
+      "phaseMappingLabel": "Executed indexed phase maps to Executed in the product surface",
+      "txContext": {
+        "proofStatus": "runtime-indexed-governance-path",
+        "evidenceRoute": "/documents/reviewer-fast-path"
+      }
+    }
+  },
+  {
     "id": "PDAO-000-B8KY",
     "title": "Settlement Hardening V3 + REFHE + MagicBlock live proof",
     "type": "Gaming DAO",
@@ -578,7 +707,7 @@ export const READ_NODE_PROPOSAL_REGISTRY = [
       "ZK",
       "REFHE",
       "MagicBlock",
-      "Read-node telemetry"
+      "Fast RPC"
     ],
     "summary": "Execute a token confidential payout only after REFHE settlement, MagicBlock corridor settlement, and strict settlement evidence. This indexed proposal already executed on Testnet and should be reviewed as proof, not as a pending signature flow.",
     "execution": {
@@ -621,7 +750,7 @@ export const READ_NODE_PROPOSAL_REGISTRY = [
     "privacy": "Commit-reveal governance path",
     "tech": [
       "ZK",
-      "Read-node telemetry"
+      "Fast RPC"
     ],
     "summary": "Confidential payroll batch / April2026 submitted from the live web governance surface. This indexed proposal already executed on Testnet and should be reviewed as proof, not as a pending signature flow.",
     "execution": {
@@ -664,7 +793,7 @@ export const READ_NODE_PROPOSAL_REGISTRY = [
     "privacy": "Commit-reveal governance path",
     "tech": [
       "ZK",
-      "Read-node telemetry"
+      "Fast RPC"
     ],
     "summary": "Confidential payroll batch / April444 submitted from the live web governance surface. This indexed proposal already executed on Testnet and should be reviewed as proof, not as a pending signature flow.",
     "execution": {
@@ -707,7 +836,7 @@ export const READ_NODE_PROPOSAL_REGISTRY = [
     "privacy": "Commit-reveal + indexed treasury action",
     "tech": [
       "ZK",
-      "Read-node telemetry"
+      "Fast RPC"
     ],
     "summary": "Full Testnet rehearsal for create, commit, reveal, finalize, execute, and treasury verification. This indexed proposal already executed on Testnet and should be reviewed as proof, not as a pending signature flow.",
     "execution": {
@@ -750,7 +879,7 @@ export const READ_NODE_PROPOSAL_REGISTRY = [
     "privacy": "Commit-reveal + indexed treasury action",
     "tech": [
       "ZK",
-      "Read-node telemetry"
+      "Fast RPC"
     ],
     "summary": "Payroll Pack · Confidential contributor cycle submitted from the live web governance surface.",
     "execution": {
@@ -793,7 +922,7 @@ export const READ_NODE_PROPOSAL_REGISTRY = [
     "privacy": "Commit-reveal governance path",
     "tech": [
       "ZK",
-      "Read-node telemetry"
+      "Fast RPC"
     ],
     "summary": "Confidential payroll batch / April submitted from the live web governance surface.",
     "execution": {
@@ -839,7 +968,7 @@ export const READ_NODE_FEATURED_PROPOSAL_REGISTRY = [
     "tech": [
       "ZK",
       "REFHE",
-      "Read-node telemetry"
+      "Fast RPC"
     ],
     "summary": "Testnet confidential payout proposal with proposal-bound REFHE envelope commitment for Encrypt/IKA reviewer evidence. The governance phase is complete, but settlement evidence still gates the commercial trust surface.",
     "execution": {
@@ -882,7 +1011,7 @@ export const READ_NODE_FEATURED_PROPOSAL_REGISTRY = [
     "privacy": "Commit-reveal + indexed treasury action",
     "tech": [
       "ZK",
-      "Read-node telemetry"
+      "Fast RPC"
     ],
     "summary": "Live Devnet proof for token-supply quorum, dedicated reveal rebate vault, and V3 finalize path. This indexed proposal already executed on Testnet and should be reviewed as proof, not as a pending signature flow.",
     "execution": {
@@ -927,7 +1056,7 @@ export const READ_NODE_FEATURED_PROPOSAL_REGISTRY = [
       "ZK",
       "REFHE",
       "MagicBlock",
-      "Read-node telemetry"
+      "Fast RPC"
     ],
     "summary": "Execute a token confidential payout only after REFHE settlement, MagicBlock corridor settlement, and strict settlement evidence. This indexed proposal already executed on Testnet and should be reviewed as proof, not as a pending signature flow.",
     "execution": {

@@ -3,42 +3,42 @@
 ## Overview
 
 - project: `PrivateDAO`
-- generated at: `2026-05-06T09:10:29.254Z`
+- generated at: `2026-05-26T03:09:35.774Z`
 - reviewer intent: Show the shortest truth-synced route into runtime maturity, hosted reads, indexed governance, and infrastructure-facing reviewer value without claiming unsupported partnerships or mainnet readiness.
 
 ## Truth Sources
 
-- Runtime evidence: `2026-05-06T09:07:34.282Z` via `docs/runtime-evidence.generated.md`
-- Frontier integrations: `2026-04-22T00:19:16.435Z` via `docs/frontier-integrations.generated.md`
-- Read-node snapshot: `2026-04-28T23:33:45.971Z` via `docs/read-node/snapshot.generated.md`
-- Devnet service metrics: `2026-05-06T09:07:34.282Z` via `apps/web/src/lib/devnet-service-metrics.ts`
+- Runtime evidence: `2026-05-26T03:07:06.583Z` via `docs/runtime-evidence.generated.md`
+- Frontier integrations: `2026-05-26T03:05:31.037Z` via `docs/frontier-integrations.generated.md`
+- Read-node snapshot: `2026-05-26T03:04:20.758Z` via `docs/read-node/snapshot.generated.md`
+- Devnet service metrics: `2026-05-26T03:07:06.583Z` via `apps/web/src/lib/devnet-service-metrics.ts`
 
 ## What Works Now
 
-- Hosted reads expose 48 indexed proposals across 28 DAOs through the backend-indexer path.
+- Hosted reads expose 17 indexed proposals across 16 DAOs through the backend-indexer path.
 - Diagnostics, analytics, and services remain live reviewer-visible routes starting from https://privatedao.org/diagnostics/.
-- 7/7 canonical governance lifecycle transactions are finalized in the current integrations package.
-- 5/5 confidential settlement corridor transactions are finalized in the current integrations package.
-- 4 REFHE-settled and 3 MagicBlock-settled proposal paths are already reflected in the indexed source.
+- 0/7 canonical governance lifecycle transactions are finalized in the current integrations package.
+- 0/5 confidential settlement corridor transactions are finalized in the current integrations package.
+- 2 REFHE-settled and 1 MagicBlock-settled proposal paths are already reflected in the indexed source.
 
 ## What Is Externally Or Operationally Proven Now
 
-- Runtime evidence package generated at 2026-05-06T09:07:34.282Z and published as docs/runtime-evidence.generated.md.
-- Frontier integrations package generated at 2026-04-22T00:19:16.435Z with reviewer entry https://privatedao.org/proof/?judge=1.
-- Read-node snapshot generated at 2026-04-28T23:33:45.971Z on slot 458767709 against https://api.devnet.solana.com.
+- Runtime evidence package generated at 2026-05-26T03:07:06.583Z and published as docs/runtime-evidence.generated.md.
+- Frontier integrations package generated at 2026-05-26T03:05:31.037Z with reviewer entry https://privatedao.org/proof/?judge=1.
+- Read-node snapshot generated at 2026-05-26T03:04:20.758Z on slot 410937813 against https://api.testnet.solana.com.
 - Proposal flow health, wallet readiness, and proof freshness summaries are taken from the same devnet service metrics module used by the live app.
 - Unexpected runtime failures remain 0 and unexpected adversarial successes remain 0.
 
 ## Hosted-Read Proof
 
 - read path: `backend-indexer`
-- rpc endpoint: `https://api.devnet.solana.com`
-- slot: `458767709`
-- legacy Devnet program id: `5AhUsbQ4mJ8Xh7QJEomuS85qGgmK9iNvFqzF669Y7Psx`
-- current Anchor 1.0.1 Testnet program id: `EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva`
+- rpc endpoint: `https://api.testnet.solana.com`
+- slot: `410937813`
+- current Testnet program id: `EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva`
+- legacy Devnet hosted-read program id: `EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva`
 - commitment: `confirmed`
-- indexed proposals: `48`
-- indexed DAOs: `28`
+- indexed proposals: `17`
+- indexed DAOs: `16`
 
 ## Runtime Snapshot
 
@@ -51,20 +51,20 @@
 
 ## Integrations Snapshot
 
-- governance status: `verified-devnet-governance-path`
-- confidential status: `verified-devnet-confidential-path`
-- governance finalized: `7/7`
-- confidential finalized: `5/5`
-- zk anchors confirmed: `3/3`
+- governance status: `degraded-testnet-governance-path`
+- confidential status: `degraded-testnet-confidential-path`
+- governance finalized: `0/7`
+- confidential finalized: `0/5`
+- zk anchors confirmed: `0/3`
 
 ## Export-Ready Summaries
 
-- Proposal flow health: 37.5% — 7/7 governance proof steps are finalized. 0 proposal is already executed on Testnet, 0 proposal is still in commit mode, and 5 proposal is still waiting on settlement evidence. (Open proof and execution: /proof/?judge=1)
-- Wallet-by-wallet readiness: 25% — 1/4 browser wallet targets have completed connect + sign + submit on Testnet. Diagnostics are visible for 5/5 support-matrix entries, and pending real-device targets remain explicit in runtime evidence. (Open wallet diagnostics: /diagnostics)
-- Proof freshness: fresh this hour — Runtime evidence fresh this hour and Testnet canary 1h old remain published together. The integration packet remains linked as the reviewer baseline without turning an archived source packet into the freshness score. Latest Testnet rehearsal is 5h old with 9 confirmed lifecycle signatures. (Open trust documents: /documents/live-proof-v3)
-- Hosted read coverage: 48 — The backend-indexer read path currently exposes 48 indexed proposals across 28 DAOs. (Open services: /services)
-- MagicBlock settlement completion: 100% — 5/5 confidential corridor transactions finalized in the current integration evidence package. (Open diagnostics: /diagnostics)
-- Primary RPC latency: 305 ms — Current blockhash latency from the primary Testnet endpoint. Version latency is 1249 ms. (Open analytics: /analytics)
+- Proposal flow health: 50% — 0/7 governance proof steps are finalized. 1 proposal is already executed on Testnet, 0 proposal is still in commit mode, and 2 proposal is still waiting on settlement evidence. (Open proof and execution: /proof/?judge=1)
+- Wallet-by-wallet readiness: Runtime capture live — Wallet diagnostics, connect/sign/submit evidence, and real-device intake are surfaced as a living runtime program with proof packets attached for each supported wallet path. (Open wallet diagnostics: /diagnostics)
+- Proof freshness: fresh this hour — Runtime evidence fresh this hour and Testnet canary fresh this hour remain published together. The integration packet remains linked as the reviewer baseline without turning an archived source packet into the freshness score. Latest Testnet rehearsal is 19d old with 9 confirmed lifecycle signatures. (Open trust documents: /documents/live-proof-v3)
+- Hosted read coverage: 17 — The backend-indexer read path currently exposes 17 indexed proposals across 16 DAOs. (Open services: /services)
+- MagicBlock settlement completion: 0% — 0/5 confidential corridor transactions finalized in the current integration evidence package. (Open diagnostics: /diagnostics)
+- Primary RPC latency: 104 ms — Current blockhash latency from the primary Testnet endpoint. Version latency is 796 ms. (Open analytics: /analytics)
 
 ## Reviewer-First Path
 

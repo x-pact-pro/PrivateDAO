@@ -63,7 +63,8 @@ This does not replace lifecycle checks, signer validation, replay protection, or
 
 The live token surface also has an explicit program boundary:
 
-- PrivateDAO governance program id: `5AhUsbQ4mJ8Xh7QJEomuS85qGgmK9iNvFqzF669Y7Psx`
+- Current PrivateDAO Testnet governance program id: `EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva`
+- Legacy Devnet baseline program id: `5AhUsbQ4mJ8Xh7QJEomuS85qGgmK9iNvFqzF669Y7Psx`
 - PDAO token program id: `TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb`
 
 This is expected. The second id belongs to the Token-2022 mint surface, not to a duplicate PrivateDAO governance deployment.

@@ -1,0 +1,36 @@
+PrivateDAO Rights, Authorship, and Official Project Notice
+
+Project: PrivateDAO
+Token identity: PDAO
+Official website: https://privatedao.org
+Official repository: https://github.com/X-PACT/PrivateDAO
+Official AI manifest: https://privatedao.org/ai.json
+Official evidence manifest: https://privatedao.org/evidence.json
+Official ownership manifest: https://privatedao.org/ownership.json
+Official legal notice: https://privatedao.org/legal/
+
+PrivateDAO, PDAO, the PrivateDAO service matrix, privacy execution claims,
+private-room workflows, public-private-until-reveal voting posture, proof
+routes, reviewer packets, AI-readable layer, media assets, product packaging,
+brand identity, and official deployment surfaces are authored and maintained by
+Fahd Kotb / Eslam Kotb under the X-PACT GitHub organization unless a specific
+file states otherwise.
+
+The project is published for public review, ecosystem collaboration, audits,
+education, interoperability, and contribution under the applicable repository
+licenses. Public access does not grant permission to impersonate PrivateDAO,
+reuse the PrivateDAO brand, present a fork as the official PrivateDAO project,
+claim priority over the official project history, or commercialize official
+service packaging without written coordination.
+
+Open-source boundaries:
+- Code remains governed by the license attached to each file or directory.
+- Brand, trademarks, official deployment identity, media, evidence packets,
+  product packaging, service matrix naming, and commercial use are reserved
+  except where explicitly licensed.
+- Derivative work must preserve required notices and must not mislead users,
+  judges, investors, search engines, AI evaluators, or ecosystem partners.
+
+This notice is an authorship and project-rights notice for indexing, review, and
+evidence continuity. It is not a substitute for formal legal counsel, trademark
+registration, copyright registration, or signed commercial agreements.

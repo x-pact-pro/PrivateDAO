@@ -1,21 +1,21 @@
 # Read Node Snapshot
 
-- Generated at: `2026-05-26T03:04:20.758Z`
+- Generated at: `2026-05-30T09:26:51.176Z`
 - Read path: `backend-indexer`
 - RPC endpoint: `https://api.testnet.solana.com`
 - RPC pool size: `1`
 - Cache entries: `2`
 - Cache TTL ms: `15000`
 - Program ID: `EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva`
-- Slot: `410937813`
+- Slot: `411898989`
 - Solana core: `4.0.0-rc.0`
 - Feature set: `767961353`
 
 ## Proposal Coverage
 
-- Proposals indexed: `17`
-- Unique DAOs: `16`
-- Executed proposals: `8`
+- Proposals indexed: `20`
+- Unique DAOs: `19`
+- Executed proposals: `9`
 - Executable proposals: `3`
 - Timelocked proposals: `0`
 - ZK-enforced proposals: `0`
@@ -38,13 +38,13 @@
 - `Confidential payroll batch / April255552` | phase=`Executable` | recipient=`pending` | amount=`Pending exact amount from the indexed proposal record` | dao=`CKDqPz4H64U5b66CDrTKAHDuQXV9NwMsKtDjZyUNHhiH`
 - `Governance Hardening V3 live proof` | phase=`Executed` | recipient=`Dxk6XdDfbhGkQr2EwkcqFDzH9Stx6Vj25EHpr6QuwNZV` | amount=`0.05 SOL` | dao=`DCstvkqyeuqNTunn7WrKvsc4j7XWPt4vbmpL37pvrY6X`
 - `Confidential payroll batch / April` | phase=`Executable` | recipient=`pending` | amount=`Pending exact amount from the indexed proposal record` | dao=`2McuCRTgwc96er39sQQnzkzcN94aGWMfR9Rtz64RCdQk`
-- `Governance Hardening V3 live proof` | phase=`Executed` | recipient=`3tY61SNRGEVDxpDAMfhDjWvtWaFsv4JTPHSV6uQNSA1z` | amount=`0.05 SOL` | dao=`C8uVwtCsE24XkMrT63HehZNcMcruS2KSokZq5XYZLdZr`
+- `Confidential payroll` | phase=`Failed` | recipient=`pending` | amount=`Pending exact amount from the indexed proposal record` | dao=`4V4ZV6x7ktNHHt2zKWFYCvhX2rQ2eJohDt85huVeCSgX`
 
 ## Proposal Registry
 
-- Registry entries: `17`
-- Executed: `8`
-- Evidence gated: `2`
+- Registry entries: `20`
+- Executed: `9`
+- Evidence gated: `3`
 - Execution ready: `3`
 
 ## Featured Proposal Contexts

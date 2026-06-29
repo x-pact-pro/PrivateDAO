@@ -104,7 +104,7 @@ bash scripts/real-device-capture.sh phantom-desktop --tx "<REAL_DEVNET_SIGNATURE
   "txSignature": "example-runtime-signature-from-wallet-run",
   "errorMessage": null,
   "evidenceRefs": [
-    "screenshots/phantom-desktop-connect.png"
+    "replace-with-real-device-screenshot-path"
   ],
   "capturedAt": "2026-04-05T00:00:00.000Z"
 }

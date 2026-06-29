@@ -1,5 +1,18 @@
 User-Agent: *
 Allow: /
+Allow: /llms.txt
+Allow: /ai.json
+Allow: /evidence.json
+Allow: /ownership.json
+Allow: /rights.txt
+Allow: /judge-ai
+Allow: /proof/
+Allow: /judge
+Allow: /judges
+Allow: /deck
+Allow: /investors
+Allow: /thesis
+Allow: /legal
 
 Host: privatedao.org
 Sitemap: https://privatedao.org/sitemap.xml

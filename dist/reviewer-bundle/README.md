@@ -1,15 +1,33 @@
 <!-- SPDX-License-Identifier: AGPL-3.0-or-later -->
 # PrivateDAO
 
+> **Open-source review notice:** PrivateDAO keeps its core source open for the hackathon, judging, security review, ecosystem diligence, and official collaboration. Source files under AGPL-3.0-or-later keep the rights and duties of that license. PrivateDAO brand identity, official deployments, product design, media, evidence packets, roadmap language, commercial service packaging, and Whitepaper material are reserved. Open-source forks must respect the applicable license and must not impersonate PrivateDAO, reuse official branding, commercialize PrivateDAO service packages, or present derivative deployments as official without written coordination. See [`NOTICE.md`](NOTICE.md) and [`TERMS_OF_REVIEW.md`](TERMS_OF_REVIEW.md).
+
 <p align="center">
   <a href="https://privatedao.org/" target="_blank">
-    <img src="docs/assets/frontend-hero.png" alt="PrivateDAO live Solana governance frontend" width="920" />
+    <img src="docs/assets/privatedao-sovereign-infrastructure-map.svg" alt="PrivateDAO sovereign infrastructure map" width="920" />
   </a>
 </p>
 
 <p align="center">
   <strong>Private governance, confidential treasury operations, and audit-grade runtime evidence for Solana organizations.</strong>
 </p>
+
+PrivateDAO is organized around one product path: a normal visitor opens the browser, reviews governance and treasury context, prepares private intent or an encrypted operation, signs from a Solana Testnet wallet, and verifies the result through explorer links, live APIs, Supabase-backed receipts, or proof documents. The product is private on-chain governance first: DAO creation, proposal flow, commit/reveal voting, treasury execution, and PDAO governance-token context. Encrypted payments, confidential payroll, GamingDAO rewards, QVAC/GoldRush/Zerion intelligence, Ika/Encrypt/REFHE/2PC-MPC preparation, MagicBlock receipts, and QuickNode runtime checks are provider rails inside that path, not separate empty integrations.
+
+The site is being de-duplicated around canonical execution routes so historical links stay alive as bridges instead of becoming empty or competing integration pages.
+
+Core routes:
+
+- `/judge/` - 3-minute reviewer hub with demo video, live tracks, and proof entry points.
+- `/futardio/` - PDAO launch packet with token image, banner, raise fields, legal terms, and IP details.
+- `/govern/` - wallet-first governance path for DAO, proposal, commit/reveal, execution, and PDAO governance-token context.
+- `/intelligence/` - QVAC, GoldRush, Zerion, QuickNode, SNS, and proposal/treasury review before signing.
+- `/execute/` - private payroll, settlement, treasury route, and reward execution center.
+- `/services/` - indexed service router for encrypted payments, payroll, MagicBlock, Ika/Encrypt/REFHE, PUSD, Torque, Zerion, and runtime infrastructure.
+- `/proof/` - verification layer for on-chain signatures, live API receipts, Supabase timelines, and reviewer packets.
+- `/documents/site-execution-route-inventory-2026-05-27/` - canonical route inventory used to prevent duplicate or empty integrations.
+
 
 <p align="center">
   <a href="https://privatedao.org/"><img src="https://img.shields.io/badge/Live%20Product-Open-14F195?logo=solana" alt="Live product" /></a>
@@ -21,10 +39,67 @@
   <a href="docs/security-hardening-v2.md"><img src="https://img.shields.io/badge/Security-Strict%20V2%20Hardening-1d4ed8" alt="Strict V2 security hardening" /></a>
   <a href="docs/operational-evidence.generated.md"><img src="https://img.shields.io/badge/Devnet-50%20Wallet%20Rehearsal-7c3aed" alt="Devnet rehearsal" /></a>
   <a href="docs/testnet-lifecycle-rehearsal-2026-05-07.md"><img src="https://img.shields.io/badge/Testnet-Lifecycle%20Rehearsal%202026--05--07-0ea5e9" alt="Fresh Testnet lifecycle rehearsal" /></a>
+  <a href="docs/squads-testnet-custody-transfer-2026-05-22.md"><img src="https://img.shields.io/badge/Squads-Testnet%202--of--3%20Upgrade%20Authority-14f195" alt="Squads Testnet upgrade authority" /></a>
+  <a href="docs/dao-treasury-authority-handoff-2026-05-23.md"><img src="https://img.shields.io/badge/DAO%20Authority-Handoff%20Code--Ready-f59e0b" alt="DAO authority handoff code ready" /></a>
+  <a href="docs/solana-anonymous-governance-primitive.md"><img src="https://img.shields.io/badge/ZK-Anonymous%20Governance%20Primitive-0ea5e9" alt="Solana anonymous governance primitive" /></a>
   <a href="docs/magicblock/private-payments.md"><img src="https://img.shields.io/badge/MagicBlock-Private%20Payments-06b6d4" alt="MagicBlock private payments" /></a>
   <a href="docs/rpc-architecture.md"><img src="https://img.shields.io/badge/RPC%20Fast-Read%20Node%20Ready-f97316" alt="RPC Fast ready" /></a>
+  <a href="https://api.privatedao.org/healthz"><img src="https://img.shields.io/badge/AWS%20Read--Node-Live-232f3e?logo=amazonaws" alt="AWS read-node live" /></a>
+  <a href="https://api.privatedao.org/api/v1/qvac/runtime-proof"><img src="https://img.shields.io/badge/QVAC%20SDK-0.10.0-22d3ee" alt="QVAC SDK runtime proof" /></a>
+  <a href="https://privatedao.org/api-status/"><img src="https://img.shields.io/badge/Supabase-Receipts%20%2B%20Visitors-3ecf8e?logo=supabase" alt="Supabase receipts and visitors" /></a>
+  <a href="https://privatedao.org/services/cloak-private-settlement/"><img src="https://img.shields.io/badge/Cloak-Private%20Settlement-8b5cf6" alt="Cloak private settlement" /></a>
+  <a href="https://privatedao.org/services/umbra-private-payments/"><img src="https://img.shields.io/badge/Umbra-Private%20Payments-10b981" alt="Umbra private payments" /></a>
+  <a href="https://privatedao.org/intelligence/"><img src="https://img.shields.io/badge/Covalent%20GoldRush-Intelligence-fbbf24" alt="Covalent GoldRush intelligence" /></a>
+  <a href="docs/quicknode-stream-intelligence.md"><img src="https://img.shields.io/badge/QuickNode-Stream%20Intelligence-06b6d4" alt="QuickNode stream intelligence" /></a>
+  <a href="https://privatedao.org/services/zerion-agent-policy/"><img src="https://img.shields.io/badge/Zerion-Agent%20Policy-8b5cf6" alt="Zerion agent policy" /></a>
+  <a href="https://privatedao.org/services/jupiter-treasury-route/"><img src="https://img.shields.io/badge/Jupiter-Treasury%20Route-f97316" alt="Jupiter treasury route" /></a>
+  <a href="https://privatedao.org/services/torque-growth-loop/"><img src="https://img.shields.io/badge/Torque-Growth%20Loop-ef4444" alt="Torque growth loop" /></a>
+  <a href="https://privatedao.org/services/audd-stablecoin/"><img src="https://img.shields.io/badge/AUDD-Stablecoin%20Lane-0ea5e9" alt="AUDD stablecoin lane" /></a>
+  <a href="https://privatedao.org/services/pusd-stablecoin/"><img src="https://img.shields.io/badge/PUSD-Stablecoin%20Lane-14f195" alt="PUSD stablecoin lane" /></a>
+  <a href="https://privatedao.org/services/encrypt-ika-operations/"><img src="https://img.shields.io/badge/Encrypt%20%2F%20IKA-Confidential%20Ops-6366f1" alt="Encrypt IKA confidential operations" /></a>
+  <a href="https://privatedao.org/services/runtime-infrastructure/"><img src="https://img.shields.io/badge/Runtime-Infrastructure-06b6d4" alt="Runtime infrastructure" /></a>
+  <a href="https://privatedao.org/trust/#whitepaper"><img src="https://img.shields.io/badge/Whitepaper-Ecosystem%20Roadmap-f59e0b" alt="Whitepaper" /></a>
+  <a href="NOTICE.md"><img src="https://img.shields.io/badge/Public%20Review-Official%20Use%20Reserved-991b1b" alt="Public review notice" /></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-AGPLv3%2B%20%7C%20Apache--2.0%20%7C%20MIT-green" alt="License" /></a>
 </p>
+
+## Whitepaper And Review Rights
+
+- Whitepaper: `https://privatedao.org/trust/#whitepaper`
+- Downloadable whitepaper: `https://privatedao.org/assets/private-dao-founder-whiteprint.md`
+- Legal notice: `https://privatedao.org/legal/`
+- Repository notice: [`NOTICE.md`](NOTICE.md)
+- Terms of public source review: [`TERMS_OF_REVIEW.md`](TERMS_OF_REVIEW.md)
+
+PrivateDAO remains open source where the repository license applies because the hackathon, auditors, and ecosystem need verifiable evidence. The official product identity is separate: brand use, official-looking derivative deployments, commercial packaging, institutional pilots, or reuse of official evidence and service materials require formal coordination.
+
+The Whitepaper is intentionally split into four layers:
+
+- **Whitepaper:** technical architecture, encryption layers, QVAC/local intelligence, ZK direction, treasury logic, emergency continuity, and wallet-first execution.
+- **Vision Paper:** founder philosophy, ecosystem mission, why privacy matters, and why blockchain should preserve more than financial transfers.
+- **Roadmap:** Phase 1 core proof, Phase 2 encrypted customer infrastructure, Mainnet/security reviews, and Phase 3 cross-chain expansion.
+- **Project Letter:** a quiet project signature on an ecosystem-first commitment: the delivered core was the hardest part, while the remaining protection matrices are designed to improve continuously.
+
+### Ecosystem Message
+
+This product was not built as a hackathon showcase. It was built to address real ecosystem pain points through operational infrastructure that organizations, DAOs, and AI-native systems can use in production. Support from trusted reviewers, ecosystem catalysts, and foundational supporters accelerates this mission and strengthens confidence in the next generation of Solana builders.
+
+## Program ID Lineage
+
+PrivateDAO preserves both the old Devnet proof path and the current Anchor 1.0.1 Testnet deployment as migration evidence:
+
+| Stage | Program ID | Evidence |
+| --- | --- | --- |
+| Legacy Devnet baseline | `5AhUsbQ4mJ8Xh7QJEomuS85qGgmK9iNvFqzF669Y7Psx` | [`docs/live-proof.md`](docs/live-proof.md), [`docs/testnet-migration-report-2026-04-18.md`](docs/testnet-migration-report-2026-04-18.md) |
+| Current Anchor 1.0.1 Testnet | `EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva` | [`docs/anchor-1-migration-evidence-2026-04-30.md`](docs/anchor-1-migration-evidence-2026-04-30.md), [`docs/testnet-lifecycle-rehearsal-2026-05-07.md`](docs/testnet-lifecycle-rehearsal-2026-05-07.md) |
+
+The program ID change is part of the documented Anchor 1.0.1 migration and clean Testnet deployment. It is preserved as provenance for reviewers, not treated as a loss of continuity.
+
+## Custody And Anonymous Governance Update
+
+- Testnet program upgrade authority is now controlled by a Squads 2-of-3 vault: [`docs/squads-testnet-custody-transfer-2026-05-22.md`](docs/squads-testnet-custody-transfer-2026-05-22.md).
+- DAO operating authority and treasury operator authority handoffs are implemented in code through `transfer_dao_authority` and `transfer_treasury_operator_authority`; live activation requires the Squads-governed upgrade/timelock execution before any Testnet handoff signature is claimed: [`docs/dao-treasury-authority-handoff-2026-05-23.md`](docs/dao-treasury-authority-handoff-2026-05-23.md), [`scripts/execute-after-timelock.sh`](scripts/execute-after-timelock.sh).
+- The ZK layer is now packaged as a Solana-native anonymous governance primitive with frozen membership snapshots, proposal-scoped nullifiers, and explicit tally modes: [`docs/solana-anonymous-governance-primitive.md`](docs/solana-anonymous-governance-primitive.md).
 
 ## Winner Signal
 
@@ -35,6 +110,12 @@ PrivateDAO engineering already carries a real first-place regional signal. That 
 ## Continuous Delivery Notice
 
 Core development, wallet hardening, localization, and service packaging run in continuous release cycles.
+
+Current web polish:
+
+- The public site defaults to English unless a visitor explicitly selects another language or opens a `?lang=` link; stale browser language storage is cleared back to English for new review sessions.
+- Legacy or mistyped routes render a reviewer-grade route recovery surface that preserves judging history and points to the closest live proof, QVAC, Cloak, trust, whitepaper, or services route.
+- No submitted judging links are deleted during route maintenance; links are repaired, bridged, or recovered into the best live section.
 
 If a route is being refreshed:
 
@@ -57,13 +138,46 @@ PrivateDAO is live on Solana Testnet with the Anchor 1.0.1 program deployed, web
 
 PrivateDAO is a wallet-first Solana Testnet financial OS for organizations that need private governance, confidential treasury execution, local-first intelligence, and reviewer-visible proof without forcing normal users into terminal workflows.
 
-**Private. Verified. Informed.** PrivateDAO combines ZK privacy, REFHE confidential execution, MagicBlock speed, and GoldRush intelligence into one governance OS where every decision is private, verified, and informed.
+**Private. Verified. Informed.** PrivateDAO combines commit-reveal privacy, ZK review proofs, REFHE proof receipts, MagicBlock execution receipts, Ika readiness, Umbra payout lanes, QuickNode stream telemetry, and Covalent GoldRush intelligence into one governance OS where every decision is private, verified, and informed.
 
 - **Private:** ZK proof rails, commit-reveal voting, Cloak settlement posture, and Umbra confidential payout lanes.
 - **Verified:** fresh Testnet proof, V3 hardening, Anchor 1.0.1 toolchain evidence, Solscan-linked receipts, and Supabase timeline continuity.
-- **Informed:** GoldRush, Dune, QVAC `qvac/fabric-llm-finetune`, and the Intelligence layer before a user signs.
+- **Informed:** Covalent GoldRush, QVAC `qvac/fabric-llm-finetune`, SNS resolution, Zerion policy context, and the Intelligence layer before a user signs.
+- **Track-closed:** the active Frontier matrix maps Encrypt/Ika, MagicBlock, Umbra, Jupiter, QuickNode, Solflare, Eitherway, intelligence, and capital-route lanes to routes, proof endpoints, and verification commands: [`docs/frontier-track-closure-matrix-2026-05-25.md`](docs/frontier-track-closure-matrix-2026-05-25.md).
 
 The core product narrative is simple: PrivateDAO turns operations that used to require developers, command lines, custom scripts, and cryptography specialists into guided interface workflows. A user can learn the idea in `/learn`, connect a wallet, review the action in normal product language, sign the exact request, and verify the receipt from the web app or Android surface.
+
+## Grand Champion Improvement Map
+
+The active improvement plan is organized into ten execution levels:
+
+| Level | Focus | Shortest surface |
+| --- | --- | --- |
+| 1 | First-minute understanding | `https://privatedao.org/start/` |
+| 2 | Wallet-first execution | `https://privatedao.org/govern/` |
+| 3 | Android parity | `https://privatedao.org/android/` |
+| 4 | Proof continuity | `https://privatedao.org/proof/?judge=1` |
+| 5 | Confidential operations | `https://privatedao.org/payroll/` |
+| 6 | Intelligence before signing | `https://privatedao.org/intelligence/` |
+| 7 | Business conversion | `https://privatedao.org/pricing/` |
+| 8 | Security and release discipline | `https://privatedao.org/security/` |
+| 9 | Repository reviewability | `README.md` and `scripts/` |
+| 10 | Judging-grade narrative | `https://privatedao.org/judge/` |
+
+Canonical map: [`docs/grand-champion-10-level-improvement-map-2026-05-22.md`](docs/grand-champion-10-level-improvement-map-2026-05-22.md).
+
+## Business Model In One Minute
+
+PrivateDAO is not only a technical privacy system. It has a buyer-readable commercial path tied to the live Testnet product:
+
+| Layer | Buyer motion | Why it matters |
+| --- | --- | --- |
+| Open protocol | Free Testnet product access, source inspection, and proof review | Builds trust, adoption, and ecosystem review without hiding the protocol. |
+| Fixed pilot | `$2,500 setup` for a four-week pilot around one governance, payout, payroll, or treasury workflow | Creates the first paid conversion with a measurable proof packet instead of a vague enterprise promise. |
+| Managed operations | `$750/month` starting point after pilot validation | Turns repeated governance, payroll, payout, telemetry, hosted-read, and proof-export work into recurring revenue. |
+| Sovereign deployment | Custom pricing for customer-cloud installs, dedicated controls, white-label posture, custom retention, and support | Captures high-value organizations that need dedicated infrastructure and stronger control boundaries. |
+
+The commercial claim stays evidence-bound: the Testnet billing rehearsal proves wallet-signed payment logic and receipt continuity today; mainnet revenue, card subscription automation, and production custody remain release-stage targets rather than claimed facts.
 
 The release discipline is also part of the product. Remaining external gates are not hidden as footnotes; they are exposed as operating lanes with routes, schemas, commands, and reviewer-readable boundaries. The current closure map is published in [`docs/excellence-closure-matrix-2026-05-06.md`](docs/excellence-closure-matrix-2026-05-06.md).
 
@@ -96,7 +210,7 @@ The roadmap is intentionally simple and fundable:
 
 1. make the wallet-first Testnet flow effortless for first-time visitors
 2. keep proof, telemetry, custody, and diagnostics attached to the same product corridor
-3. strengthen audit, monitoring, real-device wallet coverage, and settlement publication
+3. strengthen audit, monitoring, signed wallet capture intake, and settlement publication
 4. close the remaining production gates and ship the strongest possible release candidate
 
 ## What Is Live Now
@@ -150,7 +264,8 @@ The first product view exposes the highest-value lanes immediately so a judge, i
 
 | Lane | Route | Why it matters |
 | --- | --- | --- |
-| Intelligence | `https://privatedao.org/intelligence/` | QVAC, GoldRush, Dune, counterparty trust, proposal context, and RPC quality before signing. |
+| Intelligence | `https://privatedao.org/intelligence/` | QVAC, Covalent GoldRush, SNS, Zerion policy context, counterparty trust, proposal context, and RPC quality before signing. |
+| Decision Intelligence | `https://privatedao.org/services/goldrush-decision-intelligence/` | Direct provider-to-execution corridor: GoldRush wallet context, QVAC decision support, Encrypt/IKA handoff, wallet execution, and proof continuity. |
 | Governance | `https://privatedao.org/govern/` | DAO creation, proposal creation, voting, reveal, finalize, and execution path. |
 | Treasury | `https://privatedao.org/treasury/` | Treasury health, policy, solvency posture, and agent context. |
 | Payroll | `https://privatedao.org/payroll/` | Private CSV payroll, stablecoin selection, Umbra/Cloak posture, and audit receipts. |
@@ -184,6 +299,7 @@ PrivateDAO keeps each integration tied to a user-facing job. The product does no
 | 🌑 | Umbra / Cloak | `/services/cloak-private-settlement`, `/payroll`, `/proof` | Private settlement intent, relayer readiness, scoped viewing-key posture, and audit-friendly confidential payout flows. |
 | 🔁 | Jupiter | `/services/jupiter-treasury-route`, `/treasury` | No-key quote preview for governed treasury routes so operators can review output, slippage, and route rationale before execution. |
 | 📊 | GoldRush / Dune | `/intelligence`, `/treasury`, `/documents/testnet-integration-runtime-closure-2026-05-07` | Prominent financial intelligence before signing: wallet history, stablecoin flow, counterparty trust, suspicious flows, and proposal review. |
+| 📡 | QuickNode Streams | `/intelligence`, `/proof`, `/documents/quicknode-stream-intelligence` | Protected Solana Testnet stream intake for block/program-log telemetry, proof freshness, compute usage, and runtime evidence before QVAC turns it into signer-readable decision support. |
 | 🏆 | Torque | `/services/torque-growth-loop`, `/proof` | Governance participation and receipt events for growth loops, rewards, and reviewer-visible engagement telemetry. |
 | 🤖 | Zerion agent policy | `/services/zerion-agent-policy`, `/treasury` | Bounded treasury assistant policy: allowed pairs, spend caps, and governance-controlled rebalancing context. |
 | 🧾 | Supabase | `/proof`, `/live`, `/dashboard` | Browser-direct receipt timeline for confirmed operations, avoiding static-export API limitations while keeping proof visible. |
@@ -191,6 +307,22 @@ PrivateDAO keeps each integration tied to a user-facing job. The product does no
 | ☁️ | AWS read node | `api.privatedao.org`, `/rpc-services` | Hosted read-node and relayer health surface for indexed evidence, QVAC runtime proof, and infrastructure checks. |
 | 🔎 | SNS `.sol` lookup | `/execute`, `/services`, wallet helpers | Lets users resolve readable `.sol` names instead of pasting raw wallet addresses where supported. |
 | 📱 | Android | `/android`, mobile docs | Mobile parity for the same wallet-first operating story: learn, review, sign, and verify without terminal workflows. |
+
+## Provider To Encrypted Execution Spine
+
+PrivateDAO now has a direct route for the highest-value operating question: how does provider intelligence become a protected on-chain action?
+
+Route: `https://privatedao.org/services/goldrush-decision-intelligence/`
+
+| Stage | Route | User job |
+| --- | --- | --- |
+| Provider | `/services/goldrush-decision-intelligence` | Run GoldRush-style wallet, stablecoin, counterparty, and source-health review. |
+| Decide | `/intelligence` | Use QVAC and deterministic analysis to classify risk before signing. |
+| Encrypt | `/services/encrypt-ika-operations` | Prepare REFHE packets, encrypted manifests, IKA custody routes, and commitment-safe artifacts. |
+| Execute | `/execute` | Sign only after the decision and privacy boundary are clear. |
+| Verify | `/proof` | Inspect receipts, logs, documents, and chain evidence without exposing confidential payloads. |
+
+This is not a sponsor-logo collage. It is the product architecture: analyze the counterparty, decide what risk exists, encrypt what must stay private, sign only from the wallet, and verify the outcome.
 
 ## Anchor 1.0.1 Toolchain Status
 
@@ -233,6 +365,17 @@ These packets are the shortest judge path for the cryptography-heavy layers:
 | GoldRush / Dune / Zerion / MagicBlock / QVAC | Live hosted checks from `api.privatedao.org` for intelligence, policy, relayer, and runtime status. | [`docs/testnet-integration-runtime-closure-2026-05-07.md`](docs/testnet-integration-runtime-closure-2026-05-07.md) |
 
 Normal users see simple route names: `Review with QVAC`, `Check wallet with GoldRush`, `Prepare private settlement`, and `Verify proof`. Judges get direct Solana Testnet transaction links and JSON/Markdown evidence packets.
+
+### Cloak SDK Devnet Probe
+
+PrivateDAO now carries an explicit Cloak SDK probe for the official devnet package:
+
+- SDK: `@cloak.dev/sdk-devnet`
+- Probe: `npm run probe:cloak-devnet-sdk`
+- Packet: [`docs/cloak-devnet-sdk-live-probe.generated.md`](docs/cloak-devnet-sdk-live-probe.generated.md)
+- JSON: [`docs/generated/cloak-devnet-sdk-probe.generated.json`](docs/generated/cloak-devnet-sdk-probe.generated.json)
+
+The default probe checks the official Cloak docs index, exported UTXO SDK contract, devnet relay health, executable devnet program account, and the hosted PrivateDAO read-node intent receipt. A funded live devnet deposit is opt-in via `PRIVATE_DAO_CLOAK_E2E=1 npm run probe:cloak-devnet-sdk`; the probe never prints private keys, viewing keys, UTXO private keys, seed material, or raw note payloads.
 
 ## Replay Pressure Note
 
@@ -326,19 +469,19 @@ Strict operator ingestion path:
 
 Current official custody state from the canonical intake:
 
-- status: `pending-external`
+- status: `ready-for-transfer`
 - production mainnet claim allowed: `false`
-- network: `mainnet-beta`
+- network: `testnet`
 - threshold target: `2-of-3`
-- signer public keys recorded: `0/3`
-- multisig implementation: `pending-selection`
-- multisig address: `pending`
-- timelock configuration evidence: `pending`
-- rehearsal signature: `pending`
-- upgrade / DAO / treasury transfer signatures: `pending`
-- post-transfer authority readouts: `pending`
-- current deployed authority readout observed on `testnet`: `4Mm5YTRbJuyA8NcWM85wTnx6ZQMXNph2DSnzCCKLhsMD`
-- target-network program readout on `mainnet-beta`: `not found`
+- signer public keys recorded: `3/3`
+- multisig implementation: `Squads Protocol`
+- multisig address: `thHmF7VYNtxE1MaDzYXbfPCiq13RF6JwuWnjvDZuSmF`
+- vault authority: `CALHrBqx6jbzcPn2NVcinqSAHeod65v9LcDuTxsdPqBv`
+- timelock configuration evidence: `67S63JAUNvvCED3hE9h6bCXW9iJ3EYzJLARvj8Lki5x2dJEgLnrfES9mp6bAxfsH6vfmor2ocqNaEd68uVN68DNJ`
+- program-upgrade authority transfer: `EzwLLrAchBpj3eLTUFuv1uo9rSLKgKNbQgp1DkCevJycT31Eou9TSJsJsEfMjLt4q87pKwXaZUTqCZ1NduNc1vy`
+- current Testnet program authority readout: `CALHrBqx6jbzcPn2NVcinqSAHeod65v9LcDuTxsdPqBv`
+- DAO authority transfer: pending Squads-governed timelock execution of the upgraded instruction
+- treasury operator authority transfer: pending Squads-governed timelock execution of the upgraded instruction
 
 Live proof surface:
 
@@ -525,15 +668,31 @@ Use only public receive addresses here. Do not place signer keypairs, seed phras
 
 The 2026-05-06 Testnet rehearsal inserted real receipt rows into both `governance_receipts` and `operation_receipts`. The timeline remains non-blocking: on-chain actions still run even if Supabase is not configured, and recent browser receipts are shown as local fallback.
 
+## Telegram Operator Notifications
+
+The AWS read-node can notify the operator when a visitor opens the site, submits an onboarding request, or signs a Testnet transaction from the interface.
+
+Set one of these configurations on the AWS host, never in frontend code:
+
+- Generic webhook: `PRIVATE_DAO_TELEGRAM_WEBHOOK_URL`, accepting a JSON body shaped as `{ "text": "..." }`.
+- Telegram Bot API: `PRIVATE_DAO_TELEGRAM_BOT_TOKEN` and `PRIVATE_DAO_TELEGRAM_CHAT_ID`.
+
+Visitor notifications are privacy-preserving. They include page, timestamp, country hint when supplied by the edge, and a short hash of the browser session. They do not store or send IP addresses. To reduce spam, normal visit notifications are throttled by:
+
+- `PRIVATE_DAO_TELEGRAM_VISITOR_NOTIFICATIONS=true`
+- `PRIVATE_DAO_TELEGRAM_VISITOR_MIN_INTERVAL_MS=60000`
+- `PRIVATE_DAO_TELEGRAM_VISITOR_SESSION_TTL_MS=1800000`
+
 ## Umbra / Cloak Settlement Boundary
 
-The hosted read node at `https://api.privatedao.org` now exposes reviewer-verifiable Umbra Devnet relayer readiness:
+The hosted read node at `https://api.privatedao.org` now exposes reviewer-verifiable Umbra Devnet relayer readiness and Cloak-labelled private-settlement intent receipts:
 
 - Health: `https://api.privatedao.org/api/v1/umbra/relayer/health`
 - Info: `https://api.privatedao.org/api/v1/umbra/relayer/info`
 - Private settlement intent receipt: `POST https://api.privatedao.org/api/v1/private-settlement/intent`
+- Cloak devnet SDK probe: `npm run probe:cloak-devnet-sdk`
 
-Current boundary: PrivateDAO verifies relayer health, supported mints, and testnet settlement intent receipts. It does not fabricate a full Umbra claim. A full claim still requires SDK-generated ZK `proof_account_data` and UTXO slot data produced by the Umbra SDK path.
+Current boundary: PrivateDAO verifies relayer health, supported mints, the Cloak devnet SDK contract, the Cloak devnet program account, and testnet settlement intent receipts. It does not fabricate a full Umbra claim. A full Umbra claim still requires SDK-generated ZK `proof_account_data` and UTXO slot data produced by the Umbra SDK path. A funded Cloak devnet UTXO deposit is available as an opt-in live probe because it creates a real devnet transaction.
 
 ## Read-Node Program Alignment Gate
 
@@ -567,8 +726,9 @@ This gate prevents a healthy-looking API from silently serving stale program met
 | Proposal-aware commercial guidance | The selected proposal panel now adapts its buyer, operator, judge, and launch-boundary guidance to the live proposal itself, including pack inference, proposal packet copy, and proof-bound next steps tied to the actual on-chain phase. | [`apps/web`](apps/web), [`docs/trust-package.md`](docs/trust-package.md), [`docs/mainnet-blockers.md`](docs/mainnet-blockers.md), [`docs/test-wallet-live-proof.generated.md`](docs/test-wallet-live-proof.generated.md) |
 | Realms migration storefront | The Realms migration page now includes organization-specific migration packs, live command generation, and next-step guidance so operators can move from migration intent to a concrete PrivateDAO bootstrap path faster. | [`apps/web`](apps/web), [`docs/migration-story.md`](docs/migration-story.md), [`docs/grant-committee-pack.md`](docs/grant-committee-pack.md), [`docs/fund-governance-pack.md`](docs/fund-governance-pack.md), [`docs/enterprise-dao-pack.md`](docs/enterprise-dao-pack.md) |
 | REFHE | Proposal-bound encrypted evaluation envelope with settlement gate and explicit trust model. | [`docs/refhe-protocol.md`](docs/refhe-protocol.md), [`docs/refhe-security-model.md`](docs/refhe-security-model.md) |
-| MagicBlock | Private-payment corridor support for confidential token payout flows, with runtime capture/evidence docs. | [`docs/magicblock/private-payments.md`](docs/magicblock/private-payments.md), [`docs/magicblock/runtime-evidence.md`](docs/magicblock/runtime-evidence.md) |
-| Integration evidence gate | One machine-checked package that binds ZK anchors, MagicBlock settlement, REFHE settlement, and backend-indexed RPC state into a single Devnet-verified review surface. | [`docs/frontier-integrations.generated.md`](docs/frontier-integrations.generated.md), [`docs/read-node/ops.generated.md`](docs/read-node/ops.generated.md) |
+| Umbra | Devnet relayer readiness, SDK export checks, claim lifecycle evidence, and explicit client-side proof/UTXO boundary for confidential payout links. | [`docs/umbra-devnet-sdk-live-probe.generated.md`](docs/umbra-devnet-sdk-live-probe.generated.md), [`docs/generated/umbra-devnet-sdk-probe.generated.json`](docs/generated/umbra-devnet-sdk-probe.generated.json), [`apps/web/src/app/services/umbra-confidential-payout/page.tsx`](apps/web/src/app/services/umbra-confidential-payout/page.tsx) |
+| MagicBlock | Private-payment corridor support for confidential token payout flows, challenge/login auth boundary, devnet region status, and runtime capture/evidence docs. | [`docs/magicblock/private-payments-live-probe.generated.md`](docs/magicblock/private-payments-live-probe.generated.md), [`docs/generated/magicblock-private-payments-probe.generated.json`](docs/generated/magicblock-private-payments-probe.generated.json), [`docs/magicblock/runtime-evidence.md`](docs/magicblock/runtime-evidence.md) |
+| Integration evidence gate | One machine-checked package that binds ZK anchors, MagicBlock settlement, REFHE settlement, backend-indexed RPC state, and the current Testnet track-closure matrix into one review surface. | [`docs/frontier-integrations.generated.md`](docs/frontier-integrations.generated.md), [`docs/frontier-track-closure-matrix-2026-05-25.md`](docs/frontier-track-closure-matrix-2026-05-25.md), [`docs/read-node/ops.generated.md`](docs/read-node/ops.generated.md) |
 | ZK layer | Groth16 companion proofs, on-chain proof anchors, ZK registry, and `zk_enforced` readiness documentation. | [`docs/zk-proof-registry.json`](docs/zk-proof-registry.json), [`docs/zk-layer.md`](docs/zk-layer.md) |
 | Strict V2 hardening | Additive companion accounts for DAO security policy, proof verification, settlement evidence, consumption, cancellation safety, and voter-weight scope. | [`docs/security-hardening-v2.md`](docs/security-hardening-v2.md), [`docs/protocol-spec.md`](docs/protocol-spec.md) |
 | Governance Hardening V3 | Additive governance-policy snapshots, token-supply participation quorum, dedicated reveal rebate vaults, and V3 finalize/reveal paths that do not reinterpret legacy proposals. | [`docs/governance-hardening-v3.md`](docs/governance-hardening-v3.md), [`docs/test-wallet-live-proof-v3.generated.md`](docs/test-wallet-live-proof-v3.generated.md), [`programs/private-dao/src/lib.rs`](programs/private-dao/src/lib.rs) |
@@ -681,16 +841,17 @@ Important security docs:
 
 ## Token Surface
 
-PrivateDAO preserves the Devnet PDAO governance-token evidence for reviewer continuity, while the governance program now has a preserved-id Testnet deployment and standard lifecycle proof.
+PrivateDAO now publishes a live Testnet PDAO Token-2022 governance mint for reviewer continuity and product execution. The older Devnet mint remains archived in [`docs/pdao-token.md`](docs/pdao-token.md) only as historical evidence.
 
 | Field | Value |
 | --- | --- |
-| Token | `PDAO` |
-| Network | Devnet |
+| Token | `PrivateDAO Governance Token` (`PDAO`) |
+| Network | Testnet |
 | Utility | Governance voting token |
 | Platform | DeAura |
-| Mint | `AZUkprJDfJPgAp7L4z3TpCV3KHqLiA8RjHAVhK9HCvDt` |
+| Mint | `DFYvBdivHCe4bSErgCiKm2RhwGEcZYbBPFQzLNr37Bie` |
 | Program | Token-2022 |
+| Token account | `CeXqKvdjrVYsPZEX2ysBNs6jubofEXEk4emE2qdS4pVg` |
 | Initial supply | `1,000,000 PDAO` |
 
 The current PrivateDAO governance program id is:
@@ -899,7 +1060,7 @@ Ready now:
 
 - live Solana Testnet program and product surface
 - preserved-id Testnet deployment and standard lifecycle proof
-- preserved PDAO Devnet governance-token evidence
+- live PDAO Testnet Token-2022 governance-token evidence
 - full governance lifecycle evidence
 - Strict V2 additive hardening model
 - Devnet rehearsal and adversarial reports

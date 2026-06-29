@@ -2,10 +2,11 @@
 
 ## Overview
 
-- Generated at: `2026-04-20T01:24:20+02:00`
-- Release commit: `c253ff7f4a74aa8756b5b29ed773463f259e8124`
+- Generated at: `2026-05-26T05:51:23+03:00`
+- Release commit: `c5f7c481e514b627b2a082181f9ad0ce43d5a238`
 - Release branch: `main`
-- Program id: `5AhUsbQ4mJ8Xh7QJEomuS85qGgmK9iNvFqzF669Y7Psx`
+- Current Testnet program id: `EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva`
+- Legacy Devnet release program id: `5AhUsbQ4mJ8Xh7QJEomuS85qGgmK9iNvFqzF669Y7Psx`
 - Verification wallet: `4Mm5YTRbJuyA8NcWM85wTnx6ZQMXNph2DSnzCCKLhsMD`
 - Deploy transaction: `2CMEujY1CKnC8rH8BuLy4GvwYk3zfqMfAKaUjybcAvRhS1dnzg3Zd3GeMttBp4vkUbu69GkQtr3TWgbmBqGY8cyC`
 

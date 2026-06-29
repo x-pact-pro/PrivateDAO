@@ -151,7 +151,7 @@ The reveal step remained correctly blocked at that moment because the commit win
   "txSignature": "example-runtime-signature-from-browser-wallet-run",
   "errorMessage": null,
   "evidenceRefs": [
-    "screenshots/phantom-browser-wallet-create-dao.png"
+    "docs/assets/runtime/browser-wallet/phantom-create-dao-awaiting-wallet.png"
   ],
   "capturedAt": "2026-04-14T00:00:00.000Z"
 }
