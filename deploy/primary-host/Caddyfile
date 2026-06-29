@@ -31,12 +31,7 @@
 	}
 
 	handle {
-		@missing_page {
-			not file {path} {path}/index.html
-			not path /_next/* /assets/* /favicon.ico /manifest.webmanifest /robots.txt /sitemap.xml /llms.txt /ai.json /evidence.json /ownership.json /rights.txt /opengraph-image.png /twitter-image.png
-		}
-		redir @missing_page /thesis/ 302
-		try_files {path} {path}/index.html /index.html
+		try_files {path} {path}/index.html /thesis/index.html /index.html
 		file_server
 	}
 }
@@ -45,10 +40,14 @@
 	import privatedao_primary_host
 }
 
-{$PRIMARY_DOMAIN:api.privatedao.org} {
+api.privatedao.org {
 	import privatedao_primary_host
 }
 
-privatedao.org, www.privatedao.org {
+www.privatedao.org {
+	redir https://privatedao.org{uri} permanent
+}
+
+privatedao.org {
 	import privatedao_primary_host
 }

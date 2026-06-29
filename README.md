@@ -29,6 +29,15 @@ The user-facing flow is intentionally simple:
 Connect -> Intelligence -> Private Vote -> Reveal -> Verify -> Execute
 ```
 
+PrivateDAO is now organized around six product lines:
+
+1. **Proof Workflows** - underwriting, compliance, grant review, vendor onboarding, and internal approvals where the process must be verifiable without exposing the private policy.
+2. **Private Governance** - rooms, committees, DAO votes, board decisions, and community governance with private coordination during the decision and public proof after reveal.
+3. **Treasury Coordination** - spending requests, treasury-token decisions, grant disbursements, payout review, and audit trails.
+4. **Sealed Auctions** - private-room and public auctions where bid intent stays hidden until the reveal/proof phase.
+5. **TxLINE Match Settlement** - World Cup prediction-market settlement powered by official TxLINE fixture data, private payout-policy proof, and Solana receipt verification.
+6. **Runtime/API Infrastructure** - AWS read-node, public health APIs, Supabase-backed receipts, QuickNode-supported reads, and developer-facing verification endpoints.
+
 The encryption and privacy posture is practical: commit/reveal voting protects intent during the vote, private rooms protect coordination before execution, encrypted metadata protects sensitive payroll and payout context, and proof reports make the final result verifiable after reveal. The product keeps cryptography behind the workflow instead of forcing normal users to understand provider names before they can act.
 
 Under that simple flow, PrivateDAO owns governance, privacy, coordination, execution, and proof. Infrastructure and intelligence providers stay modular: QuickNode, Supabase, AWS, QVAC, GoldRush/Covalent, Jupiter, PUSD/AUDD, Torque, MagicBlock, Ika/Encrypt, REFHE, Cloak, Umbra-compatible payout boundaries, Streamflow-compatible vesting boundaries, Tokens-compatible asset context, and Pyth-compatible price context are provider rails inside the product path, not separate empty integrations.
@@ -37,6 +46,7 @@ The site is being de-duplicated around canonical execution routes so historical 
 
 Primary routes:
 
+- `/products/` - the six product lines and their user-facing entry points.
 - `/value/` - why PrivateDAO exists: public accountability, private coordination, verifiable execution.
 - `/try/` - shortest first-run product path for a normal visitor.
 - `/judge/` - 3-minute reviewer hub with live tracks and proof entry points.
@@ -46,6 +56,7 @@ Primary routes:
 - `/rooms/` - private and VIP coordination rooms with invite, proposal, vote, reveal, and proof export.
 - `/intelligence/` - intelligence before signing without exposing hidden vote intent.
 - `/treasury/` - treasury coordination, asset context, route review, and execution proof.
+- `/txline-settlement/` - TxLINE World Cup match settlement product with demo video, official fixture story, private policy proof, and Solana receipt path.
 - `/payroll/` - confidential payroll and payout review paths.
 - `/android/` - mobile wallet-first access to the same product routes.
 - `/services/` - service router for QVAC, GoldRush, Jupiter, PUSD, Torque, MagicBlock, Cloak, Umbra, Ika/Encrypt, REFHE, Zerion, and runtime infrastructure.

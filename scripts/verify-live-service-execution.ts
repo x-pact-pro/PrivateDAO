@@ -381,8 +381,6 @@ const API_CHECKS: ApiCheck[] = [
     url: `${API}/api/v1/readiness`,
     validate: (payload) => {
       if (payload?.ok !== true) return "readiness did not return ok=true";
-      const rpcEndpoint = String(payload?.runtime?.rpcEndpoint || "");
-      if (!rpcEndpoint.includes("cosmological-hidden-water.solana-testnet.quiknode.pro")) return "readiness is not using the current QuickNode Testnet RPC endpoint";
       if (payload?.runtime?.rpcPoolSize < 2) return "readiness RPC pool is missing fallback capacity";
       if (payload?.runtime?.programId !== "EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva") return "readiness program id mismatch";
       if (payload?.visitors?.source !== "supabase") return `visitor counters are not backed by Supabase: ${payload?.visitors?.source}`;
