@@ -1,0 +1,4 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "ignoreCommand": "echo 'PrivateDAO deploys from AWS only; skip Vercel build.' && exit 0"
+}

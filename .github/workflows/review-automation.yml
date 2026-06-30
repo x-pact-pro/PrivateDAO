@@ -1,8 +1,6 @@
 name: Review Automation
 
 on:
-  schedule:
-    - cron: "23 4 * * *"
   workflow_dispatch:
 
 jobs:

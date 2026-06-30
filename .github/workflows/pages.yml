@@ -1,56 +1,13 @@
-name: Deploy GitHub Pages
+name: GitHub Pages Disabled
 
 on:
-  push:
-    branches: ["main"]
   workflow_dispatch:
 
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
-concurrency:
-  group: "pages"
-  cancel-in-progress: true
-
 jobs:
-  deploy:
-    env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+  disabled:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-
-      - name: Setup Node
-        uses: actions/setup-node@v6
-        with:
-          node-version: "22.21.1"
-
-      - name: Install root dependencies
-        run: npm install
-
-      - name: Install web dependencies
-        run: npm --prefix apps/web install
-
-      - name: Build root web mirror bundle
-        run: npm run web:bundle:root
-
-      - name: Build GitHub Pages redirect artifact
-        run: node scripts/build-github-pages-redirect.mjs
-
-      - name: Setup Pages
-        uses: actions/configure-pages@v6
-
-      - name: Upload GitHub Pages redirect artifact
-        uses: actions/upload-pages-artifact@v5
-        with:
-          path: ./dist/github-pages-redirect
-
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v5
+      - name: Explain deployment policy
+        run: |
+          echo "PrivateDAO live site is deployed from AWS only."
+          echo "GitHub is storage/history, not a live publishing target."
