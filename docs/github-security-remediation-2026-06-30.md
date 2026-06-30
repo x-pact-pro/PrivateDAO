@@ -2,11 +2,9 @@
 
 This note records the safe dependency-security pass applied after syncing the live PrivateDAO AWS/static/API release back into the public GitHub repository.
 
-## Action Taken
+## Root Workspace
 
-The repository was audited with `npm audit` against the current `package-lock.json`.
-
-Before remediation:
+Initial root `npm audit` state:
 
 - total vulnerabilities: 29
 - high: 10
@@ -14,7 +12,7 @@ Before remediation:
 - low: 16
 - critical: 0
 
-Safe remediation applied:
+Safe root remediation applied:
 
 - `npm audit fix --package-lock-only --ignore-scripts`
 - package overrides for safe transitive updates:
@@ -23,7 +21,7 @@ Safe remediation applied:
   - `underscore` -> `^1.13.8`
 - `npm install --package-lock-only --ignore-scripts`
 
-After remediation:
+Root result:
 
 - total vulnerabilities: 19
 - high: 4
@@ -31,27 +29,59 @@ After remediation:
 - low: 15
 - critical: 0
 
-## Remaining Boundary
+## Web App Workspace
 
-The remaining high-severity audit path is tied to `bigint-buffer` through Solana/Squads dependencies:
+Initial `apps/web` `npm audit` state:
 
-- `bigint-buffer`
-- `@solana/buffer-layout-utils`
-- `@solana/spl-token`
-- `@sqds/multisig`
+- total vulnerabilities: 52
+- critical: 2
+- high: 13
+- moderate: 24
+- low: 13
 
-`npm audit` proposes `--force` changes that would install older or breaking package lines, including downgrading Solana/Squads-related dependencies. That was intentionally not applied because this repository contains Solana wallet, token, custody, and governance code where forced dependency downgrades can create a larger operational risk than the audit warning.
+Safe web remediation applied:
 
-The remaining low-severity path is tied to `elliptic` through `circomlibjs` / `ethers` dependency chains. `elliptic` was already at the latest npm version observed during this pass, and the audit-proposed fix requires a breaking `circomlibjs` downgrade. That was also not forced.
+- `npm audit fix --package-lock-only --ignore-scripts`
+- upgraded `next` and `eslint-config-next` from `16.2.3` to `16.2.9`
+- package overrides for safe transitive updates:
+  - `onnxruntime-web` -> `^1.27.0`
+  - `protobufjs` -> `^8.6.5`
+  - `underscore` -> `^1.13.8`
+  - `uuid` -> `^11.1.1`
+  - `ws` -> `^8.21.0`
+
+Web result:
+
+- total vulnerabilities: 22
+- critical: 0
+- high: 5
+- moderate: 2
+- low: 15
+
+## Combined Effect
+
+The immediate critical alerts in `apps/web` were removed without running a forced breaking audit downgrade.
+
+Known remaining paths are concentrated around Solana/Squads/Bonfida/Cloak and ethers/circom chains:
+
+- `bigint-buffer` via Solana token/web3 dependency paths
+- `@bonfida/spl-name-service` and `@cloak.dev/sdk-devnet` dependency chains
+- ethers v5 / elliptic paths inherited through proof and integration tooling
+- Next/PostCSS audit metadata still reports a moderate path despite the `16.2.9` upgrade; this should be rechecked after GitHub Dependabot refreshes its graph
+
+## Why Force Was Not Used
+
+`npm audit fix --force` proposed breaking or unsafe changes, including Solana/Squads/Bonfida package downgrades and major dependency shifts. Because this repository contains wallet, token, custody, governance, ZK, and settlement code, forced downgrades can create a larger operational risk than the advisory itself.
 
 ## Next Security Step
 
-The next safe remediation should be a dependency-compatibility branch that tests:
+Create a dedicated dependency-compatibility branch that tests:
 
-- current `@solana/spl-token` and `@sqds/multisig` replacement paths
-- whether Squads/Solana upstreams publish a non-breaking `bigint-buffer` remediation
-- whether the ZK/circom tooling can move away from the vulnerable ethers v5 dependency path without breaking proof generation
+- current non-breaking `@solana/spl-token`, `@solana/web3.js`, and wallet-adapter upgrade paths
+- whether Bonfida/Cloak/Solana upstreams publish a non-breaking `bigint-buffer` remediation
+- whether ZK/circom tooling can move away from the ethers v5 dependency path
 - full `npm run typecheck`
+- `npm --prefix apps/web run build:root`
 - focused Solana client tests and ZK proof scripts
 
 No secrets, private keys, Supabase service-role keys, AWS credentials, QuickNode credentials, TxLINE tokens, or wallet keypairs were committed as part of this remediation.
