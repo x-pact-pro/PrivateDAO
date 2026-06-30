@@ -58,6 +58,21 @@ Web result:
 - moderate: 2
 - low: 15
 
+## Lockfile And CI Cleanup
+
+The repository previously carried both `package-lock.json` and `yarn.lock`, while several GitHub Actions jobs installed with Yarn. This made GitHub security scanning evaluate an older duplicate lockfile path in addition to the npm lockfiles that are used for current live release work.
+
+Safe cleanup applied:
+
+- converted CI, review automation, devnet deploy, and devnet canary workflows from `yarn install --frozen-lockfile` to `npm ci`
+- changed `actions/setup-node` cache mode from `yarn` to `npm`
+- removed the stale `yarn.lock`
+
+The current default branch now uses npm lockfiles as the package-manager source of truth:
+
+- `package-lock.json`
+- `apps/web/package-lock.json`
+
 ## Combined Effect
 
 The immediate critical alerts in `apps/web` were removed without running a forced breaking audit downgrade.

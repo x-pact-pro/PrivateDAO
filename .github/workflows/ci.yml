@@ -18,10 +18,8 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: '22.21.1'
-          cache: 'yarn'
+          cache: 'npm'
 
-      - name: Enable Corepack
-        run: corepack enable
 
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
@@ -47,7 +45,7 @@ jobs:
           exit 1
 
       - name: Install dependencies
-        run: yarn install --frozen-lockfile
+        run: npm ci
 
       - name: Create local test wallet
         run: |
