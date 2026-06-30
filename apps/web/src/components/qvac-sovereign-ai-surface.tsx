@@ -29,8 +29,8 @@ const defaultCapability: QvacCapabilityState = {
 };
 
 const defaultRuntime: QvacRuntime = {
-  sdkState: "installed-browser-model-runtime",
-  capabilities: ["@qvac/sdk-installed", "qvac-fabric-transformers", "deterministic-local-brief"],
+  sdkState: "optional-browser-model-runtime",
+  capabilities: ["@qvac/sdk-installed", "optional-local-model-runtime", "deterministic-local-brief"],
 };
 
 type QvacBackendProof = {

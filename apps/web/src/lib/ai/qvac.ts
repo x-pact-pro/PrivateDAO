@@ -143,7 +143,7 @@ export async function generateQvacFabricBrief(
   }
 
   try {
-    const transformers = (await import("@xenova/transformers")) as {
+    const importTransformers = new Function("return import('@xenova/transformers')") as () => Promise<{
       pipeline: (
         task: "text-generation",
         model: string,
@@ -155,7 +155,8 @@ export async function generateQvacFabricBrief(
         allowLocalModels?: boolean;
         useBrowserCache?: boolean;
       };
-    };
+    }>;
+    const transformers = await importTransformers();
 
     if (transformers.env) {
       transformers.env.allowLocalModels = true;

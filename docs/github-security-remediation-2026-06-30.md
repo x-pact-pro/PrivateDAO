@@ -43,9 +43,9 @@ Safe web remediation applied:
 
 - `npm audit fix --package-lock-only --ignore-scripts`
 - upgraded `next` and `eslint-config-next` from `16.2.3` to `16.2.9`
+- removed `@xenova/transformers` from the committed web dependency graph because the live QVAC surface already has a deterministic local fallback and the package pulled a critical `protobufjs` path through `onnxruntime-web`
+- changed QVAC browser model loading to optional runtime import with deterministic fallback
 - package overrides for safe transitive updates:
-  - `onnxruntime-web` -> `^1.27.0`
-  - `protobufjs` -> `^8.6.5`
   - `underscore` -> `^1.13.8`
   - `uuid` -> `^11.1.1`
   - `ws` -> `^8.21.0`
@@ -62,7 +62,7 @@ Web result:
 
 The immediate critical alerts in `apps/web` were removed without running a forced breaking audit downgrade.
 
-Known remaining paths are concentrated around Solana/Squads/Bonfida/Cloak and ethers/circom chains:
+Known remaining paths are concentrated around Solana/Squads/Bonfida/Cloak and ethers/circom chains. The earlier critical `protobufjs` path from `@xenova/transformers` was removed from the committed dependency graph:
 
 - `bigint-buffer` via Solana token/web3 dependency paths
 - `@bonfida/spl-name-service` and `@cloak.dev/sdk-devnet` dependency chains
