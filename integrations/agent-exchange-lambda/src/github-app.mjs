@@ -101,6 +101,62 @@ export function mergeGithubInstallationRepositories(existing = [], added = [], r
   return [...repositories.values()].sort((left, right) => String(left.full_name || "").localeCompare(String(right.full_name || "")));
 }
 
+export function githubMarketplaceAccountRecordId(accountId) {
+  const id = String(accountId ?? "").match(/^\d+$/)?.[0];
+  if (!id) throw Object.assign(new Error("valid GitHub Marketplace account id is required"), { statusCode: 400 });
+  return `github_marketplace_account_${id}`;
+}
+
+export function applyGithubMarketplacePurchase(records = [], purchase = {}, action = "", updatedAt = new Date().toISOString()) {
+  const accountId = String(purchase?.account?.id ?? "").match(/^\d+$/)?.[0];
+  if (!accountId) throw Object.assign(new Error("GitHub Marketplace purchase account id is required"), { statusCode: 400 });
+  const normalizedAction = String(action || "");
+  const account = purchase.account
+    ? { id: purchase.account.id, login: purchase.account.login || null, type: purchase.account.type || null }
+    : null;
+  const marketplace = {
+    action: normalizedAction,
+    plan_id: purchase.plan?.id || purchase.plan?.base?.id || null,
+    plan_name: purchase.plan?.name || null,
+    account,
+    effective_date: purchase.effective_date || null,
+    on_free_trial: Boolean(purchase.on_free_trial),
+    updated_at: updatedAt,
+  };
+  // A pending plan change does not revoke today's entitlement. Only the
+  // explicit cancelled action makes the current entitlement inactive.
+  const entitlementStatus = normalizedAction === "cancelled" ? "cancelled" : "active";
+  const source = Array.isArray(records) ? records : [];
+  const accountRecordId = githubMarketplaceAccountRecordId(accountId);
+  const existingAccountRecord = source.find((record) => record?.id === accountRecordId) || {};
+  const accountRecord = {
+    ...existingAccountRecord,
+    id: accountRecordId,
+    kind: "github_marketplace_account",
+    account,
+    marketplace,
+    entitlement_status: entitlementStatus,
+    updated_at: updatedAt,
+  };
+  const installationRecords = source
+    .filter((record) =>
+      record?.kind === "github_installation" &&
+      String(record?.account?.id ?? "") === accountId
+    )
+    .map((record) => ({
+      ...record,
+      marketplace,
+      entitlement_status: entitlementStatus,
+      updated_at: updatedAt,
+    }));
+  return {
+    account_id: accountId,
+    account_record: accountRecord,
+    installation_records: installationRecords,
+    entitlement_status: entitlementStatus,
+  };
+}
+
 export function publicGithubInstallationRecord(record) {
   const source = record || {};
   const safe = {};

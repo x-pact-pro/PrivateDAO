@@ -31,7 +31,7 @@ import {
 import { intelProviderStatus, runIntelInference } from "./intel.mjs";
 import { ibmProviderStatus, runWatsonxInference } from "./ibm.mjs";
 import { githubProviderStatus, repositoryEvidence } from "./github.mjs";
-import { githubAppConfigured, githubGetInstallation, githubInstallationRepositories, githubRepositoryContext, mergeGithubInstallationRepositories, publicGithubInstallationRecord, verifyGithubWebhook } from "./github-app.mjs";
+import { applyGithubMarketplacePurchase, githubAppConfigured, githubGetInstallation, githubInstallationRepositories, githubRepositoryContext, mergeGithubInstallationRepositories, publicGithubInstallationRecord, verifyGithubWebhook } from "./github-app.mjs";
 import { mongoProviderStatus, persistEvidence } from "./mongodb.mjs";
 import { assertPublicHttps, fetchPublicHttps } from "./url-safety.mjs";
 import { integrationDirectory, serviceDetails, serviceRecommendation, SERVICE_CATEGORIES } from "./exchange-metadata.mjs";
@@ -366,7 +366,10 @@ async function githubWebhook(body, rawBody, signature, eventName) {
   if (!config.githubWebhookSecret) throw Object.assign(new Error("GitHub webhook secret is not configured"), { statusCode: 503 });
   if (!verifyGithubWebhook(rawBody, signature, config.githubWebhookSecret)) throw Object.assign(new Error("invalid GitHub webhook signature"), { statusCode: 401 });
   const storage = await store();
-  const installationId = body.installation?.id || body.marketplace_purchase?.account?.id || body.account?.id;
+  // Installation events carry an installation.id. Marketplace purchase events
+  // are account-scoped; marketplace_purchase.account.id is a user/org account
+  // id and must never be treated as a GitHub App installation id.
+  const installationId = body.installation?.id || null;
   const id = installationId ? githubRecordId(installationId) : null;
   const existing = id ? await storage.get("Registry", id) : null;
   if (eventName === "ping") return { ok: true, event: "ping" };
@@ -390,22 +393,28 @@ async function githubWebhook(body, rawBody, signature, eventName) {
     await storage.put("Registry", id, { ...(existing || { id, kind: "github_installation", installation_id: String(installationId) }), repositories: repos, updated_at: now() });
     return { ok: true, event: eventName, installation_id: String(installationId), repository_count: repos.length, added_count: added.length, removed_count: removed.length };
   }
-  if (eventName === "marketplace_purchase" && installationId) {
+  if (eventName === "marketplace_purchase") {
     const purchase = body.marketplace_purchase || {};
     const action = String(body.action || "");
-    const next = {
-      ...(existing || { id, kind: "github_installation", installation_id: String(installationId) }),
-      marketplace: { action, plan_id: purchase.plan?.id || purchase.plan?.base?.id || null, plan_name: purchase.plan?.name || null, account: purchase.account ? { id: purchase.account.id, login: purchase.account.login, type: purchase.account.type } : null, effective_date: purchase.effective_date || null, on_free_trial: Boolean(purchase.on_free_trial), updated_at: now() },
-      entitlement_status: action === "cancelled" ? "cancelled" : "active",
-      updated_at: now(),
+    const observedAt = now();
+    const records = await storage.list("Registry");
+    const applied = applyGithubMarketplacePurchase(records, purchase, action, observedAt);
+    await storage.put("Registry", applied.account_record.id, applied.account_record);
+    for (const record of applied.installation_records)
+      await storage.put("Registry", record.id, record);
+    return {
+      ok: true,
+      event: eventName,
+      action,
+      account_id: applied.account_id,
+      matched_installations: applied.installation_records.length,
+      entitlement_status: applied.entitlement_status,
     };
-    await storage.put("Registry", id, next);
-    return { ok: true, event: eventName, action, installation_id: String(installationId), entitlement_status: next.entitlement_status };
   }
   return { ok: true, ignored: true, event: eventName };
 }
 async function completeGithubInstallation(storage, stateRecord, installationId) {
-  await githubGetInstallation(config, installationId);
+  const installation = await githubGetInstallation(config, installationId);
   const repositories = await githubInstallationRepositories(config, installationId);
   try {
     // The callback may be delivered more than once or concurrently. Claim the
@@ -428,7 +437,11 @@ async function completeGithubInstallation(storage, stateRecord, installationId) 
   }
   const connectionToken = randomBytes(24).toString("base64url");
   const record = {
-    id: githubRecordId(installationId), kind: "github_installation", installation_id: installationId,
+    id: githubRecordId(installationId), kind: "github_installation", installation_id: String(installationId),
+    account: installation?.account
+      ? { id: installation.account.id, login: installation.account.login || null, type: installation.account.type || null }
+      : null,
+    repository_selection: installation?.repository_selection || null,
     repositories, authentication: "github_app_installation", status: "active", entitlement_status: "active",
     connection_token_hash: hashSecret(connectionToken), updated_at: now(),
   };
