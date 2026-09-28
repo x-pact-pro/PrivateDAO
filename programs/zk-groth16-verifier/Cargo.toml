@@ -17,4 +17,4 @@ idl-build = ["anchor-lang/idl-build"]
 
 [dependencies]
 anchor-lang = { workspace = true }
-solana-define-syscall = "3.0.0"
+solana-define-syscall = "5.1.0"
