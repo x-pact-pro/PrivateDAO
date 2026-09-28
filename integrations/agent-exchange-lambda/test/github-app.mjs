@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { createHmac } from "node:crypto";
 import test from "node:test";
-import { mergeGithubInstallationRepositories, publicGithubInstallationRecord, verifyGithubWebhook } from "../src/github-app.mjs";
+import { applyGithubMarketplacePurchase, githubMarketplaceAccountRecordId, mergeGithubInstallationRepositories, publicGithubInstallationRecord, verifyGithubWebhook } from "../src/github-app.mjs";
 import { MemoryStore } from "../src/storage.mjs";
 
 test("GitHub webhook verification binds the signature to the exact raw body", () => {
@@ -65,4 +65,75 @@ test("public installation metadata never exposes repository names or credential 
   assert.equal("owner_token_hash" in safe, false);
   assert.equal("github_access_token_hash" in safe, false);
   assert.equal(JSON.stringify(safe).includes("private-repo"), false);
+});
+
+
+test("Marketplace purchase account id is never treated as an installation id", () => {
+  const records = [
+    {
+      id: "github_installation_164152168",
+      kind: "github_installation",
+      installation_id: "164152168",
+      account: { id: 259045474, login: "X-PACT", type: "User" },
+      status: "active",
+      entitlement_status: "active",
+    },
+  ];
+  const purchase = {
+    account: { id: 259045474, login: "X-PACT", type: "User" },
+    plan: { id: 7001, name: "Pro" },
+    effective_date: "2026-09-28T00:00:00Z",
+  };
+  const applied = applyGithubMarketplacePurchase(records, purchase, "purchased", "2026-09-28T12:00:00Z");
+  assert.equal(applied.account_record.id, "github_marketplace_account_259045474");
+  assert.notEqual(applied.account_record.id, "github_installation_259045474");
+  assert.equal(applied.installation_records.length, 1);
+  assert.equal(applied.installation_records[0].id, "github_installation_164152168");
+  assert.equal(applied.installation_records[0].marketplace.plan_id, 7001);
+  assert.equal(applied.entitlement_status, "active");
+});
+
+test("Marketplace entitlement updates only installations owned by the purchase account", () => {
+  const records = [
+    {
+      id: "github_installation_1",
+      kind: "github_installation",
+      installation_id: "1",
+      account: { id: 10, login: "alpha", type: "Organization" },
+      entitlement_status: "active",
+    },
+    {
+      id: "github_installation_2",
+      kind: "github_installation",
+      installation_id: "2",
+      account: { id: 20, login: "beta", type: "Organization" },
+      entitlement_status: "active",
+    },
+  ];
+  const applied = applyGithubMarketplacePurchase(
+    records,
+    { account: { id: 10, login: "alpha", type: "Organization" }, plan: { id: 3, name: "Team" } },
+    "changed",
+    "2026-09-28T12:01:00Z",
+  );
+  assert.deepEqual(applied.installation_records.map((record) => record.id), ["github_installation_1"]);
+  assert.equal(applied.installation_records[0].marketplace.plan_name, "Team");
+});
+
+test("Marketplace pending change stays active until an explicit cancellation", () => {
+  const purchase = { account: { id: 10, login: "alpha", type: "Organization" }, plan: { id: 3, name: "Team" } };
+  const pending = applyGithubMarketplacePurchase([], purchase, "pending_change", "2026-09-28T12:02:00Z");
+  assert.equal(pending.entitlement_status, "active");
+  const cancelled = applyGithubMarketplacePurchase([pending.account_record], purchase, "cancelled", "2026-09-28T12:03:00Z");
+  assert.equal(cancelled.entitlement_status, "cancelled");
+  assert.equal(cancelled.account_record.entitlement_status, "cancelled");
+});
+
+test("Marketplace account ids are validated", () => {
+  assert.equal(githubMarketplaceAccountRecordId(259045474), "github_marketplace_account_259045474");
+  assert.throws(() => githubMarketplaceAccountRecordId("not-an-id"), /valid GitHub Marketplace account id/);
+  assert.throws(
+    () => applyGithubMarketplacePurchase([], { account: { login: "missing-id" } }, "purchased"),
+    /purchase account id is required/,
+  );
 });
