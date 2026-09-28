@@ -1,0 +1,357 @@
+name: Deploy Agent Exchange
+
+on:
+  workflow_run:
+    workflows: ["CI"]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: agent-exchange-production
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  actions: read
+  id-token: write
+
+env:
+  SERVICE_DIR: integrations/agent-exchange-lambda
+  AWS_REGION: ${{ vars.AGENT_EXCHANGE_AWS_REGION || 'eu-north-1' }}
+  FUNCTION_NAME: ${{ vars.AGENT_EXCHANGE_FUNCTION_NAME || 'PrivateDAOAgentExchange-Function-N2zgpQmMN41S' }}
+  PUBLIC_BASE_URL: ${{ vars.AGENT_EXCHANGE_PUBLIC_BASE_URL || 'https://agents.privatedao.org' }}
+
+jobs:
+  gate:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (
+        github.event_name == 'workflow_run' &&
+        github.event.workflow_run.event == 'push' &&
+        github.event.workflow_run.head_branch == 'main' &&
+        github.event.workflow_run.conclusion == 'success'
+      )
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    outputs:
+      deploy_sha: ${{ steps.sha.outputs.deploy_sha }}
+      should_deploy: ${{ steps.changes.outputs.should_deploy }}
+    steps:
+      - name: Checkout immutable main revision
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          fetch-depth: 2
+          ref: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || 'main' }}
+
+      - name: Resolve deployment SHA
+        id: sha
+        run: |
+          set -euo pipefail
+          DEPLOY_SHA="$(git rev-parse HEAD)"
+          echo "deploy_sha=$DEPLOY_SHA" >> "$GITHUB_OUTPUT"
+          echo "Deploy candidate: $DEPLOY_SHA"
+
+      - name: Require successful CI and Agent Exchange checks for the same SHA
+        env:
+          GH_TOKEN: ${{ github.token }}
+          DEPLOY_SHA: ${{ steps.sha.outputs.deploy_sha }}
+        run: |
+          set -euo pipefail
+
+          wait_for_workflow() {
+            local workflow_name="$1"
+            local state="missing"
+
+            for attempt in $(seq 1 40); do
+              runs="$(gh api "/repos/${GITHUB_REPOSITORY}/actions/runs?head_sha=${DEPLOY_SHA}&event=push&per_page=100")"
+              state="$(jq -r --arg name "$workflow_name" '
+                [.workflow_runs[] | select(.name == $name)]
+                | sort_by(.created_at)
+                | last
+                | if . == null then "missing" else (.status + ":" + (.conclusion // "none")) end
+              ' <<< "$runs")"
+
+              echo "$workflow_name: $state"
+
+              case "$state" in
+                completed:success)
+                  return 0
+                  ;;
+                completed:*)
+                  echo "::error::$workflow_name did not pass for $DEPLOY_SHA ($state)"
+                  return 1
+                  ;;
+              esac
+
+              sleep 15
+            done
+
+            echo "::error::Timed out waiting for $workflow_name on $DEPLOY_SHA (last state: $state)"
+            return 1
+          }
+
+          wait_for_workflow "CI"
+          wait_for_workflow "Agent Exchange"
+
+      - name: Decide whether the production Lambda needs a deployment
+        id: changes
+        env:
+          MANUAL: ${{ github.event_name == 'workflow_dispatch' }}
+        run: |
+          set -euo pipefail
+
+          if [ "$MANUAL" = "true" ]; then
+            echo "should_deploy=true" >> "$GITHUB_OUTPUT"
+            echo "Manual dispatch: deploying the current verified main revision."
+            exit 0
+          fi
+
+          if ! git rev-parse HEAD^ >/dev/null 2>&1; then
+            echo "should_deploy=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          if git diff --quiet HEAD^ HEAD --             integrations/agent-exchange-lambda             .github/workflows/agent-exchange-deploy.yml; then
+            echo "should_deploy=false" >> "$GITHUB_OUTPUT"
+            echo "No Agent Exchange runtime or deployment-workflow change; production deployment is skipped."
+          else
+            echo "should_deploy=true" >> "$GITHUB_OUTPUT"
+            echo "Agent Exchange deployment-relevant change detected."
+          fi
+
+  deploy:
+    name: Deploy production Lambda
+    needs: gate
+    if: needs.gate.outputs.should_deploy == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment:
+      name: agent-exchange-production
+      url: ${{ vars.AGENT_EXCHANGE_PUBLIC_BASE_URL || 'https://agents.privatedao.org' }}
+    env:
+      DEPLOY_SHA: ${{ needs.gate.outputs.deploy_sha }}
+      ROLE_ARN: ${{ vars.AGENT_EXCHANGE_AWS_ROLE_ARN }}
+    steps:
+      - name: Set deployment paths
+        run: |
+          echo "PACKAGE_PATH=$RUNNER_TEMP/privatedao-agent-exchange.zip" >> "$GITHUB_ENV"
+          echo "PREVIOUS_PACKAGE_PATH=$RUNNER_TEMP/privatedao-agent-exchange.previous.zip" >> "$GITHUB_ENV"
+
+      - name: Checkout gated revision
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          ref: ${{ needs.gate.outputs.deploy_sha }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: "22.21.1"
+          cache: npm
+          cache-dependency-path: integrations/agent-exchange-lambda/package-lock.json
+
+      - name: Rebuild and verify deployment artifact
+        working-directory: ${{ env.SERVICE_DIR }}
+        run: |
+          set -euo pipefail
+          npm ci --ignore-scripts --no-audit --no-fund
+          npm run lint
+          npm test
+          npm run smoke
+          npm run package -- "$PACKAGE_PATH"
+          unzip -tq "$PACKAGE_PATH"
+
+      - name: Require GitHub OIDC deployment role
+        run: |
+          set -euo pipefail
+          if [ -z "$ROLE_ARN" ]; then
+            echo "::error::Repository variable AGENT_EXCHANGE_AWS_ROLE_ARN is not configured."
+            echo "::error::Use a GitHub OIDC IAM role; do not add AWS access keys as repository secrets."
+            exit 1
+          fi
+
+      - name: Configure AWS credentials through OIDC
+        uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd # v6.3.0
+        with:
+          role-to-assume: ${{ env.ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+          role-session-name: privatedao-agent-exchange-${{ github.run_id }}
+          mask-aws-account-id: true
+
+      - name: Verify AWS identity and Lambda target
+        run: |
+          set -euo pipefail
+          aws sts get-caller-identity >/dev/null
+          runtime="$(aws lambda get-function-configuration             --function-name "$FUNCTION_NAME"             --query 'Runtime'             --output text)"
+          test "$runtime" = "nodejs22.x"
+          echo "Target function: $FUNCTION_NAME"
+          echo "Region: $AWS_REGION"
+          echo "Runtime: $runtime"
+
+      - name: Capture exact production rollback package
+        id: capture
+        run: |
+          set -euo pipefail
+
+          config="$(aws lambda get-function-configuration             --function-name "$FUNCTION_NAME"             --output json)"
+
+          PREVIOUS_REVISION="$(jq -r '.RevisionId' <<< "$config")"
+          PREVIOUS_CODE_SHA="$(jq -r '.CodeSha256' <<< "$config")"
+          PREVIOUS_LAST_MODIFIED="$(jq -r '.LastModified' <<< "$config")"
+
+          code_url="$(aws lambda get-function             --function-name "$FUNCTION_NAME"             --query 'Code.Location'             --output text)"
+
+          curl --fail --silent --show-error --location "$code_url"             --output "$PREVIOUS_PACKAGE_PATH"
+
+          unzip -tq "$PREVIOUS_PACKAGE_PATH"
+
+          echo "PREVIOUS_REVISION=$PREVIOUS_REVISION" >> "$GITHUB_ENV"
+          echo "PREVIOUS_CODE_SHA=$PREVIOUS_CODE_SHA" >> "$GITHUB_ENV"
+          echo "PREVIOUS_LAST_MODIFIED=$PREVIOUS_LAST_MODIFIED" >> "$GITHUB_ENV"
+
+          {
+            echo "### Rollback snapshot"
+            echo "- Function: `$FUNCTION_NAME`"
+            echo "- Previous CodeSha256: `$PREVIOUS_CODE_SHA`"
+            echo "- Previous LastModified: `$PREVIOUS_LAST_MODIFIED`"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Deploy verified package and publish immutable version
+        id: deploy_code
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+
+          LOCAL_CODE_SHA="$(openssl dgst -sha256 -binary "$PACKAGE_PATH" | base64 | tr -d '\n')"
+
+          aws lambda update-function-code             --function-name "$FUNCTION_NAME"             --zip-file "fileb://$PACKAGE_PATH"             --revision-id "$PREVIOUS_REVISION"             >/tmp/agent-exchange-update.json
+
+          aws lambda wait function-updated-v2             --function-name "$FUNCTION_NAME"
+
+          deployed="$(aws lambda get-function-configuration             --function-name "$FUNCTION_NAME"             --output json)"
+
+          DEPLOYED_CODE_SHA="$(jq -r '.CodeSha256' <<< "$deployed")"
+          DEPLOYED_REVISION="$(jq -r '.RevisionId' <<< "$deployed")"
+
+          if [ "$DEPLOYED_CODE_SHA" != "$LOCAL_CODE_SHA" ]; then
+            echo "::error::AWS CodeSha256 does not match the locally verified package."
+            exit 1
+          fi
+
+          VERSION="$(aws lambda publish-version             --function-name "$FUNCTION_NAME"             --description "github:$DEPLOY_SHA"             --query 'Version'             --output text)"
+
+          echo "DEPLOYED_REVISION=$DEPLOYED_REVISION" >> "$GITHUB_ENV"
+          echo "DEPLOYED_CODE_SHA=$DEPLOYED_CODE_SHA" >> "$GITHUB_ENV"
+          echo "DEPLOYED_VERSION=$VERSION" >> "$GITHUB_ENV"
+
+          {
+            echo "### Deployment"
+            echo "- Commit: `$DEPLOY_SHA`"
+            echo "- CodeSha256: `$DEPLOYED_CODE_SHA`"
+            echo "- Published rollback/reference version: `$VERSION`"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Production smoke gate
+        id: smoke
+        if: steps.deploy_code.outcome == 'success'
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+
+          retry_json() {
+            local url="$1"
+            local output="$2"
+            for attempt in $(seq 1 12); do
+              if curl --fail --silent --show-error                 --connect-timeout 10 --max-time 30                 "$url" -o "$output" &&
+                jq -e 'type == "object"' "$output" >/dev/null; then
+                return 0
+              fi
+              sleep 10
+            done
+            return 1
+          }
+
+          retry_json "$PUBLIC_BASE_URL/api/health" /tmp/health.json
+          retry_json "$PUBLIC_BASE_URL/api/services" /tmp/services.json
+          retry_json "$PUBLIC_BASE_URL/.well-known/agent-card.json" /tmp/agent-card.json
+          retry_json "$PUBLIC_BASE_URL/openapi.json" /tmp/openapi.json
+
+          jq -e '.services | type == "array" and length >= 24' /tmp/services.json >/dev/null
+          jq -e '[.services[].id] | index("verify.basic") != null' /tmp/services.json >/dev/null
+          jq -e '.openapi != null and .paths != null' /tmp/openapi.json >/dev/null
+
+          echo "Production smoke gate passed."
+
+      - name: Roll back automatically on deployment or smoke failure
+        id: rollback
+        if: >-
+          always() &&
+          steps.capture.outcome == 'success' &&
+          (
+            steps.deploy_code.outcome == 'failure' ||
+            steps.smoke.outcome == 'failure'
+          )
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+
+          echo "::warning::Deployment gate failed; restoring the exact pre-deploy Lambda package."
+
+          CURRENT_REVISION="$(aws lambda get-function-configuration             --function-name "$FUNCTION_NAME"             --query 'RevisionId'             --output text)"
+
+          aws lambda update-function-code             --function-name "$FUNCTION_NAME"             --zip-file "fileb://$PREVIOUS_PACKAGE_PATH"             --revision-id "$CURRENT_REVISION"             >/tmp/agent-exchange-rollback.json
+
+          aws lambda wait function-updated-v2             --function-name "$FUNCTION_NAME"
+
+          RESTORED_CODE_SHA="$(aws lambda get-function-configuration             --function-name "$FUNCTION_NAME"             --query 'CodeSha256'             --output text)"
+
+          if [ "$RESTORED_CODE_SHA" != "$PREVIOUS_CODE_SHA" ]; then
+            echo "::error::Rollback CodeSha256 mismatch."
+            exit 1
+          fi
+
+          for attempt in $(seq 1 12); do
+            if curl --fail --silent --show-error               --connect-timeout 10 --max-time 30               "$PUBLIC_BASE_URL/api/health" >/tmp/rollback-health.json &&
+              jq -e 'type == "object"' /tmp/rollback-health.json >/dev/null; then
+              echo "Rollback health check passed."
+              break
+            fi
+            if [ "$attempt" -eq 12 ]; then
+              echo "::error::Rollback completed in Lambda but the public health check did not recover."
+              exit 1
+            fi
+            sleep 10
+          done
+
+          {
+            echo "### Automatic rollback"
+            echo "- Restored CodeSha256: `$RESTORED_CODE_SHA`"
+            echo "- Reason: deployment verification or production smoke gate failed."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Fail the run after a rolled-back deployment
+        if: >-
+          always() &&
+          (
+            steps.deploy_code.outcome == 'failure' ||
+            steps.smoke.outcome == 'failure'
+          )
+        run: |
+          if [ "${{ steps.rollback.outcome }}" = "success" ]; then
+            echo "::error::Deployment failed the gate and production was rolled back successfully."
+          else
+            echo "::error::Deployment failed and the automatic rollback also needs operator attention."
+          fi
+          exit 1
+
+      - name: Record successful production release
+        if: steps.deploy_code.outcome == 'success' && steps.smoke.outcome == 'success'
+        run: |
+          {
+            echo "### Production release healthy"
+            echo "- URL: $PUBLIC_BASE_URL"
+            echo "- Commit: `$DEPLOY_SHA`"
+            echo "- Lambda version: `$DEPLOYED_VERSION`"
+            echo "- CodeSha256: `$DEPLOYED_CODE_SHA`"
+            echo "- Rollback package was captured before deployment and was not needed."
+          } >> "$GITHUB_STEP_SUMMARY"
