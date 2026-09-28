@@ -128,13 +128,16 @@ jobs:
     timeout-minutes: 20
     environment:
       name: agent-exchange-production
-      url: ${{ env.PUBLIC_BASE_URL }}
+      url: ${{ vars.AGENT_EXCHANGE_PUBLIC_BASE_URL || 'https://agents.privatedao.org' }}
     env:
       DEPLOY_SHA: ${{ needs.gate.outputs.deploy_sha }}
       ROLE_ARN: ${{ vars.AGENT_EXCHANGE_AWS_ROLE_ARN }}
-      PACKAGE_PATH: ${{ runner.temp }}/privatedao-agent-exchange.zip
-      PREVIOUS_PACKAGE_PATH: ${{ runner.temp }}/privatedao-agent-exchange.previous.zip
     steps:
+      - name: Set deployment paths
+        run: |
+          echo "PACKAGE_PATH=$RUNNER_TEMP/privatedao-agent-exchange.zip" >> "$GITHUB_ENV"
+          echo "PREVIOUS_PACKAGE_PATH=$RUNNER_TEMP/privatedao-agent-exchange.previous.zip" >> "$GITHUB_ENV"
+
       - name: Checkout gated revision
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
