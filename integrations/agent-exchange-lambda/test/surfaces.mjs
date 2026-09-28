@@ -462,6 +462,20 @@ test("MCP and A2A machine entrypoints remain callable", async () => {
   assert.equal(api.paths["/api/external/jobs/{jobId}/payment"].post.responses["409"].description.includes("non-replaying recovery"), true);
 });
 
+test("browser MCP clients receive a complete CORS preflight response", async () => {
+  resetForTests();
+  const response = await request("/mcp", "OPTIONS", undefined, {
+    origin: "https://mcp-singularity.cicada71.net",
+    "access-control-request-method": "POST",
+    "access-control-request-headers": "content-type,mcp-protocol-version,mcp-session-id",
+  });
+  assert.equal(response.statusCode, 204);
+  assert.equal(response.headers["access-control-allow-origin"], "*");
+  assert.match(response.headers["access-control-allow-methods"], /POST/);
+  assert.match(response.headers["access-control-allow-headers"], /mcp-protocol-version/);
+  assert.match(response.headers["access-control-allow-headers"], /mcp-session-id/);
+});
+
 test("MCP lifecycle, schemas, errors, and network aliases are protocol-safe", async () => {
   resetForTests();
   const initialize = await request("/mcp", "POST", { jsonrpc: "2.0", id: 1, method: "initialize", params: { protocolVersion: "2025-06-18", capabilities: {}, clientInfo: { name: "test-client", version: "1" } } });

@@ -494,6 +494,8 @@ const json = (body, status = 200, headers = {}) => ({
     "content-type": "application/json; charset=utf-8",
     "cache-control": "no-store",
     "access-control-allow-origin": config.corsOrigin,
+    "access-control-allow-methods": "GET,POST,PUT,PATCH,DELETE,OPTIONS",
+    "access-control-allow-headers": "content-type, authorization, x-pdao-owner-token, mcp-protocol-version, mcp-session-id, x-github-event, x-hub-signature-256",
     ...headers,
   },
   body: JSON.stringify(body),
@@ -506,6 +508,8 @@ const text = (body, status = 200) => ({
   headers: {
     "content-type": "text/plain; charset=utf-8",
     "access-control-allow-origin": config.corsOrigin,
+    "access-control-allow-methods": "GET,POST,PUT,PATCH,DELETE,OPTIONS",
+    "access-control-allow-headers": "content-type, authorization, x-pdao-owner-token, mcp-protocol-version, mcp-session-id, x-github-event, x-hub-signature-256",
   },
   body,
 });

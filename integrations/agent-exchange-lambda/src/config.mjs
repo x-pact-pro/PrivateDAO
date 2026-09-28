@@ -20,6 +20,10 @@ export function getConfig(env = process.env) {
   return {
     region: env.AWS_REGION || "eu-north-1",
     domain: env.AGENT_DOMAIN || "agents.privatedao.org",
+    // Browser-hosted MCP clients need CORS. These endpoints do not accept
+    // browser credentials, so wildcard is safe by default and deployments
+    // can narrow it with AGENT_EXCHANGE_CORS_ORIGIN.
+    corsOrigin: env.AGENT_EXCHANGE_CORS_ORIGIN || "*",
     treasury:
       env.SOLANA_TREASURY || "2BJ4ezxqV9YJXc38D9duKBkdn4su4jE1beKUHwH663sL",
     usdcMint:
