@@ -63,7 +63,9 @@ export function getConfig(env = process.env) {
     githubAppId: Number(env.GITHUB_APP_ID || env.AGENT_EXCHANGE_GITHUB_APP_ID || 5049917),
     githubAppPrivateKey: env.GITHUB_APP_PRIVATE_KEY || "",
     githubWebhookSecret: env.GITHUB_WEBHOOK_SECRET || "",
-    githubAppSlug: env.GITHUB_APP_SLUG || "private-dao-agent-exchange",
+    // Keep the fallback aligned with the existing GitHub App slug. A wrong
+    // fallback produces a dead installation URL when the secret omits it.
+    githubAppSlug: env.GITHUB_APP_SLUG || "privatedao-agent-exchange",
     githubToken: env.GITHUB_TOKEN || "",
     githubApiUrl: env.GITHUB_API_URL || "https://api.github.com",
     githubRepository: env.GITHUB_REPOSITORY || "",

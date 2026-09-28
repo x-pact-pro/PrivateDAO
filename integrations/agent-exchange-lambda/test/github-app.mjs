@@ -1,8 +1,14 @@
 import assert from "node:assert/strict";
 import { createHmac } from "node:crypto";
 import test from "node:test";
+import { getConfig } from "../src/config.mjs";
 import { applyGithubMarketplacePurchase, githubMarketplaceAccountRecordId, mergeGithubInstallationRepositories, publicGithubInstallationRecord, verifyGithubWebhook } from "../src/github-app.mjs";
 import { MemoryStore } from "../src/storage.mjs";
+
+test("GitHub App fallback slug points to the existing Marketplace app", () => {
+  assert.equal(getConfig({}).githubAppSlug, "privatedao-agent-exchange");
+  assert.equal(getConfig({ GITHUB_APP_SLUG: "custom-slug" }).githubAppSlug, "custom-slug");
+});
 
 test("GitHub webhook verification binds the signature to the exact raw body", () => {
   const secret = "webhook-test-secret";
