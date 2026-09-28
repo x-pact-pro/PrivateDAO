@@ -190,6 +190,29 @@ test("agreements require the declared buyer and the production USDC rail", async
   assert.equal(JSON.parse(accepted.body).status, "awaiting_payment");
 });
 
+test("agreements use the persisted marketplace platform fee policy", async () => {
+  process.env.AGENT_EXCHANGE_TEST_ADMIN_TOKEN = "test-admin-token";
+  resetForTests();
+  try {
+    const updated = await request("/api/admin/marketplace/policy", "PATCH", { platform_fee_bps: 900 }, { "x-pdao-admin-smoke": "test-admin-token" });
+    assert.equal(updated.statusCode, 200, updated.body);
+    const created = await request("/api/agreements", "POST", {
+      buyerAgent: "buyer-policy-fixture",
+      providerAgent: "provider-policy-fixture",
+      service: "synthetic.service",
+      price: 1,
+      asset: "USDC",
+    });
+    assert.equal(created.statusCode, 201, created.body);
+    const agreement = JSON.parse(created.body);
+    assert.equal(agreement.platformFeeBps, 900);
+    assert.equal(agreement.protocolFee, 0.09);
+    assert.equal(agreement.providerAmount, 0.91);
+  } finally {
+    delete process.env.AGENT_EXCHANGE_TEST_ADMIN_TOKEN;
+  }
+});
+
 test("legacy admin listings cannot advertise an unsupported payment asset", async () => {
   process.env.AGENT_EXCHANGE_TEST_ADMIN_TOKEN = "test-admin-token";
   resetForTests();
@@ -439,6 +462,20 @@ test("MCP and A2A machine entrypoints remain callable", async () => {
   assert.equal(api.paths["/api/external/jobs/{jobId}/payment"].post.responses["409"].description.includes("non-replaying recovery"), true);
 });
 
+test("browser MCP clients receive a complete CORS preflight response", async () => {
+  resetForTests();
+  const response = await request("/mcp", "OPTIONS", undefined, {
+    origin: "https://mcp-singularity.cicada71.net",
+    "access-control-request-method": "POST",
+    "access-control-request-headers": "content-type,mcp-protocol-version,mcp-session-id",
+  });
+  assert.equal(response.statusCode, 204);
+  assert.equal(response.headers["access-control-allow-origin"], "*");
+  assert.match(response.headers["access-control-allow-methods"], /POST/);
+  assert.match(response.headers["access-control-allow-headers"], /mcp-protocol-version/);
+  assert.match(response.headers["access-control-allow-headers"], /mcp-session-id/);
+});
+
 test("MCP lifecycle, schemas, errors, and network aliases are protocol-safe", async () => {
   resetForTests();
   const initialize = await request("/mcp", "POST", { jsonrpc: "2.0", id: 1, method: "initialize", params: { protocolVersion: "2025-06-18", capabilities: {}, clientInfo: { name: "test-client", version: "1" } } });
@@ -510,6 +547,10 @@ test("GitHub App and external seller boundaries fail closed without credentials 
   const setup = await request("/github/setup");
   assert.equal(setup.statusCode, 200);
   assert.match(setup.body, /Connect GitHub/);
+  const oauthCallback = await request("/github/oauth/callback");
+  assert.equal(oauthCallback.statusCode, 200);
+  assert.match(oauthCallback.headers["content-type"], /^text\/html/);
+  assert.match(oauthCallback.body, /GitHub user OAuth is not used/);
   const webhook = await request("/api/github/webhook", "POST", { action: "ping" }, { "x-github-event": "ping" });
   assert.equal(webhook.statusCode, 503);
   assert.doesNotMatch(webhook.body, /PRIVATE_KEY|access_token|client_secret/i);
@@ -602,6 +643,14 @@ test("external seller ownership protects mutations and publishes declared servic
     });
     assert.equal(unsupportedPayoutRail.statusCode, 400);
     assert.match(unsupportedPayoutRail.body, /payout network must be solana-mainnet-beta/);
+    const malformedPublicKey = await request("/api/seller/metadata/preview", "POST", {
+      mcp_url: "https://example.com/mcp",
+      commercial_services: [{ id: "read", tool: "read", price: 0.03, asset: "USDC", network: "solana-mainnet-beta" }],
+      accepted_assets: ["USDC"],
+      payout: { address: "111111111111111111111111111111111111111111", network: "solana-mainnet-beta", asset: "USDC" },
+    });
+    assert.equal(malformedPublicKey.statusCode, 400);
+    assert.match(malformedPublicKey.body, /valid Solana public address/);
     const invalidTool = await request("/api/seller/metadata/preview", "POST", {
       mcp_url: "https://example.com/mcp",
       commercial_services: [{ id: "missing", tool: "missing", price: 0.03, asset: "USDC", network: "solana-mainnet-beta" }],
@@ -902,6 +951,7 @@ test("external seller paid lifecycle quotes, executes once, and records attribut
 });
 
 test("external seller listing pricing includes five services and bills each additional service once", async () => {
+  process.env.AGENT_EXCHANGE_TEST_ADMIN_TOKEN = "test-admin-token";
   resetForTests();
   const originalFetch = globalThis.fetch;
   globalThis.fetch = async (_url, options = {}) => {
@@ -913,6 +963,8 @@ test("external seller listing pricing includes five services and bills each addi
     throw new Error(`unexpected pricing fixture request: ${payload.method}`);
   };
   try {
+    const policyUpdate = await request("/api/admin/marketplace/policy", "PATCH", { listing_fee_usd: 12 }, { "x-pdao-admin-smoke": "test-admin-token" });
+    assert.equal(policyUpdate.statusCode, 200, policyUpdate.body);
     const firstPartyQuote = await request("/api/payments/quote", "POST", { service_id: "verify.deep", job_id: "first_party_fixture" });
     assert.equal(firstPartyQuote.statusCode, 200);
     const firstPartyBody = JSON.parse(firstPartyQuote.body);
@@ -921,7 +973,7 @@ test("external seller listing pricing includes five services and bills each addi
     assert.equal(firstPartyBody.seller_net_amount, null);
     const registered = JSON.parse((await request("/api/registry/register", "POST", { name: "Pricing Fixture", mcp_url: "https://example.com/mcp" })).body);
     const serviceSet = (count) => Array.from({ length: count }, (_item, index) => ({ id: `service_${index + 1}`, tool: "read", title: `Service ${index + 1}`, price: 0.01, asset: "USDC", network: "solana-mainnet-beta" }));
-    for (const [count, expected] of [[1, 10], [5, 10]]) {
+    for (const [count, expected] of [[1, 12], [5, 12]]) {
       const updated = await request(`/api/registry/agents/${registered.id}/services`, "PATCH", { owner_token: registered.owner_token, services: serviceSet(count), accepted_assets: ["USDC"], payout: { address: "2BJ4ezxqV9YJXc38D9duKBkdn4su4jE1beKUHwH663sL", network: "solana-mainnet-beta", asset: "USDC" } });
       assert.equal(updated.statusCode, 200, updated.body);
       const quoteResponse = await request("/api/marketplace/seller-listings/quote", "POST", { agent_id: registered.id, owner_token: registered.owner_token, tier: "pro", accept_terms: true, terms_version: "seller-marketplace-v1" });
@@ -933,6 +985,7 @@ test("external seller listing pricing includes five services and bills each addi
     assert.match(tooMany.body, /at most 5 services/);
   } finally {
     globalThis.fetch = originalFetch;
+    delete process.env.AGENT_EXCHANGE_TEST_ADMIN_TOKEN;
   }
 });
 
