@@ -36,6 +36,7 @@ test("human root is HTML while machine surfaces remain available", async () => {
   assert.equal(integrationPage.statusCode, 200);
   assert.match(integrationPage.body, /Recognize the stack at a glance/);
   assert.doesNotMatch(integrationPage.body, /https:\/\/github\.com\/marketplace\/privatedao-agent-exchange/);
+  // GitHub Marketplace publication is managed separately from the GitHub App runtime.\n  // Keep every public Agent Exchange surface away from the dead Marketplace URL until GitHub publishes it.\n  assert.doesNotMatch(root.body, /https:\/\/github\.com\/marketplace\/privatedao-agent-exchange/);\n  assert.doesNotMatch(marketplace.body, /https:\/\/github\.com\/marketplace\/privatedao-agent-exchange/);
   assert.match(integrationPage.body, /https:\/\/github\.com\/apps\/privatedao-agent-exchange/);
   const sellerPortal = await request("/sellers");
   assert.equal(sellerPortal.statusCode, 200);
