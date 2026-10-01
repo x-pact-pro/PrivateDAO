@@ -19,7 +19,7 @@
     "@aws-sdk/lib-dynamodb": "^3.1136.0",
     "@aws-sdk/client-secrets-manager": "^3.1106.0",
     "@solana/web3.js": "1.98.4",
-    "mongodb": "^6.20.0"
+    "mongodb": "^7.6.0"
   },
   "devDependencies": {
     "8004-solana": "0.8.3",
