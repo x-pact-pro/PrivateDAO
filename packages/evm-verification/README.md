@@ -40,6 +40,27 @@ deployment evidence only after confirmed on-chain transactions.
 No Mainnet configuration is accepted by this runner. No public RPC fallback is
 used. No mock receipt or synthetic success path exists.
 
+### Base Builder Code attribution
+
+Base Sepolia E2E transactions from the registered deployer wallet use the
+official ERC-8021 `dataSuffix` through `ox/erc8021`. The public Builder Code is
+stored in `base-builder-code.json` and can be overridden with
+`PDAO_BASE_BUILDER_CODE`; `PDAO_BASE_BUILDER_WALLET` must match the wallet that
+Base registered for that code. A mismatched wallet fails closed. Checker EOAs
+are not attributed unless a separate Builder Code is explicitly configured.
+
+Run the local contract-free check with:
+
+```bash
+npm run test:base:builder-code
+```
+
+Historical Base evidence predates this wiring and is therefore labelled as not
+attributed. Future Base receipts expose the configured Builder Code in the
+evidence record. Attribution can be verified in Base's dashboard or by
+decoding the transaction input suffix; it does not change contract calldata
+semantics.
+
 The generic runner can be selected with `PDAO_EVM_NETWORKS` for Ethereum
 Sepolia, Base Sepolia, Arbitrum Sepolia, BNB Testnet, Robinhood Testnet,
 Hyperliquid HyperEVM Testnet, or Tempo Testnet. Hyperliquid uses the standard

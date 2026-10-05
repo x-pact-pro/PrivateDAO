@@ -17,11 +17,14 @@ import {
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 import { createClient as createTempoClient } from "viem/tempo";
 import { tempoModerato } from "viem/chains";
+import { Attribution } from "ox/erc8021";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const PACKAGE = path.join(ROOT, "packages/evm-verification");
 const TEMPO_FEE_TOKEN = "0x20c0000000000000000000000000000000000001";
 const TEMPO_TOKEN_DECIMALS = 6;
+const BASE_BUILDER_CODE = process.env.PDAO_BASE_BUILDER_CODE?.trim() || "bc_dxjpt7gf";
+const BASE_BUILDER_WALLET = (process.env.PDAO_BASE_BUILDER_WALLET?.trim() || "0x1c3D6757651B617D7e5c08aE6F7a7F65eEafD75F").toLowerCase();
 const NETWORK = process.env.PDAO_EVM_NETWORK?.trim() || "ethereum-sepolia";
 const NETWORK_CONFIG = {
   "ethereum-sepolia": { chainId: 11155111, rpcEnv: "PDAO_EVM_ETHEREUM_SEPOLIA_RPC_URL", currency: { name: "Sepolia Ether", symbol: "ETH", decimals: 18 } },
@@ -49,6 +52,12 @@ const chain = defineChain({
   rpcUrls: { default: { http: [rpcUrl] } },
 });
 const deployer = privateKeyToAccount(deployerKey);
+const deployerDataSuffix = NETWORK === "base-sepolia"
+  ? (() => {
+      assert.equal(deployer.address.toLowerCase(), BASE_BUILDER_WALLET, "Base Builder Code wallet does not match the organizational E2E deployer.");
+      return Attribution.toDataSuffix({ codes: [BASE_BUILDER_CODE] });
+    })()
+  : undefined;
 const rpcTimeoutMs = Number(process.env.PDAO_EVM_RPC_TIMEOUT_MS || 120_000);
 if (!Number.isInteger(rpcTimeoutMs) || rpcTimeoutMs < 10_000 || rpcTimeoutMs > 300_000) {
   throw new Error("PDAO_EVM_RPC_TIMEOUT_MS must be an integer between 10000 and 300000.");
@@ -66,7 +75,7 @@ const deployerTempoClient = NETWORK === "tempo-testnet"
   ? createTempoClient({ account: deployer, chain: tempoModerato.extend({ feeToken: TEMPO_FEE_TOKEN }), transport })
   : null;
 const publicClient = deployerTempoClient ?? createPublicClient({ chain, transport });
-const deployerWallet = deployerTempoClient ?? createWalletClient({ account: deployer, chain, transport });
+const deployerWallet = deployerTempoClient ?? createWalletClient({ account: deployer, chain, transport, ...(deployerDataSuffix ? { dataSuffix: deployerDataSuffix } : {}) });
 let checker;
 for (let attempt = 0; attempt < 8; attempt += 1) {
   const candidate = privateKeyToAccount(generatePrivateKey());
@@ -161,6 +170,7 @@ const deployments = {
   environment: "testnet",
   deployer: deployer.address,
   checker: checker.address,
+  attribution: deployerDataSuffix ? { builderCode: BASE_BUILDER_CODE, walletAddress: deployer.address, dataSuffixConfigured: true } : { dataSuffixConfigured: false },
   createdAt: new Date().toISOString(),
   contracts: {},
   evidence: {},

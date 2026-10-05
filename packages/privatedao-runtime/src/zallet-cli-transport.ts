@@ -31,6 +31,8 @@ export interface ZalletCliTransportOptions {
   commandTimeoutMs?: number;
   pollIntervalMs?: number;
   confirmationDepth?: number;
+  allowBalanceReadinessProbe?: boolean;
+  broadcastEnabled?: boolean;
 }
 
 type OperationRecord = {
@@ -85,6 +87,7 @@ export class ZalletCliTransport implements ZcashTransport {
     // that expose it.
     let syncedToNode = nodeHeight >= 0 && walletHeight >= nodeHeight;
     if (status.wallet_tip?.height === undefined || status.fully_synced_height === undefined) {
+      if (!this.options.allowBalanceReadinessProbe) return { ok: false, network: "zcash-testnet", latencyMs: Date.now() - started };
       try {
         await this.rpc("z_gettotalbalance");
         syncedToNode = nodeHeight >= 0;
@@ -134,6 +137,11 @@ export class ZalletCliTransport implements ZcashTransport {
       address: recipient.address,
       amount: atomicToZec(recipient.atomicAmount),
     }));
+    if (!this.options.broadcastEnabled) {
+      record.state = "failed";
+      record.errorCode = "ZCASH_BROADCAST_DISABLED";
+      throw new Error("Zcash broadcast is disabled. Set broadcastEnabled only for an explicitly approved Testnet E2E send.");
+    }
     const result = await this.rpc<unknown>("z_sendmany", [
       payload.fromAddress,
       amounts,

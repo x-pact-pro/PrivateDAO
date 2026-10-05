@@ -1,0 +1,66 @@
+{
+  "schema": "privatedao.base-integration-evidence.v1",
+  "generatedAt": "2026-10-05T20:39:15.464Z",
+  "network": "base-sepolia",
+  "chainId": 84532,
+  "environment": "testnet",
+  "mainnetExecution": "disabled",
+  "explorerBaseUrl": "https://sepolia.basescan.org",
+  "builderCode": {
+    "walletAddress": "0x1c3D6757651B617D7e5c08aE6F7a7F65eEafD75F",
+    "builderCode": "bc_dxjpt7gf",
+    "networkScope": "Base transactions only",
+    "source": "Base Builder Code API",
+    "mainnetExecutionEnabled": false
+  },
+  "workflows": [
+    {
+      "product": "Record Verification",
+      "status": "testnet_verified",
+      "txHash": "0x7b49ff793e588760095b234189c4fa35829be5dc960f2d22f4d1683a4e16bbe2",
+      "blockNumber": "46934942",
+      "verification": true,
+      "builderCodeAttribution": "historical evidence predates Builder Code wiring",
+      "explorerUrl": "https://sepolia.basescan.org/tx/0x7b49ff793e588760095b234189c4fa35829be5dc960f2d22f4d1683a4e16bbe2",
+      "proofUrl": "https://privatedao.org/verify/evm?network=base-sepolia&type=record&id=0x20e1ef89e6e1080e58c4db810a06313825373a9745b3007da38a9b7fcc16ee48"
+    },
+    {
+      "product": "Blind Verification",
+      "status": "testnet_verified",
+      "txHash": "0x220af80816988d9d19ab102160b8946ebac428caef6e65150534f8544917d243",
+      "blockNumber": "46934944",
+      "verification": true,
+      "builderCodeAttribution": "historical evidence predates Builder Code wiring",
+      "explorerUrl": "https://sepolia.basescan.org/tx/0x220af80816988d9d19ab102160b8946ebac428caef6e65150534f8544917d243",
+      "proofUrl": "https://privatedao.org/verify/evm?network=base-sepolia&type=blind&id=0x624a5057d97b5f6db52390a1cb12e85f58f1beac4177298ce93a525e10f11de8"
+    },
+    {
+      "product": "Private Treasury",
+      "status": "testnet_verified",
+      "txHash": "0x5eee192c4af62410015d2492b9a7ef7c7d81f3e914be41ab00ac28adb8adada8",
+      "verification": true,
+      "builderCodeAttribution": "historical evidence predates Builder Code wiring",
+      "explorerUrl": "https://sepolia.basescan.org/tx/0x5eee192c4af62410015d2492b9a7ef7c7d81f3e914be41ab00ac28adb8adada8"
+    },
+    {
+      "product": "Private Governance",
+      "status": "testnet_verified",
+      "txHash": "0x98df5049029710d3291742452007c037f3ad696eb2a8333a81686baa73d180f4",
+      "verification": true,
+      "builderCodeAttribution": "historical evidence predates Builder Code wiring",
+      "explorerUrl": "https://sepolia.basescan.org/tx/0x98df5049029710d3291742452007c037f3ad696eb2a8333a81686baa73d180f4"
+    },
+    {
+      "product": "Confidential Auctions",
+      "status": "testnet_verified",
+      "txHash": "0x1f01d7cf49375513a159f1bd0b8ca53f35a6e4c1a023f1721cc2709c36fdb173",
+      "verification": true,
+      "builderCodeAttribution": "historical evidence predates Builder Code wiring",
+      "explorerUrl": "https://sepolia.basescan.org/tx/0x1f01d7cf49375513a159f1bd0b8ca53f35a6e4c1a023f1721cc2709c36fdb173"
+    }
+  ],
+  "sourceArtifacts": [
+    "packages/evm-verification/deployments/phase-2-e2e-base-sepolia.json",
+    "packages/evm-verification/deployments/organizational-base-sepolia.json"
+  ]
+}
