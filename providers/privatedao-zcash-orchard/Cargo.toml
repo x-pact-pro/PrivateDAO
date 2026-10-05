@@ -15,7 +15,7 @@ zcash_client_backend = { version = "0.24.0", default-features = false, features 
 zcash_client_sqlite = { version = "0.22.0", default-features = false, features = ["orchard", "pczt-tests", "unstable"] }
 zcash_keys = { version = "0.16.1", default-features = false, features = ["std", "orchard"] }
 zcash_protocol = "0.10.5"
-zip32 = "0.2.1"
+zip32 = "0.3.0"
 secrecy = "0.8"
 time = "0.3"
 tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
