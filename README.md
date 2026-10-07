@@ -66,6 +66,11 @@ value.
 The current published token surface is documented in
 [`docs/pdao-token.md`](docs/pdao-token.md) and the machine-readable
 attestation is [`docs/pdao-attestation.generated.json`](docs/pdao-attestation.generated.json).
+Pump.fun / creator-reward identity metadata for the live PDAO mint is published at
+[`docs/pdao-pumpfun.json`](docs/pdao-pumpfun.json).
+
+Live PDAO mint on Solana Mainnet: `9isGuumtaqvJeJeyLF44fvfskk2cv5mYsopexMBfpump`.
+
 The documented Testnet governance token is `PDAO` with mint
 `DFYvBdivHCe4bSErgCiKm2RhwGEcZYbBPFQzLNr37Bie` and a published initial supply
 of `1,000,000 PDAO`. These references describe the current evidence surface;
