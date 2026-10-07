@@ -172,6 +172,7 @@ or mainnet readiness unless the referenced document says so explicitly.
 - [PDAO attestation](docs/pdao-attestation.generated.json)
 - [Strategy operations](docs/strategy-operations.md)
 - [Reviewer fast path](docs/reviewer-fast-path.md)
+- [Reviewer surface map](docs/reviewer-surface-map.md)
 - [Cryptographic integrity](docs/cryptographic-integrity.md)
 - [Cryptographic manifest](docs/cryptographic-manifest.generated.json)
 
@@ -285,9 +286,7 @@ URL, or deployment credential in the repository.
 
 PrivateDAO distinguishes between implementation, testnet evidence, production
 readiness, and mainnet execution. A green unit test does not prove an on-chain
-transaction. An RPC health check does not prove product support. A marketplace
-listing does not prove payment settlement. Each product and network must carry
-its own lifecycle, receipt, reconciliation, privacy, and release evidence.
+transaction. An RPC health check does not prove product support. A marketplace listing does not prove payment settlement. Each product and network must carry its own lifecycle, receipt, reconciliation, privacy, and release evidence.
 
 ## License and notices
 
