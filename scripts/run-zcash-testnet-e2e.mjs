@@ -21,6 +21,7 @@ const recipientAddress = process.env.PDAO_ZCASH_RECIPIENT_ADDRESS?.trim() || sou
 const atomicAmount = process.env.PDAO_ZCASH_ATOMIC_AMOUNT?.trim() || "10000";
 const confirmationDepth = Number(process.env.PDAO_ZCASH_CONFIRMATIONS || "1");
 const receiptTimeoutMs = Number(process.env.PDAO_ZCASH_RECEIPT_TIMEOUT_MS || "900000");
+const operationTimeoutMs = Number(process.env.PDAO_ZCASH_OPERATION_TIMEOUT_MS || "900000");
 const allowBalanceReadinessProbe = process.env.PDAO_ZCASH_ALLOW_BALANCE_CHECK === "1";
 const broadcastEnabled = process.env.PDAO_ZCASH_BROADCAST_ENABLED === "1";
 const dryRun = process.env.PDAO_ZCASH_DRY_RUN === "1";
@@ -28,6 +29,7 @@ const outputPath = process.env.PDAO_ZCASH_E2E_OUTPUT?.trim();
 assert.match(atomicAmount, /^\d+$/);
 assert.ok(BigInt(atomicAmount) > 0n);
 assert.ok(Number.isInteger(confirmationDepth) && confirmationDepth >= 1);
+assert.ok(Number.isFinite(operationTimeoutMs) && operationTimeoutMs >= 30_000);
 if (!allowBalanceReadinessProbe) {
   throw new Error("PDAO_ZCASH_ALLOW_BALANCE_CHECK=1 is required for the write-enabled Zcash E2E readiness gate.");
 }
@@ -43,6 +45,7 @@ const transport = new ZalletCliTransport({
   explorerBaseUrl: "https://explorer.testnet.z.cash",
   confirmationDepth,
   commandTimeoutMs: 30_000,
+  operationTimeoutMs,
   allowBalanceReadinessProbe,
   broadcastEnabled,
 });

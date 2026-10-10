@@ -80,7 +80,11 @@ if (method === "getwalletinfo") {
 } else if (method === "z_gettotalbalance") {
   console.log(JSON.stringify({ orchard: "1.0" }));
 } else if (method === "z_sendmany") {
-  console.log(JSON.stringify("opid-should-not-run"));
+  process.stdout.write("opid-testnet-send");
+} else if (method === "z_getoperationstatus") {
+  console.log(JSON.stringify([{ id: "opid-testnet-send", status: "success", result: { txid: "zcash-testnet-real-shape-txid" } }]));
+} else if (method === "getrawtransaction") {
+  console.log(JSON.stringify({ confirmations: 2, height: 101 }));
 } else {
   console.log(JSON.stringify({ ok: true }));
 }
@@ -106,6 +110,24 @@ if (method === "getwalletinfo") {
   const guardedPrepared = await guarded.prepare(guardedIntent);
   await assert.rejects(() => guarded.submit(guardedPrepared, guardedPrepared.unsignedPayload), /Zcash broadcast is disabled/);
   assert.doesNotMatch(await readFile(callsPath, "utf8"), /z_sendmany/);
+
+  const enabled = new ZalletCliTransport({
+    binaryPath: fakeZallet,
+    dataDirectory: tmp,
+    configPath: fakeConfig,
+    network: "zcash-testnet",
+    explorerBaseUrl: "https://explorer.testnet.z.cash",
+    broadcastEnabled: true,
+  });
+  const enabledPrepared = await enabled.prepare({
+    ...guardedIntent,
+    context: { ...guardedIntent.context, requestId: "zcash-enabled-send", idempotencyKey: "zcash-enabled-send" },
+  });
+  const enabledSubmitted = await enabled.submit(enabledPrepared, enabledPrepared.unsignedPayload);
+  assert.deepEqual(enabledSubmitted.signatures, ["zcash-testnet-real-shape-txid"]);
+  const enabledReceipt = await enabled.receipt(enabledPrepared.executionId);
+  assert.equal(enabledReceipt.state, "finalized");
+  assert.equal(enabledReceipt.blockNumber, "101");
 } finally {
   await rm(tmp, { recursive: true, force: true });
 }

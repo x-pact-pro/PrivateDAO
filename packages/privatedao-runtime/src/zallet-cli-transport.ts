@@ -29,6 +29,7 @@ export interface ZalletCliTransportOptions {
   network: "zcash-testnet";
   explorerBaseUrl: string;
   commandTimeoutMs?: number;
+  operationTimeoutMs?: number;
   pollIntervalMs?: number;
   confirmationDepth?: number;
   allowBalanceReadinessProbe?: boolean;
@@ -64,9 +65,11 @@ export class ZalletCliTransport implements ZcashTransport {
   private readonly timeoutMs: number;
   private readonly pollMs: number;
   private readonly confirmations: number;
+  private readonly operationTimeoutMs: number;
 
   constructor(private readonly options: ZalletCliTransportOptions) {
     this.timeoutMs = options.commandTimeoutMs ?? 20_000;
+    this.operationTimeoutMs = options.operationTimeoutMs ?? 15 * 60_000;
     this.pollMs = options.pollIntervalMs ?? 2_000;
     this.confirmations = options.confirmationDepth ?? 1;
   }
@@ -89,7 +92,9 @@ export class ZalletCliTransport implements ZcashTransport {
     if (status.wallet_tip?.height === undefined || status.fully_synced_height === undefined) {
       if (!this.options.allowBalanceReadinessProbe) return { ok: false, network: "zcash-testnet", latencyMs: Date.now() - started };
       try {
-        await this.rpc("z_gettotalbalance");
+        // Zallet beta.3 currently requires include_watchonly=true even for
+        // wallets whose active account has spending authority.
+        await this.rpc("z_gettotalbalance", [1, true]);
         syncedToNode = nodeHeight >= 0;
       } catch {
         syncedToNode = false;
@@ -199,7 +204,7 @@ export class ZalletCliTransport implements ZcashTransport {
   }
 
   private async waitForOperation(operationId: string, record: OperationRecord): Promise<string> {
-    const deadline = Date.now() + this.timeoutMs;
+    const deadline = Date.now() + this.operationTimeoutMs;
     while (Date.now() < deadline) {
       const entries = await this.rpc<ZalletOperation[]>("z_getoperationstatus", [[operationId]]);
       const operation = entries[0];
@@ -280,7 +285,19 @@ function runZallet(options: ZalletCliTransportOptions, method: string, params: r
         return;
       }
       try {
-        const parsed = JSON.parse(stdout) as { result?: unknown; error?: unknown };
+        const trimmed = stdout.trim();
+        let parsed: unknown;
+        try {
+          parsed = JSON.parse(trimmed);
+        } catch {
+          // Zallet's RPC CLI deliberately prints JSON string results without
+          // their surrounding quotes. Async methods such as z_sendmany
+          // therefore return a bare operation id on stdout.
+          if (!trimmed || /[\r\n\u0000-\u001f]/.test(trimmed)) {
+            throw new Error("invalid Zallet CLI output");
+          }
+          parsed = trimmed;
+        }
         // The zallet CLI prints the RPC result directly, unlike its HTTP
         // JSON-RPC endpoint. Normalize both shapes at this boundary.
         if (parsed && typeof parsed === "object" && ("result" in parsed || "error" in parsed)) {
