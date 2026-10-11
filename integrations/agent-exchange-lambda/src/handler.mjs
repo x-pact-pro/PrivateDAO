@@ -1198,25 +1198,25 @@ function serviceInputSchema(service) {
   };
   if (id === "receipt.verify") return {
     type: "object",
-    properties: { receipt: { type: "object" }, expected_hash: { type: "string" } },
+    properties: { network: NETWORK_SCHEMA(service), receipt: { type: "object" }, expected_hash: { type: "string" } },
     required: ["receipt"],
     additionalProperties: false,
   };
   if (id === "agent.match") return {
     type: "object",
-    properties: { capabilities: { type: "array", items: { type: "string" }, maxItems: 32 }, network: { type: "string" } },
+    properties: { capabilities: { type: "array", items: { type: "string" }, maxItems: 32 }, network: NETWORK_SCHEMA(service) },
     required: ["capabilities"],
     additionalProperties: false,
   };
   if (id === "intelligence.synthesize") return {
     type: "object",
-    properties: { evidence: { type: "object" }, requested_output: { type: "string", maxLength: 500 } },
+    properties: { network: NETWORK_SCHEMA(service), evidence: { type: "object" }, requested_output: { type: "string", maxLength: 500 } },
     required: ["evidence"],
     additionalProperties: false,
   };
-  if (id === "decision.context") return { type: "object", properties: { evidence: { type: "object" } }, required: ["evidence"], additionalProperties: false };
+  if (id === "decision.context") return { type: "object", properties: { network: NETWORK_SCHEMA(service), evidence: { type: "object" } }, required: ["evidence"], additionalProperties: false };
   if (id === "game.tool") return { type: "object", properties: { world: { type: "string", maxLength: 40 }, tool: { type: "string", enum: ["privacy-lens", "verification-scanner", "hoverboard"] } }, required: ["tool"], additionalProperties: false };
-  if (id === "sponsored.discovery") return { type: "object", properties: { campaignId: { type: "string" }, destination: { type: "string", format: "uri" }, subject: { type: "string" }, targetCapabilities: { type: "array", items: { type: "string" } }, targetChains: { type: "array", items: { type: "string" } }, tags: { type: "array", items: { type: "string" } }, start: { type: "string", format: "date-time" }, expiry: { type: "string", format: "date-time" } }, required: ["campaignId", "destination"], additionalProperties: false };
+  if (id === "sponsored.discovery") return { type: "object", properties: { network: NETWORK_SCHEMA(service), campaignId: { type: "string" }, destination: { type: "string", format: "uri" }, subject: { type: "string" }, targetCapabilities: { type: "array", items: { type: "string" } }, targetChains: { type: "array", items: { type: "string" } }, tags: { type: "array", items: { type: "string" } }, start: { type: "string", format: "date-time" }, expiry: { type: "string", format: "date-time" } }, required: ["campaignId", "destination"], additionalProperties: false };
   return { type: "object", additionalProperties: true, description: "Service-specific JSON input." };
 }
 function serviceManifest(service) {
@@ -1263,12 +1263,12 @@ function validateServiceInput(serviceId, input = {}) {
     return;
   }
   const network = input.network == null ? "" : normalizeNetworkId(input.network);
-  if (service.supportedNetworks?.length && !service.supportedNetworks.includes(network))
+  if (service.supportedNetworks?.length && network && !service.supportedNetworks.includes(network))
     throw new Error(`${serviceId} is not supported on ${network || "this network"}`);
   const solana = /^[1-9A-HJ-NP-Za-km-z]{32,88}$/;
   const evm = /^0x[0-9a-fA-F]{40}$/;
   const isEvm = ["ethereum-mainnet", "base-mainnet", "arbitrum-mainnet"].includes(network);
-  if (isEvm && !isEvmServiceSupported(serviceId) && !["research.asset", "research.wallet", "contract.explain", "transaction.explain", "anomaly.detect", "agent.research.report", "portfolio.intelligence", "market.snapshot"].includes(serviceId))
+  if (isEvm && !isEvmServiceSupported(serviceId) && !["verify.basic", "verify.deep", "decision.context", "receipt.verify", "agent.match", "intelligence.synthesize", "sponsored.discovery", "research.asset", "research.wallet", "contract.explain", "transaction.explain", "anomaly.detect", "agent.research.report", "portfolio.intelligence", "market.snapshot"].includes(serviceId))
     throw new Error(`${serviceId} is not implemented on ${network}`);
   if (serviceId === "swap.quote") {
     const tokenPattern = isEvm ? /^0x[0-9a-fA-F]{40}$/ : /^[1-9A-HJ-NP-Za-km-z]{32,44}$/;
@@ -2568,18 +2568,29 @@ async function executeService(id, input) {
     if (id === "market.snapshot") return marketSnapshot(config, normalizedInput);
     return portfolioIntelligence(config, normalizedInput);
   }
-  if (requestedNetwork && evmNetwork(requestedNetwork)) {
+  const networkContextServices = new Set(["verify.basic", "verify.deep", "decision.context", "receipt.verify", "agent.match", "intelligence.synthesize", "sponsored.discovery"]);
+  if (requestedNetwork && evmNetwork(requestedNetwork) && !networkContextServices.has(id)) {
     if (!service?.supportedNetworks?.includes(requestedNetwork))
       throw new Error(`${id} is not supported on ${requestedNetwork}`);
     return executeEvmService(config, id, normalizedInput);
   }
-  if (requestedNetwork && requestedNetwork !== "solana-mainnet-beta")
+  if (requestedNetwork && requestedNetwork !== "solana-mainnet-beta" && !networkContextServices.has(id))
     throw new Error(`unsupported target network: ${requestedNetwork}`);
   if (id === "swap.quote") return swapQuote(config, normalizedInput);
   if (id === "transaction.simulate") return simulateSolanaTransaction(config, normalizedInput);
   if (id === "verify.basic" || id === "verify.deep") {
     const mint = input?.mint || input?.asset;
     if (mint) {
+      if (requestedNetwork && evmNetwork(requestedNetwork)) {
+        const evidence = await executeEvmService(config, "token.intelligence", { network: requestedNetwork, asset: mint });
+        return {
+          ...evidence,
+          service: id,
+          verification_status: evidence.contract_present ? "VERIFIED" : "INVALID",
+          checks: [{ name: "evm_contract_present", passed: evidence.contract_present }],
+          canonicalization: "privatedao-agent-v1",
+        };
+      }
       const evidence = await mintEvidence(config, mint);
       if (id === "verify.deep") {
         const sigs = await readRpc(config, "getSignaturesForAddress", [
@@ -2601,6 +2612,7 @@ async function executeService(id, input) {
           : "VERIFIED",
       input_hash: inputHash,
       canonicalization: "privatedao-agent-v1",
+      ...(requestedNetwork ? { target_network: requestedNetwork } : {}),
       checks: [
         {
           name: "canonical_digest",
@@ -2723,7 +2735,8 @@ async function executeService(id, input) {
   }
   if (id === "decision.context")
     return {
-      cluster: "mainnet-beta",
+      target_network: requestedNetwork || null,
+      cluster: requestedNetwork === "solana-mainnet-beta" || !requestedNetwork ? "mainnet-beta" : null,
       evidence_digest: digest(input?.evidence || input),
       checks: [
         {
@@ -2741,11 +2754,12 @@ async function executeService(id, input) {
           ? "INVALID"
           : "VERIFIED",
       receipt_digest: actual,
-      cluster: "mainnet-beta",
+      target_network: requestedNetwork || null,
+      cluster: requestedNetwork === "solana-mainnet-beta" || !requestedNetwork ? "mainnet-beta" : null,
     };
   }
   if (id === "agent.match") {
-    return matchRegisteredAgents(input);
+    return { target_network: requestedNetwork || null, ...(await matchRegisteredAgents(input)) };
   }
   if (id === "intelligence.synthesize") {
     let inference = await runIntelInference(config, {
@@ -2763,6 +2777,7 @@ async function executeService(id, input) {
       }
     }
     return {
+      target_network: requestedNetwork || null,
       status: inference.status,
       provider: inference.provider,
       model: inference.model,
@@ -2791,6 +2806,7 @@ async function executeService(id, input) {
       throw new Error("campaignId and destination are required");
     const campaign = {
       id: input.campaignId,
+      targetNetwork: requestedNetwork || null,
       subject: input.subject || input.name,
       destination: input.destination,
       targetCapabilities: input.targetCapabilities || [],

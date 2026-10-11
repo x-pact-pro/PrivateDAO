@@ -20,6 +20,10 @@ assert.equal(services.statusCode, 200);
 const serviceList = JSON.parse(services.body).services;
 assert.ok(serviceList.some((service) => service.id === "agent.research.report"));
 assert.ok(serviceList.some((service) => service.id === "transaction.simulate"));
+for (const serviceId of ["verify.deep", "decision.context", "receipt.verify", "agent.match", "intelligence.synthesize", "sponsored.discovery"]) {
+  const service = serviceList.find((item) => item.id === serviceId);
+  assert.deepEqual(service.supported_target_networks, ["solana-mainnet-beta", "ethereum-mainnet", "base-mainnet", "arbitrum-mainnet"], serviceId);
+}
 
 for (const path of ["/.well-known/agent-card.json", "/openapi.json", "/mcp", "/a2a"]) {
   const response = await request(path);

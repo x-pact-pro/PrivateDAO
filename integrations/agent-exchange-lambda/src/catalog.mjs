@@ -1,3 +1,10 @@
+export const UNIVERSAL_READ_NETWORKS = Object.freeze([
+  "solana-mainnet-beta",
+  "ethereum-mainnet",
+  "base-mainnet",
+  "arbitrum-mainnet",
+]);
+
 export const SERVICES = Object.freeze([
   {
     id: "verify.basic",
@@ -16,6 +23,7 @@ export const SERVICES = Object.freeze([
     access: "paid",
     input: "JSON evidence and rules",
     output: "verified receipt and checks",
+    supportedNetworks: UNIVERSAL_READ_NETWORKS,
   },
   {
     id: "token.intelligence",
@@ -185,6 +193,7 @@ export const SERVICES = Object.freeze([
     access: "paid",
     input: "structured evidence",
     output: "deterministic evidence context",
+    supportedNetworks: UNIVERSAL_READ_NETWORKS,
   },
   {
     id: "receipt.verify",
@@ -194,6 +203,7 @@ export const SERVICES = Object.freeze([
     access: "free",
     input: "receipt and expected hash",
     output: "receipt integrity result",
+    supportedNetworks: UNIVERSAL_READ_NETWORKS,
   },
   {
     id: "github.repository",
@@ -222,6 +232,7 @@ export const SERVICES = Object.freeze([
     access: "paid",
     input: "capabilities and context",
     output: "ranked registry matches",
+    supportedNetworks: UNIVERSAL_READ_NETWORKS,
   },
   {
     id: "sponsored.discovery",
@@ -231,6 +242,7 @@ export const SERVICES = Object.freeze([
     access: "paid",
     input: "verified Agent Card and targeting",
     output: "explicit sponsored placement",
+    supportedNetworks: UNIVERSAL_READ_NETWORKS,
   },
   {
     id: "intelligence.synthesize",
@@ -240,6 +252,7 @@ export const SERVICES = Object.freeze([
     access: "paid",
     input: "structured evidence",
     output: "structured synthesis and receipt",
+    supportedNetworks: UNIVERSAL_READ_NETWORKS,
   },
 ]);
 
