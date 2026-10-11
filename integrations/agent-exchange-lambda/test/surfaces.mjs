@@ -438,6 +438,8 @@ test("every catalog capability has a stable detail page", async () => {
         assert.match(response.body, /eth_requestAccounts/, service.id);
       }
       assert.match(response.body, /Use PDAO holder access/, service.id);
+      assert.match(response.body, /holderRequestInFlight/, service.id);
+      assert.match(response.body, /this signed challenge was already submitted/, service.id);
       assert.match(response.body, /walletChooser/, service.id);
       assert.doesNotMatch(response.body, new RegExp(`href="/connect#${service.id}"`), service.id);
       assert.match(response.body, /href="#service-checkout-title">Request this service/, service.id);
