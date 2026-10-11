@@ -35,6 +35,7 @@ import { applyGithubMarketplacePurchase, githubAppConfigured, githubGetInstallat
 import { mongoProviderStatus, persistEvidence } from "./mongodb.mjs";
 import { assertPublicHttps, fetchPublicHttps } from "./url-safety.mjs";
 import { integrationDirectory, serviceDetails, serviceRecommendation, SERVICE_CATEGORIES } from "./exchange-metadata.mjs";
+import { issuePdaoChallenge, verifyPdaoHolderAccess } from "./pdao-entitlement.mjs";
 
 const config = getConfig();
 let storePromise;
@@ -1297,14 +1298,15 @@ function serviceCheckoutPage(service) {
   const subjectKey = subjectMode === "wallet" ? "wallet" : service.id === "launch.check" ? "mint" : service.id === "contract.explain" ? "contract" : "asset";
   const action = paid ? "Get quote and pay" : "Run service";
   const paymentCopy = paid
-    ? "PrivateDAO creates a quote first. Your wallet signs the exact finalized Solana Mainnet USDC transaction; the service does not execute before payment verification."
+    ? "PrivateDAO creates a quote first. Pay the exact finalized Solana Mainnet USDC transaction, or verify a signed wallet holding at least $25 of the PDAO token for one month of access."
     : "This service is free. Run it directly and receive a verifiable receipt.";
-  return `<section class="panel" style="margin-top:14px" aria-labelledby="service-checkout-title"><h2 id="service-checkout-title">${paid ? "Request, quote and pay" : "Run this service"}</h2><p class="muted">${paymentCopy}</p>${subjectMode ? `<label for="serviceSubject">${subjectLabel}</label><input id="serviceSubject" inputmode="text" autocomplete="off" placeholder="${subjectPlaceholder}" style="width:100%;box-sizing:border-box;padding:12px;border:1px solid var(--line);border-radius:12px">` : ""}<label for="serviceInput" style="display:block;margin-top:12px">Service input JSON <span class="muted">(optional when using the address field above)</span></label><textarea id="serviceInput" rows="7" style="width:100%;box-sizing:border-box;font:12px ui-monospace,monospace;padding:12px;border:1px solid var(--line);border-radius:12px">${example}</textarea><div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px"><button id="requestService" class="button" type="button">${action}</button>${paid ? '<button id="connectWallet" class="button" type="button">Connect wallet</button><button id="payService" class="button" type="button" disabled>Pay quoted USDC</button>' : ""}</div>${paid ? '<p id="connectedWallet" class="muted" style="margin:10px 0 0">Wallet not connected. You will approve the connection in your wallet.</p>' : ""}<pre id="servicePaymentStatus" aria-live="polite" style="margin-top:14px">Ready. No request has been submitted.</pre><p class="muted" style="margin-bottom:0">Your wallet only signs the exact quoted transaction. Never enter a private key or seed phrase. After completion, the receipt can be opened and independently verified.</p><script type="module">
-const serviceId=${serviceId},paid=${paid ? "true" : "false"},requestButton=document.querySelector("#requestService"),connectButton=document.querySelector("#connectWallet"),payButton=document.querySelector("#payService"),walletLabel=document.querySelector("#connectedWallet"),status=document.querySelector("#servicePaymentStatus");let jobId="",paymentSignature="",payerAddress="";
+  return `<section class="panel" style="margin-top:14px" aria-labelledby="service-checkout-title"><h2 id="service-checkout-title">${paid ? "Request, quote and pay" : "Run this service"}</h2><p class="muted">${paymentCopy}</p>${paid ? '<p class="muted">PDAO holder access: sign a no-transaction challenge from a wallet holding at least $25 USD equivalent of the exact PDAO mint. Eligibility is rechecked on every request; no private key is ever requested.</p>' : ""}${subjectMode ? `<label for="serviceSubject">${subjectLabel}</label><input id="serviceSubject" inputmode="text" autocomplete="off" placeholder="${subjectPlaceholder}" style="width:100%;box-sizing:border-box;padding:12px;border:1px solid var(--line);border-radius:12px">` : ""}<label for="serviceInput" style="display:block;margin-top:12px">Service input JSON <span class="muted">(optional when using the address field above)</span></label><textarea id="serviceInput" rows="7" style="width:100%;box-sizing:border-box;font:12px ui-monospace,monospace;padding:12px;border:1px solid var(--line);border-radius:12px">${example}</textarea><div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px"><button id="requestService" class="button" type="button">${action}</button>${paid ? '<button id="holderAccess" class="button" type="button">Use PDAO holder access</button><button id="connectWallet" class="button" type="button">Connect wallet</button><button id="payService" class="button" type="button" disabled>Pay quoted USDC</button>' : ""}</div>${paid ? '<p id="connectedWallet" class="muted" style="margin:10px 0 0">Wallet not connected. You will approve the connection in your wallet.</p>' : ""}<pre id="servicePaymentStatus" aria-live="polite" style="margin-top:14px">Ready. No request has been submitted.</pre><p class="muted" style="margin-bottom:0">Your wallet only signs the exact quoted transaction or the access challenge. Never enter a private key or seed phrase. After completion, the receipt can be opened and independently verified.</p><script type="module">
+const serviceId=${serviceId},paid=${paid ? "true" : "false"},requestButton=document.querySelector("#requestService"),holderButton=document.querySelector("#holderAccess"),connectButton=document.querySelector("#connectWallet"),payButton=document.querySelector("#payService"),walletLabel=document.querySelector("#connectedWallet"),status=document.querySelector("#servicePaymentStatus");let jobId="",paymentSignature="",payerAddress="";
 const show=value=>status.textContent=typeof value==="string"?value:JSON.stringify(value,null,2);
 async function read(response){const value=await response.json();if(!response.ok&&response.status!==402)throw new Error(value.message||value.error||"request failed");return {response,value};}
 if(connectButton)connectButton.onclick=async()=>{connectButton.disabled=true;try{if(!window.solana)throw new Error("Install a Solana wallet extension to continue");const wallet=await window.solana.connect();payerAddress=wallet.publicKey.toString();walletLabel.textContent="Connected wallet: "+payerAddress;connectButton.textContent="Wallet connected";if(jobId)payButton.disabled=false;}catch(error){show("WALLET ERROR: "+(error.message||String(error)));}finally{connectButton.disabled=false}};
 requestButton.onclick=async()=>{requestButton.disabled=true;try{let input;try{input=JSON.parse(document.querySelector("#serviceInput").value)}catch(error){throw new Error("Service input JSON must be valid JSON")};const subject=document.querySelector("#serviceSubject")?.value.trim();if(subject)input={...input,["${subjectKey}"]:subject};const result=await read(await fetch("/api/jobs",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({service_id:serviceId,input})}));if(result.response.status===402){jobId=result.value.payment_intent.jobId;payButton.disabled=!payerAddress;show({status:"quote_ready",job_id:jobId,payment_intent:result.value.payment_intent,next:payerAddress?"Review the amount and expiry, then select Pay quoted USDC.":"Connect your wallet, review the amount and expiry, then select Pay quoted USDC."});}else{show(result.value)}}catch(error){show("ERROR: "+(error.message||String(error)))}finally{requestButton.disabled=false}};
+if(holderButton)holderButton.onclick=async()=>{holderButton.disabled=true;try{let input;try{input=JSON.parse(document.querySelector("#serviceInput").value)}catch(error){throw new Error("Service input JSON must be valid JSON")};const subject=document.querySelector("#serviceSubject")?.value.trim();if(subject)input={...input,["${subjectKey}"]:subject};if(!window.solana)throw new Error("Install a Solana wallet extension to continue");const wallet=await window.solana.connect(),walletAddress=wallet.publicKey.toString();const challengeResponse=await fetch("/api/access/challenge",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({wallet:walletAddress,service_id:serviceId,input})}),challenge=await challengeResponse.json();if(!challengeResponse.ok)throw new Error(challenge.message||challenge.error||"holder access challenge unavailable");const signed=await window.solana.signMessage(new TextEncoder().encode(challenge.message),"utf8"),signature=btoa(String.fromCharCode(...new Uint8Array(signed.signature||signed)));const result=await read(await fetch("/api/jobs",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({service_id:serviceId,input,pdao_access:{wallet:walletAddress,message:challenge.message,signature,nonce:challenge.nonce}})}));show(result.value)}catch(error){show("HOLDER ACCESS ERROR: "+(error.message||String(error)))}finally{holderButton.disabled=false}};
 if(payButton)payButton.onclick=async()=>{payButton.disabled=true;try{if(!jobId)throw new Error("Get a quote first");if(!payerAddress){if(!connectButton)throw new Error("Connect a Solana wallet first");await connectButton.onclick();if(!payerAddress)throw new Error("Wallet connection was not approved");}const payer=payerAddress,builtResponse=await fetch("/api/jobs/"+encodeURIComponent(jobId)+"/payment-transaction",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({payer})}),built=await builtResponse.json();if(!builtResponse.ok||!built.recentBlockhash)throw new Error(built.message||"payment transaction unavailable");const web3=await import("/assets/browser/solana-web3.mjs"),spl=await import("/assets/browser/spl-token.mjs"),payerKey=new web3.PublicKey(payer),mint=new web3.PublicKey(built.mint),source=new web3.PublicKey(built.sourceTokenAccount),destination=new web3.PublicKey(built.treasuryTokenAccount),owner=new web3.PublicKey(built.treasuryOwner),tx=new web3.Transaction();tx.add(spl.createAssociatedTokenAccountIdempotentInstruction(payerKey,destination,owner,mint,spl.TOKEN_PROGRAM_ID,spl.ASSOCIATED_TOKEN_PROGRAM_ID),spl.createTransferCheckedInstruction(source,mint,destination,payerKey,BigInt(built.amountBaseUnits),6,[],spl.TOKEN_PROGRAM_ID),new web3.TransactionInstruction({programId:new web3.PublicKey("MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr"),keys:[{pubkey:payerKey,isSigner:true,isWritable:false}],data:new TextEncoder().encode(built.paymentReference)}));tx.feePayer=payerKey;tx.recentBlockhash=built.recentBlockhash;const sent=await window.solana.signAndSendTransaction(tx);paymentSignature=sent.signature;show({status:"payment_submitted",signature:paymentSignature,message:"Payment submitted. Waiting for finalized backend verification. Do not submit another payment."});let result;for(let attempt=0;attempt<20;attempt++){const response=await fetch("/api/jobs/"+encodeURIComponent(jobId)+"/payment",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({signature:paymentSignature})});result=await response.json();if(response.ok&&result.receipt)break;if(response.status===409){show(result);return}if(!response.ok&&response.status!==202)throw new Error(result.message||result.error||"payment verification failed");await new Promise(resolve=>setTimeout(resolve,3000))}show(result)}catch(error){show("PAYMENT ERROR: "+(error.message||String(error)))}finally{payButton.disabled=false}};
 </script></section>`;
 }
@@ -2232,7 +2234,7 @@ function errorResponse(error) {
 
 function publicJobStatus(job) {
   if (!job) return job;
-  const { execution_input: _privateInput, ...publicJob } = job;
+  const { execution_input: _privateInput, pdao_entitlement: _privateEntitlement, ...publicJob } = job;
   return {
     ...publicJob,
     target_network: normalizeNetworkId(job.execution_input?.network || job.target_network || "") || null,
@@ -2296,14 +2298,18 @@ async function makeQuote(serviceId, jobId, admin = false, currency = "USDC", tar
 async function externalServiceById(serviceId) {
   return (await externalServiceManifests()).find((service) => service.id === serviceId);
 }
-async function createExternalJob(serviceId, input = {}) {
+async function createExternalJob(serviceId, input = {}, access = null) {
   const service = await externalServiceById(serviceId);
   if (!service) throw Object.assign(new Error("unknown external service"), { statusCode: 404 });
+  const pdaoEntitlement = !service.free
+    ? await verifyPdaoHolderAccess({ config, storage: await store(), access, serviceId: service.id, input })
+    : null;
+  const holderAccess = Boolean(pdaoEntitlement);
   const id = `job_${randomUUID()}`;
-  const job = { id, kind: "external", service_id: service.id, seller_agent_id: service.seller_agent_id, seller_tool: service.tool, seller_service_id: service.service_id, seller_name: service.provider, input_hash: digest(input), execution_input: input, status: service.free ? "running" : "awaiting_payment", created_at: now(), payment_network: "solana-mainnet-beta", payment_asset: service.asset, target_network: normalizeNetworkId(service.network) };
+  const job = { id, kind: "external", service_id: service.id, seller_agent_id: service.seller_agent_id, seller_tool: service.tool, seller_service_id: service.service_id, seller_name: service.provider, input_hash: digest(input), execution_input: input, status: service.free || holderAccess ? "running" : "awaiting_payment", created_at: now(), payment_network: "solana-mainnet-beta", payment_asset: service.asset, target_network: normalizeNetworkId(service.network), ...(holderAccess ? { access_method: "pdao_holder_monthly", pdao_entitlement: pdaoEntitlement } : {}) };
   const storage = await store();
   await storage.put("Jobs", id, job, true);
-  if (service.free) return completeExternalJob(job, await invokeMcpAgent(await storage.get("Registry", service.seller_agent_id), service.tool, input), null);
+  if (service.free || holderAccess) return completeExternalJob(job, await invokeMcpAgent(await storage.get("Registry", service.seller_agent_id), service.tool, input), null);
   const amount = Number((service.price * config.priceMultiplier).toFixed(6));
   const policy = await marketplacePolicy();
   const platformFee = Number(((amount * policy.platform_fee_bps) / 10000).toFixed(6));
@@ -2328,7 +2334,7 @@ async function completeExternalJob(job, execution, payment) {
   const persistence = await persistEvidence(config, { job_id: job.id, service: job.service_id, input_hash: job.input_hash, completed_at: now(), result });
   const settlement = { id: `seller_settlement_${job.id}`, kind: "seller_settlement", job_id: job.id, seller_agent_id: job.seller_agent_id, gross_amount: grossAmount, platform_fee_amount: platformFee, platform_fee_bps: feeBps, protocol_fee: platformFee, seller_net_amount: sellerNet, seller_amount: sellerNet, asset: payment?.currency || job.payment_asset, payout: (await storage.get("Registry", job.seller_agent_id))?.payout || null, status: "payable_pending_admin_settlement", created_at: now() };
   await storage.put("Registry", settlement.id, settlement, true);
-  const receipt = { receipt_id: receiptId({ job_id: job.id, service: job.service_id, result_hash: digest(result) }), job_id: job.id, service: job.service_id, input_hash: job.input_hash, result_hash: digest(result), evidence_hash: digest(result), payment_signature: payment?.signature || null, amount: payment?.amount || 0, gross_amount: grossAmount, platform_fee_amount: platformFee, platform_fee_bps: feeBps, seller_net_amount: sellerNet, asset: payment?.currency || null, treasury: config.treasury, network: "solana-mainnet-beta", target_network: job.target_network || null, seller_agent_id: job.seller_agent_id, seller_service_id: job.seller_service_id, seller_settlement: { id: settlement.id, gross_amount: settlement.gross_amount, platform_fee_amount: settlement.platform_fee_amount, platform_fee_bps: settlement.platform_fee_bps, protocol_fee: settlement.protocol_fee, seller_net_amount: settlement.seller_net_amount, seller_amount: settlement.seller_amount, status: settlement.status }, evidence_persistence: persistence.status, status: "VERIFIED", created_at: job.created_at, completed_at: now() };
+  const receipt = { receipt_id: receiptId({ job_id: job.id, service: job.service_id, result_hash: digest(result) }), job_id: job.id, service: job.service_id, input_hash: job.input_hash, result_hash: digest(result), evidence_hash: digest(result), payment_signature: payment?.signature || null, amount: payment?.amount || 0, gross_amount: grossAmount, platform_fee_amount: platformFee, platform_fee_bps: feeBps, seller_net_amount: sellerNet, asset: payment?.currency || null, treasury: config.treasury, network: "solana-mainnet-beta", target_network: job.target_network || null, seller_agent_id: job.seller_agent_id, seller_service_id: job.seller_service_id, seller_settlement: { id: settlement.id, gross_amount: settlement.gross_amount, platform_fee_amount: settlement.platform_fee_amount, platform_fee_bps: settlement.platform_fee_bps, protocol_fee: settlement.protocol_fee, seller_net_amount: settlement.seller_net_amount, seller_amount: settlement.seller_amount, status: settlement.status }, evidence_persistence: persistence.status, status: "VERIFIED", created_at: job.created_at, completed_at: now(), ...(job.pdao_entitlement ? { access_method: "pdao_holder_monthly", access_wallet: job.pdao_entitlement.wallet, access_token_mint: job.pdao_entitlement.token_mint, access_threshold_usd: job.pdao_entitlement.threshold_usd, access_verified_at: job.pdao_entitlement.verified_at, access_active_until: job.pdao_entitlement.active_until } : {}) };
   receipt.public_url = `https://${config.domain}/receipts/${encodeURIComponent(receipt.receipt_id)}`;
   receipt.verification_url = `https://${config.domain}/verify/receipt/${encodeURIComponent(receipt.receipt_id)}`;
   await storage.put("Receipts", receipt.receipt_id, receipt, true);
@@ -2698,23 +2704,28 @@ async function executeMeasuredService(id, input) {
   };
 }
 
-async function createJob(serviceId, input, admin = false, currency = "USDC", metadata = {}) {
+async function createJob(serviceId, input, admin = false, currency = "USDC", metadata = {}, access = null) {
   const service = serviceById(serviceId);
   if (!service) throw new Error("unknown service");
   validateServiceInput(serviceId, input);
+  const pdaoEntitlement = service.price
+    ? await verifyPdaoHolderAccess({ config, storage: await store(), access, serviceId, input })
+    : null;
+  const holderAccess = Boolean(pdaoEntitlement);
   const persistForPaymentRetry = Boolean(service.price);
   const job = {
     id: `job_${randomUUID()}`,
     service_id: serviceId,
     input_hash: digest(input),
-    status: service.price ? "awaiting_payment" : "running",
+    status: service.price && !holderAccess ? "awaiting_payment" : "running",
     created_at: now(),
     expires_at: new Date(Date.now() + 1800000).toISOString(),
     ...(persistForPaymentRetry ? { execution_input: input } : {}),
+    ...(holderAccess ? { access_method: "pdao_holder_monthly", pdao_entitlement: pdaoEntitlement } : {}),
   };
   await (await store()).put("Jobs", job.id, job, true);
   trackFunnel("job_created", { service: serviceId, ...metadata });
-  if (service.price) {
+  if (service.price && !holderAccess) {
     const quote = await makeQuote(serviceId, job.id, admin, currency, input?.network || null);
     job.quote_id = quote.quote_id;
     await (await store()).put("Jobs", job.id, job);
@@ -2832,6 +2843,14 @@ async function completeJob(job, result, payment, telemetry = {}) {
     target_network: targetNetwork,
     evidence_persistence: persistence.status,
     status: "VERIFIED",
+    ...(job.pdao_entitlement ? {
+      access_method: "pdao_holder_monthly",
+      access_wallet: job.pdao_entitlement.wallet,
+      access_token_mint: job.pdao_entitlement.token_mint,
+      access_threshold_usd: job.pdao_entitlement.threshold_usd,
+      access_verified_at: job.pdao_entitlement.verified_at,
+      access_active_until: job.pdao_entitlement.active_until,
+    } : {}),
   };
   receipt.public_url = `https://${config.domain}/receipts/${encodeURIComponent(receipt.receipt_id)}`;
   receipt.verification_url = `https://${config.domain}/verify/receipt/${encodeURIComponent(receipt.receipt_id)}`;
@@ -3466,8 +3485,10 @@ async function invokeAgent(body) {
     const service = (agent.commercial_services || []).find((item) => item.status !== "retired" && item.tool === body.tool);
     if (!sellerListingState(agent) || !service)
       throw Object.assign(new Error("MCP seller services require a confirmed published marketplace listing"), { statusCode: 403 });
-    if (!service.free && Number(service.price || 0) > 0)
-      throw Object.assign(new Error("paid MCP services require a marketplace quote and finalized payment"), { statusCode: 402 });
+    if (!service.free && Number(service.price || 0) > 0) {
+      if (body.pdao_access) return createExternalJob(service.id, body.arguments || body.payload || {}, body.pdao_access);
+      throw Object.assign(new Error("paid MCP services require a marketplace quote and finalized payment, or valid PDAO holder access"), { statusCode: 402 });
+    }
     return invokeMcpAgent(agent, body.tool, body.arguments || body.payload || {});
   }
   const response = await fetchPublicHttps(agent.url, {
@@ -3900,10 +3921,16 @@ async function handle(e) {
       ),
     );
   }
+  if (method === "POST" && path === "/api/access/challenge") {
+    const service = serviceById(body.service_id) || await externalServiceById(body.service_id);
+    if (!service) return json({ error: "unknown service" }, 404);
+    if (!Number(service.price || 0)) return json({ error: "holder access is only required for paid services" }, 400);
+    return json(await issuePdaoChallenge({ config, storage: await store(), wallet: body.wallet, serviceId: body.service_id, input: body.input || {} }));
+  }
   if (method === "POST" && path === "/api/jobs")
-    return json(await createJob(body.service_id, body.input || {}, false, "USDC", requestMetadata(e)));
+    return json(await createJob(body.service_id, body.input || {}, false, "USDC", requestMetadata(e), body.pdao_access || body.token_holder_access || null));
   if (method === "POST" && path === "/api/external/jobs")
-    return json(await createExternalJob(body.service_id, body.input || {}), 201);
+    return json(await createExternalJob(body.service_id, body.input || {}, body.pdao_access || body.token_holder_access || null), 201);
   const externalPayment = path.match(/^\/api\/external\/jobs\/([^/]+)\/payment$/);
   if (method === "POST" && externalPayment) {
     const result = await submitExternalPayment(decodeURIComponent(externalPayment[1]), body);
@@ -4021,7 +4048,7 @@ async function handle(e) {
         });
       }
       try {
-        const result = await createJob(serviceId, message.metadata?.input || {}, false);
+        const result = await createJob(serviceId, message.metadata?.input || {}, false, "USDC", {}, message.metadata?.pdao_access || null);
         return json({ jsonrpc: "2.0", id: body.id ?? null, result: { id: result.job_id, status: { state: "completed" }, artifacts: [{ parts: [{ type: "data", data: result.result }] }], receipt: result.receipt } });
       } catch (error) {
         const rawStatus = Number(error?.statusCode);
@@ -4035,6 +4062,9 @@ async function handle(e) {
       body.service || body.service_id,
       body.input || body.payload || {},
       false,
+      "USDC",
+      {},
+      body.pdao_access || null,
     );
     return json({
       id: result.job_id,
@@ -4087,6 +4117,7 @@ async function mcp(request) {
       properties: {
         service_id: { type: "string", enum: SERVICES.filter((service) => service.access === "paid").map((service) => service.id) },
         input: { type: "object", description: "Service-specific JSON input." },
+        pdao_access: { type: "object", description: "Optional signed PDAO holder challenge from /api/access/challenge.", properties: { wallet: { type: "string" }, message: { type: "string" }, signature: { type: "string" }, nonce: { type: "string" } }, required: ["wallet", "message", "signature", "nonce"], additionalProperties: false },
       },
       required: ["service_id"],
       additionalProperties: false,
@@ -4275,7 +4306,7 @@ async function mcp(request) {
         result = await executeService("verify.basic", a);
       else if (name === "create_paid_job") {
         try {
-          result = await createJob(a.service_id, a.input || {}, false);
+          result = await createJob(a.service_id, a.input || {}, false, "USDC", {}, a.pdao_access || null);
         } catch (error) {
           if (error.statusCode === 402)
             result = {

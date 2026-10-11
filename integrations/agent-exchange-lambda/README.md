@@ -136,6 +136,25 @@ and Jupiter swap quotes never sign or broadcast transactions. Solana
 transaction simulation uses `simulateTransaction` with signature verification
 disabled; it returns simulation logs and compute usage only.
 
+## PDAO token-holder access
+
+Paid first-party services support an optional promotional access path. The
+caller requests `POST /api/access/challenge` with a wallet, service ID, and
+exact input, signs the returned message with that wallet, then includes the
+single-use challenge and base64 Ed25519 signature as `pdao_access` on
+`POST /api/jobs`. The server, never the browser, verifies the signature,
+reads the finalized Solana Mainnet SPL balance for the fixed `PDAO_MINT`,
+obtains a USD price from the configured market-data source, and requires at
+least $25 of value. The exact mint is
+`9isGuumtaqvJeJeyLF44fvfskk2cv5mYsopexMBfpump`.
+
+Qualifying access activates for 30 days from the first successful verification
+and does not extend the window on later requests. The token balance and market
+price are rechecked on every request; if either check fails, the paid quote
+path remains available. A signed message proves wallet control and never
+authorizes a transaction. The entitlement is independent from the treasury,
+USDC payment verification, and seller settlement rails.
+
 Alchemy Data APIs are used opportunistically behind the EVM provider boundary
 for token metadata and wallet token balances. If a Data API method is not
 available, the service returns the bounded standard-RPC evidence instead of
