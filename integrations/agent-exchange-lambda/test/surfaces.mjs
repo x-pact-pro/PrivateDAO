@@ -401,7 +401,11 @@ test("every catalog capability has a stable detail page", async () => {
     assert.match(response.body, new RegExp(service.title.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")), service.id);
     assert.match(response.body, /Service input JSON/, service.id);
     assert.match(response.body, /\/api\/jobs/, service.id);
-    if (service.price) assert.match(response.body, /Pay quoted USDC with wallet/, service.id);
+    if (service.price) {
+      assert.match(response.body, /Connect wallet/, service.id);
+      assert.match(response.body, /Pay quoted USDC/, service.id);
+      assert.match(response.body, /signs the exact quoted transaction/, service.id);
+    }
   }
 });
 
