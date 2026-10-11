@@ -426,6 +426,7 @@ test("every catalog capability has a stable detail page", async () => {
       assert.match(response.body, /signs the exact quoted transaction/, service.id);
       assert.match(response.body, /Open Phantom Mobile/, service.id);
       assert.match(response.body, /Open Solflare Mobile/, service.id);
+      assert.match(response.body, /Payment wallet: use <a[^>]*>Phantom<\/a>, <a[^>]*>Solflare<\/a>, or Backpack on Solana/, service.id);
       if (/wallet\.intelligence|wallet\.bot\.classify|research\.wallet|forensics\.trace/.test(service.id)) {
         assert.match(response.body, /Connect target wallet \(EVM \/ Robinhood\)/, service.id);
         assert.match(response.body, /evmWalletChooser/, service.id);
