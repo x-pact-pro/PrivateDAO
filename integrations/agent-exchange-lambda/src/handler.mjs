@@ -1361,7 +1361,9 @@ $("payService")?.addEventListener("click",async()=>{const button=$("payService")
 function serviceDetailPage(service) {
   // This checkout script is intentionally classic: it is inline after the controls,
   // so it must bind synchronously even when a browser blocks module execution.
-  const checkout = serviceCheckoutPageV2(service).replace('<script type="module">', '<script>');
+  const checkout = serviceCheckoutPageV2(service)
+    .replace('<script type="module">', '<script>')
+    .replace('const $=id=>document.querySelector(id),', 'const $=id=>document.querySelector(id.startsWith("#")?id:"#"+id),');
   return serviceDetailPageBase(service).replace("</header>", `</header>${commercialOfferBanner()}`).replace("</main>", `${checkout}</main>`);
 }
 function publicReceiptPage(receipt, verified = false) {

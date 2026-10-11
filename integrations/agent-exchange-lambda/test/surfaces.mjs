@@ -115,6 +115,7 @@ test("human root is HTML while machine surfaces remain available", async () => {
   assert.match(botPage.body, /if\(found\.length===1\)\{await connect\(found\[0\]\);return;\}/);
   assert.match(botPage.body, /const signMessage=async/);
   assert.match(botPage.body, /<script>\nconst serviceId=/);
+  assert.match(botPage.body, /id\.startsWith\("#"\)\?id:"#"\+id/);
   const portfolioService = catalog.services.find((service) => service.id === "portfolio.intelligence");
   assert.deepEqual(portfolioService.input_schema.properties.assets.minItems, 1);
   const simulationService = catalog.services.find((service) => service.id === "transaction.simulate");
