@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowUpRight, BrainCircuit, Gamepad2, Gavel, LockKeyhole, ReceiptText, ShieldCheck, WalletCards } from "lucide-react";
+import { ArrowUpRight, BrainCircuit, Gavel, LockKeyhole, ReceiptText, ShieldCheck, WalletCards } from "lucide-react";
 
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -16,12 +16,6 @@ const capabilityLanes = [
     title: "2. Treasury and encrypted money movement",
     body: "Run encrypted payments, confidential payroll, stablecoin billing, Jupiter treasury routing, and receipt-backed settlement from one finance path.",
     href: "/treasury",
-  },
-  {
-    icon: Gamepad2,
-    title: "3. Communities, competitions, and GamingDAO",
-    body: "Use the same governance and treasury rails for communities, prize pools, tournaments, rewards, and reviewer-visible competition flows.",
-    href: "/gaming",
   },
   {
     icon: BrainCircuit,

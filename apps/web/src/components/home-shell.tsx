@@ -9,12 +9,10 @@ import {
   Coins,
   Compass,
   FileCheck2,
-  Gamepad2,
   Gavel,
   Gauge,
   LifeBuoy,
   MessageSquareHeart,
-  PlayCircle,
   ReceiptText,
   Shield,
   Trophy,
@@ -301,12 +299,6 @@ export function HomeShell() {
       href: "/treasury",
       icon: Shield,
     },
-    {
-      title: "GamingDAO & Agentic Rewards",
-      description: "Create guilds, tournaments, and inventory proposals with governed reward settlement linked back to proof.",
-      href: "/gaming",
-      icon: PlayCircle,
-    },
   ];
   const fastActionSteps = [
     {
@@ -368,14 +360,6 @@ export function HomeShell() {
       badge: "Finance",
     },
     {
-      title: "Gaming DAO",
-      eyebrow: "Guild ops",
-      description: "Guild hub, tournament rewards, inventory proposals, and private winner payouts.",
-      href: "/gaming",
-      icon: Gamepad2,
-      badge: "Community",
-    },
-    {
       title: "Compliance",
       eyebrow: "Audit pack",
       description: "Scoped viewing keys, date-windowed report flow, and dWallet-signed evidence.",
@@ -424,9 +408,6 @@ export function HomeShell() {
     { label: "Treasury", href: "/treasury" },
     { label: "Confidential", href: "/services/refhe-payroll-proof" },
     { label: "Payments", href: "/services/confidential-payments" },
-    { label: "Gaming", href: "/gaming" },
-    { label: "Tournaments", href: "/gaming/tournaments" },
-    { label: "Inventory", href: "/gaming/inventory" },
     { label: "Security", href: "/security" },
     { label: "Proof", href: "/proof" },
     { label: "Trust", href: "/trust" },
@@ -487,8 +468,8 @@ export function HomeShell() {
     },
     {
       technology: "MagicBlock",
-      service: "Responsive action corridor for governance and gaming",
-      outcome: "Used where wallet-first actions need a faster execution lane so DAO and game-linked decisions do not feel stuck behind slow runtime behavior.",
+      service: "Responsive action corridor for governance and organizational workflows",
+      outcome: "Used where wallet-first actions need a faster execution lane so organizational decisions do not feel stuck behind slow runtime behavior.",
     },
     {
       technology: "Read-node telemetry",
@@ -522,7 +503,7 @@ export function HomeShell() {
     },
     {
       title: "Infrastructure and funding surfaces now align",
-      detail: "Payroll, gaming, compliance, developers, RPC, command center, proof, and services routes now tell one Testnet-ready product story with explicit mainnet gates.",
+      detail: "Payroll, compliance, developers, RPC, command center, proof, and services routes now tell one Testnet-ready product story with explicit mainnet gates.",
     },
   ];
   const faqItems = [
@@ -684,7 +665,7 @@ export function HomeShell() {
                     <div className="text-[11px] uppercase tracking-[0.28em] text-violet-100/80">Live mobile proof</div>
                     <div className="mt-2 text-lg font-semibold text-white">The Android APK turns the same web product into a mobile Solana operating app.</div>
                     <p className="mt-2">
-                      Judges can install the APK, open the live product routes, connect a Testnet wallet, and participate on-chain from mobile while proof, diagnostics, payroll, encrypted payments, and gaming reward paths stay one tap away.
+                      Judges can install the APK, open the live product routes, connect a Testnet wallet, and participate on-chain from mobile while proof, diagnostics, payroll, and encrypted payments stay one tap away.
                     </p>
                   </div>
                   <Link className={cn(buttonVariants({ size: "sm" }))} href="/android">
@@ -704,7 +685,7 @@ export function HomeShell() {
                   </div>
                   <div className="rounded-2xl border border-white/10 bg-black/20 p-3">
                     <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-cyan-100/82">
-                      <PlayCircle className="h-4 w-4" />
+                      <CheckCircle2 className="h-4 w-4" />
                       Innovation two
                     </div>
                     <p className="mt-2 text-xs leading-6 text-white/64">
@@ -1053,7 +1034,7 @@ export function HomeShell() {
           <div className="text-[11px] font-medium uppercase tracking-[0.34em] text-emerald-300/80">How the stack maps to services</div>
           <h2 className="text-3xl font-semibold tracking-tight text-white sm:text-4xl">These technologies are tied to real product lanes, not a theory slide</h2>
           <p className="text-base leading-8 text-white/60 sm:text-lg">
-            PrivateDAO uses each rail for a specific user-facing job. The public story should make that obvious: governance runs the DAO, gaming uses the same responsive decision corridor, confidential payout depends on privacy rails, and read-node telemetry keeps the result visible.
+            PrivateDAO uses each rail for a specific user-facing job. The public story should make that obvious: governance runs the DAO, confidential payout depends on privacy rails, and read-node telemetry keeps the result visible.
           </p>
         </div>
         <div className="mt-8 grid gap-4 xl:grid-cols-2">
@@ -1168,7 +1149,7 @@ export function HomeShell() {
           <Card className="border-white/10 bg-[linear-gradient(180deg,rgba(10,15,30,0.92),rgba(6,9,20,0.98))]">
             <CardHeader><CardTitle className="text-xl">Watch the product story</CardTitle></CardHeader>
             <CardContent className="space-y-4">
-              <p className="text-sm leading-7 text-white/58">See the full problem-to-solution narrative for private governance, treasury, payroll, gaming, and proof.</p>
+              <p className="text-sm leading-7 text-white/58">See the full problem-to-solution narrative for private governance, treasury, payroll, and proof.</p>
               <Link className={cn(buttonVariants({ size: "sm", variant: "secondary" }))} href="/story">Open story</Link>
             </CardContent>
           </Card>

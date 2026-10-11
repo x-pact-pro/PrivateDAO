@@ -69,7 +69,6 @@ export default function robots(): MetadataRoute.Robots {
           "/judge",
           "/judges",
           "/judge-ai",
-          "/gaming/",
           "/tracks/",
           "/android/",
           "/arena/",

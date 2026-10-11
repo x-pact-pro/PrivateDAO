@@ -31,11 +31,6 @@ const platformLanes = [
     href: "/services/jupiter-treasury-route",
   },
   {
-    title: "GamingDAO and community rewards",
-    body: "Tournament, community, and competition reward operations use the same governance, private payout, and proof rails.",
-    href: "/gaming",
-  },
-  {
     title: "Intelligence before authorization",
     body: "QVAC, GoldRush/Covalent, SNS, Zerion, QuickNode, and policy context explain risk before a normal user or agent approves.",
     href: "/intelligence",

@@ -532,17 +532,6 @@ export const privateDaoServiceConstellation = [
     proofHref: "/documents/confidential-payout-evidence-packet",
   },
   {
-    title: "Rewards and gaming treasuries",
-    audience: "Games, guilds, tournaments, creator economies",
-    problem: "Reward programs need fast distribution without losing policy, treasury limits, or visible fairness.",
-    service:
-      "Gaming reward pools, MagicBlock execution framing, tournament payout logic, and proposal-scoped settlement boundaries.",
-    execution: "Game or tournament intent routes through governance and lands as a controlled reward distribution packet.",
-    proof: "Gaming reward corridor",
-    href: "/gaming",
-    proofHref: "/services/magicblock-private-payments",
-  },
-  {
     title: "Stablecoin treasury rails",
     audience: "Merchants, foundations, regional operators, service buyers",
     problem: "Teams need stable-value operating rails that remain governed instead of becoming disconnected payment widgets.",
