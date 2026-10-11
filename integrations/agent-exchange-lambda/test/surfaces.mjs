@@ -425,6 +425,11 @@ test("every catalog capability has a stable detail page", async () => {
       assert.match(response.body, /signs the exact quoted transaction/, service.id);
       assert.match(response.body, /Open Phantom Mobile/, service.id);
       assert.match(response.body, /Open Solflare Mobile/, service.id);
+      if (/wallet\.intelligence|wallet\.bot\.classify|research\.wallet|forensics\.trace/.test(service.id)) {
+        assert.match(response.body, /Connect target wallet \(EVM \/ Robinhood\)/, service.id);
+        assert.match(response.body, /Solana wallet remains required for holder access or USDC payment/, service.id);
+        assert.match(response.body, /eth_requestAccounts/, service.id);
+      }
       assert.match(response.body, /Use PDAO holder access/, service.id);
       assert.match(response.body, /walletChooser/, service.id);
       assert.doesNotMatch(response.body, new RegExp(`href="/connect#${service.id}"`), service.id);
