@@ -112,7 +112,8 @@ test("human root is HTML while machine surfaces remain available", async () => {
   assert.match(botPage.body, /Target network/);
   assert.match(botPage.body, /If you or your agent hold at least \$25 worth of PDAO token/);
   assert.match(botPage.body, /href="#service-checkout-title">Request this service/);
-  assert.match(botPage.body, /if\(found\.length===1\)\{await connect\(found\[0\]\);return;\}/);
+  assert.match(botPage.body, /if\(immediate\.length===1\)\{await connect\(immediate\[0\]\);return;\}/);
+  assert.match(botPage.body, /Wallet found\. Click Use … to approve the connection/);
   assert.match(botPage.body, /const signMessage=async/);
   assert.match(botPage.body, /<script>\nconst serviceId=/);
   assert.match(botPage.body, /id\.startsWith\("#"\)\?id:"#"\+id/);
