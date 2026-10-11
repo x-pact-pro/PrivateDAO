@@ -405,6 +405,10 @@ test("every catalog capability has a stable detail page", async () => {
       assert.match(response.body, /Connect wallet/, service.id);
       assert.match(response.body, /Pay quoted USDC/, service.id);
       assert.match(response.body, /signs the exact quoted transaction/, service.id);
+      assert.match(response.body, /Open Phantom Mobile/, service.id);
+      assert.match(response.body, /Open Solflare Mobile/, service.id);
+      assert.match(response.body, /Use PDAO holder access/, service.id);
+      assert.match(response.body, /walletChooser/, service.id);
     }
   }
 });
