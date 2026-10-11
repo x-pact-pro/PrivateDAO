@@ -50,6 +50,8 @@ export function getConfig(env = process.env) {
     evmRpcUrls,
     jupiterQuoteUrl: env.PDAO_JUPITER_QUOTE_URL || "https://quote-api.jup.ag/v6/quote",
     jupiterApiKey: env.PDAO_JUPITER_API_KEY || "",
+    lifiQuoteUrl: env.PDAO_LIFI_QUOTE_URL || "https://li.quest/v1/quote",
+    lifiApiKey: env.PDAO_LIFI_API_KEY || "",
     bedrockEnabled: bool(env.BEDROCK_ENABLED),
     bedrockModel: env.BEDROCK_MODEL_ID || "amazon.nova-micro-v1:0",
     intelInferenceUrl: env.PDAO_INTEL_INFERENCE_URL || "",

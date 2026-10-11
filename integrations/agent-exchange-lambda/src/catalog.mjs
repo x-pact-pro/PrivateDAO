@@ -163,9 +163,9 @@ export const SERVICES = Object.freeze([
     price: 0.01,
     currency: "USDC",
     access: "paid",
-    input: "Solana input mint, output mint and amount",
+    input: "network, input token, output token and amount",
     output: "quote-only route, expected output, slippage and network cost",
-    supportedNetworks: ["solana-mainnet-beta"],
+    supportedNetworks: ["solana-mainnet-beta", "ethereum-mainnet", "base-mainnet", "arbitrum-mainnet"],
   },
   {
     id: "transaction.simulate",

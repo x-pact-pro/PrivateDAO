@@ -21,7 +21,14 @@ const EVM_EXECUTABLE_SERVICES = new Set([
   "launch.check",
   "forensics.trace",
   "transaction.simulate",
+  "swap.quote",
 ]);
+
+const EVM_CHAIN_IDS = Object.freeze({
+  "ethereum-mainnet": "1",
+  "base-mainnet": "8453",
+  "arbitrum-mainnet": "42161",
+});
 
 function retryableError(message, retryable = false) {
   const error = new Error(message);
@@ -180,6 +187,7 @@ export async function executeEvmService(config, serviceId, input = {}) {
   const network = normalizeNetworkId(input.network || "");
   const definition = evmNetwork(network);
   if (!definition) throw new Error("supported EVM network is required");
+  if (serviceId === "swap.quote") return evmSwapQuote(config, network, input);
   const asset = input.asset || input.token || input.contract;
   if (["token.intelligence", "risk.score", "market.snapshot"].includes(serviceId)) {
     const evidence = await tokenCalls(config, network, asset);
@@ -276,6 +284,53 @@ export async function executeEvmService(config, serviceId, input = {}) {
     return evidence;
   }
   throw new Error(`service ${serviceId} is not implemented for EVM`);
+}
+
+async function evmSwapQuote(config, network, input = {}) {
+  const address = /^0x[0-9a-fA-F]{40}$/;
+  const inputToken = String(input.inputMint || input.inputToken || input.input_token || "");
+  const outputToken = String(input.outputMint || input.outputToken || input.output_token || "");
+  const amount = String(input.amount || "");
+  if (!address.test(inputToken) || !address.test(outputToken)) throw new Error("valid EVM input and output token addresses are required");
+  if (!/^[1-9][0-9]*$/.test(amount)) throw new Error("positive base-unit amount is required");
+  const url = new URL(config.lifiQuoteUrl);
+  const chainId = EVM_CHAIN_IDS[network];
+  for (const [key, value] of Object.entries({
+    fromChain: chainId,
+    toChain: chainId,
+    fromToken: inputToken,
+    toToken: outputToken,
+    fromAddress: input.fromAddress || input.wallet || "0x0000000000000000000000000000000000000001",
+    toAddress: input.toAddress || input.fromAddress || input.wallet || "0x0000000000000000000000000000000000000001",
+    fromAmount: amount,
+    order: "CHEAPEST",
+    slippage: (Math.min(5000, Math.max(1, Number(input.slippageBps || 50))) / 10000).toString(),
+    allowBridges: "none",
+    integrator: "PrivateDAO-Agent-Exchange",
+  })) url.searchParams.set(key, String(value));
+  const headers = { accept: "application/json" };
+  if (config.lifiApiKey) headers["x-lifi-api-key"] = config.lifiApiKey;
+  const response = await fetch(url, { headers, signal: AbortSignal.timeout(10000) });
+  if (!response.ok) throw new Error(`EVM quote provider HTTP ${response.status}`);
+  const quote = await response.json();
+  if (!quote?.estimate?.toAmount) throw new Error("EVM quote provider returned no executable estimate");
+  return {
+    network,
+    provider: "LI.FI quote API",
+    quote_only: true,
+    execution: "disabled",
+    input_token: inputToken,
+    output_token: outputToken,
+    amount_in: amount,
+    amount_out: quote.estimate.toAmount,
+    amount_out_min: quote.estimate.toAmountMin || null,
+    slippage_bps: Math.min(5000, Math.max(1, Number(input.slippageBps || 50))),
+    route: quote.tool || quote.type || null,
+    gas_costs: Array.isArray(quote.estimate.gasCosts) ? quote.estimate.gasCosts.map((item) => ({ amount: item.amount || null, amount_usd: item.amountUSD || null, token: item.token?.symbol || null })) : [],
+    fee_costs: Array.isArray(quote.estimate.feeCosts) ? quote.estimate.feeCosts.map((item) => ({ amount: item.amount || null, amount_usd: item.amountUSD || null, token: item.token?.symbol || null })) : [],
+    transaction_request_exposed: false,
+    observed_at: new Date().toISOString(),
+  };
 }
 
 export async function evmHealth(config, network) {

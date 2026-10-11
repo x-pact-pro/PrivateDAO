@@ -70,6 +70,36 @@ test("EVM services are read-only and use the configured provider", async () => {
   server.close();
 });
 
+test("EVM swap quotes are read-only and never expose a transaction request", async () => {
+  const originalFetch = global.fetch;
+  global.fetch = async () => new Response(JSON.stringify({
+    type: "swap",
+    tool: "uniswap",
+    estimate: {
+      toAmount: "950000",
+      toAmountMin: "945000",
+      gasCosts: [{ amount: "1000000000000", amountUSD: "0.01", token: { symbol: "ETH" } }],
+      feeCosts: [],
+    },
+    transactionRequest: { to: "0xdeadbeef" },
+  }), { status: 200, headers: { "content-type": "application/json" } });
+  try {
+    const result = await executeEvmService({ lifiQuoteUrl: "https://quote.invalid/v1/quote", lifiApiKey: "" }, "swap.quote", {
+      network: "base-mainnet",
+      inputMint: "0x4200000000000000000000000000000000000006",
+      outputMint: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+      amount: "1000000",
+      slippageBps: 50,
+    });
+    assert.equal(result.quote_only, true);
+    assert.equal(result.execution, "disabled");
+    assert.equal(result.transaction_request_exposed, false);
+    assert.equal(result.amount_out, "950000");
+  } finally {
+    global.fetch = originalFetch;
+  }
+});
+
 test("upstream infrastructure errors are sanitized and classified as temporary", async () => {
   const originalFetch = global.fetch;
   const originalConsoleError = console.error;

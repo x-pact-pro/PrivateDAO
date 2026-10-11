@@ -1171,6 +1171,8 @@ function serviceInputSchema(service) {
       outputMint: { type: "string", pattern: ADDRESS_PATTERN },
       amount: { type: "string", pattern: "^[0-9]+$" },
       slippageBps: { type: "integer", minimum: 1, maximum: 5000 },
+      fromAddress: { type: "string", pattern: ADDRESS_PATTERN, description: "Optional EVM wallet used only to improve quote accuracy." },
+      toAddress: { type: "string", pattern: ADDRESS_PATTERN, description: "Optional EVM recipient used only for quote context." },
     },
     required: ["network", "inputMint", "outputMint", "amount"],
     additionalProperties: false,
@@ -1268,6 +1270,15 @@ function validateServiceInput(serviceId, input = {}) {
   const isEvm = ["ethereum-mainnet", "base-mainnet", "arbitrum-mainnet"].includes(network);
   if (isEvm && !isEvmServiceSupported(serviceId) && !["research.asset", "research.wallet", "contract.explain", "transaction.explain", "anomaly.detect", "agent.research.report", "portfolio.intelligence", "market.snapshot"].includes(serviceId))
     throw new Error(`${serviceId} is not implemented on ${network}`);
+  if (serviceId === "swap.quote") {
+    const tokenPattern = isEvm ? /^0x[0-9a-fA-F]{40}$/ : /^[1-9A-HJ-NP-Za-km-z]{32,44}$/;
+    if (!tokenPattern.test(String(input.inputMint || input.inputToken || "")) || !tokenPattern.test(String(input.outputMint || input.outputToken || "")))
+      throw new Error(isEvm ? "valid EVM input and output token addresses are required" : "valid Solana inputMint and outputMint are required");
+    if (!/^[1-9][0-9]*$/.test(String(input.amount || ""))) throw new Error("positive base-unit amount is required");
+    if (isEvm && input.fromAddress && !/^0x[0-9a-fA-F]{40}$/.test(String(input.fromAddress))) throw new Error("valid EVM fromAddress is required");
+    if (isEvm && input.toAddress && !/^0x[0-9a-fA-F]{40}$/.test(String(input.toAddress))) throw new Error("valid EVM toAddress is required");
+    return;
+  }
   const subject = input.asset || input.mint || input.token || input.contract || input.program || input.address || input.wallet;
   const addressValid = isEvm ? evm.test(String(subject || "")) : solana.test(String(subject || ""));
   if (["token.intelligence", "risk.score", "market.snapshot", "research.asset", "contract.explain", "contract.inspect", "launch.check"].includes(serviceId) && !addressValid)
@@ -1348,6 +1359,7 @@ const $=id=>document.querySelector(id),status=$("servicePaymentStatus"),chooser=
 let jobId="",payerAddress="",provider=null;
 const show=value=>status.textContent=typeof value==="string"?value:JSON.stringify(value,null,2);
 const read=async response=>{const value=await response.json();if(!response.ok&&response.status!==402)throw new Error(value.message||value.error||"request failed");return {response,value};};
+if(serviceId==="swap.quote"&&!$("serviceNetwork")){const label=document.createElement("label");label.textContent="Target network";label.style="display:block;margin-top:12px;font-weight:750";const select=document.createElement("select");select.id="serviceNetwork";select.style="width:100%;box-sizing:border-box;padding:12px;border:1px solid var(--line);border-radius:12px;font:inherit";for(const network of ["solana-mainnet-beta","ethereum-mainnet","base-mainnet","arbitrum-mainnet"]){const option=document.createElement("option");option.value=network;option.textContent=network.replaceAll("-mainnet","").replaceAll("-"," ");select.append(option);}$("serviceInput").before(label,select);select.addEventListener("change",()=>{if(select.value==="solana-mainnet-beta")$("serviceInput").value=JSON.stringify({network:select.value,inputMint:"So11111111111111111111111111111111111111112",outputMint:"EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",amount:"1000000",slippageBps:50},null,2);else $("serviceInput").value=JSON.stringify({network:select.value,inputMint:"0x4200000000000000000000000000000000000006",outputMint:"0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",amount:"1000000",slippageBps:50},null,2);});}
 const signMessage=async(bytes)=>{if(!provider||typeof provider.signMessage!=="function")throw new Error("This wallet cannot sign messages in the current browser. Open the page in the wallet app.");try{return await provider.signMessage(bytes,"utf8");}catch(firstError){return await provider.signMessage(bytes);}};
 const providers=()=>{const found=[];const add=(name,p)=>{if(p&&typeof p.connect==="function"&&!found.some(x=>x.provider===p))found.push({name,provider:p});};add("Phantom",window.phantom?.solana);add("Solflare",window.solflare?.solana||window.solflare);add("Backpack",window.backpack?.solana||window.backpack);add("Detected Solana wallet",window.solana);return found;};
 const evmProviders=()=>{const found=[];const candidates=window.ethereum?.providers?.length?window.ethereum.providers:[window.ethereum];for(const candidate of candidates){if(!candidate||typeof candidate.request!=="function"||found.some(item=>item.provider===candidate))continue;const name=candidate.isRobinhood?"Robinhood":candidate.isMetaMask?"MetaMask":candidate.isCoinbaseWallet?"Coinbase Wallet":candidate.isRabby?"Rabby":"EVM wallet";found.push({name,provider:candidate});}return found;};

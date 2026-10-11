@@ -22,7 +22,7 @@ const DETAILS = Object.freeze({
   "forensics.trace": detail("Risk", "Trace public transaction evidence without signing or broadcasting.", "A bounded multi-chain forensic view of what happened."),
   "transaction.explain": detail("Transactions", "Explain a transaction or signature and surface failure context.", "Understand a transaction before or after a decision."),
   "transaction.simulate": detail("Transactions", "Simulate unsigned transaction data and return deterministic results.", "Test a transaction without broadcasting it."),
-  "swap.quote": detail("Financial Services", "Return a Solana swap quote, route, slippage and network cost.", "Price a possible swap without executing it."),
+  "swap.quote": detail("Financial Services", "Return a Solana or EVM swap quote, route, slippage and network cost.", "Price a possible swap without executing it."),
   "agent.match": detail("Agent Services", "Rank registered agents against requested capabilities and context.", "Find the next provider for a multi-agent workflow."),
   "sponsored.discovery": detail("Agent Services", "Create an explicitly disclosed sponsored placement for agent discovery.", "Reach agents through a transparent commercial channel."),
 });
