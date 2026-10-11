@@ -23,8 +23,7 @@
     {"name": "Confidential Auctions", "url": "https://privatedao.org/auctions/"},
     {"name": "Blind Verification", "url": "https://privatedao.org/proof-workflows/blind-policy/"},
     {"name": "Record Verification", "url": "https://privatedao.org/products/record-verification/"},
-    {"name": "Agent Exchange", "url": "https://agents.privatedao.org/"},
-    {"name": "PDAO Worlds", "url": "https://game.privatedao.org/game/godot/index.html"}
+    {"name": "Agent Exchange", "url": "https://agents.privatedao.org/"}
   ],
   "agent_exchange": {
     "mcp": "https://agents.privatedao.org/mcp",

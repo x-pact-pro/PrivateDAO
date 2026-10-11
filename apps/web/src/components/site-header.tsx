@@ -66,7 +66,6 @@ const menus: Record<string, { label: string; columns: readonly MenuColumn[] }> =
       { title: "The ecosystem", links: [
         { href: "/token", label: "PDAO", description: "Official token information and current utility.", icon: Coins },
         { href: "https://agents.privatedao.org/", label: "Agent Marketplace", description: "Discover services for autonomous systems.", icon: Bot, external: true },
-        { href: "https://game.privatedao.org/game/godot/index.html", label: "PDAO Worlds", description: "A separate consumer world built around trust and coordination.", icon: Network, external: true },
       ] },
       { title: "Stay connected", links: [
         { href: "/contact", label: "Contact PrivateDAO", description: "Bring us the work that needs to stay private.", icon: Users },

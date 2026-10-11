@@ -20,7 +20,6 @@ const products = [
   ["Private Auctions", "Support sealed commercial bids and verifiable outcomes for procurement and allocation workflows.", ShieldCheck],
   ["Blind and Record Verification", "Verify selected claims or records without publishing the underlying sensitive material.", LockKeyhole],
   ["Agent Marketplace", "Discover and connect to bounded software services through explicit capabilities and receipts.", Network],
-  ["PDAO Worlds", "An independent game product that explores privacy, trust, coordination, and decisions through play.", ShieldCheck],
 ] as const;
 
 export default function AboutPage() {

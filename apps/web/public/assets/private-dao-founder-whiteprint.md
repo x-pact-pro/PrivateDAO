@@ -92,15 +92,11 @@ The Kernel is the shared operating boundary beneath the products. It provides co
 
 Products do not need to expose these implementation details to their users. A network is presented as available only when the relevant product path has a real provider configuration and appropriate evidence.
 
-## Agents and PDAO Worlds
+## Agents and Integrations
 
 ### Agent Marketplace
 
 PrivateDAO Agents extend the same trust model to software. Organizations and systems can discover bounded capabilities, request a defined job, and receive a result with a clear receipt. The agent surface remains separate from the enterprise workflow while sharing the same principles of permission, privacy, and verifiability.
-
-### PDAO Worlds
-
-PDAO Worlds is an independent consumer product. It turns privacy, trust, evidence, and coordination into playable experiences for a wider audience. It is part of the ecosystem and brand story, not a replacement for the commercial products.
 
 ## Who it is for
 
@@ -133,7 +129,7 @@ The commercial growth path is:
 2. Package successful workflows for companies, institutions, data providers, and Web3 operators.
 3. Expand through enterprise partnerships, integrations, and product revenue.
 4. Use strategic Web3 ecosystem capital and broader institutional or technology investment to accelerate distribution, delivery, and product depth.
-5. Extend the same trust model through Agent Marketplace and PDAO Worlds as independent ecosystem products.
+5. Extend the same trust model through Agent Marketplace and verified integrations.
 
 The thesis is product-led: investment supports repeatable customer outcomes, not a promise of token performance.
 

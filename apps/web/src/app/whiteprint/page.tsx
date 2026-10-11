@@ -23,7 +23,7 @@ const products = [
   ["Private operations", "Payroll, treasury coordination, and governance for organizations handling sensitive work."],
   ["Private transactions", "Auctions and settlement workflows that protect commercial intent until the right moment."],
   ["Verification", "Blind and record verification that turns private work into evidence others can trust."],
-  ["Ecosystem products", "Agent services and PDAO Worlds extend the same ideas to software and consumer audiences."],
+  ["Ecosystem products", "Agent services and verified integrations extend the same ideas to software and organizational audiences."],
 ] as const;
 
 const workflow = ["Choose a solution", "Set policies and access", "Run the workflow", "Approve when ready", "Share the outcome"] as const;

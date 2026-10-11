@@ -31,7 +31,7 @@ Commercial Product Lines:
 - Financial Operations: Confidential Payroll, Treasury Coordination, and private settlement workflows.
 - Governance and Markets: Private Governance and Confidential Auctions for decisions, procurement, and sealed bids.
 - Verification: Blind Verification, Record Verification, and Private Identity Verification through attestation providers.
-- Ecosystem: Agent Marketplace and PDAO Worlds as independent ecosystem products.
+- Ecosystem: Agent Marketplace and verified integration surfaces for autonomous systems.
 Chain Strategy: Capability-gated and evidence-first. A network is presented as live for a product only after the corresponding runtime and verification evidence are available; the workflow remains independent of the underlying network.
 Founder: Fahd Kotb
 Official Owner / Operator: Fahd Kotb / Eslam Kotb (X-PACT)
@@ -64,7 +64,6 @@ Proof Workflows: https://privatedao.org/proof-workflows/
 Blind Policy Verification: https://privatedao.org/proof-workflows/blind-policy/
 Record Verification: https://privatedao.org/products/record-verification/
 Agent Marketplace: https://agents.privatedao.org/
-PDAO Worlds: https://game.privatedao.org/game/godot/index.html
 Blind Policy Product Status: https://privatedao.org/api/proof-workflows/blind-policy/status
 Blind Policy Product Prove API: https://privatedao.org/api/proof-workflows/blind-policy/prove
 Blind Policy Product Verify API: https://privatedao.org/api/proof-workflows/blind-policy/verify
@@ -193,7 +192,7 @@ PrivateDAO is useful to Web3-native organizations and to established organizatio
 
 ## Discovery keywords
 
-PrivateDAO, Fahd Kotb, organizational privacy, private work, verifiable outcomes, enterprise Web3, Web3 capabilities, blockchain privacy, crypto privacy, DAO governance, private governance, confidential payroll, private treasury, treasury approvals, sealed auctions, confidential procurement, blind verification, record verification, KYC, KYB, zero-knowledge proofs, ZK, evidence-bound workflows, Agent Marketplace, PDAO Worlds.
+PrivateDAO, Fahd Kotb, organizational privacy, private work, verifiable outcomes, enterprise Web3, Web3 capabilities, blockchain privacy, crypto privacy, DAO governance, private governance, confidential payroll, private treasury, treasury approvals, sealed auctions, confidential procurement, blind verification, record verification, KYC, KYB, zero-knowledge proofs, ZK, evidence-bound workflows, Agent Marketplace.
 
 ## Commercial Readiness
 
@@ -409,7 +408,7 @@ PrivateDAO uses Colosseum sponsor resources as modular product lanes, not as hom
 
 ## Search Concepts
 
-PrivateDAO, Private DAO, private organizational work, enterprise Web3, Web3 capabilities, private governance, confidential governance, confidential coordination infrastructure, private coordination layer, organizational workflow engine, reviews and approvals, proof center, public verification, transparency report, private DAO voting, private rooms, treasury coordination, confidential payroll, confidential procurement, sealed auctions, blind verification, record verification, KYC, KYB, privacy-preserving settlement, zero-knowledge proofs, ZK commit reveal, onchain proof, verifiable outcomes, Agent Marketplace, PDAO Worlds.
+PrivateDAO, Private DAO, private organizational work, enterprise Web3, Web3 capabilities, private governance, confidential governance, confidential coordination infrastructure, private coordination layer, organizational workflow engine, reviews and approvals, proof center, public verification, transparency report, private DAO voting, private rooms, treasury coordination, confidential payroll, confidential procurement, sealed auctions, blind verification, record verification, KYC, KYB, privacy-preserving settlement, zero-knowledge proofs, ZK commit reveal, onchain proof, verifiable outcomes, Agent Marketplace.
 
 ## Language Coverage
 

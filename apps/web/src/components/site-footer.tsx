@@ -55,7 +55,6 @@ export function SiteFooter() {
           <Link href="/security" className="text-[#52647d] transition hover:text-[#175cd3]">Security</Link>
           <a href={`mailto:${contactEmails.support}`} className="text-[#52647d] transition hover:text-[#175cd3]">Support</a>
           <a href="https://github.com/apps/privatedao-agent-exchange" target="_blank" rel="noreferrer" className="text-[#52647d] transition hover:text-[#175cd3]">GitHub App</a>
-          <a href="https://game.privatedao.org/game/godot/index.html" target="_blank" rel="noreferrer" className="text-[#52647d] transition hover:text-[#175cd3]">PDAO Worlds</a>
         </nav>
       </div>
 

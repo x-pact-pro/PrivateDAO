@@ -153,7 +153,7 @@ export default function HomePage() {
             <div>
               <div className="commercial-eyebrow">Beyond the workflow</div>
               <h2 className="commercial-section-title mt-4">The same trust model, extended to software and people.</h2>
-              <p className="commercial-section-lead mt-5">Agents and PDAO Worlds remain independent products, connected by the same ideas: privacy, boundaries, evidence, and coordination.</p>
+              <p className="commercial-section-lead mt-5">Agent services remain an independent product, connected by the same ideas: privacy, boundaries, evidence, and coordination.</p>
             </div>
             <div className="commercial-ecosystem-links">
               {ecosystemCommercialProducts.flatMap((group) => group.products).map((product) => {

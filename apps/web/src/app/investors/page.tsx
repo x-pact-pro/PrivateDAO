@@ -22,7 +22,7 @@ const portfolio = [
   ["Confidential Payroll", "Private payroll preparation, policy approval, settlement, and a shareable verified outcome."],
   ["Treasury and Governance", "Controlled spending and organizational decisions with clear authority and evidence."],
   ["Auctions and Verification", "Private bids, blind checks, and record receipts for commercial and operational workflows."],
-  ["Agents and PDAO Worlds", "A machine-facing marketplace and a consumer game that extend the PrivateDAO ecosystem."],
+  ["Agent Marketplace", "A machine-facing marketplace that extends the PrivateDAO ecosystem through bounded services and verifiable receipts."],
 ] as const;
 
 export default function InvestorsPage() {

@@ -120,13 +120,6 @@ export const commercialProductGroups: readonly CommercialProductGroup[] = [
         cta: "Open Agent Marketplace",
         runtimeProductId: "agent",
       },
-      {
-        title: "PDAO Worlds",
-        summary: "Explore privacy, trust, evidence, and coordination through an independent game product.",
-        audience: "Players, communities, and consumer acquisition channels.",
-        href: "https://game.privatedao.org/game/godot/index.html",
-        cta: "Play PDAO Worlds",
-      },
     ],
   },
   {

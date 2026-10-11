@@ -41,7 +41,6 @@ Traditional companies, enterprises, financial institutions, data companies, tech
 - Record Verification: create a shareable record receipt with selective disclosure, expiry, and revocation boundaries.
 - Private Identity Verification: use an issuer attestation to verify eligibility, age, jurisdiction, business verification, or authorized representation without exposing the identity file.
 - Agent Marketplace: discover bounded services and receive checkable results through the independent Agent Exchange.
-- PDAO Worlds: an independent consumer game and ecosystem product, separate from enterprise workflows.
 
 ## Commercial message
 
@@ -68,7 +67,6 @@ Use the public product pages, proof routes, evidence manifest, and network capab
 - Blind Verification: https://privatedao.org/proof-workflows/blind-policy/
 - Record Verification: https://privatedao.org/products/record-verification/
 - Agent Marketplace: https://agents.privatedao.org/
-- PDAO Worlds: https://game.privatedao.org/game/godot/index.html
 - Evidence manifest: https://privatedao.org/evidence.json
 - AI manifest: https://privatedao.org/ai.json
 - Ownership manifest: https://privatedao.org/ownership.json
