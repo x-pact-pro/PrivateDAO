@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 
 import { OperationsShell } from "@/components/operations-shell";
+import { SelectedKernelWorkflow } from "@/components/selected-kernel-workflow";
 import { buildRouteMetadata } from "@/lib/route-metadata";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -27,6 +28,7 @@ export default function TreasuryPage() {
         { label: "Treasury proof", variant: "success" },
       ]}
     >
+      <SelectedKernelWorkflow product="treasury">
       <section className="rounded-[28px] border border-emerald-300/18 bg-emerald-300/[0.06] p-5 sm:p-6">
         <h2 className="text-2xl font-semibold text-white">Start a treasury workflow.</h2>
         <p className="mt-3 max-w-3xl text-sm leading-7 text-white/64">
@@ -78,6 +80,7 @@ export default function TreasuryPage() {
           <ArrowRight className="h-4 w-4" />
         </Link>
       </section>
+      </SelectedKernelWorkflow>
     </OperationsShell>
   );
 }

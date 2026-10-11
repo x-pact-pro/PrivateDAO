@@ -60,39 +60,41 @@ export const PRODUCT_CATALOG: readonly ProductDescriptor[] = [
     id: "payroll",
     name: "Confidential Payroll",
     availability: "available",
+    // Payroll is intentionally limited to the Solana workflow until a native
+    // settlement provider passes an independent E2E gate. Umbra and the
+    // unfinished Zcash route are not customer-facing capabilities.
     networks: [solanaDevnet],
     capabilities: [
-      capability("payroll.calculate", "payroll", false),
-      capability("payroll.approve", "payroll", true),
-      capability("payroll.settle", "payroll", true),
+      capability("payroll.calculate", "payroll", false, true, [solanaDevnet]),
+      capability("payroll.approve", "payroll", true, true, [solanaDevnet]),
     ],
   },
   {
     id: "treasury",
     name: "Private Treasury",
     availability: "available",
-    networks: [solanaDevnet, ethereumSepolia, arbitrumSepolia, tempoTestnet],
-    capabilities: [capability("treasury.policy.check", "treasury", false, true, [solanaDevnet, ethereumSepolia, arbitrumSepolia, tempoTestnet])],
+    networks: [solanaDevnet, ethereumSepolia, arbitrumSepolia, tempoTestnet, baseSepolia],
+    capabilities: [capability("treasury.policy.check", "treasury", false, true, [solanaDevnet, ethereumSepolia, arbitrumSepolia, tempoTestnet, baseSepolia])],
   },
   {
     id: "governance",
     name: "Private Governance",
     availability: "available",
-    networks: [solanaDevnet, ethereumSepolia, arbitrumSepolia, tempoTestnet],
-    capabilities: [capability("governance.proposal.execute", "governance", true, true, [solanaDevnet, ethereumSepolia, arbitrumSepolia, tempoTestnet])],
+    networks: [solanaDevnet, ethereumSepolia, arbitrumSepolia, tempoTestnet, baseSepolia],
+    capabilities: [capability("governance.proposal.execute", "governance", true, true, [solanaDevnet, ethereumSepolia, arbitrumSepolia, tempoTestnet, baseSepolia])],
   },
   {
     id: "auction",
     name: "Private Auctions",
     availability: "available",
-    networks: [solanaDevnet, ethereumSepolia, arbitrumSepolia, tempoTestnet],
+    networks: [solanaDevnet, ethereumSepolia, arbitrumSepolia, tempoTestnet, baseSepolia],
     capabilities: [
       // The current endpoint issues commitments/proof data off-chain; it does
       // not submit the financial bid transaction.
-      capability("auction.bid.commit", "auction", false, true, [solanaDevnet, ethereumSepolia, arbitrumSepolia, tempoTestnet]),
+      capability("auction.bid.commit", "auction", false, true, [solanaDevnet, ethereumSepolia, arbitrumSepolia, tempoTestnet, baseSepolia]),
       // The current Kernel action proves an already-bound outcome. It does
       // not submit the financial settlement transaction.
-      capability("auction.settle", "auction", false, true, [solanaDevnet, ethereumSepolia, arbitrumSepolia, tempoTestnet]),
+      capability("auction.settle", "auction", false, true, [solanaDevnet, ethereumSepolia, arbitrumSepolia, tempoTestnet, baseSepolia]),
     ],
   },
   {

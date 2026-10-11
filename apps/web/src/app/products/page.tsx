@@ -4,6 +4,7 @@ import { ArrowRight } from "lucide-react";
 
 import { OperationsShell } from "@/components/operations-shell";
 import { OrganizationFitSelector } from "@/components/organization-fit-selector";
+import { ProductNetworkWorkspace } from "@/components/product-network-workspace";
 import { buildRouteMetadata } from "@/lib/route-metadata";
 import { commercialProductGroups, ecosystemCommercialProducts, primaryCommercialProducts, type CommercialProduct } from "@/lib/commercial-product-map";
 import { isRuntimeProductAvailable } from "@/lib/runtime-catalog";
@@ -41,6 +42,7 @@ export default function ProductsPage() {
       navigationMode="guided"
       badges={[{ label: "Private by design", variant: "success" }, { label: "Clear approvals", variant: "cyan" }, { label: "Trusted outcomes", variant: "violet" }]}
     >
+    <ProductNetworkWorkspace />
     <div className="grid gap-5 lg:grid-cols-3">{primaryCommercialProducts.map((group) => <ProductGroup key={group.title} group={group} />)}</div>
     <OrganizationFitSelector />
     <section className="enterprise-dark-panel rounded-[24px] bg-[#10233f] p-6 text-white sm:p-8"><div className="text-[11px] font-bold uppercase tracking-[0.25em] text-[#9fc7ff]">Beyond the core workflow</div><div className="mt-3 flex flex-wrap items-end justify-between gap-5"><div><h2 className="text-2xl font-semibold tracking-[-0.03em]">Extend the ecosystem when your organization is ready.</h2><p className="mt-3 max-w-2xl text-sm leading-7 text-[#d5e2f3]">Agent services and PDAO Worlds remain separate products without complicating the enterprise path.</p></div><div className="flex flex-wrap gap-3">{ecosystemCommercialProducts.flatMap((group) => group.products).map((product) => product.href.startsWith("http") ? <a key={product.title} href={product.href} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 rounded-full border border-white/25 px-4 py-2.5 text-sm font-semibold text-white">{product.cta} <ArrowRight className="h-4 w-4" /></a> : <Link key={product.title} href={product.href} className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2.5 text-sm font-semibold text-[#10233f]">{product.cta} <ArrowRight className="h-4 w-4" /></Link>)}</div></div></section>

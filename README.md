@@ -194,6 +194,17 @@ material. Ethereum, Base, Arbitrum, Robinhood, Zcash, Hyperliquid, and other
 network entries must be read through the capability matrix and their linked
 evidence rather than treated as one universal support claim.
 
+### Base Builder Codes
+
+PrivateDAO's Base Sepolia Builder Code integration is published and limited to
+eligible Base transactions. The public evidence page is
+[`/integrations/base`](https://privatedao.org/integrations/base), and the
+technical announcement is [`docs/base-builder-announcement.md`](docs/base-builder-announcement.md).
+Existing Base receipts remain valid testnet evidence, but they predate Builder
+Code wiring. A newly funded Base Sepolia write is still required before
+attribution can be reported as verified. No Base Mainnet execution,
+partnership, grant award, or endorsement is claimed.
+
 Start with:
 
 - [`docs/current-network-state-2026-05-24.md`](docs/current-network-state-2026-05-24.md)

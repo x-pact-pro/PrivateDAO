@@ -6,6 +6,7 @@ import type {
   PreparedExecution,
   ProviderId,
 } from "./index.js";
+import { buildKernelAuctionBidProof } from "./auction-proof-service.js";
 
 export interface AuctionBidCommitPayload {
   config: Record<string, unknown>;
@@ -42,10 +43,10 @@ export class AuctionBidCommitProvider implements KernelProvider {
   private readonly records = new Map<string, BidExecution>();
 
   constructor(
-    private readonly fetchImpl: FetchLike = fetch,
-    private readonly endpoint = DEFAULT_ENDPOINT,
+    private readonly fetchImpl?: FetchLike,
+    private readonly endpoint?: string,
   ) {
-    if (!endpoint.startsWith("https://")) throw new Error("Auction bid endpoint must use HTTPS.");
+    if (endpoint && !endpoint.startsWith("https://")) throw new Error("Auction bid endpoint must use HTTPS.");
   }
 
   supports(capability: string): boolean {
@@ -55,17 +56,23 @@ export class AuctionBidCommitProvider implements KernelProvider {
   async prepare<TPayload, TUnsigned>(intent: ExecutionIntent<TPayload>): Promise<PreparedExecution<TUnsigned>> {
     if (!this.supports(intent.context.capability)) throw new Error("Auction bid provider does not support this capability.");
     const payload = parsePayload(intent.payload);
-    const response = await this.fetchImpl(this.endpoint, {
+    const result = this.endpoint && this.fetchImpl
+      ? await this.fetchRemote(payload)
+      : buildKernelAuctionBidProof(payload);
+    const executionId = `auction-bid-commit-${intent.context.requestId}`;
+    const preparedAt = new Date().toISOString();
+    this.records.set(executionId, { intent: intent as ExecutionIntent<AuctionBidCommitPayload>, result, state: "prepared", preparedAt });
+    return { executionId, intent, unsignedPayload: undefined as TUnsigned, requiredSigners: [], state: "prepared" };
+  }
+
+  private async fetchRemote(payload: AuctionBidCommitPayload): Promise<AuctionBidCommitResult> {
+    const response = await this.fetchImpl!(this.endpoint!, {
       method: "POST",
       headers: { Accept: "application/json", "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     });
     if (!response.ok) throw new Error(`Auction bid service failed with HTTP ${response.status}.`);
-    const result = parseResult(await response.json());
-    const executionId = `auction-bid-commit-${intent.context.requestId}`;
-    const preparedAt = new Date().toISOString();
-    this.records.set(executionId, { intent: intent as ExecutionIntent<AuctionBidCommitPayload>, result, state: "prepared", preparedAt });
-    return { executionId, intent, unsignedPayload: undefined as TUnsigned, requiredSigners: [], state: "prepared" };
+    return parseResult(await response.json());
   }
 
   async submit<TUnsigned>(execution: PreparedExecution<TUnsigned>, _signedPayload: TUnsigned): Promise<{ executionId: string; signatures: string[] }> {

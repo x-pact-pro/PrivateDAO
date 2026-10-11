@@ -6,6 +6,7 @@ import type {
   PreparedExecution,
   ProviderId,
 } from "./index.js";
+import { buildKernelAuctionOutcomeProof } from "./auction-proof-service.js";
 
 export interface AuctionOutcomeProofPayload {
   metadata: Record<string, unknown>;
@@ -44,10 +45,10 @@ export class AuctionOutcomeProofProvider implements KernelProvider {
   private readonly records = new Map<string, ProofExecution>();
 
   constructor(
-    private readonly fetchImpl: FetchLike = fetch,
-    private readonly endpoint = DEFAULT_ENDPOINT,
+    private readonly fetchImpl?: FetchLike,
+    private readonly endpoint?: string,
   ) {
-    if (!endpoint.startsWith("https://")) throw new Error("Auction proof endpoint must use HTTPS.");
+    if (endpoint && !endpoint.startsWith("https://")) throw new Error("Auction proof endpoint must use HTTPS.");
   }
 
   supports(capability: string): boolean {
@@ -57,17 +58,23 @@ export class AuctionOutcomeProofProvider implements KernelProvider {
   async prepare<TPayload, TUnsigned>(intent: ExecutionIntent<TPayload>): Promise<PreparedExecution<TUnsigned>> {
     if (!this.supports(intent.context.capability)) throw new Error("Auction outcome provider does not support this capability.");
     const payload = parsePayload(intent.payload);
-    const response = await this.fetchImpl(this.endpoint, {
+    const result = this.endpoint && this.fetchImpl
+      ? await this.fetchRemote(payload)
+      : buildKernelAuctionOutcomeProof(payload);
+    const executionId = `auction-outcome-proof-${intent.context.requestId}`;
+    const preparedAt = new Date().toISOString();
+    this.records.set(executionId, { intent: intent as ExecutionIntent<AuctionOutcomeProofPayload>, result, state: "prepared", preparedAt });
+    return { executionId, intent, unsignedPayload: undefined as TUnsigned, requiredSigners: [], state: "prepared" };
+  }
+
+  private async fetchRemote(payload: AuctionOutcomeProofPayload): Promise<AuctionOutcomeProofResult> {
+    const response = await this.fetchImpl!(this.endpoint!, {
       method: "POST",
       headers: { Accept: "application/json", "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     });
     if (!response.ok) throw new Error(`Auction outcome proof service failed with HTTP ${response.status}.`);
-    const result = parseResult(await response.json());
-    const executionId = `auction-outcome-proof-${intent.context.requestId}`;
-    const preparedAt = new Date().toISOString();
-    this.records.set(executionId, { intent: intent as ExecutionIntent<AuctionOutcomeProofPayload>, result, state: "prepared", preparedAt });
-    return { executionId, intent, unsignedPayload: undefined as TUnsigned, requiredSigners: [], state: "prepared" };
+    return parseResult(await response.json());
   }
 
   async submit<TUnsigned>(execution: PreparedExecution<TUnsigned>, _signedPayload: TUnsigned): Promise<{ executionId: string; signatures: string[] }> {

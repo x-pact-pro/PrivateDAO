@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 
 import { OperationsShell } from "@/components/operations-shell";
+import { SelectedKernelWorkflow } from "@/components/selected-kernel-workflow";
 import { ConfidentialAuctionWorkbench } from "@/components/confidential-auction-workbench";
 import { buttonVariants } from "@/components/ui/button";
 import { buildRouteMetadata } from "@/lib/route-metadata";
@@ -28,6 +29,7 @@ export default function AuctionsPage() {
         { label: "Shareable result", variant: "success" },
       ]}
     >
+      <SelectedKernelWorkflow product="auction">
       <section className="grid gap-4 lg:grid-cols-2">
         <article className="rounded-[28px] border border-[#f0c9cd] bg-[#fff6f6] p-5 sm:p-6">
           <div className="text-[11px] font-bold uppercase tracking-[0.25em] text-[#b42318]">Problem</div>
@@ -85,6 +87,7 @@ export default function AuctionsPage() {
           </Link>
         </div>
       </section>
+      </SelectedKernelWorkflow>
     </OperationsShell>
   );
 }

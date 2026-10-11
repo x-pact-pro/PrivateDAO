@@ -40,6 +40,7 @@ import {
   type TxlineSettlementProofPackage,
 } from "../apps/web/src/lib/txline-settlement";
 import { PayrollStore, type PayrollState, type SettlementState } from "./lib/payroll-domain.ts";
+import { createKernelGatewayService } from "./kernel-gateway-service.ts";
 
 const host = process.env.PRIVATE_DAO_READ_NODE_HOST || "127.0.0.1";
 const port = Number(process.env.PRIVATE_DAO_READ_NODE_PORT || 8787);
@@ -47,6 +48,7 @@ const allowedOrigin = process.env.PRIVATE_DAO_READ_ALLOWED_ORIGIN || "*";
 const rateWindowMs = Number(process.env.PRIVATE_DAO_READ_RATE_WINDOW_MS || 60_000);
 const rateLimit = Number(process.env.PRIVATE_DAO_READ_RATE_LIMIT || 180);
 const readNode = new PrivateDaoReadNode();
+const kernelGatewayService = createKernelGatewayService();
 const memoProgramId = new PublicKey("MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr");
 const blindPolicyVerifierProgramId = new PublicKey(
   process.env.BLIND_POLICY_ONCHAIN_PROGRAM_ID || "GGqZKsdEwH9YVAqWYqjMgCmZ5nNbvGc8RkiMee3S6SdK",
@@ -6506,6 +6508,8 @@ async function handle(req: http.IncomingMessage, res: http.ServerResponse) {
   const url = new URL(req.url || "/", `http://${req.headers.host || `${host}:${port}`}`);
   const pathname = url.pathname.replace(/\/+$/, "") || "/";
   markRoute(pathname);
+
+  if (await kernelGatewayService.handle(req, res)) return;
 
   try {
     if (req.method === "GET" && pathname.startsWith("/api/v1/payroll/verify/")) {

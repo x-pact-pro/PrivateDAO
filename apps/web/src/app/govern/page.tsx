@@ -5,6 +5,7 @@ import { ArrowRight } from "lucide-react";
 import { GovernWorkbenchClient } from "@/components/govern/govern-workbench-client";
 import { GuidedOperationRail } from "@/components/guided-operation-rail";
 import { OperationsShell } from "@/components/operations-shell";
+import { SelectedKernelWorkflow } from "@/components/selected-kernel-workflow";
 import { buttonVariants } from "@/components/ui/button";
 import { buildRouteMetadata } from "@/lib/route-metadata";
 import { cn } from "@/lib/utils";
@@ -30,6 +31,7 @@ export default function GovernPage() {
         { label: "Verifiable results", variant: "violet" },
       ]}
     >
+      <SelectedKernelWorkflow product="governance">
       <section className="rounded-[28px] border border-cyan-300/18 bg-cyan-300/[0.06] p-5 sm:p-6">
         <h2 className="text-2xl font-semibold text-white">Start with a private room.</h2>
         <p className="mt-3 max-w-3xl text-sm leading-7 text-white/64">
@@ -64,6 +66,7 @@ export default function GovernPage() {
       <div className="enterprise-card rounded-[24px] p-5 text-sm leading-7 text-[#5d6d82]">
         Start with one decision, invite the people who should be involved, and keep the final outcome clear for everyone who needs to trust it.
       </div>
+      </SelectedKernelWorkflow>
     </OperationsShell>
   );
 }

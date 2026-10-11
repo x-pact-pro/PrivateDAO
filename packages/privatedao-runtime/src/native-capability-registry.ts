@@ -83,11 +83,26 @@ const AGENT_MAINNET_EVIDENCE = {
 } as const;
 
 const PAYROLL_SOLANA_DEVNET_EVIDENCE = {
-  provider: "umbra-solana-devnet",
-  program: "DSuKkyqGVGgo4QtPABfxKJKygUDACbUhirnuv63mEpAJ",
+  provider: "privatedao-payroll-kernel",
   asset: "WSOL",
   commit: "adcb3ae",
   timestamp: "2026-09-11T21:36:18.740Z",
+} as const;
+
+const ZCASH_TESTNET_PAYROLL_EVIDENCE = {
+  provider: "zcash-testnet-zallet",
+  transaction: "c14158dad7761c5d3c497cf27b2a80ffa909156ba2306e18f3731e608d1521df",
+  blockNumber: "4485265",
+  commit: "d41bec9addcd6580afce1fa11554d5ec03b94c86",
+  timestamp: "2026-10-10T12:42:21.000Z",
+} as const;
+
+const SOLANA_DEVNET_ORGANIZATIONAL_EVIDENCE = {
+  provider: "solana-devnet",
+  governanceProgram: "EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva",
+  auctionProgram: "4Z7AeFRZHBCok68hhbUgVLC3uFaEP2aDWozsYVksPuQd",
+  commit: "c2c7ef8afb15e0bb8cf5f1f34c59d9813e65072a",
+  timestamp: "2026-09-25T01:38:47.952Z",
 } as const;
 
 const TEMPO_TESTNET_EVIDENCE = {
@@ -135,6 +150,17 @@ const ORGANIZATIONAL_EVIDENCE = {
     commit: "bf23f95",
     timestamp: "2026-09-17T07:23:24.600Z",
   },
+  "base-sepolia": {
+    provider: "evm-base-sepolia-organizational",
+    contracts: [
+      "0xf053303014cbf6233d8b9bf38679a30706069216",
+      "0x9887bcfe7daad364202d5d3102de180c389ecb20",
+      "0xcfb3e7af09f206614cf7a3cf8a93f92379c1c374",
+    ],
+    assets: ["ETH"],
+    commit: "ea3b8105cbb65423adf6145db507484f75f880cd",
+    timestamp: "2026-09-19T13:20:48.792Z",
+  },
 } as const;
 
 function nativeAsset(network: NetworkDescriptor): string | null {
@@ -145,7 +171,7 @@ function nativeAsset(network: NetworkDescriptor): string | null {
     if (network.id === "hyperliquid-testnet") return "HYPE";
     return "ETH";
   }
-  if (network.family === "utxo") return "ZEC";
+  if (network.family === "utxo") return network.id === "zcash-testnet" ? "TAZ" : "ZEC";
   if (network.family === "exchange") return "USDC";
   return null;
 }
@@ -239,23 +265,81 @@ function applyAgentMainnetEvidence(entry: NativeCapabilityEntry): NativeCapabili
 
 function applyPayrollDevnetEvidence(entry: NativeCapabilityEntry): NativeCapabilityEntry {
   if (entry.product !== "payroll" || entry.network !== "solana-devnet") return entry;
-  if (!["payroll.calculate", "payroll.approve", "payroll.settle"].includes(entry.capability)) return entry;
-  const isSettlement = entry.capability === "payroll.settle";
+  if (!["payroll.calculate", "payroll.approve"].includes(entry.capability)) return entry;
   return {
     ...entry,
     provider: PAYROLL_SOLANA_DEVNET_EVIDENCE.provider,
     supportedAssets: [PAYROLL_SOLANA_DEVNET_EVIDENCE.asset],
-    contracts: [PAYROLL_SOLANA_DEVNET_EVIDENCE.program],
+    contracts: [],
     walletModel: "external-wallet",
     supportsExecution: true,
-    supportsPrivateExecution: isSettlement,
-    supportsPrivateSettlement: isSettlement,
-    supportsProof: isSettlement,
+    supportsPrivateExecution: false,
+    supportsPrivateSettlement: false,
+    supportsProof: false,
     supportsReceipt: true,
-    supportsReconciliation: isSettlement,
+    supportsReconciliation: false,
     status: "devnet_verified",
     lastVerifiedCommit: PAYROLL_SOLANA_DEVNET_EVIDENCE.commit,
     lastVerifiedTimestamp: PAYROLL_SOLANA_DEVNET_EVIDENCE.timestamp,
+    evidence: "devnet-e2e",
+  };
+}
+
+function applyZcashTestnetEvidence(entry: NativeCapabilityEntry): NativeCapabilityEntry {
+  if (entry.product !== "payroll" || entry.network !== "zcash-testnet") return entry;
+  if (entry.capability === "payroll.calculate" || entry.capability === "payroll.approve") {
+    return {
+      ...entry,
+      provider: "privatedao-payroll-kernel",
+      walletModel: "none",
+      supportsExecution: true,
+      supportsPrivateExecution: false,
+      supportsPrivateSettlement: false,
+      supportsReceipt: true,
+      supportsReconciliation: true,
+      status: "implementation",
+      evidence: "runtime-only",
+    };
+  }
+  if (entry.capability !== "payroll.settle") return entry;
+  return {
+    ...entry,
+    provider: ZCASH_TESTNET_PAYROLL_EVIDENCE.provider,
+    supportedAssets: ["TAZ"],
+    walletModel: "provider-wallet",
+    supportsExecution: true,
+    supportsPrivateExecution: true,
+    supportsPrivateSettlement: true,
+    supportsReceipt: true,
+    supportsReconciliation: true,
+    status: "testnet_verified",
+    lastVerifiedCommit: ZCASH_TESTNET_PAYROLL_EVIDENCE.commit,
+    lastVerifiedTimestamp: ZCASH_TESTNET_PAYROLL_EVIDENCE.timestamp,
+    evidence: "testnet-e2e",
+  };
+}
+
+function applySolanaDevnetOrganizationalEvidence(entry: NativeCapabilityEntry): NativeCapabilityEntry {
+  if (entry.network !== "solana-devnet") return entry;
+  const isTreasury = entry.product === "treasury" && entry.capability === "treasury.policy.check";
+  const isGovernance = entry.product === "governance" && entry.capability === "governance.proposal.execute";
+  const isAuction = entry.product === "auction" && ["auction.bid.commit", "auction.settle"].includes(entry.capability);
+  if (!isTreasury && !isGovernance && !isAuction) return entry;
+  const isAuctionSettlement = entry.capability === "auction.settle";
+  return {
+    ...entry,
+    provider: SOLANA_DEVNET_ORGANIZATIONAL_EVIDENCE.provider,
+    contracts: [isAuction ? SOLANA_DEVNET_ORGANIZATIONAL_EVIDENCE.auctionProgram : SOLANA_DEVNET_ORGANIZATIONAL_EVIDENCE.governanceProgram],
+    walletModel: "external-wallet",
+    supportsExecution: true,
+    supportsPrivateExecution: isAuction,
+    supportsPrivateSettlement: isAuctionSettlement,
+    supportsProof: isGovernance || isAuction,
+    supportsReceipt: true,
+    supportsReconciliation: true,
+    status: "devnet_verified",
+    lastVerifiedCommit: SOLANA_DEVNET_ORGANIZATIONAL_EVIDENCE.commit,
+    lastVerifiedTimestamp: SOLANA_DEVNET_ORGANIZATIONAL_EVIDENCE.timestamp,
     evidence: "devnet-e2e",
   };
 }
@@ -316,32 +400,44 @@ function applyOrganizationalEvidence(entry: NativeCapabilityEntry): NativeCapabi
 export function buildNativeCapabilityRegistry(): readonly NativeCapabilityEntry[] {
   return PRODUCT_CATALOG.flatMap((product) =>
     product.capabilities.flatMap((capability) =>
-      NETWORK_MATRIX.map((network) => applyOrganizationalEvidence(applyTempoTestnetEvidence(applyPayrollDevnetEvidence(applyAgentMainnetEvidence(applyArbitrumSepoliaEvidence(applyBaseSepoliaEvidence(applyEthereumSepoliaEvidence({
-        product: product.id,
-        capability: capability.id,
-        network: network.id,
-        networkFamily: network.family,
-        declared: product.networks.includes(network.id) && capability.networks.includes(network.id),
-        environment: network.environment,
-        chainId: network.chainId ?? null,
-        nativeAsset: nativeAsset(network),
-        supportedAssets: nativeAsset(network) ? [nativeAsset(network) as string] : [],
-        contracts: [],
-        verifier: null,
-        provider: network.adapterId ?? null,
-        walletModel: network.family === "solana" || network.family === "evm" ? "external-wallet" : "none",
-        supportsExecution: false,
-        supportsPrivateExecution: false,
-        supportsPrivateSettlement: false,
-        supportsProof: false,
-        supportsReceipt: false,
-        supportsReconciliation: false,
-        supportsMainnet: false,
-        status: defaultStatus(product.networks.includes(network.id) && capability.networks.includes(network.id), network),
-        lastVerifiedCommit: null,
-        lastVerifiedTimestamp: null,
-        evidence: "none",
-      })))))))) ,
+      NETWORK_MATRIX.map((network) => {
+        const declared = product.networks.includes(network.id) && capability.networks.includes(network.id);
+        const baseEntry: NativeCapabilityEntry = {
+          product: product.id,
+          capability: capability.id,
+          network: network.id,
+          networkFamily: network.family,
+          declared,
+          environment: network.environment,
+          chainId: network.chainId ?? null,
+          nativeAsset: nativeAsset(network),
+          supportedAssets: nativeAsset(network) ? [nativeAsset(network) as string] : [],
+          contracts: [],
+          verifier: null,
+          provider: network.adapterId ?? null,
+          walletModel: network.family === "solana" || network.family === "evm" ? "external-wallet" : "none",
+          supportsExecution: false,
+          supportsPrivateExecution: false,
+          supportsPrivateSettlement: false,
+          supportsProof: false,
+          supportsReceipt: false,
+          supportsReconciliation: false,
+          supportsMainnet: false,
+          status: defaultStatus(declared, network),
+          lastVerifiedCommit: null,
+          lastVerifiedTimestamp: null,
+          evidence: "none",
+        };
+        const withEthereum = applyEthereumSepoliaEvidence(baseEntry);
+        const withBase = applyBaseSepoliaEvidence(withEthereum);
+        const withArbitrum = applyArbitrumSepoliaEvidence(withBase);
+        const withAgent = applyAgentMainnetEvidence(withArbitrum);
+        const withPayroll = applyPayrollDevnetEvidence(withAgent);
+        const withZcash = applyZcashTestnetEvidence(withPayroll);
+        const withTempo = applyTempoTestnetEvidence(withZcash);
+        const withSolanaOrg = applySolanaDevnetOrganizationalEvidence(withTempo);
+        return applyOrganizationalEvidence(withSolanaOrg);
+      }),
     ),
   );
 }

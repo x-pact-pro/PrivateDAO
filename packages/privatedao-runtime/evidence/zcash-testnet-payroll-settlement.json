@@ -1,0 +1,23 @@
+{
+  "schema": "privatedao.network-e2e-evidence.v1",
+  "product": "payroll",
+  "capability": "payroll.settle",
+  "network": "zcash-testnet",
+  "environment": "testnet",
+  "asset": "TAZ",
+  "state": "reconciled",
+  "provider": "zcash-testnet-zallet",
+  "transaction": "c14158dad7761c5d3c497cf27b2a80ffa909156ba2306e18f3731e608d1521df",
+  "blockNumber": "4485265",
+  "confirmationsAtCapture": 3,
+  "explorerUrl": "https://explorer.testnet.z.cash/tx/c14158dad7761c5d3c497cf27b2a80ffa909156ba2306e18f3731e608d1521df",
+  "reconciliation": {
+    "expectedRecipients": 1,
+    "settledRecipients": 1,
+    "failedRecipients": 0,
+    "duplicateRecipients": 0,
+    "atomicAmount": "10000"
+  },
+  "verifiedAt": "2026-10-10T12:42:21.000Z",
+  "verifiedCommit": "d41bec9addcd6580afce1fa11554d5ec03b94c86"
+}

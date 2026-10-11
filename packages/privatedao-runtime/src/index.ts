@@ -67,6 +67,7 @@ export interface PreparedExecution<TUnsigned = unknown> {
   unsignedPayload: TUnsigned;
   requiredSigners: AccountReference[];
   state: "prepared" | "awaiting_signature";
+  signingMode?: "browser" | "server";
 }
 
 export interface ExecutionReceipt<TResult = unknown> {
@@ -133,6 +134,10 @@ export interface ProtocolReceipt<TResult = unknown> extends ExecutionReceipt<TRe
 }
 
 export { InMemoryProviderRegistry, KernelError, PrivateDaoKernel, reconcileSettlements } from "./kernel.js";
+export { SolanaBrowserExecutionProvider } from "./solana-browser-execution-provider.js";
+export type { SolanaBrowserExecutionPayload, SolanaBrowserSignedPayload } from "./solana-browser-execution-provider.js";
+export { SolanaPayrollSettlementProvider } from "./solana-payroll-settlement-provider.js";
+export type { SolanaPayrollSettlementPayload } from "./solana-payroll-settlement-provider.js";
 export type {
   KernelErrorCode,
   KernelEvent,
@@ -174,6 +179,8 @@ export { EvmNetworkAdapter, EvmAdapterError, EVM_NETWORK_CONFIGS } from "./evm-n
 export type { EvmEnvironment, EvmNetworkConfig, EvmTransport, EvmWalletAdapter } from "./evm-network.js";
 export { ViemEvmTransport } from "./evm-viem-transport.js";
 export type { ViemContractWritePayload } from "./evm-viem-transport.js";
+export { BrowserEvmTransport } from "./browser-evm-transport.js";
+export type { BrowserEvmContractWritePayload, BrowserEvmSignedPayload } from "./browser-evm-transport.js";
 export { ZcashNetworkAdapter, ZcashAdapterError, ZCASH_NETWORK_CONFIGS } from "./zcash-network.js";
 export type { ZcashEnvironment, ZcashNetworkConfig, ZcashTransport, ZcashWalletAdapter } from "./zcash-network.js";
 export { ZalletCliTransport } from "./zallet-cli-transport.js";
@@ -210,10 +217,6 @@ export type {
   TenantMembership,
   TenantMembershipStore,
 } from "./identity/entra.js";
-export { AzureKeyVaultSecretProvider, EnvironmentSecretProvider, createSecretProvider } from "./azure/secrets.js";
-export type { SecretProvider } from "./azure/secrets.js";
-export { initializeAzureMonitor, SafeKernelTelemetry } from "./azure/monitor.js";
-export type { AzureMonitorOptions } from "./azure/monitor.js";
 export { createPrivateDaoRuntime } from "./runtime.js";
 export type { PrivateDaoRuntime } from "./runtime.js";
 export { PayrollCalculationProvider } from "./payroll-provider.js";
@@ -230,6 +233,7 @@ export { BlindPolicyProofProvider } from "./blind-policy-provider.js";
 export type { BlindPolicyProofPayload, BlindPolicyProofResult } from "./blind-policy-provider.js";
 export { AuctionOutcomeProofProvider } from "./auction-outcome-provider.js";
 export type { AuctionOutcomeProofPayload, AuctionOutcomeProofResult } from "./auction-outcome-provider.js";
+export { buildKernelAuctionBidProof, buildKernelAuctionOutcomeProof } from "./auction-proof-service.js";
 export { AuctionBidCommitProvider } from "./auction-bid-provider.js";
 export type { AuctionBidCommitPayload, AuctionBidCommitResult } from "./auction-bid-provider.js";
 export { buildCapabilityMatrix } from "./capability-matrix.js";

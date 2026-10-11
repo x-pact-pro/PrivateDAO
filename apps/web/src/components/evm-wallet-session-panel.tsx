@@ -3,17 +3,6 @@
 import { useMemo, useState } from "react";
 import { CheckCircle2, Wallet, XCircle } from "lucide-react";
 
-type Eip1193Provider = {
-  request(args: { method: string; params?: unknown[] }): Promise<unknown>;
-  providers?: Eip1193Provider[];
-};
-
-declare global {
-  interface Window {
-    ethereum?: Eip1193Provider;
-  }
-}
-
 type EvmNetwork = {
   id: string;
   label: string;
@@ -33,7 +22,7 @@ const EVM_NETWORKS: readonly EvmNetwork[] = [
   { id: "tempo-testnet", label: "Tempo Testnet", chainId: 42431, currency: "USD", rpcUrl: "https://rpc.moderato.tempo.xyz", explorer: "https://explore.testnet.tempo.xyz" },
 ];
 
-function getProvider(): Eip1193Provider | null {
+function getProvider(): PrivateDaoEip1193Provider | null {
   if (typeof window === "undefined" || !window.ethereum) return null;
   return window.ethereum.providers?.[0] ?? window.ethereum;
 }

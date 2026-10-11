@@ -174,9 +174,11 @@ export const NETWORK_MATRIX: readonly NetworkDescriptor[] = [
     id: "zcash-testnet",
     label: "Zcash Testnet",
     family: "utxo",
-    stage: "planned",
+    stage: "available",
     environment: "testnet",
     finalityModel: "shielded transaction confirmation",
+    explorerBaseUrl: "https://explorer.testnet.z.cash/",
+    adapterId: "zcash-testnet-zallet",
   },
   {
     id: "hyperliquid-testnet",

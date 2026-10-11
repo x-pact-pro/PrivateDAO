@@ -363,7 +363,7 @@ export const runtimeCatalog = {
             },
             {
               "network": "zcash-testnet",
-              "stage": "planned",
+              "stage": "available",
               "environment": "testnet",
               "chainId": null,
               "declared": false,
@@ -375,9 +375,9 @@ export const runtimeCatalog = {
               "supportsReceipt": false,
               "supportsReconciliation": false,
               "supportedAssets": [
-                "ZEC"
+                "TAZ"
               ],
-              "provider": null
+              "provider": "zcash-testnet-zallet"
             },
             {
               "network": "hyperliquid-testnet",
@@ -761,7 +761,7 @@ export const runtimeCatalog = {
             },
             {
               "network": "zcash-testnet",
-              "stage": "planned",
+              "stage": "available",
               "environment": "testnet",
               "chainId": null,
               "declared": false,
@@ -773,9 +773,9 @@ export const runtimeCatalog = {
               "supportsReceipt": false,
               "supportsReconciliation": false,
               "supportedAssets": [
-                "ZEC"
+                "TAZ"
               ],
-              "provider": null
+              "provider": "zcash-testnet-zallet"
             },
             {
               "network": "hyperliquid-testnet",
@@ -1145,7 +1145,7 @@ export const runtimeCatalog = {
             },
             {
               "network": "zcash-testnet",
-              "stage": "planned",
+              "stage": "available",
               "environment": "testnet",
               "chainId": null,
               "declared": false,
@@ -1157,9 +1157,9 @@ export const runtimeCatalog = {
               "supportsReceipt": false,
               "supportsReconciliation": false,
               "supportedAssets": [
-                "ZEC"
+                "TAZ"
               ],
-              "provider": null
+              "provider": "zcash-testnet-zallet"
             },
             {
               "network": "hyperliquid-testnet",
@@ -1213,7 +1213,7 @@ export const runtimeCatalog = {
               "supportedAssets": [
                 "WSOL"
               ],
-              "provider": "umbra-solana-devnet"
+              "provider": "privatedao-payroll-kernel"
             }
           ],
           "networkAvailability": [
@@ -1233,7 +1233,7 @@ export const runtimeCatalog = {
               "supportedAssets": [
                 "WSOL"
               ],
-              "provider": "umbra-solana-devnet"
+              "provider": "privatedao-payroll-kernel"
             },
             {
               "network": "solana-mainnet-beta",
@@ -1471,21 +1471,21 @@ export const runtimeCatalog = {
             },
             {
               "network": "zcash-testnet",
-              "stage": "planned",
+              "stage": "available",
               "environment": "testnet",
               "chainId": null,
               "declared": false,
               "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
+              "evidenceStatus": "implementation",
+              "evidence": "runtime-only",
               "executable": false,
               "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
-                "ZEC"
+                "TAZ"
               ],
-              "provider": null
+              "provider": "privatedao-payroll-kernel"
             },
             {
               "network": "hyperliquid-testnet",
@@ -1529,7 +1529,7 @@ export const runtimeCatalog = {
               "supportedAssets": [
                 "WSOL"
               ],
-              "provider": "umbra-solana-devnet"
+              "provider": "privatedao-payroll-kernel"
             }
           ],
           "networkAvailability": [
@@ -1549,7 +1549,7 @@ export const runtimeCatalog = {
               "supportedAssets": [
                 "WSOL"
               ],
-              "provider": "umbra-solana-devnet"
+              "provider": "privatedao-payroll-kernel"
             },
             {
               "network": "solana-mainnet-beta",
@@ -1787,337 +1787,21 @@ export const runtimeCatalog = {
             },
             {
               "network": "zcash-testnet",
-              "stage": "planned",
+              "stage": "available",
               "environment": "testnet",
               "chainId": null,
               "declared": false,
               "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
+              "evidenceStatus": "implementation",
+              "evidence": "runtime-only",
               "executable": false,
               "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
-              "supportedAssets": [
-                "ZEC"
-              ],
-              "provider": null
-            },
-            {
-              "network": "hyperliquid-testnet",
-              "stage": "available",
-              "environment": "testnet",
-              "chainId": "998",
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
-              "executable": false,
-              "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
-              "supportedAssets": [
-                "HYPE"
-              ],
-              "provider": "evm-hyperliquid-testnet"
-            }
-          ]
-        },
-        {
-          "id": "payroll.settle",
-          "version": "1.0",
-          "requiresSignature": true,
-          "supportsAsync": true,
-          "receiptSchema": "privatedao.execution-receipt.v1",
-          "applicationBindings": [
-            {
-              "network": "solana-devnet",
-              "mode": "legacy-provider",
-              "entrypoint": "/api/private-payout/prepare",
-              "method": "POST",
-              "note": "Existing private-payout provider route; it is not evidence of an end-to-end payroll settlement.",
-              "evidenceStatus": "devnet_verified",
-              "evidence": "devnet-e2e",
-              "supportsExecution": true,
-              "supportsProof": true,
               "supportsReceipt": true,
               "supportsReconciliation": true,
               "supportedAssets": [
-                "WSOL"
+                "TAZ"
               ],
-              "provider": "umbra-solana-devnet"
-            }
-          ],
-          "networkAvailability": [
-            {
-              "network": "solana-devnet",
-              "stage": "available",
-              "environment": "devnet",
-              "chainId": null,
-              "declared": true,
-              "mode": "legacy-provider",
-              "evidenceStatus": "devnet_verified",
-              "evidence": "devnet-e2e",
-              "executable": false,
-              "supportsProof": true,
-              "supportsReceipt": true,
-              "supportsReconciliation": true,
-              "supportedAssets": [
-                "WSOL"
-              ],
-              "provider": "umbra-solana-devnet"
-            },
-            {
-              "network": "solana-mainnet-beta",
-              "stage": "available",
-              "environment": "mainnet",
-              "chainId": null,
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
-              "executable": false,
-              "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
-              "supportedAssets": [
-                "SOL"
-              ],
-              "provider": "solana-mainnet-beta"
-            },
-            {
-              "network": "ethereum-sepolia",
-              "stage": "available",
-              "environment": "testnet",
-              "chainId": "11155111",
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
-              "executable": false,
-              "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
-              "supportedAssets": [
-                "ETH"
-              ],
-              "provider": "evm-ethereum-sepolia"
-            },
-            {
-              "network": "ethereum-mainnet",
-              "stage": "planned",
-              "environment": "mainnet",
-              "chainId": "1",
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
-              "executable": false,
-              "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
-              "supportedAssets": [
-                "ETH"
-              ],
-              "provider": "evm-ethereum-mainnet"
-            },
-            {
-              "network": "arbitrum-sepolia",
-              "stage": "available",
-              "environment": "testnet",
-              "chainId": "421614",
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
-              "executable": false,
-              "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
-              "supportedAssets": [
-                "ETH"
-              ],
-              "provider": "evm-arbitrum-sepolia"
-            },
-            {
-              "network": "arbitrum-one",
-              "stage": "planned",
-              "environment": "mainnet",
-              "chainId": "42161",
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
-              "executable": false,
-              "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
-              "supportedAssets": [
-                "ETH"
-              ],
-              "provider": "evm-arbitrum-one"
-            },
-            {
-              "network": "bnb-testnet",
-              "stage": "available",
-              "environment": "testnet",
-              "chainId": "97",
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
-              "executable": false,
-              "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
-              "supportedAssets": [
-                "BNB"
-              ],
-              "provider": "evm-bnb-testnet"
-            },
-            {
-              "network": "bnb-mainnet",
-              "stage": "planned",
-              "environment": "mainnet",
-              "chainId": "56",
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
-              "executable": false,
-              "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
-              "supportedAssets": [
-                "BNB"
-              ],
-              "provider": "evm-bnb-mainnet"
-            },
-            {
-              "network": "base-sepolia",
-              "stage": "available",
-              "environment": "testnet",
-              "chainId": "84532",
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
-              "executable": false,
-              "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
-              "supportedAssets": [
-                "ETH"
-              ],
-              "provider": "evm-base-sepolia"
-            },
-            {
-              "network": "base-mainnet",
-              "stage": "planned",
-              "environment": "mainnet",
-              "chainId": "8453",
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
-              "executable": false,
-              "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
-              "supportedAssets": [
-                "ETH"
-              ],
-              "provider": "evm-base-mainnet"
-            },
-            {
-              "network": "robinhood-testnet",
-              "stage": "available",
-              "environment": "testnet",
-              "chainId": "46630",
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
-              "executable": false,
-              "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
-              "supportedAssets": [
-                "ETH"
-              ],
-              "provider": "evm-robinhood-testnet"
-            },
-            {
-              "network": "robinhood-mainnet",
-              "stage": "planned",
-              "environment": "mainnet",
-              "chainId": "4663",
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
-              "executable": false,
-              "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
-              "supportedAssets": [
-                "ETH"
-              ],
-              "provider": "evm-robinhood-mainnet"
-            },
-            {
-              "network": "tempo-testnet",
-              "stage": "available",
-              "environment": "testnet",
-              "chainId": "42431",
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
-              "executable": false,
-              "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
-              "supportedAssets": [
-                "USD"
-              ],
-              "provider": "evm-tempo-testnet"
-            },
-            {
-              "network": "tempo-mainnet",
-              "stage": "planned",
-              "environment": "mainnet",
-              "chainId": null,
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
-              "executable": false,
-              "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
-              "supportedAssets": [
-                "USD"
-              ],
-              "provider": "evm-tempo-mainnet"
-            },
-            {
-              "network": "zcash-testnet",
-              "stage": "planned",
-              "environment": "testnet",
-              "chainId": null,
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
-              "executable": false,
-              "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
-              "supportedAssets": [
-                "ZEC"
-              ],
-              "provider": null
+              "provider": "privatedao-payroll-kernel"
             },
             {
               "network": "hyperliquid-testnet",
@@ -2149,7 +1833,8 @@ export const runtimeCatalog = {
         "solana-devnet",
         "ethereum-sepolia",
         "arbitrum-sepolia",
-        "tempo-testnet"
+        "tempo-testnet",
+        "base-sepolia"
       ],
       "capabilities": [
         {
@@ -2165,12 +1850,12 @@ export const runtimeCatalog = {
               "entrypoint": "kernel://treasury.policy.check",
               "method": null,
               "note": "Kernel-native deterministic policy evaluation; no wallet signature or treasury movement is performed.",
-              "evidenceStatus": "implementation",
-              "evidence": "none",
-              "supportsExecution": false,
+              "evidenceStatus": "devnet_verified",
+              "evidence": "devnet-e2e",
+              "supportsExecution": true,
               "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "SOL"
               ],
@@ -2226,6 +1911,23 @@ export const runtimeCatalog = {
                 "AlphaUSD"
               ],
               "provider": "evm-tempo-testnet-organizational"
+            },
+            {
+              "network": "base-sepolia",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://treasury.policy.check",
+              "method": null,
+              "note": "Base Sepolia organizational Treasury passed real funding, budget, Maker/Checker approval, execution, receipt, and state reconciliation checks in the committed E2E artifact.",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "supportsExecution": true,
+              "supportsProof": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "ETH"
+              ],
+              "provider": "evm-base-sepolia-organizational"
             }
           ],
           "networkAvailability": [
@@ -2236,12 +1938,12 @@ export const runtimeCatalog = {
               "chainId": null,
               "declared": true,
               "mode": "kernel-gateway",
-              "evidenceStatus": "implementation",
-              "evidence": "none",
-              "executable": false,
+              "evidenceStatus": "devnet_verified",
+              "evidence": "devnet-e2e",
+              "executable": true,
               "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "SOL"
               ],
@@ -2378,18 +2080,18 @@ export const runtimeCatalog = {
               "stage": "available",
               "environment": "testnet",
               "chainId": "84532",
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
-              "executable": false,
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "executable": true,
               "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "ETH"
               ],
-              "provider": "evm-base-sepolia"
+              "provider": "evm-base-sepolia-organizational"
             },
             {
               "network": "base-mainnet",
@@ -2483,7 +2185,7 @@ export const runtimeCatalog = {
             },
             {
               "network": "zcash-testnet",
-              "stage": "planned",
+              "stage": "available",
               "environment": "testnet",
               "chainId": null,
               "declared": false,
@@ -2495,9 +2197,9 @@ export const runtimeCatalog = {
               "supportsReceipt": false,
               "supportsReconciliation": false,
               "supportedAssets": [
-                "ZEC"
+                "TAZ"
               ],
-              "provider": null
+              "provider": "zcash-testnet-zallet"
             },
             {
               "network": "hyperliquid-testnet",
@@ -2529,7 +2231,8 @@ export const runtimeCatalog = {
         "solana-devnet",
         "ethereum-sepolia",
         "arbitrum-sepolia",
-        "tempo-testnet"
+        "tempo-testnet",
+        "base-sepolia"
       ],
       "capabilities": [
         {
@@ -2541,16 +2244,16 @@ export const runtimeCatalog = {
           "applicationBindings": [
             {
               "network": "solana-devnet",
-              "mode": "unbound",
-              "entrypoint": null,
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://governance.proposal.execute",
               "method": null,
-              "note": "No exact Kernel-backed governance execution action is exposed by the web app.",
-              "evidenceStatus": "implementation",
-              "evidence": "none",
-              "supportsExecution": false,
-              "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "note": "Solana Devnet governance uses the existing PrivateDAO program transaction builder through the browser-signing Kernel boundary.",
+              "evidenceStatus": "devnet_verified",
+              "evidence": "devnet-e2e",
+              "supportsExecution": true,
+              "supportsProof": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "SOL"
               ],
@@ -2606,6 +2309,23 @@ export const runtimeCatalog = {
                 "AlphaUSD"
               ],
               "provider": "evm-tempo-testnet-organizational"
+            },
+            {
+              "network": "base-sepolia",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://governance.proposal.execute",
+              "method": null,
+              "note": "Base Sepolia commit/reveal governance passed real proposal creation, early-reveal rejection, vote reveal, finalization, receipt, and state checks in the committed E2E artifact.",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "supportsExecution": true,
+              "supportsProof": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "ETH"
+              ],
+              "provider": "evm-base-sepolia-organizational"
             }
           ],
           "networkAvailability": [
@@ -2615,13 +2335,13 @@ export const runtimeCatalog = {
               "environment": "devnet",
               "chainId": null,
               "declared": true,
-              "mode": "unbound",
-              "evidenceStatus": "implementation",
-              "evidence": "none",
-              "executable": false,
-              "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "devnet_verified",
+              "evidence": "devnet-e2e",
+              "executable": true,
+              "supportsProof": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "SOL"
               ],
@@ -2758,18 +2478,18 @@ export const runtimeCatalog = {
               "stage": "available",
               "environment": "testnet",
               "chainId": "84532",
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
-              "executable": false,
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "executable": true,
               "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "ETH"
               ],
-              "provider": "evm-base-sepolia"
+              "provider": "evm-base-sepolia-organizational"
             },
             {
               "network": "base-mainnet",
@@ -2863,7 +2583,7 @@ export const runtimeCatalog = {
             },
             {
               "network": "zcash-testnet",
-              "stage": "planned",
+              "stage": "available",
               "environment": "testnet",
               "chainId": null,
               "declared": false,
@@ -2875,9 +2595,9 @@ export const runtimeCatalog = {
               "supportsReceipt": false,
               "supportsReconciliation": false,
               "supportedAssets": [
-                "ZEC"
+                "TAZ"
               ],
-              "provider": null
+              "provider": "zcash-testnet-zallet"
             },
             {
               "network": "hyperliquid-testnet",
@@ -2909,7 +2629,8 @@ export const runtimeCatalog = {
         "solana-devnet",
         "ethereum-sepolia",
         "arbitrum-sepolia",
-        "tempo-testnet"
+        "tempo-testnet",
+        "base-sepolia"
       ],
       "capabilities": [
         {
@@ -2924,13 +2645,13 @@ export const runtimeCatalog = {
               "mode": "kernel-gateway",
               "entrypoint": "kernel://auction.bid.commit",
               "method": null,
-              "note": "Kernel adapter delegates to the HTTPS sealed-bid commitment service; it returns observed public commitments and does not claim a wallet signature or token movement.",
-              "evidenceStatus": "implementation",
-              "evidence": "none",
-              "supportsExecution": false,
-              "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "note": "Kernel-local SHA-256 sealed-bid commitment proof is available on Solana Devnet; this path does not claim MagicBlock settlement or Groth16.",
+              "evidenceStatus": "devnet_verified",
+              "evidence": "devnet-e2e",
+              "supportsExecution": true,
+              "supportsProof": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "SOL"
               ],
@@ -2986,6 +2707,23 @@ export const runtimeCatalog = {
                 "AlphaUSD"
               ],
               "provider": "evm-tempo-testnet-organizational"
+            },
+            {
+              "network": "base-sepolia",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://auction.bid.commit",
+              "method": null,
+              "note": "Base Sepolia sealed auction passed real commit, altered-reveal rejection, reveal, finalization, settlement, receipt, and state checks in the committed E2E artifact.",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "supportsExecution": true,
+              "supportsProof": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "ETH"
+              ],
+              "provider": "evm-base-sepolia-organizational"
             }
           ],
           "networkAvailability": [
@@ -2996,12 +2734,12 @@ export const runtimeCatalog = {
               "chainId": null,
               "declared": true,
               "mode": "kernel-gateway",
-              "evidenceStatus": "implementation",
-              "evidence": "none",
-              "executable": false,
-              "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "evidenceStatus": "devnet_verified",
+              "evidence": "devnet-e2e",
+              "executable": true,
+              "supportsProof": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "SOL"
               ],
@@ -3138,18 +2876,18 @@ export const runtimeCatalog = {
               "stage": "available",
               "environment": "testnet",
               "chainId": "84532",
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
-              "executable": false,
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "executable": true,
               "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "ETH"
               ],
-              "provider": "evm-base-sepolia"
+              "provider": "evm-base-sepolia-organizational"
             },
             {
               "network": "base-mainnet",
@@ -3243,7 +2981,7 @@ export const runtimeCatalog = {
             },
             {
               "network": "zcash-testnet",
-              "stage": "planned",
+              "stage": "available",
               "environment": "testnet",
               "chainId": null,
               "declared": false,
@@ -3255,9 +2993,9 @@ export const runtimeCatalog = {
               "supportsReceipt": false,
               "supportsReconciliation": false,
               "supportedAssets": [
-                "ZEC"
+                "TAZ"
               ],
-              "provider": null
+              "provider": "zcash-testnet-zallet"
             },
             {
               "network": "hyperliquid-testnet",
@@ -3291,13 +3029,13 @@ export const runtimeCatalog = {
               "mode": "kernel-gateway",
               "entrypoint": "kernel://auction.settle",
               "method": null,
-              "note": "Kernel adapter delegates to the HTTPS outcome-proof service; it proves an already-bound result and does not claim token movement or an on-chain signature.",
-              "evidenceStatus": "implementation",
-              "evidence": "none",
-              "supportsExecution": false,
-              "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "note": "Kernel-local SHA-256 outcome commitment proof is available on Solana Devnet; this path does not claim MagicBlock settlement or Groth16.",
+              "evidenceStatus": "devnet_verified",
+              "evidence": "devnet-e2e",
+              "supportsExecution": true,
+              "supportsProof": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "SOL"
               ],
@@ -3353,6 +3091,23 @@ export const runtimeCatalog = {
                 "AlphaUSD"
               ],
               "provider": "evm-tempo-testnet-organizational"
+            },
+            {
+              "network": "base-sepolia",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://auction.settle",
+              "method": null,
+              "note": "Base Sepolia sealed auction settlement is backed by the committed organizational E2E evidence artifact.",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "supportsExecution": true,
+              "supportsProof": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "ETH"
+              ],
+              "provider": "evm-base-sepolia-organizational"
             }
           ],
           "networkAvailability": [
@@ -3363,12 +3118,12 @@ export const runtimeCatalog = {
               "chainId": null,
               "declared": true,
               "mode": "kernel-gateway",
-              "evidenceStatus": "implementation",
-              "evidence": "none",
-              "executable": false,
-              "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "evidenceStatus": "devnet_verified",
+              "evidence": "devnet-e2e",
+              "executable": true,
+              "supportsProof": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "SOL"
               ],
@@ -3505,18 +3260,18 @@ export const runtimeCatalog = {
               "stage": "available",
               "environment": "testnet",
               "chainId": "84532",
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
-              "executable": false,
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "executable": true,
               "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "ETH"
               ],
-              "provider": "evm-base-sepolia"
+              "provider": "evm-base-sepolia-organizational"
             },
             {
               "network": "base-mainnet",
@@ -3610,7 +3365,7 @@ export const runtimeCatalog = {
             },
             {
               "network": "zcash-testnet",
-              "stage": "planned",
+              "stage": "available",
               "environment": "testnet",
               "chainId": null,
               "declared": false,
@@ -3622,9 +3377,9 @@ export const runtimeCatalog = {
               "supportsReceipt": false,
               "supportsReconciliation": false,
               "supportedAssets": [
-                "ZEC"
+                "TAZ"
               ],
-              "provider": null
+              "provider": "zcash-testnet-zallet"
             },
             {
               "network": "hyperliquid-testnet",
@@ -3954,7 +3709,7 @@ export const runtimeCatalog = {
             },
             {
               "network": "zcash-testnet",
-              "stage": "planned",
+              "stage": "available",
               "environment": "testnet",
               "chainId": null,
               "declared": false,
@@ -3966,9 +3721,9 @@ export const runtimeCatalog = {
               "supportsReceipt": false,
               "supportsReconciliation": false,
               "supportedAssets": [
-                "ZEC"
+                "TAZ"
               ],
-              "provider": null
+              "provider": "zcash-testnet-zallet"
             },
             {
               "network": "hyperliquid-testnet",
@@ -4287,7 +4042,7 @@ export const runtimeCatalog = {
             },
             {
               "network": "zcash-testnet",
-              "stage": "planned",
+              "stage": "available",
               "environment": "testnet",
               "chainId": null,
               "declared": false,
@@ -4299,9 +4054,9 @@ export const runtimeCatalog = {
               "supportsReceipt": false,
               "supportsReconciliation": false,
               "supportedAssets": [
-                "ZEC"
+                "TAZ"
               ],
-              "provider": null
+              "provider": "zcash-testnet-zallet"
             },
             {
               "network": "hyperliquid-testnet",
@@ -4454,8 +4209,9 @@ export const runtimeCatalog = {
       "id": "zcash-testnet",
       "label": "Zcash Testnet",
       "family": "utxo",
-      "stage": "planned",
-      "environment": "testnet"
+      "stage": "available",
+      "environment": "testnet",
+      "adapterId": "zcash-testnet-zallet"
     },
     {
       "id": "hyperliquid-testnet",

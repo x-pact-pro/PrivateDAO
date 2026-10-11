@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ArrowRight, CheckCircle2 } from "lucide-react";
 
 import { OperationsShell } from "@/components/operations-shell";
+import { SelectedKernelWorkflow } from "@/components/selected-kernel-workflow";
 import { buttonVariants } from "@/components/ui/button";
 import { buildRouteMetadata } from "@/lib/route-metadata";
 import { cn } from "@/lib/utils";
@@ -39,6 +40,7 @@ export default function ProofWorkflowsPage() {
       navigationMode="guided"
       badges={[]}
     >
+      <SelectedKernelWorkflow product="verification">
       <section className="grid gap-4 lg:grid-cols-2">
         <article className="rounded-[28px] border border-red-300/16 bg-red-400/[0.06] p-5 sm:p-6">
           <div className="text-[11px] uppercase tracking-[0.25em] text-red-100/76">Problem</div>
@@ -122,6 +124,7 @@ export default function ProofWorkflowsPage() {
           </article>
         ))}
       </section>
+      </SelectedKernelWorkflow>
     </OperationsShell>
   );
 }

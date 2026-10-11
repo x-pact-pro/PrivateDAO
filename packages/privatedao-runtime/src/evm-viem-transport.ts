@@ -13,7 +13,7 @@ export type ViemContractWritePayload = {
   abi: readonly unknown[];
   functionName: string;
   args: readonly unknown[];
-  account: `0x${string}`;
+  account?: `0x${string}`;
   value?: bigint;
 };
 
@@ -51,6 +51,7 @@ export class ViemEvmTransport implements EvmTransport {
     private readonly environment: "testnet" | "mainnet",
     private readonly explorerBaseUrl: string,
     private readonly nativeAsset: string,
+    private readonly signerAddress?: `0x${string}`,
   ) {}
 
   async health(): Promise<{ ok: boolean; chainId: string; latencyMs?: number }> {
@@ -61,6 +62,8 @@ export class ViemEvmTransport implements EvmTransport {
 
   async prepare<TPayload, TUnsigned>(intent: ExecutionIntent<TPayload>): Promise<PreparedExecution<TUnsigned>> {
     const payload = parsePayload(intent.payload);
+    const account = payload.account || this.signerAddress;
+    if (!account) throw new Error("EVM contract write requires a configured signer account.");
     const previous = this.idempotency.get(intent.context.idempotencyKey);
     if (previous) {
       const record = this.executions.get(previous);
@@ -72,9 +75,10 @@ export class ViemEvmTransport implements EvmTransport {
     const prepared: PreparedExecution<ViemContractWritePayload> = {
       executionId,
       intent: intent as ExecutionIntent<ViemContractWritePayload>,
-      unsignedPayload: payload,
-      requiredSigners: [{ role: "payer", address: payload.account, network: this.network }],
+      unsignedPayload: { ...payload, account },
+      requiredSigners: [],
       state: "awaiting_signature",
+      signingMode: "server",
     };
     this.executions.set(executionId, { intent: prepared.intent as ExecutionIntent<ViemContractWritePayload>, prepared, state: "awaiting_signature" });
     this.idempotency.set(intent.context.idempotencyKey, executionId);
@@ -146,7 +150,7 @@ export class ViemEvmTransport implements EvmTransport {
 function parsePayload(value: unknown): ViemContractWritePayload {
   if (!value || typeof value !== "object") throw new Error("EVM execution payload must be an object.");
   const payload = value as Partial<ViemContractWritePayload>;
-  if (payload.kind !== "contract-write" || typeof payload.address !== "string" || !Array.isArray(payload.abi) || typeof payload.functionName !== "string" || !Array.isArray(payload.args) || typeof payload.account !== "string") {
+  if (payload.kind !== "contract-write" || typeof payload.address !== "string" || !Array.isArray(payload.abi) || typeof payload.functionName !== "string" || !Array.isArray(payload.args) || (payload.account !== undefined && typeof payload.account !== "string")) {
     throw new Error("EVM execution payload is not a contract-write payload.");
   }
   return payload as ViemContractWritePayload;

@@ -40,7 +40,8 @@
 	redir /benefit /pricing permanent
 	redir /versus /products permanent
 	redir /revenue /pricing permanent
-	redir /services /pricing permanent
+	redir /services /products permanent
+	redir /services/ /products permanent
 	redir /engage /pilots permanent
 	redir /analytics /govern permanent
 	redir /custody /trust permanent
