@@ -1269,7 +1269,7 @@ function validateServiceInput(serviceId, input = {}) {
   const solana = /^[1-9A-HJ-NP-Za-km-z]{32,88}$/;
   const evm = /^0x[0-9a-fA-F]{40}$/;
   const isEvm = ["ethereum-mainnet", "base-mainnet", "arbitrum-mainnet"].includes(network);
-  if (isEvm && !isEvmServiceSupported(serviceId) && !["verify.basic", "verify.deep", "decision.context", "receipt.verify", "agent.match", "intelligence.synthesize", "sponsored.discovery", "research.asset", "research.wallet", "contract.explain", "transaction.explain", "anomaly.detect", "agent.research.report", "portfolio.intelligence", "market.snapshot"].includes(serviceId))
+  if (isEvm && !isEvmServiceSupported(serviceId) && !["verify.basic", "verify.deep", "decision.context", "receipt.verify", "agent.match", "intelligence.synthesize", "sponsored.discovery", "research.asset", "research.wallet", "wallet.bot.classify", "forensics.trace", "contract.explain", "contract.inspect", "launch.check", "transaction.explain", "anomaly.detect", "agent.research.report", "portfolio.intelligence", "market.snapshot"].includes(serviceId))
     throw new Error(`${serviceId} is not implemented on ${network}`);
   if (serviceId === "swap.quote") {
     const tokenPattern = isEvm ? /^0x[0-9a-fA-F]{40}$/ : /^[1-9A-HJ-NP-Za-km-z]{32,44}$/;
@@ -2566,13 +2566,16 @@ async function executeService(id, input) {
   const requestedNetwork = input?.network ? normalizeNetworkId(input.network) : "";
   const normalizedInput = requestedNetwork ? { ...input, network: requestedNetwork } : input;
   const service = serviceById(id);
-  if (["research.asset", "research.wallet", "wallet.bot.classify", "contract.explain", "transaction.explain", "anomaly.detect", "agent.research.report", "portfolio.intelligence", "market.snapshot"].includes(id)) {
+  if (["research.asset", "research.wallet", "wallet.bot.classify", "forensics.trace", "contract.explain", "contract.inspect", "launch.check", "transaction.explain", "anomaly.detect", "agent.research.report", "portfolio.intelligence", "market.snapshot"].includes(id)) {
     if (!service?.supportedNetworks?.includes(requestedNetwork))
       throw new Error(`${id} is not supported on ${requestedNetwork || "this network"}`);
     if (id === "research.asset") return researchAsset(config, normalizedInput);
     if (id === "research.wallet") return researchWallet(config, normalizedInput);
     if (id === "wallet.bot.classify") return classifyWalletBot(config, normalizedInput);
+    if (id === "forensics.trace") return researchWallet(config, normalizedInput);
     if (id === "contract.explain") return explainContract(config, normalizedInput);
+    if (id === "contract.inspect") return explainContract(config, normalizedInput);
+    if (id === "launch.check") return researchAsset(config, normalizedInput);
     if (id === "transaction.explain") return explainTransaction(config, normalizedInput);
     if (id === "anomaly.detect") return detectAnomaly(config, normalizedInput);
     if (id === "agent.research.report") return researchReport(config, normalizedInput);
