@@ -1222,6 +1222,7 @@ function serviceInputSchema(service) {
 function serviceManifest(service) {
   const inputSchema = serviceInputSchema(service);
   const details = serviceDetails(service);
+  const targetNetworks = service.supportedNetworks || (service.id === "github.repository" ? [] : ["solana-mainnet-beta"]);
   return {
     ...service,
     ...details,
@@ -1229,7 +1230,7 @@ function serviceManifest(service) {
     status: capabilityStatus(service.id),
     public_url: `https://${config.domain}${servicePath(service.id)}`,
     payment_network: "solana-mainnet-beta",
-    supported_target_networks: service.supportedNetworks || ["solana-mainnet-beta"],
+    supported_target_networks: targetNetworks,
     input_schema: inputSchema,
     input_requirements: {
       required: inputSchema.required || [],
@@ -1242,7 +1243,7 @@ function serviceManifest(service) {
       : { required: true, price: service.price, currency: service.currency, flow: "quote_then_finalized_solana_payment_then_execute" },
     runtime: {
       status: capabilityStatus(service.id),
-      target_networks: service.supportedNetworks || ["solana-mainnet-beta"],
+      target_networks: targetNetworks,
       payment_network: "solana-mainnet-beta",
       read_only_execution: true,
       kernel_routing: { status: "not_claimed", note: "This Lambda uses its explicit read-only provider boundary; PrivateDAO Kernel routes are documented separately when applicable." },
@@ -1313,7 +1314,7 @@ function commercialOfferBanner() {
 function serviceDetailPageBase(service) {
   const status = capabilityStatus(service.id);
   const example = JSON.stringify({ service_id: service.id, input: serviceExample(service) }, null, 2);
-  const supported = service.supportedNetworks?.length ? service.supportedNetworks.join(", ") : status === "Mainnet Live" ? "solana-mainnet-beta" : "Solana Mainnet path";
+  const supported = service.supportedNetworks?.length ? service.supportedNetworks.join(", ") : service.id === "github.repository" ? "Network independent" : "Solana Mainnet path";
   return injectLanguageWidget(`<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escapeHtml(service.title)} | PrivateDAO Agents</title><meta name="description" content="${escapeHtml(service.output)} through the PrivateDAO Agent Exchange."><link rel="canonical" href="https://${config.domain}${servicePath(service.id)}"><meta property="og:title" content="${escapeHtml(service.title)} | PrivateDAO Agents"><meta property="og:description" content="${escapeHtml(service.output)} through the PrivateDAO Agent Exchange."><meta property="og:url" content="https://${config.domain}${servicePath(service.id)}"><style>:root{--ink:#071a32;--muted:#52657b;--line:#dbe5ef;--blue:#1769e0;--pale:#f5f9ff}*{box-sizing:border-box}body{margin:0;background:#fff;color:var(--ink);font-family:Inter,system-ui,sans-serif;line-height:1.55}main{max-width:1000px;margin:auto;padding:26px 24px 72px}header{display:flex;justify-content:space-between;gap:20px;padding-bottom:70px}.brand,a{color:var(--blue);font-weight:750;text-decoration:none}.brand{color:var(--ink);font-weight:850}.nav{display:flex;gap:18px;color:var(--muted);font-size:.9rem}.nav a{color:var(--muted)}.eyebrow{color:var(--blue);font-size:.72rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase}h1{font-size:clamp(2.7rem,7vw,5.8rem);line-height:.95;letter-spacing:-.06em;max-width:760px;margin:14px 0 18px}.lead{max-width:700px;color:var(--muted);font-size:1.15rem}.meta{display:flex;flex-wrap:wrap;gap:9px;margin:26px 0}.pill{border:1px solid var(--line);border-radius:999px;padding:8px 12px;background:var(--pale);font-size:.86rem;font-weight:700}.live{color:#087f5b}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:42px}.panel{border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:0 10px 25px rgba(14,42,78,.05)}.panel h2{margin-top:0;font-size:1.2rem}.muted{color:var(--muted)}pre{overflow:auto;background:#f5f9ff;border:1px solid var(--line);border-radius:12px;padding:14px;font-size:12px}.button{display:inline-flex;background:var(--ink);color:#fff;border-radius:999px;padding:12px 18px;margin-top:18px}@media(max-width:700px){main{padding:20px 16px 56px}header{padding-bottom:45px}.nav{gap:10px;font-size:.78rem}.grid{grid-template-columns:1fr}h1{font-size:clamp(3rem,15vw,5.4rem)}}</style></head><body><main><header><a class="brand" href="/">PrivateDAO Agents</a><nav class="nav"><a href="/marketplace">Marketplace</a><a href="/connect">Build</a><a href="/.well-known/agent-card.json">Agent Card</a></nav></header><p class="eyebrow">Service capability</p><h1>${escapeHtml(service.title)}</h1><p class="lead">${escapeHtml(service.output)}. Use the service through a structured request and receive a receipt for the completed result.</p><div class="meta"><span class="pill ${status === "Mainnet Live" ? "live" : ""}">${escapeHtml(status)}</span><span class="pill">${escapeHtml(service.access === "free" ? "Free" : `${service.price} ${service.currency}`)}</span><span class="pill">${escapeHtml(supported)}</span></div><div class="grid"><section class="panel"><h2>What you provide</h2><p>${escapeHtml(service.input)}</p><h2>What happens</h2><p class="muted">PrivateDAO validates the request, runs the capability within its execution boundary, and returns a machine-readable result with a receipt when completed.</p></section><section class="panel"><h2>What you receive</h2><p>${escapeHtml(service.output)}</p><p class="muted">No claim is made beyond the evidence available for this capability and network.</p></section></div><section class="panel" style="margin-top:14px"><h2>API example</h2><pre>${escapeHtml(`curl -X POST https://${config.domain}/api/jobs -H 'content-type: application/json' -d '${example.replaceAll("'", "\\'")}'`)}</pre><a class="button" href="#service-checkout-title">Request this service <span aria-hidden="true">→</span></a></section></main></body></html>`);
 }
 function serviceCheckoutPage(service) {
@@ -1412,7 +1413,7 @@ async function marketplacePage() {
     const serviceCards = category.services.map((service) => {
       const details = serviceDetails(service);
       const price = service.access === "free" ? "Free to try" : `${service.price} ${service.currency}`;
-      const networks = (service.supportedNetworks || ["Solana Mainnet"]).map((network) => network.replaceAll("-mainnet", "").replaceAll("-", " ")).join(", ");
+      const networks = (service.supportedNetworks || (service.id === "github.repository" ? ["Network independent"] : ["Solana Mainnet"])).map((network) => network.replaceAll("-mainnet", "").replaceAll("-", " ")).join(", ");
       return `<article class="card"><div class="card-top"><div class="tag">${escapeHtml(service.access === "free" ? "Free" : "Paid")}</div><span class="price">${escapeHtml(price)}</span></div><h3>${escapeHtml(service.title)}</h3><p>${escapeHtml(details.summary)}</p><p class="value">${escapeHtml(details.customer_value)}</p><dl><div><dt>For</dt><dd>${escapeHtml(service.input)}</dd></div><div><dt>Works on</dt><dd>${escapeHtml(networks)}</dd></div></dl><a class="action" href="${servicePath(service.id)}">View capability <span aria-hidden="true">→</span></a></article>`;
     }).join("");
     return `<section class="category"><div class="category-head"><div><p class="eyebrow">${escapeHtml(category.id)}</p><h2>${escapeHtml(category.id)}</h2></div><p>${escapeHtml(category.description)}</p></div><div class="grid">${serviceCards}</div></section>`;

@@ -20,6 +20,8 @@ assert.equal(services.statusCode, 200);
 const serviceList = JSON.parse(services.body).services;
 assert.ok(serviceList.some((service) => service.id === "agent.research.report"));
 assert.ok(serviceList.some((service) => service.id === "transaction.simulate"));
+assert.deepEqual(serviceList.find((service) => service.id === "verify.basic").supported_target_networks, ["solana-mainnet-beta", "ethereum-mainnet", "base-mainnet", "arbitrum-mainnet"]);
+assert.deepEqual(serviceList.find((service) => service.id === "github.repository").supported_target_networks, []);
 for (const serviceId of ["verify.deep", "decision.context", "receipt.verify", "agent.match", "intelligence.synthesize", "sponsored.discovery"]) {
   const service = serviceList.find((item) => item.id === serviceId);
   assert.deepEqual(service.supported_target_networks, ["solana-mainnet-beta", "ethereum-mainnet", "base-mainnet", "arbitrum-mainnet"], serviceId);

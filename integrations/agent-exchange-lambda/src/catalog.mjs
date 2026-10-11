@@ -14,6 +14,7 @@ export const SERVICES = Object.freeze([
     access: "free",
     input: "JSON evidence",
     output: "canonical digest and receipt",
+    supportedNetworks: UNIVERSAL_READ_NETWORKS,
   },
   {
     id: "verify.deep",
