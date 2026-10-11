@@ -1311,6 +1311,9 @@ function injectLanguageWidget(html) {
 function commercialOfferBanner() {
   return `<aside class="pdao-offer" aria-label="PDAO holder offer" style="margin:0 0 22px;padding:14px 16px;border:1px solid #b9d3f2;border-radius:14px;background:#f5f9ff;color:#174a83;line-height:1.5"><b style="display:block;margin-bottom:4px">PDAO holder offer</b><span>${escapeHtml(COMMERCIAL_HOLDER_OFFER)}</span></aside>`;
 }
+function walletStandardBootstrap() {
+  return `<script>(function(){const wallets=window.__pdaoStandardWallets=window.__pdaoStandardWallets||[];const register=wallet=>{if(wallet&&!wallets.includes(wallet))wallets.push(wallet)};const capture=event=>{try{event.detail?.({register})}catch(_error){}};window.addEventListener("wallet-standard:register-wallet",capture);window.addEventListener("wallet-standard:app-ready",capture)})();</script>`;
+}
 function serviceDetailPageBase(service) {
   const status = capabilityStatus(service.id);
   const example = JSON.stringify({ service_id: service.id, input: serviceExample(service) }, null, 2);
@@ -1365,6 +1368,7 @@ const signMessage=async(bytes)=>{if(!provider||typeof provider.signMessage!=="fu
 const standardAdapters=[];
 const base58Encode=bytes=>{const alphabet="123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";const digits=[0];for(const byte of bytes){let carry=byte;for(let i=0;i<digits.length;i++){const value=digits[i]*256+carry;digits[i]=value%58;carry=Math.floor(value/58);}while(carry){digits.push(carry%58);carry=Math.floor(carry/58);}}for(const byte of bytes){if(byte!==0)break;digits.push(0);}return digits.reverse().map(value=>alphabet[value]).join("");};
 const registerStandardWallet=wallet=>{try{const connectFeature=wallet?.features?.["standard:connect"],chains=wallet?.chains||[];if(!connectFeature||!chains.some(chain=>chain==="solana:mainnet")){return;}if(standardAdapters.some(item=>item.wallet===wallet)){return;}let account=wallet.accounts?.[0]||null;const publicKey=()=>account?.address?{toString:()=>account.address,toBase58:()=>account.address}:null;const adapter={name:wallet.name||"Solana wallet",wallet,connect:async()=>{const result=await connectFeature.connect();account=result?.accounts?.[0]||wallet.accounts?.[0]||account;if(!account?.address)throw new Error("The wallet did not return a Solana public address");return {publicKey:publicKey()};},get publicKey(){return publicKey();},signMessage:async bytes=>{const feature=wallet.features?.["solana:signMessage"];if(!feature)throw new Error("This wallet does not support Solana message signing");const result=await feature.signMessage({account,message:bytes});const item=Array.isArray(result)?result[0]:result;return {signature:item?.signature||item};},signAndSendTransaction:async transaction=>{const feature=wallet.features?.["solana:signAndSendTransaction"];if(!feature)throw new Error("This wallet does not support Solana transaction signing");const serialized=transaction.serialize({requireAllSignatures:false,verifySignatures:false});const result=await feature.signAndSendTransaction({account,transaction:serialized});const item=Array.isArray(result)?result[0]:result;const signature=item?.signature||item;if(!signature)throw new Error("The wallet did not return a transaction signature");return {signature:typeof signature==="string"?signature:base58Encode(signature)};}};standardAdapters.push(adapter);}catch(error){console.warn("wallet-standard registration failed",error);}};
+for(const wallet of window.__pdaoStandardWallets||[])registerStandardWallet(wallet);
 window.addEventListener("wallet-standard:register-wallet",event=>event.detail?.({register:registerStandardWallet}));
 window.addEventListener("wallet-standard:app-ready",event=>event.detail?.({register:registerStandardWallet}));
 const readWalletProvider=(read)=>{try{return read()}catch(_error){return null;}};
@@ -1394,7 +1398,7 @@ function serviceDetailPage(service) {
   const checkout = serviceCheckoutPageV2(service)
     .replace('<script type="module">', '<script>')
     .replace('const $=id=>document.querySelector(id),', 'const $=id=>document.querySelector(id.startsWith("#")?id:"#"+id),');
-  return serviceDetailPageBase(service).replace("</header>", `</header>${commercialOfferBanner()}`).replace("</main>", `${checkout}</main>`);
+  return serviceDetailPageBase(service).replace("</head>", `${walletStandardBootstrap()}</head>`).replace("</header>", `</header>${commercialOfferBanner()}`).replace("</main>", `${checkout}</main>`);
 }
 function publicReceiptPage(receipt, verified = false) {
   const rows = [
