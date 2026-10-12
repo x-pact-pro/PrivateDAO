@@ -39,6 +39,26 @@ export interface HyperCorePreparedAction {
   broadcastEnabled: false;
 }
 
+export interface HyperCoreTypedDataSigner {
+  signTypedData(args: {
+    domain: {
+      name: "HyperliquidSignTransaction";
+      version: "1";
+      chainId: `0x${string}`;
+      verifyingContract: `0x${string}`;
+    };
+    types: Record<string, readonly { name: string; type: string }[]>;
+    primaryType: string;
+    message: Record<string, string | boolean | bigint>;
+  }): Promise<`0x${string}`>;
+}
+
+export interface HyperCoreSignedAction extends HyperCorePreparedAction {
+  signature: `0x${string}`;
+  signatureChainId: `0x${string}`;
+  broadcastEnabled: false;
+}
+
 type FetchLike = (input: string, init?: RequestInit) => Promise<Response>;
 
 const DEFAULT_TESTNET_API = "https://api.hyperliquid-testnet.xyz/info";
@@ -125,15 +145,111 @@ export class HyperCoreNetworkAdapter {
       throw new Error("HyperCore Testnet actions cannot target Mainnet.");
     }
     validateNativeActionPayload(type, payload);
+    const action = {
+      ...payload,
+      ...(typeof payload.time === "undefined" && ["usdSend", "spotSend", "withdraw3"].includes(type)
+        ? { time: Date.now() }
+        : {}),
+      type,
+      hyperliquidChain: payload.hyperliquidChain ?? "Testnet",
+    };
     return {
       network: this.network,
       endpoint: this.apiUrl.replace(/\/info$/i, "/exchange"),
-      action: { ...payload, type, hyperliquidChain: payload.hyperliquidChain ?? "Testnet" },
+      action,
       nonce,
       requiresSignature: true,
       broadcastEnabled: false,
     };
   }
+
+  /**
+   * Signs only the user-signed HyperCore actions supported by the official
+   * Exchange API. This produces an offline payload; submission remains a
+   * separate, disabled operation until a reviewed receipt path exists.
+   */
+  async signNativeAction(
+    prepared: HyperCorePreparedAction,
+    signer: HyperCoreTypedDataSigner,
+    signatureChainId: `0x${string}`,
+  ): Promise<HyperCoreSignedAction> {
+    if (prepared.network !== this.network) throw new Error("HyperCore action network mismatch.");
+    if (!/^0x[0-9a-f]+$/i.test(signatureChainId)) throw new Error("HyperCore signatureChainId must be a hexadecimal chain ID.");
+    const typed = typedDataForAction(prepared.action, signatureChainId);
+    if (!typed) throw new Error(`HyperCore action type ${prepared.action.type} has no supported user-signed EIP-712 mapping.`);
+    const signature = await signer.signTypedData(typed);
+    if (!/^0x[0-9a-f]{130}$/i.test(signature)) throw new Error("HyperCore signer returned an invalid EIP-712 signature.");
+    return { ...prepared, signature, signatureChainId };
+  }
+}
+
+const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000" as const;
+const USER_SIGNED_TYPES = {
+  usdSend: [
+    { name: "hyperliquidChain", type: "string" },
+    { name: "destination", type: "string" },
+    { name: "amount", type: "string" },
+    { name: "time", type: "uint64" },
+  ],
+  spotSend: [
+    { name: "hyperliquidChain", type: "string" },
+    { name: "destination", type: "string" },
+    { name: "token", type: "string" },
+    { name: "amount", type: "string" },
+    { name: "time", type: "uint64" },
+  ],
+  usdClassTransfer: [
+    { name: "hyperliquidChain", type: "string" },
+    { name: "amount", type: "string" },
+    { name: "toPerp", type: "bool" },
+    { name: "nonce", type: "uint64" },
+  ],
+  tokenDelegate: [
+    { name: "hyperliquidChain", type: "string" },
+    { name: "validator", type: "address" },
+    { name: "wei", type: "uint64" },
+    { name: "isUndelegate", type: "bool" },
+    { name: "nonce", type: "uint64" },
+  ],
+} as const;
+
+function typedDataForAction(
+  action: HyperCorePreparedAction["action"],
+  signatureChainId: `0x${string}`,
+): Parameters<HyperCoreTypedDataSigner["signTypedData"]>[0] | null {
+  const fields = USER_SIGNED_TYPES[action.type as keyof typeof USER_SIGNED_TYPES];
+  if (!fields) return null;
+  const primaryType = `HyperliquidTransaction:${action.type === "usdClassTransfer" ? "UsdClassTransfer" : action.type === "tokenDelegate" ? "TokenDelegate" : action.type === "spotSend" ? "SpotSend" : "UsdSend"}`;
+  const message: Record<string, string | boolean | bigint> = {
+    hyperliquidChain: String(action.hyperliquidChain),
+  };
+  for (const field of fields) {
+    if (field.name === "hyperliquidChain") continue;
+    const value = action[field.name];
+    if (field.type === "uint64") {
+      if (typeof value !== "number" || !Number.isSafeInteger(value) || value <= 0) {
+        throw new Error(`HyperCore ${action.type} ${field.name} must be a positive safe integer.`);
+      }
+      message[field.name] = BigInt(value);
+    } else if (field.type === "bool") {
+      if (typeof value !== "boolean") throw new Error(`HyperCore ${action.type} ${field.name} must be boolean.`);
+      message[field.name] = value;
+    } else {
+      if (typeof value !== "string" || value.length === 0) throw new Error(`HyperCore ${action.type} ${field.name} must be a non-empty string.`);
+      message[field.name] = value;
+    }
+  }
+  return {
+    domain: {
+      name: "HyperliquidSignTransaction",
+      version: "1",
+      chainId: signatureChainId,
+      verifyingContract: ZERO_ADDRESS,
+    },
+    types: { [primaryType]: fields },
+    primaryType,
+    message,
+  };
 }
 
 function validateNativeActionPayload(type: HyperCoreNativeActionType, payload: Record<string, unknown>): void {

@@ -41,6 +41,42 @@ assert.throws(
   /Testnet API endpoint/,
 );
 
+let signedTypedData;
+const signer = {
+  signTypedData: async (args) => {
+    signedTypedData = args;
+    return `0x${"11".repeat(65)}`;
+  },
+};
+const signedPrepared = adapter.prepareNativeAction("usdSend", {
+  hyperliquidChain: "Testnet",
+  destination: "0x0000000000000000000000000000000000000001",
+  amount: "1",
+  time: 1_700_000_000_000,
+});
+const signed = await adapter.signNativeAction(signedPrepared, signer, "0x66eee");
+assert.equal(signed.broadcastEnabled, false);
+assert.equal(signed.signatureChainId, "0x66eee");
+assert.equal(signedTypedData.primaryType, "HyperliquidTransaction:UsdSend");
+assert.equal(signedTypedData.domain.name, "HyperliquidSignTransaction");
+assert.equal(signedTypedData.message.hyperliquidChain, "Testnet");
+assert.equal(signedTypedData.message.amount, "1");
+assert.equal(signedTypedData.message.time, 1_700_000_000_000n);
+
+assert.rejects(
+  () => adapter.signNativeAction(adapter.prepareNativeAction("withdraw3", {
+    hyperliquidChain: "Testnet",
+    destination: "0x0000000000000000000000000000000000000001",
+    amount: "1",
+    time: 1,
+  }), signer, "0x66eee"),
+  /no supported user-signed EIP-712 mapping/,
+);
+assert.rejects(
+  () => adapter.signNativeAction(signedPrepared, signer, "not-a-chain-id"),
+  /signatureChainId must be a hexadecimal chain ID/,
+);
+
 const malformed = new HyperCoreNetworkAdapter({
   apiUrl: "https://api.hyperliquid-testnet.xyz/info",
   fetchImpl: async () => new Response(JSON.stringify({}), { status: 200 }),

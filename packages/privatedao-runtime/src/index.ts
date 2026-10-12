@@ -189,7 +189,14 @@ export type { ZalletCliTransportOptions, ZcashRecipient, ZcashSendPayload } from
 export { StellarNetworkAdapter, StellarAdapterError, StellarHorizonTransport, STELLAR_NETWORK_CONFIGS, STELLAR_TESTNET_NETWORK_PASSPHRASE, STELLAR_KERNEL_CAPABILITIES } from "./stellar-network.js";
 export type { StellarEnvironment, StellarNetworkConfig, StellarPaymentPayload, StellarPayrollRecipient, StellarPayrollSettlementPayload, StellarRecoveredAccount, StellarTransport, StellarUnsignedPayload, StellarSignedPayload } from "./stellar-network.js";
 export { HyperCoreNetworkAdapter } from "./hypercore-network.js";
-export type { HyperCoreHealth, HyperCoreMetaSnapshot, HyperCoreNetworkId } from "./hypercore-network.js";
+export type {
+  HyperCoreHealth,
+  HyperCoreMetaSnapshot,
+  HyperCoreNetworkId,
+  HyperCorePreparedAction,
+  HyperCoreSignedAction,
+  HyperCoreTypedDataSigner,
+} from "./hypercore-network.js";
 export { DeploymentRegistry } from "./deployment-registry.js";
 export type { DeploymentRecord } from "./deployment-registry.js";
 export { createHttpBackedPrivateDaoRuntime } from "./http-runtime.js";
