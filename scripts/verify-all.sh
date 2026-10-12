@@ -71,6 +71,10 @@ echo "[verify-all] checking multichain Kernel product boundaries"
 npm run verify:product-gateway-boundary >/dev/null
 npm run test:native-capability-registry >/dev/null
 npm run verify:native-capability-matrix >/dev/null
+npm run test:kernel-gateway >/dev/null
+npm run test:runtime:hypercore >/dev/null
+npm run test:zcash:foundation >/dev/null
+npm run verify:11-network-e2e >/dev/null
 npm run verify:public-game-removed >/dev/null
 npm run test:stellar:product-workflow >/dev/null
 npm run verify:stellar:coherence >/dev/null
