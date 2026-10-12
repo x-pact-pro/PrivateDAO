@@ -23,6 +23,8 @@ product page.
    evidence artifacts.
 8. [`product-network-evidence.md`](product-network-evidence.md) - concise
    product/network status rules and the current evidence-backed lanes.
+9. [`current-network-e2e-audit-20261012.md`](current-network-e2e-audit-20261012.md)
+   - current read-only E2E evidence counts and missing-capability boundaries.
 
 ## What proves execution
 
