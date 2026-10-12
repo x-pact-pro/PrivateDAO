@@ -214,8 +214,10 @@ The current repository evidence includes Solana Testnet lifecycle material,
 selective EVM-family Testnet verification, and Tempo Testnet payment/runtime
 material, plus Stellar Testnet product-binding evidence through the shared
 Kernel and Horizon adapter. The Stellar evidence covers Blind Verification,
-Record Verification, payroll calculation and approval, Treasury policy,
-Governance execution, and sealed-auction commit/settle workflows. Ethereum,
+Record Verification, payroll calculation, approval and settlement, Treasury
+policy, Governance execution, and sealed-auction commit/settle workflows.
+Agent Exchange is a separate Solana marketplace lane; product-network
+execution belongs to the Kernel and its family/network adapters. Ethereum,
 Base, Arbitrum, Robinhood, Zcash, Hyperliquid, and other
 network entries must be read through the capability matrix and their linked
 evidence rather than treated as one universal support claim.

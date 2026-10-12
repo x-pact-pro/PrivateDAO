@@ -17,7 +17,7 @@ assert.equal(evidence.chainId, 46630);
 assert.equal(await client.getChainId(), 46630);
 
 const contractEntries = Object.values(evidence.contracts);
-assert.equal(contractEntries.length, 3);
+assert.equal(contractEntries.length, 4, "Robinhood organizational evidence must include treasury, payroll, governance, and auction contracts");
 for (const contract of contractEntries) {
   const code = await client.getBytecode({ address: contract.address });
   assert.ok(code && code !== "0x", `missing bytecode at ${contract.address}`);
@@ -31,7 +31,7 @@ for (const section of Object.values(evidence.evidence)) {
   }
 }
 const uniqueHashes = [...new Set(transactionHashes)];
-assert.equal(uniqueHashes.length, 17, "Robinhood artifact must contain 17 transaction hashes");
+assert.equal(uniqueHashes.length, 22, "Robinhood artifact must contain the four deployment hashes and eighteen workflow hashes");
 
 const receipts = [];
 for (const hash of uniqueHashes) {

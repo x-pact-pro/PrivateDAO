@@ -7,6 +7,8 @@ import { STELLAR_KERNEL_CAPABILITIES } from "../packages/privatedao-runtime/src/
 const horizon = process.env.PDAO_STELLAR_TESTNET_HORIZON_URL?.replace(/\/$/, "") || "https://horizon-testnet.stellar.org";
 const evidencePath = process.env.PDAO_STELLAR_PRODUCT_EVIDENCE || "docs/evidence/stellar-testnet-product-e2e.json";
 const evidence = JSON.parse(await readFile(evidencePath, "utf8"));
+const payrollEvidencePath = process.env.PDAO_STELLAR_PAYROLL_EVIDENCE || "docs/evidence/stellar-testnet-payroll-e2e.json";
+const payrollEvidence = JSON.parse(await readFile(payrollEvidencePath, "utf8"));
 
 assert.equal(evidence.schema, "privatedao.stellar-testnet-product-e2e.v1");
 assert.equal(evidence.network, "stellar-testnet");
@@ -15,6 +17,12 @@ assert.equal(evidence.provider, "stellar-testnet-horizon");
 assert.equal(evidence.executionPath, "product-gateway->protocol->kernel->stellar-adapter->horizon");
 assert.equal(evidence.broadcastExecuted, true);
 assert.deepEqual(evidence.preparedOnly, ["payroll.settle"]);
+assert.equal(payrollEvidence.schema, "privatedao.stellar-testnet-payroll-e2e.v1");
+assert.equal(payrollEvidence.network, "stellar-testnet");
+assert.equal(payrollEvidence.environment, "testnet");
+assert.equal(payrollEvidence.provider, "stellar-testnet-horizon");
+assert.equal(payrollEvidence.broadcastExecuted, true);
+assert.equal(payrollEvidence.receiptState, "confirmed");
 const expectedProducts = new Map(
   PRODUCT_CATALOG
     .filter((product) => product.id !== "agent")
@@ -23,13 +31,26 @@ const expectedProducts = new Map(
       .map((capability) => [capability.id, product.id]),
   ),
 );
-const evidencedProducts = new Map([...expectedProducts].filter(([capability]) => capability !== "payroll.settle"));
 assert.deepEqual(
   [...expectedProducts.keys()].sort(),
   [...STELLAR_KERNEL_CAPABILITIES].sort(),
   "Stellar adapter capabilities must match the catalog's declared Stellar capabilities",
 );
-assert.equal(evidence.results.length, evidencedProducts.size);
+const allResults = [
+  ...evidence.results,
+  {
+    product: "payroll",
+    capability: "payroll.settle",
+    network: payrollEvidence.network,
+    provider: payrollEvidence.provider,
+    state: payrollEvidence.receiptState,
+    transactionHash: payrollEvidence.transactionHash,
+    ledger: payrollEvidence.ledger,
+    explorerUrl: payrollEvidence.explorerUrl,
+    workflow: payrollEvidence.workflow,
+  },
+];
+assert.equal(allResults.length, expectedProducts.size);
 
 for (const [capability, product] of expectedProducts) {
   const binding = APPLICATION_CAPABILITY_BINDINGS.find(
@@ -41,8 +62,8 @@ for (const [capability, product] of expectedProducts) {
 }
 
 const seen = new Set();
-for (const result of evidence.results) {
-  assert.equal(evidencedProducts.get(result.capability), result.product, `wrong product for ${result.capability}`);
+for (const result of allResults) {
+  assert.equal(expectedProducts.get(result.capability), result.product, `wrong product for ${result.capability}`);
   assert.equal(result.network, "stellar-testnet");
   assert.equal(result.provider, "stellar-testnet-horizon");
   assert.equal(result.state, "confirmed");
@@ -74,14 +95,14 @@ for (const result of evidence.results) {
   assert.equal(String(transaction.ledger), String(result.ledger), `${result.capability} ledger mismatch`);
 }
 
-assert.deepEqual([...seen].sort(), [...evidencedProducts.keys()].sort());
+assert.deepEqual([...seen].sort(), [...expectedProducts.keys()].sort());
 console.log(JSON.stringify({
   schema: evidence.schema,
   network: evidence.network,
   provider: evidence.provider,
   executionPath: evidence.executionPath,
   capabilities: seen.size,
-  preparedOnly: ["payroll.settle"],
+  preparedOnly: [],
   confirmedOnHorizon: true,
   readOnly: true,
 }, null, 2));
