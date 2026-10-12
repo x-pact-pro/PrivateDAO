@@ -1,6 +1,6 @@
 {
   "schema": "privatedao.engineer-architecture-index.v1",
-  "generatedAt": "2026-10-12T06:47:56.623Z",
+  "generatedAt": "2026-10-12T10:54:27.837Z",
   "bridgeFree": true,
   "sources": {
     "protocol": "packages/privatedao-runtime/src/protocol.ts",
@@ -346,15 +346,20 @@
         {
           "id": "payroll.settle",
           "networks": [
-            "zcash-testnet",
+            "ethereum-sepolia",
+            "arbitrum-sepolia",
+            "tempo-testnet",
+            "base-sepolia",
             "bnb-testnet",
-            "stellar-testnet"
+            "zcash-testnet",
+            "stellar-testnet",
+            "robinhood-testnet"
           ],
           "requiresSignature": true,
           "supportsAsync": true
         }
       ],
-      "bindingCount": 25
+      "bindingCount": 30
     },
     {
       "id": "treasury",
@@ -524,8 +529,8 @@
   ],
   "evidenceSummary": {
     "entries": 216,
-    "testnetVerified": 61,
-    "devnetVerified": 6,
+    "testnetVerified": 74,
+    "devnetVerified": 9,
     "mainnetLive": 2,
     "statuses": [
       "devnet_verified",

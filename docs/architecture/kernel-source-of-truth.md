@@ -74,15 +74,16 @@ network is executable only for the product capability that has both an
 application binding and matching evidence; catalog presence alone is not a
 support claim.
 
-- `solana-devnet`: Kernel-native payroll, governance, and auction paths with
-  Devnet evidence.
+- `solana-devnet`: Kernel-native product paths with independent Devnet
+  evidence for the six declared product lanes.
 - `ethereum-sepolia`, `base-sepolia`, `arbitrum-sepolia`, `bnb-testnet`,
   `robinhood-testnet`, `hyperliquid-testnet`, and `tempo-testnet`: shared EVM
   lifecycle with separated chain IDs, RPC configuration, fee rules, receipts,
   and independent verification evidence. Hyperliquid here means HyperEVM;
   HyperCore remains a separate native API surface.
 - `zcash-testnet`: native UTXO/Zallet-Zebra boundary with a separately
-  evidenced payroll settlement path. It is not an EVM lane.
+  evidenced Payroll settlement path. The strict six-product gate remains
+  incomplete; it is not an EVM lane.
 - `stellar-testnet`: Horizon adapter with ten Kernel product capabilities
   covering verification, payroll calculation/approval/settlement, treasury
   policy, governance, and auction workflow commitments. All ten capabilities
@@ -91,10 +92,10 @@ support claim.
   product binding and workflow evidence; they do not claim private business
   data storage or financial settlement privacy on Stellar.
 
-`agent` capabilities remain explicitly scoped to Solana in the catalog, and
-`payroll.settle` is exposed on Stellar only as a Kernel-ready preparation and
-signing path; it is not advertised as independently verified until a funded
-Testnet receipt exists. Mainnet configurations remain disabled everywhere.
+`agent` capabilities remain explicitly scoped to Solana in the catalog.
+Stellar's six product lanes, including Payroll settlement, have confirmed
+Testnet evidence in the current registry. Mainnet configurations remain
+disabled everywhere.
 
 ## Migration rule
 

@@ -46,16 +46,18 @@ The generated architecture manifest currently reports:
 
 - 7 products
 - 17 network descriptors
-- 96 application bindings
+- 111 application bindings
 - 216 capability evidence entries
-- 61 `testnet_verified` entries
-- 6 `devnet_verified` entries
+- 74 `testnet_verified` entries
+- 9 `devnet_verified` entries
 - 2 `mainnet_live` entries in the generated registry scope
 - `bridgeFree: true`
 
 These are registry counts, not a claim that every product is verified on every
-network. Always inspect the product-specific artifact before making a public
-execution claim.
+network. The strict 11-network gate currently has eight complete networks;
+Zcash Testnet, Hyperliquid HyperEVM Testnet, and HyperCore Testnet remain
+incomplete for the full product matrix. Always inspect the product-specific
+artifact before making a public execution claim.
 
 ## BNB Smart Chain Testnet
 
@@ -95,15 +97,15 @@ The current BNB deployer balance was read-only verified at
 
 | Network/family | Current evidence boundary |
 |---|---|
-| Ethereum Sepolia | Verified EVM product lanes listed in the capability matrix |
-| Arbitrum Sepolia | Verified EVM product lanes listed in the capability matrix |
-| Base Sepolia | Verified EVM lanes; Builder Code attribution remains a separate evidence gate |
-| Tempo Testnet | EVM/tokenized fee and payment behavior is network-specific |
-| Robinhood Testnet | Treasury, Governance, and Auction are verified; other lanes remain gated |
-| Hyperliquid HyperEVM | Blind and Record Verification verified; HyperCore is separate |
-| Solana Devnet | Solana-specific wallet/commitment lifecycle and organizational evidence. Record Verification now has a local schema/policy-bound anchor service with broadcast disabled by default; a funded approved signer run is still required before promotion to product E2E. |
+| Ethereum Sepolia | Six-product organizational E2E evidence on the shared EVM path |
+| Arbitrum Sepolia | Six-product organizational E2E evidence on the shared EVM path |
+| Base Sepolia | Six-product E2E evidence; Builder Code attribution remains a separate evidence gate |
+| Tempo Testnet | Six-product E2E evidence including token-settled Payroll |
+| Robinhood Testnet | Six-product organizational E2E evidence |
+| Hyperliquid HyperEVM | Blind and Record Verification only; organizational lanes remain gated; HyperCore is separate |
+| Solana Devnet | Six product lanes have independent Devnet evidence through the Solana adapter and Kernel |
 | Zcash Testnet | Zcash-specific shielded wallet/provider boundary; Payroll settlement has a confirmed Testnet receipt, while other products remain policy-only |
-| Stellar Testnet | Ten product-binding capabilities verified through Kernel, signer boundary, Horizon submission, confirmation, and receipts, including the confirmed payroll settlement receipt; business payloads remain off-chain |
+| Stellar Testnet | Six product lanes verified through Kernel, signer boundary, Horizon submission, confirmation, and receipts; business payloads remain off-chain |
 
 The BNB ecosystem references supplied by the user, including Agent Studio,
 Agent SDK, Greenfield, MCP/Ask AI, MPP, ERC-8056, and Privacy at Scale, are

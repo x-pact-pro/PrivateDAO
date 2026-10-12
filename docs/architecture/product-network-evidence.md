@@ -17,10 +17,10 @@ does not upgrade a capability.
 | Ethereum Sepolia | Blind Verification, Record Verification, Payroll settlement, Treasury, Governance, Auctions | Testnet only. Payroll calculation/approval remain Kernel policy stages around the evidenced settlement contract. |
 | Arbitrum Sepolia | Blind Verification, Record Verification, Payroll settlement, Treasury, Governance, Auctions | Testnet only. Payroll calculation/approval remain Kernel policy stages around the evidenced settlement contract. |
 | Base Sepolia | Blind Verification, Record Verification, Payroll settlement, Treasury, Governance, Auctions | Builder Code attribution requires a fresh eligible transaction. |
-| BNB Testnet | Blind Verification, Record Verification, Treasury, Confidential Payroll, Governance, Auctions | Payroll binds an off-chain commitment to a native Testnet payout receipt; it is not shielded EVM settlement. |
-| Tempo Testnet | Blind Verification, Record Verification, Treasury, Governance, Auctions | Tokenized fee/payment behavior is Tempo-specific; Payroll remains policy-only. |
-| Robinhood Testnet | Payroll settlement, Treasury, Governance, Auctions | Verification remains gated; calculation/approval remain Kernel policy stages. |
-| Solana Devnet | Payroll calculation/approval, Treasury, Governance, Auctions | Product-specific evidence; do not generalize to every Solana product. |
+| BNB Testnet | Blind Verification, Record Verification, Confidential Payroll, Treasury, Governance, Auctions | Payroll binds an off-chain commitment to a native Testnet payout receipt; it is not shielded EVM settlement. |
+| Tempo Testnet | Blind Verification, Record Verification, Confidential Payroll settlement, Treasury, Governance, Auctions | Tokenized fee/payment behavior is Tempo-specific; the evidenced Payroll lane covers token settlement, while calculation/approval remain workflow stages. |
+| Robinhood Testnet | Blind Verification, Record Verification, Confidential Payroll, Treasury, Governance, Auctions | Six-product organizational E2E evidence; the network uses the shared EVM lifecycle with its own chain configuration. |
+| Solana Devnet | Blind Verification, Record Verification, Confidential Payroll, Treasury, Governance, Auctions | Six product lanes have independent Solana Devnet evidence; do not generalize to Solana Mainnet. |
 | Zcash Testnet | Payroll settlement | Shielded-wallet evidence is Zcash-specific; other products remain policy-only. |
 | Hyperliquid HyperEVM Testnet | Blind Verification, Record Verification | EVM chain 998 evidence is independent from HyperCore native APIs; organizational lanes remain gated. |
 | Stellar Testnet | Blind/Record Verification, Payroll calculation/approval/settlement, Treasury, Governance, Auctions | Ten confirmed Kernel-to-Horizon product-binding capabilities, including the payroll settlement receipt; controlled Testnet payments prove lifecycle execution, not product data storage. |

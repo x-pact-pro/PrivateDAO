@@ -25,17 +25,17 @@ the independent write gate is not complete. It does not mean a funded E2E.
 
 | Network lane | Verified | Ready only | Declared products | Current evidence boundary |
 |---|---:|---:|---:|---|
-| Solana Devnet | 6 | 3 | 7 | Solana lifecycle evidence; not every declared capability is verified |
-| Ethereum Sepolia | 10 | 0 | 6 | Verification, Payroll settlement, Treasury, Governance, and Auction evidence |
-| Arbitrum Sepolia | 10 | 0 | 6 | Verification, Payroll settlement, Treasury, Governance, and Auction evidence |
-| BNB Testnet | 8 | 2 | 6 | Product and organizational E2E receipts; Robinhood-style native lanes remain separate |
-| Base Sepolia | 10 | 0 | 6 | Product and Payroll settlement receipts verified; historical Builder attribution is not asserted |
-| Robinhood Testnet | 5 | 5 | 6 | Payroll settlement, Treasury, Governance, and Auction organizational evidence; verification remains gated |
-| Tempo Testnet | 9 | 0 | 6 | EVM product evidence plus Tempo payment rail evidence |
-| Zcash Testnet | 1 | 9 | 6 | Confirmed Zallet/Zebra Payroll settlement; other product rows remain Kernel policy-only |
-| Stellar Testnet | 10 | 0 | 6 | Kernel -> Stellar adapter -> Horizon; all 10 declared non-agent capabilities confirmed |
-| Hyperliquid Testnet / HyperEVM | 3 | 6 | 6 | HyperEVM verification evidence; this does not certify HyperCore native execution |
-| HyperCore Testnet | 0 | 9 | 6 | Native readiness/policy boundary only; no native execution E2E claim |
+| Solana Devnet | 6 | 0 | 6 | Six product lanes have independent Devnet evidence |
+| Ethereum Sepolia | 6 | 0 | 6 | Full six-product organizational E2E evidence |
+| Arbitrum Sepolia | 6 | 0 | 6 | Full six-product organizational E2E evidence |
+| BNB Testnet | 6 | 0 | 6 | Full six-product organizational E2E evidence |
+| Base Sepolia | 6 | 0 | 6 | Full six-product evidence; Builder attribution remains a separate gate |
+| Robinhood Testnet | 6 | 0 | 6 | Full six-product organizational E2E evidence |
+| Tempo Testnet | 6 | 0 | 6 | Full six-product evidence including token-settled Payroll |
+| Zcash Testnet | 0 | 6 | 6 | Payroll settlement is evidenced separately, but the strict six-product gate is not complete |
+| Stellar Testnet | 6 | 0 | 6 | Full six-product Kernel-to-Horizon evidence |
+| Hyperliquid Testnet / HyperEVM | 2 | 4 | 6 | Blind/Record evidence only; organizational attempt is blocked by signer funding |
+| HyperCore Testnet | 0 | 6 | 6 | Native read-only adapter only; no product execution E2E |
 
 The counts intentionally contradict a blanket “all six products on all eleven
 networks are complete” claim. That claim must remain unpublished until each
