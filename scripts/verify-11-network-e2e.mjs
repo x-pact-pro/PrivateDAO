@@ -26,6 +26,29 @@ for (const entry of buildNativeCapabilityRegistry()) {
   productCapabilities.set(key, current);
 }
 
+function blockersFor(network, missingCapabilities) {
+  if (missingCapabilities.length === 0) return [];
+  if (network === "zcash-testnet") {
+    return [
+      "Zcash product-specific Testnet receipts are missing for the listed capabilities.",
+      "The existing Payroll settlement receipt does not prove the other product paths.",
+    ];
+  }
+  if (network === "hyperliquid-testnet") {
+    return [
+      "HyperEVM organizational E2E requires a funded Testnet signer and fresh receipts.",
+      "HyperEVM evidence must not be used as evidence for native HyperCore.",
+    ];
+  }
+  if (network === "hypercore-testnet") {
+    return [
+      "The current HyperCore adapter is read-only metadata/health; native product execution is not implemented.",
+      "A native HyperCore transaction and receipt path is required before any product can be verified.",
+    ];
+  }
+  return ["Independent Testnet/Devnet evidence is missing for the listed capabilities."];
+}
+
 const rows = networks.map((network) => {
   const products = [...new Set(
     [...productCapabilities.keys()]
@@ -50,6 +73,7 @@ const rows = networks.map((network) => {
     completeProducts: products.length - incomplete.length,
     incompleteProducts: incomplete,
     missingCapabilities,
+    blockers: blockersFor(network, missingCapabilities),
     status: incomplete.length === 0 ? "COMPLETE" : "INCOMPLETE",
   };
 });
