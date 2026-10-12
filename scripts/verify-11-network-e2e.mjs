@@ -14,8 +14,9 @@ const networks = [
   "hypercore-testnet",
 ];
 
+const registryEntries = buildNativeCapabilityRegistry();
 const productCapabilities = new Map();
-for (const entry of buildNativeCapabilityRegistry()) {
+for (const entry of registryEntries) {
   if (!entry.declared || entry.product === "agent") continue;
   const key = `${entry.network}:${entry.product}`;
   const current = productCapabilities.get(key) ?? { verified: true, entries: 0, evidence: new Set() };
@@ -57,7 +58,7 @@ const rows = networks.map((network) => {
   )];
   const incomplete = products.filter((product) => !productCapabilities.get(`${network}:${product}`)?.verified);
   const missingCapabilities = incomplete.map((product) => {
-    const entries = [...buildNativeCapabilityRegistry()].filter(
+    const entries = registryEntries.filter(
       (entry) => entry.declared && entry.network === network && entry.product === product,
     );
     return {
@@ -81,6 +82,7 @@ const rows = networks.map((network) => {
 const complete = rows.every((row) => row.status === "COMPLETE");
 console.log(JSON.stringify({
   schema: "privatedao.11-network-e2e-gate.v1",
+  registryEntries: registryEntries.length,
   networks: rows,
   complete,
   rule: "Every declared product on every listed network requires a testnet/devnet E2E evidence status.",
