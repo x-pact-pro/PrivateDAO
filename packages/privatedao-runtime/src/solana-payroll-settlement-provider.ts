@@ -31,6 +31,7 @@ type SettlementRecord = {
 };
 
 const DEFAULT_ENDPOINT = "https://privatedao.org/api/private-payout/umbra-workflow";
+const DEFAULT_TIMEOUT_MS = 30_000;
 
 /**
  * Kernel boundary for the existing Umbra Devnet payroll workflow.
@@ -45,6 +46,7 @@ export class SolanaPayrollSettlementProvider implements KernelProvider {
   constructor(
     private readonly fetchImpl: FetchLike = fetch,
     private readonly endpoint = process.env.PDAO_SOLANA_PAYROLL_UMBRA_ENDPOINT?.trim() || DEFAULT_ENDPOINT,
+    private readonly timeoutMs = parseTimeout(process.env.PDAO_SOLANA_PAYROLL_TIMEOUT_MS),
   ) {
     if (!endpoint.startsWith("https://")) throw new Error("Umbra payroll endpoint must use HTTPS.");
   }
@@ -114,16 +116,31 @@ export class SolanaPayrollSettlementProvider implements KernelProvider {
   }
 
   private async request(body: Record<string, unknown>): Promise<Record<string, unknown>> {
-    const response = await this.fetchImpl(this.endpoint, {
-      method: "POST",
-      headers: { Accept: "application/json", "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    });
-    const payload = await response.json().catch(() => ({}));
-    if (!response.ok) throw new Error(isRecord(payload) && typeof payload.error === "string" ? payload.error : `Umbra payroll endpoint failed with HTTP ${response.status}.`);
-    if (!isRecord(payload)) throw new Error("Umbra payroll endpoint returned an invalid response.");
-    return payload;
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), this.timeoutMs);
+    try {
+      const response = await this.fetchImpl(this.endpoint, {
+        method: "POST",
+        headers: { Accept: "application/json", "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+        signal: controller.signal,
+      });
+      const payload = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(isRecord(payload) && typeof payload.error === "string" ? payload.error : `Umbra payroll endpoint failed with HTTP ${response.status}.`);
+      if (!isRecord(payload)) throw new Error("Umbra payroll endpoint returned an invalid response.");
+      return payload;
+    } catch (error) {
+      if (controller.signal.aborted) throw new Error(`Umbra payroll request timed out after ${this.timeoutMs}ms.`);
+      throw error;
+    } finally {
+      clearTimeout(timer);
+    }
   }
+}
+
+function parseTimeout(value: string | undefined): number {
+  const parsed = Number(value || DEFAULT_TIMEOUT_MS);
+  return Number.isFinite(parsed) && parsed >= 250 ? Math.floor(parsed) : DEFAULT_TIMEOUT_MS;
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
