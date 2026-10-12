@@ -70,7 +70,11 @@ const adapter = new ZcashNetworkAdapter({
 });
 
 const health = await adapter.health();
-assert.equal(health.ok, true, "Zcash node and wallet must be synchronized before a write-enabled E2E run.");
+assert.equal(
+  health.ok,
+  true,
+  `Zcash Testnet runtime is not ready: ${health.reason || "wallet/node synchronization is incomplete"}. Start the approved Zallet/Zaino service before running E2E.`,
+);
 
 const requestId = `zcash-testnet-e2e-${Date.now()}`;
 const intent = {
