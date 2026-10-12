@@ -2713,6 +2713,23 @@ export const runtimeCatalog = {
               "provider": "evm-arbitrum-sepolia-organizational"
             },
             {
+              "network": "tempo-testnet",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://payroll.settle",
+              "method": null,
+              "note": "tempo-testnet organizational Payroll contract passed real create, Maker/Checker approval, settlement, receipt, and state-reconciliation checks; employee records and policy details remain off-chain.",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "supportsExecution": true,
+              "supportsProof": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "AlphaUSD"
+              ],
+              "provider": "evm-tempo-testnet-organizational"
+            },
+            {
               "network": "base-sepolia",
               "mode": "kernel-gateway",
               "entrypoint": "kernel://payroll.settle",
@@ -3020,11 +3037,11 @@ export const runtimeCatalog = {
               "stage": "available",
               "environment": "testnet",
               "chainId": "42431",
-              "declared": false,
-              "mode": "unbound",
+              "declared": true,
+              "mode": "kernel-gateway",
               "evidenceStatus": "testnet_verified",
               "evidence": "testnet-e2e",
-              "executable": false,
+              "executable": true,
               "supportsProof": false,
               "supportsReceipt": true,
               "supportsReconciliation": true,

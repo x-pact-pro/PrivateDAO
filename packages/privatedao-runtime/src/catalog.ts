@@ -74,9 +74,9 @@ export const PRODUCT_CATALOG: readonly ProductDescriptor[] = [
       capability("payroll.calculate", "payroll", false, true, [solanaDevnet, ethereumSepolia, arbitrumSepolia, tempoTestnet, baseSepolia, bnbTestnet, zcashTestnet, stellarTestnet, robinhoodTestnet, hyperliquidTestnet, hypercoreTestnet]),
       capability("payroll.approve", "payroll", true, true, [solanaDevnet, ethereumSepolia, arbitrumSepolia, tempoTestnet, baseSepolia, bnbTestnet, zcashTestnet, stellarTestnet, robinhoodTestnet, hyperliquidTestnet, hypercoreTestnet]),
       // Settlement is exposed only where a network-specific provider and a
-      // confirmed Testnet payout receipt exist. Tempo remains excluded until
-      // its token-payroll artifact is independently evidenced.
-      capability("payroll.settle", "payroll", true, true, [ethereumSepolia, arbitrumSepolia, baseSepolia, bnbTestnet, zcashTestnet, stellarTestnet, robinhoodTestnet]),
+      // confirmed Testnet payout receipt exist. Tempo uses its token-settled
+      // Payroll contract and is included only after that artifact is recorded.
+      capability("payroll.settle", "payroll", true, true, [ethereumSepolia, arbitrumSepolia, tempoTestnet, baseSepolia, bnbTestnet, zcashTestnet, stellarTestnet, robinhoodTestnet]),
     ],
   },
   {

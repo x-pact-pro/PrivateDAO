@@ -1,6 +1,6 @@
 {
   "schema": "privatedao.native-capability-matrix.v1",
-  "generatedAt": "2026-10-12T10:29:55.181Z",
+  "generatedAt": "2026-10-12T10:45:26.865Z",
   "bridgeFree": true,
   "entries": [
     {
@@ -3021,7 +3021,7 @@
       "capability": "payroll.settle",
       "network": "tempo-testnet",
       "networkFamily": "evm",
-      "declared": false,
+      "declared": true,
       "environment": "testnet",
       "chainId": "42431",
       "nativeAsset": "USD",

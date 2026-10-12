@@ -312,7 +312,7 @@ export const APPLICATION_CAPABILITY_BINDINGS: readonly ApplicationCapabilityBind
     entrypoint: "kernel://payroll.settle",
     note: "BNB Testnet payroll settlement binds an off-chain payroll commitment to a real Maker/Checker payout receipt; employee records and policy details remain off-chain.",
   },
-  ...(["ethereum-sepolia", "arbitrum-sepolia", "base-sepolia", "robinhood-testnet"] as NetworkId[]).map((network) => ({
+  ...(["ethereum-sepolia", "arbitrum-sepolia", "tempo-testnet", "base-sepolia", "robinhood-testnet"] as NetworkId[]).map((network) => ({
     product: "payroll" as ProductId,
     capability: "payroll.settle" as CapabilityId,
     network,
