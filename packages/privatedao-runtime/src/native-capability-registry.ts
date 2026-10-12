@@ -162,13 +162,14 @@ const ORGANIZATIONAL_EVIDENCE = {
   "ethereum-sepolia": {
     provider: "evm-ethereum-sepolia-organizational",
     contracts: [
-      "0x92739fdd28d200b7ced0d177c021079ce30412b1",
-      "0x8ea77a4b281c29d92bb6cb991687cc34462cd2a1",
-      "0xff3bbac12cb2630bee9f0576ea2ea202a059edf7",
+      "0x5a10a22ffbd1f2db3415c96731a07ee8d35c11bc",
+      "0x6c7362977625a0c1a403f02fef606cb6315e953f",
+      "0xb0698a8462b62654773a0171f39c0cce86c9a95d",
+      "0x5134fa0a560ae838f1e0324ce38a385a26711d68",
     ],
     assets: ["ETH"],
-    commit: "bc9e662",
-    timestamp: "2026-09-16T23:03:17.944Z",
+    commit: "b0fed5204",
+    timestamp: "2026-10-11T23:56:56.361Z",
   },
   "tempo-testnet": {
     provider: "evm-tempo-testnet-organizational",
@@ -184,47 +185,50 @@ const ORGANIZATIONAL_EVIDENCE = {
   "arbitrum-sepolia": {
     provider: "evm-arbitrum-sepolia-organizational",
     contracts: [
-      "0xbf495e8147ab23bfa2024eae7c0d2f54af40279c",
-      "0xc4d37f8fb01dd8575ed8a5e8432eaa284abc41ec",
-      "0x4dbe25b21607cf04bbf06b9b88927af3e381d373",
+      "0xd3e604000917d0edd557005a8af39a33ee05ff4b",
+      "0x6b55c67d83645060cae54ea4246310246afa07d9",
+      "0xb93e85befcabcf2cf2c6c4bdd5e8b670b04c82d0",
+      "0x21c4cd7d2e039f7debfa87f51fd919be7ea912f1",
     ],
     assets: ["ETH"],
-    commit: "bf23f95",
-    timestamp: "2026-09-17T07:23:24.600Z",
+    commit: "b0fed5204",
+    timestamp: "2026-10-12T00:15:59.960Z",
   },
   "base-sepolia": {
     provider: "evm-base-sepolia-organizational",
     contracts: [
-      "0xf053303014cbf6233d8b9bf38679a30706069216",
-      "0x9887bcfe7daad364202d5d3102de180c389ecb20",
-      "0xcfb3e7af09f206614cf7a3cf8a93f92379c1c374",
+      "0xbba00deafaa326943390724ab0de021a661a0e51",
+      "0x02ab06a15a3c210a5c902513a2195e3e2b7096df",
+      "0x7801916f5bfadc99a0e14735a8f49d21d85eb61f",
+      "0xf70e48d8bb75757420c7ea231aaaff3e5df2aba0",
     ],
     assets: ["ETH"],
-    commit: "ea3b8105cbb65423adf6145db507484f75f880cd",
-    timestamp: "2026-09-19T13:20:48.792Z",
+    commit: "b0fed5204",
+    timestamp: "2026-10-12T00:13:22.254Z",
   },
   "robinhood-testnet": {
     provider: "evm-robinhood-testnet-organizational",
     contracts: [
-      "0xdd01da1b53ba46bf1ce8c71bc1c5e86e8784694b",
-      "0x5b3a18eda78e7ce2086271585c3c23c8269c7ca4",
-      "0xffe6e9a78dafd35f230ad51c7bd96ba469d53405",
+      "0x251ea5ec76e21c8b694903ac8e45c1c4587a5291",
+      "0xc26ca8381e0c55e128348ae54e39aaa5a384753f",
+      "0x290c6498cef5bf0b80461aa62d8e199a79695b6d",
+      "0xba041bea600ad3f0f115f18dd24fe9a1e2623442",
     ],
     assets: ["ETH"],
-    commit: "65fe6957e",
-    timestamp: "2026-09-19T14:01:22.656Z",
+    commit: "b0fed5204",
+    timestamp: "2026-10-12T00:21:40.273Z",
   },
   "bnb-testnet": {
     provider: "evm-bnb-testnet-organizational",
     contracts: [
-      "0x5011c9c68006c2857eaea0f67401e9d58ff39770",
-      "0x62f8f7ffc4235a1dde58ba811fa9c448c56f7620",
-      "0x57d5d75f81db5459d541891f4c1a20f51abe32fc",
-      "0x4dbe25b21607cf04bbf06b9b88927af3e381d373",
+      "0x9d03c14562852092b39c1dd96c441dd9484b5a2b",
+      "0x0a1a6467fdcc858899692c0f7d15beca2483d069",
+      "0x3fc47618e59c5bf8a19fe6a5298938fc9b8c3bdc",
+      "0x9dfc12d43a60ec0edcc2da33a6c5f943839ea392",
     ],
     assets: ["BNB"],
-    commit: "107b73c8b",
-    timestamp: "2026-10-11T17:04:22.062Z",
+    commit: "b0fed5204",
+    timestamp: "2026-10-12T00:18:34.179Z",
   },
 } as const;
 
@@ -568,7 +572,8 @@ function applyOrganizationalEvidence(entry: NativeCapabilityEntry): NativeCapabi
   const supportedCapability =
     (entry.product === "treasury" && entry.capability === "treasury.policy.check") ||
     (entry.product === "governance" && entry.capability === "governance.proposal.execute") ||
-    (entry.product === "auction" && ["auction.bid.commit", "auction.settle"].includes(entry.capability));
+    (entry.product === "auction" && ["auction.bid.commit", "auction.settle"].includes(entry.capability)) ||
+    (entry.product === "payroll" && entry.capability === "payroll.settle" && entry.network !== "tempo-testnet");
   if (!evidence || !supportedCapability) return entry;
   return {
     ...entry,

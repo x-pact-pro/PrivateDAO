@@ -2679,11 +2679,11 @@ export const runtimeCatalog = {
           "receiptSchema": "privatedao.execution-receipt.v1",
           "applicationBindings": [
             {
-              "network": "zcash-testnet",
+              "network": "ethereum-sepolia",
               "mode": "kernel-gateway",
               "entrypoint": "kernel://payroll.settle",
               "method": null,
-              "note": "Zcash Testnet payroll settlement is backed by the confirmed Zallet/Zebra receipt and remains Testnet-only with broadcast controlled by the secure runtime gate.",
+              "note": "ethereum-sepolia organizational Payroll contract passed real create, Maker/Checker approval, settlement, receipt, and state-reconciliation checks; employee records and policy details remain off-chain.",
               "evidenceStatus": "testnet_verified",
               "evidence": "testnet-e2e",
               "supportsExecution": true,
@@ -2691,9 +2691,43 @@ export const runtimeCatalog = {
               "supportsReceipt": true,
               "supportsReconciliation": true,
               "supportedAssets": [
-                "TAZ"
+                "ETH"
               ],
-              "provider": "zcash-testnet-zallet"
+              "provider": "evm-ethereum-sepolia-organizational"
+            },
+            {
+              "network": "arbitrum-sepolia",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://payroll.settle",
+              "method": null,
+              "note": "arbitrum-sepolia organizational Payroll contract passed real create, Maker/Checker approval, settlement, receipt, and state-reconciliation checks; employee records and policy details remain off-chain.",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "supportsExecution": true,
+              "supportsProof": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "ETH"
+              ],
+              "provider": "evm-arbitrum-sepolia-organizational"
+            },
+            {
+              "network": "base-sepolia",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://payroll.settle",
+              "method": null,
+              "note": "base-sepolia organizational Payroll contract passed real create, Maker/Checker approval, settlement, receipt, and state-reconciliation checks; employee records and policy details remain off-chain.",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "supportsExecution": true,
+              "supportsProof": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "ETH"
+              ],
+              "provider": "evm-base-sepolia-organizational"
             },
             {
               "network": "bnb-testnet",
@@ -2713,6 +2747,23 @@ export const runtimeCatalog = {
               "provider": "evm-bnb-testnet-organizational"
             },
             {
+              "network": "zcash-testnet",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://payroll.settle",
+              "method": null,
+              "note": "Zcash Testnet payroll settlement is backed by the confirmed Zallet/Zebra receipt and remains Testnet-only with broadcast controlled by the secure runtime gate.",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "supportsExecution": true,
+              "supportsProof": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "TAZ"
+              ],
+              "provider": "zcash-testnet-zallet"
+            },
+            {
               "network": "stellar-testnet",
               "mode": "kernel-gateway",
               "entrypoint": "kernel://payroll.settle",
@@ -2728,6 +2779,23 @@ export const runtimeCatalog = {
                 "XLM"
               ],
               "provider": "stellar-testnet-horizon"
+            },
+            {
+              "network": "robinhood-testnet",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://payroll.settle",
+              "method": null,
+              "note": "robinhood-testnet organizational Payroll contract passed real create, Maker/Checker approval, settlement, receipt, and state-reconciliation checks; employee records and policy details remain off-chain.",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "supportsExecution": true,
+              "supportsProof": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "ETH"
+              ],
+              "provider": "evm-robinhood-testnet-organizational"
             }
           ],
           "networkAvailability": [
@@ -2772,18 +2840,18 @@ export const runtimeCatalog = {
               "stage": "available",
               "environment": "testnet",
               "chainId": "11155111",
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
-              "executable": false,
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "executable": true,
               "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "ETH"
               ],
-              "provider": "evm-ethereum-sepolia"
+              "provider": "evm-ethereum-sepolia-organizational"
             },
             {
               "network": "ethereum-mainnet",
@@ -2808,18 +2876,18 @@ export const runtimeCatalog = {
               "stage": "available",
               "environment": "testnet",
               "chainId": "421614",
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
-              "executable": false,
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "executable": true,
               "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "ETH"
               ],
-              "provider": "evm-arbitrum-sepolia"
+              "provider": "evm-arbitrum-sepolia-organizational"
             },
             {
               "network": "arbitrum-one",
@@ -2880,18 +2948,18 @@ export const runtimeCatalog = {
               "stage": "available",
               "environment": "testnet",
               "chainId": "84532",
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
-              "executable": false,
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "executable": true,
               "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "ETH"
               ],
-              "provider": "evm-base-sepolia"
+              "provider": "evm-base-sepolia-organizational"
             },
             {
               "network": "base-mainnet",
@@ -2916,18 +2984,18 @@ export const runtimeCatalog = {
               "stage": "available",
               "environment": "testnet",
               "chainId": "46630",
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
-              "executable": false,
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "executable": true,
               "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "ETH"
               ],
-              "provider": "evm-robinhood-testnet"
+              "provider": "evm-robinhood-testnet-organizational"
             },
             {
               "network": "robinhood-mainnet",

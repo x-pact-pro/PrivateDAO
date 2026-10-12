@@ -26,11 +26,11 @@ the independent write gate is not complete. It does not mean a funded E2E.
 | Network lane | Verified | Ready only | Declared products | Current evidence boundary |
 |---|---:|---:|---:|---|
 | Solana Devnet | 6 | 3 | 7 | Solana lifecycle evidence; not every declared capability is verified |
-| Ethereum Sepolia | 9 | 0 | 6 | Verification, Treasury, Governance, and Auction evidence |
-| Arbitrum Sepolia | 9 | 0 | 6 | Verification, Treasury, Governance, and Auction evidence |
+| Ethereum Sepolia | 10 | 0 | 6 | Verification, Payroll settlement, Treasury, Governance, and Auction evidence |
+| Arbitrum Sepolia | 10 | 0 | 6 | Verification, Payroll settlement, Treasury, Governance, and Auction evidence |
 | BNB Testnet | 8 | 2 | 6 | Product and organizational E2E receipts; Robinhood-style native lanes remain separate |
-| Base Sepolia | 9 | 0 | 6 | Product receipts verified; historical Builder attribution is not asserted |
-| Robinhood Testnet | 4 | 5 | 6 | Treasury, Payroll, Governance, and Auction organizational evidence; verifier now checks 4 contracts and 22 receipts |
+| Base Sepolia | 10 | 0 | 6 | Product and Payroll settlement receipts verified; historical Builder attribution is not asserted |
+| Robinhood Testnet | 5 | 5 | 6 | Payroll settlement, Treasury, Governance, and Auction organizational evidence; verification remains gated |
 | Tempo Testnet | 9 | 0 | 6 | EVM product evidence plus Tempo payment rail evidence |
 | Zcash Testnet | 1 | 9 | 6 | Confirmed Zallet/Zebra Payroll settlement; other product rows remain Kernel policy-only |
 | Stellar Testnet | 10 | 0 | 6 | Kernel -> Stellar adapter -> Horizon; all 10 declared non-agent capabilities confirmed |

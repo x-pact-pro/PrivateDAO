@@ -14,12 +14,12 @@ does not upgrade a capability.
 
 | Network | Verified product lanes | Boundary |
 |---|---|---|
-| Ethereum Sepolia | Blind Verification, Record Verification, Treasury, Governance, Auctions | Testnet only. Payroll calculation/approval are Kernel policy lanes. |
-| Arbitrum Sepolia | Blind Verification, Record Verification, Treasury, Governance, Auctions | Testnet only. Payroll settlement is not promoted. |
-| Base Sepolia | Blind Verification, Record Verification, Treasury, Governance, Auctions | Builder Code attribution requires a fresh eligible transaction. |
+| Ethereum Sepolia | Blind Verification, Record Verification, Payroll settlement, Treasury, Governance, Auctions | Testnet only. Payroll calculation/approval remain Kernel policy stages around the evidenced settlement contract. |
+| Arbitrum Sepolia | Blind Verification, Record Verification, Payroll settlement, Treasury, Governance, Auctions | Testnet only. Payroll calculation/approval remain Kernel policy stages around the evidenced settlement contract. |
+| Base Sepolia | Blind Verification, Record Verification, Payroll settlement, Treasury, Governance, Auctions | Builder Code attribution requires a fresh eligible transaction. |
 | BNB Testnet | Blind Verification, Record Verification, Treasury, Confidential Payroll, Governance, Auctions | Payroll binds an off-chain commitment to a native Testnet payout receipt; it is not shielded EVM settlement. |
 | Tempo Testnet | Blind Verification, Record Verification, Treasury, Governance, Auctions | Tokenized fee/payment behavior is Tempo-specific; Payroll remains policy-only. |
-| Robinhood Testnet | Treasury, Governance, Auctions | Verification and Payroll settlement remain gated. |
+| Robinhood Testnet | Payroll settlement, Treasury, Governance, Auctions | Verification remains gated; calculation/approval remain Kernel policy stages. |
 | Solana Devnet | Payroll calculation/approval, Treasury, Governance, Auctions | Product-specific evidence; do not generalize to every Solana product. |
 | Zcash Testnet | Payroll settlement | Shielded-wallet evidence is Zcash-specific; other products remain policy-only. |
 | Hyperliquid HyperEVM Testnet | Blind Verification, Record Verification | EVM chain 998 evidence is independent from HyperCore native APIs; organizational lanes remain gated. |

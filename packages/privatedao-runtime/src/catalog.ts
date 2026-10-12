@@ -73,10 +73,10 @@ export const PRODUCT_CATALOG: readonly ProductDescriptor[] = [
     capabilities: [
       capability("payroll.calculate", "payroll", false, true, [solanaDevnet, ethereumSepolia, arbitrumSepolia, tempoTestnet, baseSepolia, bnbTestnet, zcashTestnet, stellarTestnet, robinhoodTestnet, hyperliquidTestnet, hypercoreTestnet]),
       capability("payroll.approve", "payroll", true, true, [solanaDevnet, ethereumSepolia, arbitrumSepolia, tempoTestnet, baseSepolia, bnbTestnet, zcashTestnet, stellarTestnet, robinhoodTestnet, hyperliquidTestnet, hypercoreTestnet]),
-      // Settlement is exposed only where a network-specific provider exists.
-      // Stellar settlement is backed by an independently confirmed Testnet
-      // payout receipt; Mainnet remains outside this catalog lane.
-      capability("payroll.settle", "payroll", true, true, [zcashTestnet, bnbTestnet, stellarTestnet]),
+      // Settlement is exposed only where a network-specific provider and a
+      // confirmed Testnet payout receipt exist. Tempo remains excluded until
+      // its token-payroll artifact is independently evidenced.
+      capability("payroll.settle", "payroll", true, true, [ethereumSepolia, arbitrumSepolia, baseSepolia, bnbTestnet, zcashTestnet, stellarTestnet, robinhoodTestnet]),
     ],
   },
   {
