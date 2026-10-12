@@ -10,26 +10,28 @@ support.
 
 | Network | Current state | Evidence boundary |
 | --- | --- | --- |
-| Solana Devnet | `devnet_verified` for three Payroll rows | Payroll Devnet artifacts and runtime registry |
+| Solana Devnet | `COMPLETE` for all six declared products | Verification, payroll, treasury, governance, and auction Devnet evidence through the Kernel |
 | Solana Mainnet | `mainnet_live` for two Agent Exchange rows | Live Agent Card, A2A, MCP, OpenAPI, free job and receipt smoke checks |
-| Ethereum Sepolia | `testnet_verified` | Fresh Phase 2 artifact with record/blind proof, rejection, expiry, and revocation checks |
-| Base Sepolia | `testnet_verified` | Fresh Phase 2 artifact with the same full verification checks |
-| Arbitrum Sepolia | `testnet_verified` | Committed Phase 2 artifact; a prior long-running rerun remains open and was not duplicated |
-| Tempo Testnet | `testnet_verified` | Committed verification and organizational evidence artifacts |
-| Robinhood Testnet | `testnet_verified` for Verification and organizational workflows | Fresh verification and organizational receipts; no Mainnet claim |
-| Hyperliquid HyperEVM Testnet | `testnet_verified` for Verification; organizational lane pending funding | Chain `998` verification receipts are present; organizational runner needs additional HYPE gas |
-| Zcash Testnet | foundation adapter only | Native UTXO, isolation, timeout, receipt and gate tests; no funded chain E2E |
-| BNB Testnet | `testnet_verified` for Verification and organizational workflows | Fresh verification and organizational receipts; no Mainnet claim |
-| Stellar Testnet | `testnet_verified` at Kernel product-binding lifecycle level | Nine primary controlled self-payment receipts plus one confirmed payroll settlement receipt cover every declared Stellar product capability; product-specific business state remains off-chain and signature-gated |
+| Ethereum Sepolia | `COMPLETE` for all six declared products | Organizational lifecycle artifacts plus verification receipts |
+| Base Sepolia | `COMPLETE` for all six declared products | Organizational lifecycle artifacts plus verification receipts |
+| Arbitrum Sepolia | `COMPLETE` for all six declared products | Organizational lifecycle artifacts plus verification receipts |
+| Tempo Testnet | `COMPLETE` for all six declared products | Token-settled payroll artifact plus verification and organizational receipts |
+| Robinhood Testnet | `COMPLETE` for all six declared products | Fresh verification and organizational receipts; no Mainnet claim |
+| Hyperliquid HyperEVM Testnet | `INCOMPLETE` at 2/6 products | Chain `998` verification receipts are present; organizational runner requires additional HYPE gas |
+| Zcash Testnet | `INCOMPLETE` at 0/6 products in the strict gate | One historical Payroll settlement artifact exists, but the current registry does not have independent E2E evidence for all six products |
+| BNB Testnet | `COMPLETE` for all six declared products | Fresh verification and organizational receipts; no Mainnet claim |
+| Stellar Testnet | `COMPLETE` at Kernel product-binding lifecycle level | Ten confirmed Testnet receipts cover every declared Stellar product capability; product-specific business state remains off-chain and signature-gated |
+| HyperCore Testnet | `INCOMPLETE` at 0/6 products | Native read-only metadata/health adapter passes; no product execution evidence exists |
 | Wormhole | cancelled scope | No bridge network is declared in the capability matrix |
 
 ## Product Evidence
 
 - Application bindings: `7` products and the current generated binding set.
-- Native capability registry: `216` rows, `61` testnet-verified, `6`
+- Native capability registry: `216` rows, `74` testnet-verified, `9`
   devnet-verified, `2` mainnet-live, bridge-free.
-- Hyperliquid organizational rows remain pending until the deployer has enough
-  HYPE for the full Treasury/Payroll/Governance/Auction runner.
+- The strict `verify:11-network-e2e` gate currently reports eight complete
+  networks and blocks completion on Zcash, Hyperliquid organizational flows,
+  and HyperCore product execution.
 - Mainnet execution remains disabled by the EVM gate.
 
 ## Current Funding Gate
@@ -41,7 +43,9 @@ Read-only balance observations for the public test wallet:
 - Base Sepolia: below the `0.01 ETH` reporting threshold after its completed
   E2E run.
 - Robinhood Testnet: funded for the completed organizational run.
-- Hyperliquid Testnet: `0 HYPE`.
+- Hyperliquid Testnet: the last attempted organizational run stopped before
+  deployment because the signer had approximately `0.0002429 HYPE`, while the
+  first checker-funding transaction required approximately `0.0010132 HYPE`.
 
 No private key was printed, committed, or included in this report. No funding
 transaction is initiated by the reporting command.
@@ -76,7 +80,9 @@ adoption or revenue.
 
 ## Release Boundary
 
-The repository is synchronized between `main` and `canonical-live`. The game,
-production website, and production services were not changed by this work.
+The working evidence branch is synchronized between
+`codex/pdao-holder-access` and `canonical-live` at the latest evidence commit.
+This work did not deploy to production. The game, production website, and
+production services were not changed by this work.
 No network is promoted to Mainnet or commercial support without independent
 on-chain evidence for that product and network.
