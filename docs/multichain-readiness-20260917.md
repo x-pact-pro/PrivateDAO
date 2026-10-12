@@ -20,7 +20,7 @@ support.
 | Hyperliquid HyperEVM Testnet | `testnet_verified` for Verification; organizational lane pending funding | Chain `998` verification receipts are present; organizational runner needs additional HYPE gas |
 | Zcash Testnet | foundation adapter only | Native UTXO, isolation, timeout, receipt and gate tests; no funded chain E2E |
 | BNB Testnet | `testnet_verified` for Verification and organizational workflows | Fresh verification and organizational receipts; no Mainnet claim |
-| Stellar Testnet | `testnet_verified` at Kernel product-binding lifecycle level | Nine controlled self-payment receipts cover every declared Stellar product capability; product-specific business state remains off-chain and signature-gated |
+| Stellar Testnet | `testnet_verified` at Kernel product-binding lifecycle level | Nine primary controlled self-payment receipts plus one confirmed payroll settlement receipt cover every declared Stellar product capability; product-specific business state remains off-chain and signature-gated |
 | Wormhole | cancelled scope | No bridge network is declared in the capability matrix |
 
 ## Product Evidence
@@ -49,7 +49,9 @@ transaction is initiated by the reporting command.
 ## Stellar product-binding evidence
 
 `docs/evidence/stellar-testnet-product-e2e.json` records nine confirmed
-Stellar Testnet transactions. Each was prepared through the Kernel intent
+Stellar Testnet transactions, and
+`docs/evidence/stellar-testnet-payroll-e2e.json` records the tenth confirmed
+payroll settlement transaction. Each was prepared through the Kernel intent
 boundary, signed by the authorized Testnet account, submitted through Horizon,
 and reconciled into a confirmed receipt. The current evidence also carries a
 privacy-preserving product workflow envelope: SHA-256 input commitments, plus

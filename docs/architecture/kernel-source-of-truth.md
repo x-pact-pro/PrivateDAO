@@ -84,12 +84,12 @@ support claim.
 - `zcash-testnet`: native UTXO/Zallet-Zebra boundary with a separately
   evidenced payroll settlement path. It is not an EVM lane.
 - `stellar-testnet`: Horizon adapter with ten Kernel product capabilities
-  covering verification, payroll calculation/approval, treasury policy,
-  governance, auction workflow commitments, and a prepared-only payroll
-  settlement path. Nine capabilities have confirmed transactions; payroll
-  settlement remains `testnet_ready` until a funded receipt exists. The
-  confirmed transactions prove product binding and workflow evidence; they do
-  not claim private business data storage or financial settlement on Stellar.
+  covering verification, payroll calculation/approval/settlement, treasury
+  policy, governance, and auction workflow commitments. All ten capabilities
+  have confirmed Testnet evidence across the primary product packet and the
+  dedicated payroll settlement receipt. The confirmed transactions prove
+  product binding and workflow evidence; they do not claim private business
+  data storage or financial settlement privacy on Stellar.
 
 `agent` capabilities remain explicitly scoped to Solana in the catalog, and
 `payroll.settle` is exposed on Stellar only as a Kernel-ready preparation and

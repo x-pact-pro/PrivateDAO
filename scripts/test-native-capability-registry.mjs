@@ -8,7 +8,7 @@ const verifiedDevnet = entries.filter((entry) => entry.status === "devnet_verifi
 const verifiedPayroll = verifiedDevnet.filter((entry) => entry.product === "payroll");
 
 assert.equal(entries.length, 216, "unexpected native capability matrix size");
-assert.equal(verified.length, 61, "only evidence-backed testnet verification and organizational rows should be verified");
+assert.equal(verified.length, 62, "only evidence-backed testnet verification and organizational rows should be verified");
 assert.equal(liveAgents.length, 2, "the two live Agent Exchange rows must be runtime-verified");
 assert.equal(verifiedPayroll.length, 2, "only Payroll calculation and approval remain enabled on Solana Devnet");
 assert.equal(verifiedDevnet.length, 6, "Solana Devnet must include enabled Payroll plus the evidenced governance, treasury, and auction lanes");
@@ -79,18 +79,18 @@ for (const network of ["bnb-testnet", "robinhood-testnet", "hyperliquid-testnet"
   const policyRows = entries.filter((entry) => entry.network === network && entry.declared && entry.product !== "agent");
   const expectedRows = network === "bnb-testnet" ? 10 : network === "stellar-testnet" ? 10 : 9;
   assert.equal(policyRows.length, expectedRows, `${network} must expose all declared product lanes`);
-  const expectedPolicyRows = network === "robinhood-testnet" ? 5 : network === "bnb-testnet" ? 2 : network === "hyperliquid-testnet" ? 6 : network === "stellar-testnet" ? 1 : 9;
+  const expectedPolicyRows = network === "robinhood-testnet" ? 5 : network === "bnb-testnet" ? 2 : network === "hyperliquid-testnet" ? 6 : network === "stellar-testnet" ? 0 : 9;
   assert.equal(policyRows.filter((entry) => entry.status === "testnet_ready" && entry.evidence === "runtime-only").length, expectedPolicyRows, `${network} policy rows must not claim unsupported on-chain E2E`);
 }
 
-const stellarVerified = entries.filter((entry) => entry.network === "stellar-testnet" && entry.product !== "agent" && entry.capability !== "payroll.settle");
-assert.equal(stellarVerified.length, 9, "Stellar must expose all nine product-binding capabilities");
+const stellarVerified = entries.filter((entry) => entry.network === "stellar-testnet" && entry.product !== "agent");
+assert.equal(stellarVerified.length, 10, "Stellar must expose all ten product-binding capabilities");
 assert.equal(stellarVerified.every((entry) => entry.status === "testnet_verified" && entry.evidence === "testnet-e2e"), true, "Stellar product-binding evidence must be reflected in the registry");
-assert.equal(stellarVerified.every((entry) => entry.lastVerifiedCommit === "cba4217b9"), true, "Stellar evidence commit must be pinned");
+assert.equal(stellarVerified.every((entry) => entry.lastVerifiedCommit === "7aeff6d4b"), true, "Stellar evidence commit must be pinned");
 const stellarPayrollSettlement = entries.find((entry) => entry.network === "stellar-testnet" && entry.capability === "payroll.settle");
 assert(stellarPayrollSettlement, "Stellar payroll settlement row must remain explicit");
-assert.equal(stellarPayrollSettlement.status, "testnet_ready", "Stellar payroll settlement must remain Kernel-ready without claiming E2E");
-assert.equal(stellarPayrollSettlement.evidence, "runtime-only");
+assert.equal(stellarPayrollSettlement.status, "testnet_verified", "Stellar payroll settlement must reflect its confirmed Testnet E2E");
+assert.equal(stellarPayrollSettlement.evidence, "testnet-e2e");
 
 assert.equal(entries.some((entry) => entry.network === "zcash-testnet" && entry.product === "payroll" && entry.declared), true, "Zcash Kernel payroll policy workflows must be declared");
 for (const product of ["blind-verification", "record-verification", "treasury", "auction"]) {

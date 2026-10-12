@@ -36,7 +36,7 @@ confirmation lookup, and receipt construction.
 | Private Auctions | `auction.bid.commit` | Bid workflow commitment; bid contents stay off-chain |
 | Private Auctions | `auction.settle` | Auction outcome commitment; financial settlement is not implied |
 
-The nine capabilities above are required to remain synchronized across:
+The ten capabilities above are required to remain synchronized across:
 
 - `PRODUCT_CATALOG`
 - `APPLICATION_CAPABILITY_BINDINGS`
@@ -51,8 +51,8 @@ The coherence verifier fails if any of these projections diverge.
 
 - `agent.discover` and `agent.invoke` remain on the Solana Agent Exchange
   lane. The Solana registry identity is not silently advertised as Stellar.
-- `payroll.settle` is now `testnet_verified` from the confirmed evidence packet
-  in `docs/evidence/stellar-testnet-payroll-e2e.json`. This proves the guarded
+- `payroll.settle` is `testnet_verified` from the confirmed evidence packet in
+  `docs/evidence/stellar-testnet-payroll-e2e.json`. This proves the guarded
   Kernel-to-Horizon settlement path on Testnet; it does not imply Mainnet
   readiness or that private payroll inputs are published.
 - The shared `StellarHorizonTransport` supports a guarded,
