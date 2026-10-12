@@ -138,6 +138,7 @@ type StellarRecord = {
 };
 
 const DEFAULT_HORIZON_URL = "https://horizon-testnet.stellar.org";
+const DEFAULT_HORIZON_TIMEOUT_MS = 10_000;
 
 /**
  * Horizon boundary for Stellar. Product code only supplies a workflow intent;
@@ -153,6 +154,7 @@ export class StellarHorizonTransport implements StellarTransport {
     horizonUrl = process.env.PDAO_STELLAR_TESTNET_HORIZON_URL?.trim() || DEFAULT_HORIZON_URL,
     private readonly broadcastEnabledFlag = process.env.PDAO_STELLAR_TESTNET_BROADCAST_ENABLED === "1"
       && process.env.PDAO_STELLAR_TESTNET_E2E_APPROVED === "1",
+    private readonly requestTimeoutMs = parseTimeout(process.env.PDAO_STELLAR_HORIZON_TIMEOUT_MS),
   ) {
     if (!/^https:\/\//i.test(horizonUrl)) throw new Error("Stellar Horizon must use HTTPS.");
     this.horizonUrl = horizonUrl.replace(/\/$/, "");
@@ -179,13 +181,16 @@ export class StellarHorizonTransport implements StellarTransport {
   }
 
   async recoverAccount(publicKey: string): Promise<StellarRecoveredAccount> {
-    const { Keypair, Horizon } = await import("@stellar/stellar-sdk");
+    const { Keypair } = await import("@stellar/stellar-sdk");
     try {
       Keypair.fromPublicKey(publicKey);
     } catch {
       throw new Error("Stellar account public key is malformed.");
     }
-    const account = await new Horizon.Server(this.horizonUrl).loadAccount(publicKey);
+    const account = await this.request<StellarAccountResponse>(`/accounts/${encodeURIComponent(publicKey)}`);
+    if (typeof account.sequence !== "string" || !Array.isArray(account.balances)) {
+      throw new Error("Stellar Horizon returned a malformed account response.");
+    }
     const health = await this.health();
     return {
       network: "stellar-testnet",
@@ -324,11 +329,10 @@ export class StellarHorizonTransport implements StellarTransport {
   private async buildPaymentTransaction(intent: ExecutionIntent<unknown>, payment: StellarPaymentPayload | StellarPayrollSettlementPayload): Promise<{ xdr: string }> {
     const payer = intent.accounts.find((account) => account.role === "payer" || account.role === "authority");
     if (!payer) throw new Error("Stellar payment requires a payer or authority account.");
-    const { Keypair, Horizon, Memo, Networks, Operation, TransactionBuilder, Asset } = await import("@stellar/stellar-sdk");
+    const { Account, Keypair, Memo, Networks, Operation, TransactionBuilder, Asset } = await import("@stellar/stellar-sdk");
     try { Keypair.fromPublicKey(payer.address); } catch { throw new Error("Stellar payment contains an invalid payer account."); }
-    const server = new Horizon.Server(this.horizonUrl);
-    await this.recoverAccount(payer.address);
-    const source = await server.loadAccount(payer.address);
+    const recovered = await this.recoverAccount(payer.address);
+    const source = new Account(payer.address, recovered.sequence);
     const fee = await this.estimateFee(intent);
     let builder = new TransactionBuilder(source, {
       fee: fee.atomicAmount,
@@ -353,11 +357,33 @@ export class StellarHorizonTransport implements StellarTransport {
   }
 
   private async request<T>(path: string): Promise<T> {
-    const response = await this.fetchImpl(`${this.horizonUrl}${path}`, { headers: { Accept: "application/json" } });
-    const body = await response.json().catch(() => ({}));
-    if (!response.ok) throw new Error(`Stellar Horizon HTTP ${response.status}`);
-    return body as T;
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), this.requestTimeoutMs);
+    try {
+      const response = await this.fetchImpl(`${this.horizonUrl}${path}`, {
+        headers: { Accept: "application/json" },
+        signal: controller.signal,
+      });
+      const body = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(`Stellar Horizon HTTP ${response.status}`);
+      return body as T;
+    } catch (error) {
+      if (controller.signal.aborted) throw new Error(`Stellar Horizon request timed out after ${this.requestTimeoutMs}ms.`);
+      throw error;
+    } finally {
+      clearTimeout(timer);
+    }
   }
+}
+
+type StellarAccountResponse = {
+  sequence?: unknown;
+  balances?: unknown;
+};
+
+function parseTimeout(value: string | undefined): number {
+  const parsed = Number(value || DEFAULT_HORIZON_TIMEOUT_MS);
+  return Number.isFinite(parsed) && parsed >= 250 ? Math.floor(parsed) : DEFAULT_HORIZON_TIMEOUT_MS;
 }
 
 function parsePaymentPayload(payload: unknown, capability: CapabilityId): StellarPaymentPayload | StellarPayrollSettlementPayload | undefined {

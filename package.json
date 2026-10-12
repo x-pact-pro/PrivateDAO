@@ -117,6 +117,7 @@
     "verify:stellar-product-contract": "node --import tsx scripts/verify-stellar-product-contract.mjs",
     "verify:stellar:coherence": "node --import tsx scripts/verify-stellar-system-coherence.mjs",
     "test:stellar:signer-boundary": "node --import tsx scripts/test-stellar-signer-boundary.mjs",
+    "test:stellar:timeout": "node --import tsx scripts/test-stellar-timeout.mjs",
   "test:stellar:payroll-prep": "node --import tsx scripts/test-stellar-payroll-settlement-prep.mjs",
   "test:stellar:payroll-kernel": "node --import tsx scripts/test-stellar-payroll-kernel.mjs",
   "test:stellar:kernel-boundary": "node scripts/test-stellar-kernel-boundary.mjs",
