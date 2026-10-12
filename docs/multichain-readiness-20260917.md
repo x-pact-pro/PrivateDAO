@@ -27,6 +27,7 @@ support.
 ## Product Evidence
 
 - Application bindings: `7` products and the current generated binding set.
+- Declared commercial capability rows: `107`.
 - Native capability registry: `216` rows, `74` testnet-verified, `9`
   devnet-verified, `2` mainnet-live, bridge-free.
 - The strict `verify:11-network-e2e` gate currently reports eight complete
