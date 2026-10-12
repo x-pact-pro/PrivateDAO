@@ -33,11 +33,23 @@ const rows = networks.map((network) => {
       .map((key) => key.slice(network.length + 1)),
   )];
   const incomplete = products.filter((product) => !productCapabilities.get(`${network}:${product}`)?.verified);
+  const missingCapabilities = incomplete.map((product) => {
+    const entries = [...buildNativeCapabilityRegistry()].filter(
+      (entry) => entry.declared && entry.network === network && entry.product === product,
+    );
+    return {
+      product,
+      capabilities: entries
+        .filter((entry) => entry.status !== "testnet_verified" && entry.status !== "devnet_verified")
+        .map((entry) => ({ capability: entry.capability, status: entry.status, evidence: entry.evidence })),
+    };
+  });
   return {
     network,
     declaredProducts: products.length,
     completeProducts: products.length - incomplete.length,
     incompleteProducts: incomplete,
+    missingCapabilities,
     status: incomplete.length === 0 ? "COMPLETE" : "INCOMPLETE",
   };
 });
