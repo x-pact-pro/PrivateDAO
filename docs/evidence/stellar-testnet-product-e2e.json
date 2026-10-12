@@ -1,0 +1,156 @@
+{
+  "schema": "privatedao.stellar-testnet-product-e2e.v1",
+  "network": "stellar-testnet",
+  "environment": "testnet",
+  "provider": "stellar-testnet-horizon",
+  "executionPath": "product-gateway->protocol->kernel->stellar-adapter->horizon",
+  "signerPublicKey": "GBBDH5SMLNRE5FSPNEGISMWSSZBV7OE4L5DUC7BRTWJCJSVYDODJK32L",
+  "broadcastExecuted": true,
+  "capabilityCount": 9,
+  "preparedOnly": [
+    "payroll.settle"
+  ],
+  "results": [
+    {
+      "product": "blind-verification",
+      "capability": "verification.blind.prove",
+      "network": "stellar-testnet",
+      "provider": "stellar-testnet-horizon",
+      "state": "confirmed",
+      "transactionHash": "48f9a7c780924548ecd3caf44c117007c354de11ac03ca81b38faa5d95a39966",
+      "ledger": "5148657",
+      "explorerUrl": "https://stellar.expert/explorer/testnet/tx/48f9a7c780924548ecd3caf44c117007c354de11ac03ca81b38faa5d95a39966",
+      "asset": "XLM",
+      "workflow": {
+        "workflowId": "stellar-testnet:verification.blind.prove:1791766866498",
+        "inputCommitment": "36126e8a6ce98c79329f696b67bef6491461c1008e08f285e4ef47d03c8f28d9"
+      }
+    },
+    {
+      "product": "record-verification",
+      "capability": "verification.record.create",
+      "network": "stellar-testnet",
+      "provider": "stellar-testnet-horizon",
+      "state": "confirmed",
+      "transactionHash": "9d415e3509e6027614013ccd298a0e88091f77daa2c468fc8bae5982300acb86",
+      "ledger": "5148658",
+      "explorerUrl": "https://stellar.expert/explorer/testnet/tx/9d415e3509e6027614013ccd298a0e88091f77daa2c468fc8bae5982300acb86",
+      "asset": "XLM",
+      "workflow": {
+        "workflowId": "stellar-testnet:verification.record.create:1791766873228",
+        "inputCommitment": "1d18b134209e2ae8f472dfb6a5bc7ca57334f2ac7aa98d480311447a078f92d5"
+      }
+    },
+    {
+      "product": "record-verification",
+      "capability": "verification.record.verify",
+      "network": "stellar-testnet",
+      "provider": "stellar-testnet-horizon",
+      "state": "confirmed",
+      "transactionHash": "6c4fc117c39590cc92e90821f502c8ce49c6ffac6a399a12e6e8e165bca1b008",
+      "ledger": "5148659",
+      "explorerUrl": "https://stellar.expert/explorer/testnet/tx/6c4fc117c39590cc92e90821f502c8ce49c6ffac6a399a12e6e8e165bca1b008",
+      "asset": "XLM",
+      "workflow": {
+        "workflowId": "stellar-testnet:verification.record.verify:1791766877907",
+        "inputCommitment": "dd039b084fd0e86989b68def18ce0dd7d59d59791ee883d504b5d974b7bf1d47"
+      }
+    },
+    {
+      "product": "payroll",
+      "capability": "payroll.calculate",
+      "network": "stellar-testnet",
+      "provider": "stellar-testnet-horizon",
+      "state": "confirmed",
+      "transactionHash": "2762c13176a65ff0ff6a1d33d68970ded7f1fe96c09e38a336009ed89f55580e",
+      "ledger": "5148660",
+      "explorerUrl": "https://stellar.expert/explorer/testnet/tx/2762c13176a65ff0ff6a1d33d68970ded7f1fe96c09e38a336009ed89f55580e",
+      "asset": "XLM",
+      "workflow": {
+        "workflowId": "stellar-testnet:payroll.calculate:1791766882957",
+        "inputCommitment": "056974089812016394fa31e3a6bcfc1f7b160aca68df0bfd90b79a59de36049a",
+        "policyCommitment": "1b6c7f6ec4fb492545266ed52d40eb3622dedab4597637c7add2b3cae81174be"
+      }
+    },
+    {
+      "product": "payroll",
+      "capability": "payroll.approve",
+      "network": "stellar-testnet",
+      "provider": "stellar-testnet-horizon",
+      "state": "confirmed",
+      "transactionHash": "d7d5a0977741b5316936e115f3632dbb1f32b1ad285c44b4dcaabc9e279e7ae1",
+      "ledger": "5148661",
+      "explorerUrl": "https://stellar.expert/explorer/testnet/tx/d7d5a0977741b5316936e115f3632dbb1f32b1ad285c44b4dcaabc9e279e7ae1",
+      "asset": "XLM",
+      "workflow": {
+        "workflowId": "stellar-testnet:payroll.approve:1791766887918",
+        "inputCommitment": "5c5ab2c1b683459455cec1b6ad450775e21f82a1a84b0ef2b7026193103d1145",
+        "policyCommitment": "3d572566609458e85a4a375e597bf52c0cd7409b47c659cd7ac99dc13d0e230d"
+      }
+    },
+    {
+      "product": "treasury",
+      "capability": "treasury.policy.check",
+      "network": "stellar-testnet",
+      "provider": "stellar-testnet-horizon",
+      "state": "confirmed",
+      "transactionHash": "b69f9c0f47a443ff517edd50b12b5204effddc5c07e567df6940174e39956214",
+      "ledger": "5148662",
+      "explorerUrl": "https://stellar.expert/explorer/testnet/tx/b69f9c0f47a443ff517edd50b12b5204effddc5c07e567df6940174e39956214",
+      "asset": "XLM",
+      "workflow": {
+        "workflowId": "stellar-testnet:treasury.policy.check:1791766892950",
+        "inputCommitment": "b2ab7af557cc1f6cdee3cc684f586954ffab184a76522391e46d901b1f969693",
+        "policyCommitment": "b55079d5f17754a87bc63478106f99585bb4a633e9578f67efe5b8047b6c3a13"
+      }
+    },
+    {
+      "product": "governance",
+      "capability": "governance.proposal.execute",
+      "network": "stellar-testnet",
+      "provider": "stellar-testnet-horizon",
+      "state": "confirmed",
+      "transactionHash": "66bdc160aaae3592cda5973652ec9c978bb64eb9e0ba1034dd047d7de30ae697",
+      "ledger": "5148663",
+      "explorerUrl": "https://stellar.expert/explorer/testnet/tx/66bdc160aaae3592cda5973652ec9c978bb64eb9e0ba1034dd047d7de30ae697",
+      "asset": "XLM",
+      "workflow": {
+        "workflowId": "stellar-testnet:governance.proposal.execute:1791766898165",
+        "inputCommitment": "cda5b3d4963e9da365cc3188868fe51456faaa4375de11e3c807fa9d0a40277d",
+        "policyCommitment": "38360c278378a49ceb651535e40a094ffabbeb7d731dfb5e66d3391813af0871"
+      }
+    },
+    {
+      "product": "auction",
+      "capability": "auction.bid.commit",
+      "network": "stellar-testnet",
+      "provider": "stellar-testnet-horizon",
+      "state": "confirmed",
+      "transactionHash": "cd666e59728c76098e0e009d7289fd53e0b1cfc9c092732d2053c5a0b7d02f2e",
+      "ledger": "5148664",
+      "explorerUrl": "https://stellar.expert/explorer/testnet/tx/cd666e59728c76098e0e009d7289fd53e0b1cfc9c092732d2053c5a0b7d02f2e",
+      "asset": "XLM",
+      "workflow": {
+        "workflowId": "stellar-testnet:auction.bid.commit:1791766903135",
+        "inputCommitment": "805597f0012571e1c19aa0da6d29c6a8ae989b2f98b27de8e349d074bee10ccd"
+      }
+    },
+    {
+      "product": "auction",
+      "capability": "auction.settle",
+      "network": "stellar-testnet",
+      "provider": "stellar-testnet-horizon",
+      "state": "confirmed",
+      "transactionHash": "e468617c87da6dd463057cd50ffb69fcbd7ac9b5ebb6676010523c7f4311b4b3",
+      "ledger": "5148665",
+      "explorerUrl": "https://stellar.expert/explorer/testnet/tx/e468617c87da6dd463057cd50ffb69fcbd7ac9b5ebb6676010523c7f4311b4b3",
+      "asset": "XLM",
+      "workflow": {
+        "workflowId": "stellar-testnet:auction.settle:1791766908151",
+        "inputCommitment": "b69ed4e22bc4556a40a47a779566be8565adf37a3fb9d331b01ba215938e9cd0",
+        "outcomeCommitment": "121f9c74386a685237dadac994fc55044eff7516cdce08ead8d40c61251b48cd"
+      }
+    }
+  ],
+  "generatedAt": "2026-10-12T01:01:52.965Z"
+}

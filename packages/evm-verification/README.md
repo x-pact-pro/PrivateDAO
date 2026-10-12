@@ -40,6 +40,39 @@ deployment evidence only after confirmed on-chain transactions.
 No Mainnet configuration is accepted by this runner. No public RPC fallback is
 used. No mock receipt or synthetic success path exists.
 
+### Base Builder Code attribution
+
+Base Sepolia E2E transactions from the registered deployer wallet use the
+official ERC-8021 `dataSuffix` through `ox/erc8021`. The public Builder Code is
+stored in `base-builder-code.json` and can be overridden with
+`PDAO_BASE_BUILDER_CODE`; `PDAO_BASE_BUILDER_WALLET` must match the wallet that
+Base registered for that code. A mismatched wallet fails closed. Checker EOAs
+are not attributed unless a separate Builder Code is explicitly configured.
+
+Run the local contract-free check with:
+
+```bash
+npm run test:base:builder-code
+```
+
+Historical Base evidence predates this wiring and is therefore labelled as not
+attributed. Future Base receipts expose the configured Builder Code in the
+evidence record. Attribution can be verified in Base's dashboard or by
+decoding the transaction input suffix; it does not change contract calldata
+semantics.
+
+### Public announcement status
+
+PrivateDAO is ready to submit Base Sepolia Builder Code evidence. The public
+integration page and announcement intentionally distinguish:
+
+- `testnet_verified`: the workflow and receipt were verified on Base Sepolia;
+- `configured_pending_fresh_testnet_transaction`: ERC-8021 is wired, but a new
+  funded transaction created after the wiring is still required to prove
+  attribution.
+
+No Base Mainnet execution or grant submission is implied by this status.
+
 The generic runner can be selected with `PDAO_EVM_NETWORKS` for Ethereum
 Sepolia, Base Sepolia, Arbitrum Sepolia, BNB Testnet, Robinhood Testnet,
 Hyperliquid HyperEVM Testnet, or Tempo Testnet. Hyperliquid uses the standard
@@ -48,7 +81,7 @@ token, not the standard EVM gas-balance path. Tempo Testnet is only promoted
 after the same contract-write, receipt, proof, expiry, wrong-chain, altered-
 proof, and revocation checks pass on the Tempo chain itself.
 
-The organizational Treasury, Governance, and Sealed Auction E2E runner uses
+The organizational Treasury, Confidential Payroll, Governance, and Sealed Auction E2E runner uses
 `PDAO_EVM_NETWORK` for one standard-EVM testnet at a time:
 
 ```bash
@@ -66,6 +99,20 @@ Tempo rejects native `msg.value` transfers. The runner requires a funded
 testnet deployer, writes a network-specific evidence file only after all
 receipts and state assertions pass, and rejects unsupported or Mainnet
 networks.
+
+BNB Testnet verification is recorded in
+`deployments/phase-2-e2e-bnb-testnet.json`. Revalidate its on-chain receipts
+without signing or sending anything with:
+
+```bash
+npm run verify:bnb:evidence
+```
+
+The BNB artifact proves the Blind Verification and Record Verification lanes.
+The organizational artifact separately proves Treasury, Confidential Payroll,
+Governance, and Auction on chain 97. Payroll evidence covers commitment,
+Maker/Checker approval, settlement, receipt, and deployed product-specific
+bytecode; it does not claim shielded EVM settlement.
 
 ## Current evidence boundary
 

@@ -85,12 +85,11 @@ assert.equal(products.find((product) => product.id === "blind-verification")?.na
 assert.equal(products.find((product) => product.id === "record-verification")?.name, "Record Verification");
 assert.equal(isRuntimeProductAvailable("blind-verification"), true);
 assert.equal(isRuntimeProductAvailable("record-verification"), true);
-assert.equal(isRuntimeProductAvailable("payroll"), false);
+assert.equal(isRuntimeProductAvailable("payroll"), true);
 assert.equal(isRuntimeProductAvailable("governance"), true);
   assert.equal(isRuntimeProductAvailable("agent"), false);
 assert.equal(isRuntimeCapabilityExecutable("payroll", "payroll.calculate", "solana-devnet"), true);
 assert.equal(isRuntimeCapabilityExecutable("payroll", "payroll.approve", "solana-devnet"), true);
-assert.equal(isRuntimeCapabilityExecutable("payroll", "payroll.settle", "solana-devnet"), false);
 
 const runtime = createPrivateDaoRuntime(registry);
 const protocolRegistry = runtime.protocols;
@@ -98,6 +97,7 @@ const registrations = protocolRegistry.list();
 const expectedRegistrationCount = products.reduce((count, product) => count + product.capabilities.length, 0);
 assert.equal(registrations.length, expectedRegistrationCount);
 assert.equal(protocolRegistry.list("payroll").length, 3);
+assert.equal(protocolRegistry.list("payroll").some((entry) => entry.capability.id === "payroll.settle"), true);
 assert.equal(protocolRegistry.authorize("payroll.approve", "execution.submit", "checker"), true);
 assert.equal(protocolRegistry.authorize("payroll.approve", "execution.submit", "auditor"), false);
 
@@ -302,6 +302,19 @@ assert.throws(
   () => gateway.prepare({ ...intent, context: { ...intent.context, product: "payroll", capability: "payroll.approve" } }, "auditor"),
   (error) => error?.code === "INVALID_INTENT",
 );
+await assert.rejects(
+  () => gateway.prepare({
+    ...intent,
+    context: {
+      ...intent.context,
+      requestId: "solana-payroll-settlement-rejected",
+      idempotencyKey: "solana-payroll-settlement-rejected",
+      product: "payroll",
+      capability: "payroll.settle",
+    },
+  }, "maker"),
+  (error) => error?.code === "UNSUPPORTED_NETWORK",
+);
 
 const emptyRuntime = createPrivateDaoRuntime(new InMemoryProviderRegistry());
 await assert.rejects(
@@ -326,8 +339,9 @@ assert.equal(listApplicationBindings().find((entry) => entry.capability === "ver
 assert.equal(listApplicationBindings().find((entry) => entry.capability === "verification.record.verify")?.mode, "kernel-gateway");
 assert.equal(listApplicationBindings().find((entry) => entry.capability === "agent.discover")?.mode, "kernel-gateway");
 assert.equal(listApplicationBindings().find((entry) => entry.capability === "verification.blind.prove")?.mode, "kernel-gateway");
-assert.equal(listApplicationBindings().find((entry) => entry.capability === "auction.settle")?.mode, "kernel-gateway");
-assert.equal(listApplicationBindings().find((entry) => entry.capability === "auction.bid.commit")?.mode, "kernel-gateway");
+assert.equal(listApplicationBindings().find((entry) => entry.capability === "auction.settle" && entry.network === "ethereum-sepolia")?.mode, "kernel-gateway");
+assert.equal(listApplicationBindings().find((entry) => entry.capability === "auction.bid.commit" && entry.network === "ethereum-sepolia")?.mode, "kernel-gateway");
+assert.equal(listApplicationBindings().find((entry) => entry.capability === "auction.settle" && entry.network === "solana-devnet")?.mode, "kernel-gateway");
 
 let currentTime = "2026-09-09T00:00:00.000Z";
 const expiredKernel = new PrivateDaoKernel(registry, { now: () => currentTime });

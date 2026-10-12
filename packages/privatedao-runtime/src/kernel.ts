@@ -9,6 +9,7 @@ import type {
   CapabilityId,
   NetworkId,
 } from "./index.js";
+import { supportsProductCapability } from "./catalog.js";
 import { isNetworkAvailable } from "./networks.js";
 
 export type KernelErrorCode =
@@ -274,6 +275,13 @@ export class PrivateDaoKernel {
   private validateIntent<TPayload>(intent: ExecutionIntent<TPayload>): void {
     if (!intent.context.requestId || !intent.context.idempotencyKey || !intent.context.network || !intent.context.capability) {
       throw new KernelError("INVALID_INTENT", "Execution intent is missing required context fields.");
+    }
+    if (!supportsProductCapability(intent.context.product, intent.context.network, intent.context.capability)) {
+      throw new KernelError("UNSUPPORTED_NETWORK", "The product capability is not declared for the selected network.", {
+        product: intent.context.product,
+        capability: intent.context.capability,
+        network: intent.context.network,
+      });
     }
     if (intent.expiresAt) {
       const expiresAt = Date.parse(intent.expiresAt);

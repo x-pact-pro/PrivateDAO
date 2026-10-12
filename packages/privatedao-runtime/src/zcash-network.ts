@@ -36,7 +36,7 @@ export const ZCASH_NETWORK_CONFIGS: readonly ZcashNetworkConfig[] = [
 ];
 
 export interface ZcashTransport {
-  health(): Promise<{ ok: boolean; network: NetworkId; latencyMs?: number }>;
+  health(): Promise<{ ok: boolean; network: NetworkId; latencyMs?: number; reason?: string }>;
   prepare<TPayload, TUnsigned>(intent: ExecutionIntent<TPayload>): Promise<PreparedExecution<TUnsigned>>;
   submit<TUnsigned>(execution: PreparedExecution<TUnsigned>, signedPayload: TUnsigned): Promise<{ executionId: string; signatures: string[] }>;
   status(executionId: string): Promise<{ executionId: string; state: ExecutionState; errorCode?: string }>;
@@ -129,7 +129,7 @@ export class ZcashNetworkAdapter implements KernelProvider {
     return this.call(() => this.transport.estimateFee(intent));
   }
 
-  async health(): Promise<{ ok: boolean; network: NetworkId; latencyMs?: number }> {
+  async health(): Promise<{ ok: boolean; network: NetworkId; latencyMs?: number; reason?: string }> {
     const health = await this.call(() => this.transport.health());
     if (health.network !== this.config.network) throw new ZcashAdapterError("NETWORK_MISMATCH", "Zcash RPC health reports a different network.");
     return health;

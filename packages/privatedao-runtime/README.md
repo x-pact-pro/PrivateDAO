@@ -26,7 +26,17 @@ and disabled Mainnet records; configuration presence is not support evidence.
 
 `HttpExecutionTransport` is the production HTTP implementation of that boundary. It maps a configured backend's prepare, submit, status, receipt, and fee-estimate endpoints into the same transport contract, enforces request timeouts, validates lifecycle responses, and fails closed on non-JSON or incomplete responses. It never creates a local execution id, signature, receipt, or success fallback. API authentication is injected through headers by the owning service and is never logged by this package.
 
-`PRODUCT_CATALOG` is the single customer-executable capability surface for the current release. It lists only capabilities with a real provider, transaction lifecycle, receipt path, independent test evidence, and an application binding. Solana Devnet, Ethereum Sepolia, and Tempo Testnet currently expose the verified Blind/Record capability lanes; payroll, treasury, governance, auctions, and agent execution remain limited to the networks explicitly listed by their bindings. Other configured networks remain planned until the same evidence gate is passed.
+`PRODUCT_CATALOG` is the single customer-executable capability surface for the current release. It lists the product/network contracts, while the generated native capability registry applies the stricter evidence gate before a lane is advertised as executable. Current evidence-backed lanes include Solana Devnet payroll calculation/approval and governance/auction runtime paths, Ethereum Sepolia, Tempo Testnet, Base Sepolia, Arbitrum Sepolia, and Robinhood Testnet organizational paths. Zcash Testnet exposes Kernel policy, verification, commitment workflows, and a separately evidenced private payroll settlement lane through the Zallet/Zebra adapter. Umbra is not an active Solana product binding. Each row remains limited to the product, action, asset, receipt, and reconciliation behavior actually evidenced for that network; a network appearing in the catalog alone is not a claim of on-chain settlement support.
+
+Robinhood Testnet has verified organizational E2E evidence for Treasury,
+Governance, and Auctions, while its Blind Verification, Record Verification,
+and Payroll lanes remain explicit Kernel policy paths. Hyperliquid Testnet has
+explicit Kernel policy lanes for the supported organizational workflows. These
+policy lanes provide network-scoped validation, approvals, commitments, and
+receipt-shaped outcomes through the Kernel, but are not advertised as on-chain
+settlement or mainnet support without independent funded adapter evidence.
+
+For Hyperliquid, `hyperliquid-testnet` refers to HyperEVM (chain ID 998), the EVM execution surface. HyperCore is the native Hyperliquid trading/state layer, not a second EVM network. PrivateDAO must keep these surfaces separate: HyperCore data or trading actions require a dedicated native API/precompile adapter and independent evidence; they must not be inferred from HyperEVM RPC health or policy-lane readiness.
 
 `NETWORK_MATRIX` records the requested network roadmap without making unsupported claims. Planned entries are metadata only and cannot be resolved by a provider registry until an adapter is implemented and tested.
 
@@ -35,6 +45,22 @@ The migration rule is strict: product code may depend on these contracts, but pr
 `registerCatalogCapabilities` materializes the current product catalog in the Protocol registry with shared role and permission policies. It only registers contracts; it does not execute a transaction or create a provider success path. Applications still have to inject a real adapter and provide independent network evidence before declaring an action supported.
 
 `ProductExecutionGateway` is the application boundary for those contracts. It checks product ownership and role permissions before delegating prepare, submit, status, or receipt work to `PrivateDaoKernel`; it does not bypass provider lifecycle checks or create synthetic receipts.
+
+## Wallet Recovery Boundary
+
+Recovery is network-family-specific and remains behind the Kernel boundary. EVM
+adapters recover an external wallet session and re-check the expected chain ID;
+Zcash adapters recover only a session that reports `zcash-testnet`; Solana uses
+the browser wallet adapter's reconnect/session boundary. A network mismatch is
+rejected before signing or submission. HyperCore is a stateless native API
+readiness lane in the current release, so it has no wallet recovery or signing
+claim until a native execution adapter is independently implemented and tested.
+
+The recovery contract is covered by `npm run test:runtime:wallet-recovery`.
+That test uses injected wallet/session boundaries and verifies Solana browser
+reconnect/idempotency, EVM reconnects including HyperEVM, Zcash Testnet
+reconnects, HyperCore stateless health reconnects, and fail-closed
+wrong-network rejection without keys, seed material, or network writes.
 
 `createPrivateDaoRuntime` is the standard composition root for applications. It
 creates one protocol registry, registers the complete product catalog, and

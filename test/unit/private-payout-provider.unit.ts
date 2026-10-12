@@ -11,12 +11,12 @@ describe("private payout provider", () => {
     assert.equal(status.sandbox, true);
   });
 
-  it("fails closed when the default Umbra provider is unavailable", async () => {
+  it("fails closed when the legacy Solana private-payout provider is unavailable", async () => {
     try {
       await getPrivatePayoutProvider("default");
-      assert.fail("expected unavailable Umbra provider to fail closed");
+      assert.fail("expected the disabled legacy Solana provider to fail closed");
     } catch (error) {
-      assert.match(error instanceof Error ? error.message : String(error), /Umbra private payout provider is not configured/);
+      assert.match(error instanceof Error ? error.message : String(error), /No active Solana private-payout provider is configured/);
     }
   });
 

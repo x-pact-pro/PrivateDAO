@@ -472,8 +472,8 @@ test("MCP and A2A machine entrypoints remain callable", async () => {
   assert.match(hub.body, /Claude/);
   assert.match(hub.body, /Grok/);
   assert.match(hub.body, /OpenClaw/);
-  assert.ok((hub.body.match(/MCP VERIFIED/g) || []).length >= 8);
-  assert.match(hub.body, /Client-Level MCP Verification/);
+  assert.doesNotMatch(hub.body, /MCP VERIFIED/);
+  assert.doesNotMatch(hub.body, /Client-Level MCP Verification/);
   for (const asset of ["openai-knot.svg", "claude-symbol.svg", "grok-symbol.svg", "openclaw-symbol.png"]) {
     assert.match(hub.body, new RegExp(`/assets/clients/${asset}`));
     const response = await request(`/assets/clients/${asset}`);
@@ -483,8 +483,8 @@ test("MCP and A2A machine entrypoints remain callable", async () => {
   assert.doesNotMatch(hub.body, /cdn\.simpleicons|claude\.ai\/favicon|grok\.com\/images\/favicon/);
   for (const path of ["/connect/chatgpt", "/connect/claude", "/connect/grok", "/connect/openclaw"]) {
     const page = await request(path);
-    assert.match(page.body, /MCP VERIFIED/, path);
-    assert.doesNotMatch(page.body, /not a verified Grok client result|No OpenClaw installation was available/, path);
+    assert.doesNotMatch(page.body, /MCP VERIFIED/, path);
+    assert.doesNotMatch(page.body, /PrivateDAO-tested MCP interoperability/, path);
   }
   const robots = await request("/robots.txt");
   assert.match(robots.body, /Allow: \/connect\/grok/);

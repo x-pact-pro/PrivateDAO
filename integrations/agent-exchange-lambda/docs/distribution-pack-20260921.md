@@ -4,6 +4,10 @@ Status: prepared for distribution; not published as a social post.
 
 ## Client-level MCP verification
 
+This interoperability evidence is maintained in GitHub documentation only. The
+public connection hub intentionally shows connection instructions and endpoint
+details without verification badges or client-level certification marks.
+
 PrivateDAO-tested production MCP interoperability:
 
 - ChatGPT — MCP VERIFIED

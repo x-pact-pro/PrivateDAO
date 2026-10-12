@@ -69,16 +69,32 @@ finality, or an on-chain signature.
 
 ## Network truth
 
-Only `solana-devnet` is currently an available runtime network in the Kernel
-catalog. Other requested networks remain planned until each has a real
-provider adapter, transaction lifecycle, receipt path, and independent tests.
+The current Kernel catalog contains independently gated Testnet lanes. A
+network is executable only for the product capability that has both an
+application binding and matching evidence; catalog presence alone is not a
+support claim.
 
-Phase 1 adds a reusable `EvmNetworkAdapter` boundary and separated testnet/
-mainnet configuration records for Ethereum, BNB Smart Chain, Arbitrum, Base,
-Robinhood Chain, and Tempo. These records do not activate a network, provide
-an RPC secret, or make a product executable. Mainnet configs are deliberately
-disabled; an EVM capability remains planned until a real transport, deployment,
-receipt path, and independent test evidence are supplied.
+- `solana-devnet`: Kernel-native payroll, governance, and auction paths with
+  Devnet evidence.
+- `ethereum-sepolia`, `base-sepolia`, `arbitrum-sepolia`, `bnb-testnet`,
+  `robinhood-testnet`, `hyperliquid-testnet`, and `tempo-testnet`: shared EVM
+  lifecycle with separated chain IDs, RPC configuration, fee rules, receipts,
+  and independent verification evidence. Hyperliquid here means HyperEVM;
+  HyperCore remains a separate native API surface.
+- `zcash-testnet`: native UTXO/Zallet-Zebra boundary with a separately
+  evidenced payroll settlement path. It is not an EVM lane.
+- `stellar-testnet`: Horizon adapter with ten Kernel product capabilities
+  covering verification, payroll calculation/approval, treasury policy,
+  governance, auction workflow commitments, and a prepared-only payroll
+  settlement path. Nine capabilities have confirmed transactions; payroll
+  settlement remains `testnet_ready` until a funded receipt exists. The
+  confirmed transactions prove product binding and workflow evidence; they do
+  not claim private business data storage or financial settlement on Stellar.
+
+`agent` capabilities remain explicitly scoped to Solana in the catalog, and
+`payroll.settle` is exposed on Stellar only as a Kernel-ready preparation and
+signing path; it is not advertised as independently verified until a funded
+Testnet receipt exists. Mainnet configurations remain disabled everywhere.
 
 ## Migration rule
 

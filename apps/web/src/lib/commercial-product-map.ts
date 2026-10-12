@@ -108,8 +108,8 @@ export const commercialProductGroups: readonly CommercialProductGroup[] = [
     ],
   },
   {
-    title: "Ecosystem Products",
-    summary: "Extend the same trust model to agents and consumer experiences.",
+    title: "Agent Ecosystem",
+    summary: "Extend the same trust model to machine-facing services.",
     icon: Bot,
     products: [
       {

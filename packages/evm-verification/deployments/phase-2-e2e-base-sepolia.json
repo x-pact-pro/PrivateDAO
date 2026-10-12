@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-17T09:43:13.310Z",
+  "generatedAt": "2026-10-11T12:18:57.009Z",
   "status": "testnet_verified",
   "scope": [
     "base-sepolia"
@@ -8,6 +8,11 @@
     {
       "network": "base-sepolia",
       "chainId": 84532,
+      "attribution": {
+        "builderCode": "bc_dxjpt7gf",
+        "walletAddress": "0x1c3D6757651B617D7e5c08aE6F7a7F65eEafD75F",
+        "dataSuffixConfigured": true
+      },
       "contracts": {
         "verifier": {
           "address": "0xdd01da1b53ba46bf1ce8c71bc1c5e86e8784694b",
@@ -26,22 +31,26 @@
         }
       },
       "record": {
-        "txHash": "0x7b49ff793e588760095b234189c4fa35829be5dc960f2d22f4d1683a4e16bbe2",
-        "blockNumber": "46934942",
-        "verificationId": "0x20e1ef89e6e1080e58c4db810a06313825373a9745b3007da38a9b7fcc16ee48",
-        "explorerUrl": "https://sepolia.basescan.org/tx/0x7b49ff793e588760095b234189c4fa35829be5dc960f2d22f4d1683a4e16bbe2"
+        "workflow": "record-verification",
+        "txHash": "0xbf20fd421d7394409cf9cae9a117298a9f1ae0dcc61c2295f20799f9f39e475a",
+        "blockNumber": "47976403",
+        "status": "success",
+        "verificationId": "0x5783e0ceb807128329110d44088ab6e48960f36b84fe9ba04c4fd7717ce00461",
+        "explorerUrl": "https://sepolia.basescan.org/tx/0xbf20fd421d7394409cf9cae9a117298a9f1ae0dcc61c2295f20799f9f39e475a"
       },
       "blind": {
-        "txHash": "0x220af80816988d9d19ab102160b8946ebac428caef6e65150534f8544917d243",
-        "blockNumber": "46934944",
-        "verificationId": "0x624a5057d97b5f6db52390a1cb12e85f58f1beac4177298ce93a525e10f11de8",
-        "explorerUrl": "https://sepolia.basescan.org/tx/0x220af80816988d9d19ab102160b8946ebac428caef6e65150534f8544917d243"
+        "workflow": "blind-verification",
+        "txHash": "0x5cfa3c8a90b5c6d48561191e26aaf54fc1fd8451909a6c565e79ba0b3dae2ef5",
+        "blockNumber": "47976411",
+        "status": "success",
+        "verificationId": "0xaf7958daa37e266ba64ff87382bfb38f5deb8e48724926b9eb23a0dcd749bbe2",
+        "explorerUrl": "https://sepolia.basescan.org/tx/0x5cfa3c8a90b5c6d48561191e26aaf54fc1fd8451909a6c565e79ba0b3dae2ef5"
       },
       "revocation": {
-        "recordTxHash": "0x52b0565f2c5629822443bdfd390a898a2c876d4be60aea348d1c832cdb765ef5",
-        "blindTxHash": "0xdc30bb8f1fe8f951fbf189fb1fbb54526eadecdda437185381c647e336ba1ba5",
-        "disposableRecordVerificationId": "0x9840a0471ec5371bc8956f2aee53722d8182f0560b5dd9e04e86c8e230525d92",
-        "disposableBlindVerificationId": "0x68e8da879ba2bfd9590bea92c2a6e51cd3b557b77488a3c5956c33b04a86ffce"
+        "recordTxHash": "0xd87c4d7edb4c0f3ed1e2b90f1900b5d21efd0f9016849bb0a1bf0f174aed06bc",
+        "blindTxHash": "0xe4a98e7c53c11ca19242d29ab131dce263182f884864056546b60c7eb7b4161d",
+        "disposableRecordVerificationId": "0x8a8d7b9a90bebb6c61160811ffdd6b38688c72eb4546143743c5e703638c2c70",
+        "disposableBlindVerificationId": "0xbf08420fc7aa7e81d6a37f2bd5afdee7b04522fc5145678eb94d38fa48c05c38"
       },
       "checks": {
         "recordVerified": true,
@@ -54,8 +63,8 @@
         "blindProofRevoked": true
       },
       "links": {
-        "record": "https://privatedao.org/verify/evm?network=base-sepolia&type=record&id=0x20e1ef89e6e1080e58c4db810a06313825373a9745b3007da38a9b7fcc16ee48",
-        "blind": "https://privatedao.org/verify/evm?network=base-sepolia&type=blind&id=0x624a5057d97b5f6db52390a1cb12e85f58f1beac4177298ce93a525e10f11de8"
+        "record": "https://privatedao.org/verify/evm?network=base-sepolia&type=record&id=0x5783e0ceb807128329110d44088ab6e48960f36b84fe9ba04c4fd7717ce00461",
+        "blind": "https://privatedao.org/verify/evm?network=base-sepolia&type=blind&id=0xaf7958daa37e266ba64ff87382bfb38f5deb8e48724926b9eb23a0dcd749bbe2"
       }
     }
   ]

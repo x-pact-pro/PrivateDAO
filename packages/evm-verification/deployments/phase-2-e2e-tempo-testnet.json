@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-19T00:32:06.264Z",
+  "generatedAt": "2026-10-11T12:29:50.126Z",
   "status": "testnet_verified",
   "scope": [
     "tempo-testnet"
@@ -8,6 +8,9 @@
     {
       "network": "tempo-testnet",
       "chainId": 42431,
+      "attribution": {
+        "dataSuffixConfigured": false
+      },
       "contracts": {
         "verifier": {
           "address": "0xbf495e8147ab23bfa2024eae7c0d2f54af40279c",
@@ -26,22 +29,26 @@
         }
       },
       "record": {
-        "txHash": "0x7156e9914bb5891b590bad99ca3048e0ba3eacf5d2f88d43dad2d6055649d019",
-        "blockNumber": "35909988",
-        "verificationId": "0x6ab542c85b770aa30430082c0a3dbd040bbcac1bd45a216ec3321c56c298951b",
-        "explorerUrl": "https://explore.testnet.tempo.xyz/tx/0x7156e9914bb5891b590bad99ca3048e0ba3eacf5d2f88d43dad2d6055649d019"
+        "workflow": "record-verification",
+        "txHash": "0x907d2b9a760d0c82b1dd9259b45cf9510f31f2d9f81adf218528e40e0244e86b",
+        "blockNumber": "39129885",
+        "status": "success",
+        "verificationId": "0x4d6d909aee77a746aeb87a12aa5db3f58c4446bbd17e099dd5959fe3eff889a5",
+        "explorerUrl": "https://explore.testnet.tempo.xyz/tx/0x907d2b9a760d0c82b1dd9259b45cf9510f31f2d9f81adf218528e40e0244e86b"
       },
       "blind": {
-        "txHash": "0xab91642626e65ed076e148c2fd88b8936b60b12341ebb08d8712299d07e76b3f",
-        "blockNumber": "35909993",
-        "verificationId": "0x74338a713817886fe22f7628ba8701d6346fb1207b30464e3a20341e7ad47c63",
-        "explorerUrl": "https://explore.testnet.tempo.xyz/tx/0xab91642626e65ed076e148c2fd88b8936b60b12341ebb08d8712299d07e76b3f"
+        "workflow": "blind-verification",
+        "txHash": "0x536a5f93b4f631448bf423f7558da5b1713dd949847aaeaefdb1ec4af8e0d4cd",
+        "blockNumber": "39129911",
+        "status": "success",
+        "verificationId": "0x73971ebfc8ea613c69e8679996dfda2a790a408483507a055e9f81bc58fc1c6f",
+        "explorerUrl": "https://explore.testnet.tempo.xyz/tx/0x536a5f93b4f631448bf423f7558da5b1713dd949847aaeaefdb1ec4af8e0d4cd"
       },
       "revocation": {
-        "recordTxHash": "0x70ce47a26c8135725d5160f86610180b8b16d82cd246d13a0b3e2d08a19c5b3e",
-        "blindTxHash": "0x1cef66c542413c0ab0db19dbe2b24b01d793dac1317c5b338a487b5f37ab5124",
-        "disposableRecordVerificationId": "0xc6ab4294d700e3053070daef5b60c928c27099467a1c5594fa5844ef1ba8889e",
-        "disposableBlindVerificationId": "0x9b134b887d221fc2ac0ee5995c5388d277c21b38d285660394db52d81ee778a5"
+        "recordTxHash": "0x9d30e98faa4c74e80495cf5cc51d3c9d1720cda694736f6255f34d35be8a1223",
+        "blindTxHash": "0xd505b7e5879df474b996ca1328784f5e678edba6616b79b669cd501b259c5abc",
+        "disposableRecordVerificationId": "0xd2cae558167e9110045e93181196d0135c391929e2610f39ca414b61bcc3e1a5",
+        "disposableBlindVerificationId": "0xb14b5398b60b3de875c1c181635c3e5a53eb54dce2045dfd8780b6b072d6a0a4"
       },
       "checks": {
         "recordVerified": true,
@@ -54,8 +61,8 @@
         "blindProofRevoked": true
       },
       "links": {
-        "record": "https://privatedao.org/verify/evm?network=tempo-testnet&type=record&id=0x6ab542c85b770aa30430082c0a3dbd040bbcac1bd45a216ec3321c56c298951b",
-        "blind": "https://privatedao.org/verify/evm?network=tempo-testnet&type=blind&id=0x74338a713817886fe22f7628ba8701d6346fb1207b30464e3a20341e7ad47c63"
+        "record": "https://privatedao.org/verify/evm?network=tempo-testnet&type=record&id=0x4d6d909aee77a746aeb87a12aa5db3f58c4446bbd17e099dd5959fe3eff889a5",
+        "blind": "https://privatedao.org/verify/evm?network=tempo-testnet&type=blind&id=0x73971ebfc8ea613c69e8679996dfda2a790a408483507a055e9f81bc58fc1c6f"
       }
     }
   ]

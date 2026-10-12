@@ -17,6 +17,7 @@ import {
 import { privateKeyToAccount } from "viem/accounts";
 import { createClient as createTempoClient } from "viem/tempo";
 import { tempoModerato } from "viem/chains";
+import { Attribution } from "ox/erc8021";
 import { EVM_NETWORK_CONFIGS, EvmNetworkAdapter, InMemoryProtocolRegistry, ViemEvmTransport } from "../../privatedao-runtime/src/index.ts";
 
 const { groth16 } = snarkjs;
@@ -24,6 +25,9 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../.
 const PACKAGE = path.join(ROOT, "packages/evm-verification");
 const CIRCUIT = "private_dao_blind_policy_overlay";
 const TEMPO_FEE_TOKEN = "0x20c0000000000000000000000000000000000001";
+const erc20BalanceAbi = parseAbi(["function balanceOf(address) view returns (uint256)"]);
+const BASE_BUILDER_CODE = process.env.PDAO_BASE_BUILDER_CODE?.trim() || "bc_dxjpt7gf";
+const BASE_BUILDER_WALLET = (process.env.PDAO_BASE_BUILDER_WALLET?.trim() || "0x1c3D6757651B617D7e5c08aE6F7a7F65eEafD75F").toLowerCase();
 const RECEIPT_TIMEOUT_MS = Number(process.env.PRIVATEDAO_EVM_RECEIPT_TIMEOUT_MS || 120_000);
 const FIELD = 21888242871839275222246405745257275088548364400416034343698204186575808495617n;
 const PRODUCT_ID = keccak256(toBytes("blind-verification"));
@@ -113,6 +117,12 @@ function chainFor(network) {
     nativeCurrency: { name: network.nativeAsset, symbol: network.nativeAsset, decimals: 18 },
     rpcUrls: { default: { http: [process.env[network.rpcEnv]] } },
   });
+}
+
+function builderDataSuffix(network, account) {
+  if (network.id !== "base-sepolia") return undefined;
+  expect(account.address.toLowerCase() === BASE_BUILDER_WALLET, "Base Builder Code wallet does not match the E2E deployer.");
+  return Attribution.toDataSuffix({ codes: [BASE_BUILDER_CODE] });
 }
 
 function proofArgs(proof) {
@@ -207,11 +217,12 @@ async function main() {
     if (!rpcUrl || !/^https:\/\//.test(rpcUrl)) throw new Error(`${network.rpcEnv} must be an explicit HTTPS RPC URL.`);
     const chain = chainFor(network);
     const transport = http(rpcUrl, { timeout: 30_000 });
+    const dataSuffix = builderDataSuffix(network, account);
     const tempoClient = network.id === "tempo-testnet"
       ? createTempoClient({ account, chain: chain.extend({ feeToken: TEMPO_FEE_TOKEN }), transport })
       : null;
     const publicClient = tempoClient ?? createPublicClient({ chain, transport });
-    const wallet = tempoClient ?? createWalletClient({ account, chain, transport });
+    const wallet = tempoClient ?? createWalletClient({ account, chain, transport, ...(dataSuffix ? { dataSuffix } : {}) });
     const observedChainId = await publicClient.getChainId();
     expect(observedChainId === network.chainId, `${network.id} RPC chain mismatch: ${observedChainId}`);
     const config = EVM_NETWORK_CONFIGS.find((entry) => entry.network === network.id);
@@ -225,8 +236,10 @@ async function main() {
     });
     const health = await adapter.health();
     expect(health.ok && health.chainId === String(network.chainId), `${network.id} Kernel adapter health failed`);
-    const balance = await publicClient.getBalance({ address: account.address });
-    expect(balance > 0n, `${network.id} deployer has no native testnet balance`);
+    const balance = network.id === "tempo-testnet"
+      ? await publicClient.readContract({ address: TEMPO_FEE_TOKEN, abi: erc20BalanceAbi, functionName: "balanceOf", args: [account.address] })
+      : await publicClient.getBalance({ address: account.address });
+    expect(balance > 0n, `${network.id} deployer has no ${network.id === "tempo-testnet" ? "Tempo fee-token" : "native testnet"} balance`);
 
     await mkdir(path.join(PACKAGE, "deployments"), { recursive: true });
     const existing = await readDeployment(network.id);
@@ -323,7 +336,7 @@ async function main() {
     }
     expect(blindRevoked, `${network.id} blind proof revocation did not invalidate the proof`);
 
-    results.push({ network: network.id, chainId: network.chainId, contracts: { verifier, blind, record }, record: { txHash: recordHash, blockNumber: recordReceipt.blockNumber.toString(), verificationId: recordVerificationId, explorerUrl: `${network.explorer}/tx/${recordHash}` }, blind: { txHash: blindHash, blockNumber: blindReceipt.blockNumber.toString(), verificationId: blindVerificationId, explorerUrl: `${network.explorer}/tx/${blindHash}` }, revocation: { recordTxHash: recordRevokeReceipt.signatures[0], blindTxHash: blindRevokeReceipt.signatures[0], disposableRecordVerificationId: revokeRecordVerificationId, disposableBlindVerificationId: revokeBlindVerificationId }, checks: { recordVerified: true, blindProofVerified: true, wrongChainRejected: true, alteredProofRejected: true, expiredRecordRejected: true, expiredBlindRejected: true, recordRevoked: true, blindProofRevoked: true }, links: { record: `https://privatedao.org/verify/evm?network=${network.id}&type=record&id=${recordVerificationId}`, blind: `https://privatedao.org/verify/evm?network=${network.id}&type=blind&id=${blindVerificationId}` } });
+    results.push({ network: network.id, chainId: network.chainId, attribution: dataSuffix ? { builderCode: BASE_BUILDER_CODE, walletAddress: account.address, dataSuffixConfigured: true } : { dataSuffixConfigured: false }, contracts: { verifier, blind, record }, record: { workflow: "record-verification", txHash: recordHash, blockNumber: recordReceipt.blockNumber.toString(), status: "success", verificationId: recordVerificationId, explorerUrl: `${network.explorer}/tx/${recordHash}` }, blind: { workflow: "blind-verification", txHash: blindHash, blockNumber: blindReceipt.blockNumber.toString(), status: "success", verificationId: blindVerificationId, explorerUrl: `${network.explorer}/tx/${blindHash}` }, revocation: { recordTxHash: recordRevokeReceipt.signatures[0], blindTxHash: blindRevokeReceipt.signatures[0], disposableRecordVerificationId: revokeRecordVerificationId, disposableBlindVerificationId: revokeBlindVerificationId }, checks: { recordVerified: true, blindProofVerified: true, wrongChainRejected: true, alteredProofRejected: true, expiredRecordRejected: true, expiredBlindRejected: true, recordRevoked: true, blindProofRevoked: true }, links: { record: `https://privatedao.org/verify/evm?network=${network.id}&type=record&id=${recordVerificationId}`, blind: `https://privatedao.org/verify/evm?network=${network.id}&type=blind&id=${blindVerificationId}` } });
   }
 
   if (activeNetworks.length > 1) {

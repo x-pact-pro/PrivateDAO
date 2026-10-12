@@ -40,7 +40,8 @@
 	redir /benefit /pricing permanent
 	redir /versus /products permanent
 	redir /revenue /pricing permanent
-	redir /services /pricing permanent
+	redir /services /products permanent
+	redir /services/ /products permanent
 	redir /engage /pilots permanent
 	redir /analytics /govern permanent
 	redir /custody /trust permanent
@@ -74,6 +75,12 @@
 	redir /services/txline/ /treasury permanent
 	redir /services/torque-mcp /developers permanent
 	redir /services/torque-mcp/ /developers permanent
+	# The former PDAO Worlds surface is archived and must not fall through to
+	# the static app shell. Keep old links useful without presenting the game.
+	redir /game /products permanent
+	redir /game/* /products permanent
+	redir /gaming /products permanent
+	redir /gaming/* /products permanent
 	redir /whiteprint /whitepaper permanent
 
 	header {

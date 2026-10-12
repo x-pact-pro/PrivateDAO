@@ -65,6 +65,16 @@ npm run verify:web-runtime-catalog >/dev/null
 
 echo "[verify-all] checking application capability bindings"
 npm run verify:application-bindings >/dev/null
+npm run verify:commercial:coherence >/dev/null
+
+echo "[verify-all] checking multichain Kernel product boundaries"
+npm run verify:product-gateway-boundary >/dev/null
+npm run test:native-capability-registry >/dev/null
+npm run verify:native-capability-matrix >/dev/null
+npm run verify:public-game-removed >/dev/null
+npm run test:stellar:product-workflow >/dev/null
+npm run verify:stellar:coherence >/dev/null
+npm run verify:stellar:product-e2e >/dev/null
 
 echo "[verify-all] checking live proof"
 npm run verify:live-proof >/dev/null

@@ -67,6 +67,7 @@ export interface PreparedExecution<TUnsigned = unknown> {
   unsignedPayload: TUnsigned;
   requiredSigners: AccountReference[];
   state: "prepared" | "awaiting_signature";
+  signingMode?: "browser" | "server";
 }
 
 export interface ExecutionReceipt<TResult = unknown> {
@@ -78,6 +79,7 @@ export interface ExecutionReceipt<TResult = unknown> {
   state: Extract<ExecutionState, "confirmed" | "finalized" | "reconciled">;
   signatures: string[];
   result?: TResult;
+  metadata?: Readonly<Record<string, string | number | boolean | null>>;
   reconciliationId?: string;
   proofId?: string;
   createdAt: string;
@@ -133,6 +135,10 @@ export interface ProtocolReceipt<TResult = unknown> extends ExecutionReceipt<TRe
 }
 
 export { InMemoryProviderRegistry, KernelError, PrivateDaoKernel, reconcileSettlements } from "./kernel.js";
+export { SolanaBrowserExecutionProvider } from "./solana-browser-execution-provider.js";
+export type { SolanaBrowserExecutionPayload, SolanaBrowserSignedPayload } from "./solana-browser-execution-provider.js";
+export { SolanaPayrollSettlementProvider } from "./solana-payroll-settlement-provider.js";
+export type { SolanaPayrollSettlementPayload } from "./solana-payroll-settlement-provider.js";
 export type {
   KernelErrorCode,
   KernelEvent,
@@ -174,10 +180,16 @@ export { EvmNetworkAdapter, EvmAdapterError, EVM_NETWORK_CONFIGS } from "./evm-n
 export type { EvmEnvironment, EvmNetworkConfig, EvmTransport, EvmWalletAdapter } from "./evm-network.js";
 export { ViemEvmTransport } from "./evm-viem-transport.js";
 export type { ViemContractWritePayload } from "./evm-viem-transport.js";
+export { BrowserEvmTransport } from "./browser-evm-transport.js";
+export type { BrowserEvmContractWritePayload, BrowserEvmSignedPayload } from "./browser-evm-transport.js";
 export { ZcashNetworkAdapter, ZcashAdapterError, ZCASH_NETWORK_CONFIGS } from "./zcash-network.js";
 export type { ZcashEnvironment, ZcashNetworkConfig, ZcashTransport, ZcashWalletAdapter } from "./zcash-network.js";
 export { ZalletCliTransport } from "./zallet-cli-transport.js";
 export type { ZalletCliTransportOptions, ZcashRecipient, ZcashSendPayload } from "./zallet-cli-transport.js";
+export { StellarNetworkAdapter, StellarAdapterError, StellarHorizonTransport, STELLAR_NETWORK_CONFIGS, STELLAR_TESTNET_NETWORK_PASSPHRASE, STELLAR_KERNEL_CAPABILITIES } from "./stellar-network.js";
+export type { StellarEnvironment, StellarNetworkConfig, StellarPaymentPayload, StellarPayrollRecipient, StellarPayrollSettlementPayload, StellarRecoveredAccount, StellarTransport, StellarUnsignedPayload, StellarSignedPayload } from "./stellar-network.js";
+export { HyperCoreNetworkAdapter } from "./hypercore-network.js";
+export type { HyperCoreHealth, HyperCoreMetaSnapshot, HyperCoreNetworkId } from "./hypercore-network.js";
 export { DeploymentRegistry } from "./deployment-registry.js";
 export type { DeploymentRecord } from "./deployment-registry.js";
 export { createHttpBackedPrivateDaoRuntime } from "./http-runtime.js";
@@ -197,6 +209,8 @@ export type {
 } from "./payroll.js";
 export { registerCatalogCapabilities } from "./product-registry.js";
 export { ProductExecutionGateway } from "./product-gateway.js";
+export { validateStellarProductWorkflow } from "./stellar-product-workflow.js";
+export type { StellarProductWorkflow } from "./stellar-product-workflow.js";
 export {
   EntraIdentityError,
   EntraTenantAuthorizer,
@@ -210,16 +224,14 @@ export type {
   TenantMembership,
   TenantMembershipStore,
 } from "./identity/entra.js";
-export { AzureKeyVaultSecretProvider, EnvironmentSecretProvider, createSecretProvider } from "./azure/secrets.js";
-export type { SecretProvider } from "./azure/secrets.js";
-export { initializeAzureMonitor, SafeKernelTelemetry } from "./azure/monitor.js";
-export type { AzureMonitorOptions } from "./azure/monitor.js";
 export { createPrivateDaoRuntime } from "./runtime.js";
 export type { PrivateDaoRuntime } from "./runtime.js";
 export { PayrollCalculationProvider } from "./payroll-provider.js";
 export type { PayrollCalculationPayload } from "./payroll-provider.js";
 export { PayrollApprovalProvider } from "./payroll-approval-provider.js";
 export type { PayrollApprovalPayload, PayrollApprovalPolicy, PayrollApprovalSignature } from "./payroll-approval-provider.js";
+export { GovernancePolicyProvider } from "./governance-policy-provider.js";
+export type { GovernancePolicyPayload, GovernancePolicySignature } from "./governance-policy-provider.js";
 export { TreasuryPolicyProvider } from "./treasury-policy-provider.js";
 export type { TreasuryPolicyCheckPayload, TreasuryPolicyCheckResult } from "./treasury-policy-provider.js";
 export { RecordCreationProvider, RecordVerificationProvider, RECORD_CANONICALIZATION_VERSION } from "./record-provider.js";
@@ -230,6 +242,7 @@ export { BlindPolicyProofProvider } from "./blind-policy-provider.js";
 export type { BlindPolicyProofPayload, BlindPolicyProofResult } from "./blind-policy-provider.js";
 export { AuctionOutcomeProofProvider } from "./auction-outcome-provider.js";
 export type { AuctionOutcomeProofPayload, AuctionOutcomeProofResult } from "./auction-outcome-provider.js";
+export { buildKernelAuctionBidProof, buildKernelAuctionOutcomeProof } from "./auction-proof-service.js";
 export { AuctionBidCommitProvider } from "./auction-bid-provider.js";
 export type { AuctionBidCommitPayload, AuctionBidCommitResult } from "./auction-bid-provider.js";
 export { buildCapabilityMatrix } from "./capability-matrix.js";

@@ -5,7 +5,7 @@ export type RuntimeNetworkId = (typeof runtimeCatalog.networks)[number]["id"];
 export type RuntimeCapabilityId = (typeof runtimeCatalog.products)[number]["capabilities"][number]["id"];
 export type RuntimeBindingMode = "kernel-gateway" | "legacy-provider" | "unbound";
 
-const VERIFIED_EVIDENCE = new Set(["devnet_verified", "testnet_verified", "mainnet_live"] as const);
+const VERIFIED_EVIDENCE = new Set<string>(["devnet_verified", "testnet_verified", "mainnet_live"]);
 
 export function getRuntimeProduct(productId: RuntimeProductId) {
   const product = runtimeCatalog.products.find((entry) => entry.id === productId);
@@ -35,7 +35,7 @@ export function isRuntimeCapabilityLegacyRoute(
   network: RuntimeNetworkId,
 ): boolean {
   return getRuntimeCapability(productId, capabilityId).applicationBindings.some(
-    (binding) => binding.network === network && binding.mode === "legacy-provider",
+    (binding) => binding.network === network && (binding.mode as RuntimeBindingMode) === "legacy-provider",
   );
 }
 
@@ -48,7 +48,7 @@ export function isRuntimeProductAvailable(productId: RuntimeProductId): boolean 
   // capability can remain visible as roadmap/context, but must not create a
   // misleading "Available now" claim in the commercial surface.
   return product.capabilities.every((capability) =>
-    capability.applicationBindings.some((binding) => binding.mode === "kernel-gateway" && binding.supportsExecution && VERIFIED_EVIDENCE.has(binding.evidenceStatus)),
+    capability.applicationBindings.some((binding) => (binding.mode as RuntimeBindingMode) === "kernel-gateway" && binding.supportsExecution && VERIFIED_EVIDENCE.has(binding.evidenceStatus)),
   );
 }
 

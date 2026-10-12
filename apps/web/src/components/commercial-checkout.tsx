@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ArrowRight, CheckCircle2, Copy, ShieldCheck, Wallet } from "lucide-react";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { Buffer } from "buffer";
@@ -9,7 +9,7 @@ import { createTransferCheckedInstruction, getAssociatedTokenAddress, TOKEN_PROG
 
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { createSolanaBrowserConnection, sendAndConfirmBrowserTransaction } from "@/lib/network-adapters/solana-browser";
+import { createSolanaBrowserConnection, sendBrowserTransaction } from "@/lib/network-adapters/solana-browser";
 import { getSolanaRpcEndpoint } from "@/lib/solana-network";
 
 type LicenseType = "COMMUNITY" | "PROFESSIONAL" | "ORGANIZATION" | "ENTERPRISE";
@@ -38,6 +38,7 @@ type OrderResponse = { ok: boolean; order?: { orderId: string; organizationId: s
 
 type VerifyResponse = {
   ok: boolean;
+  status?: string;
   receipt?: {
     receiptId: string;
     organizationId: string;
@@ -81,6 +82,9 @@ const assetOptions: Array<{ value: PaymentAsset; label: string }> = [
 const commercialCheckoutApiBase = "https://api.privatedao.org/api/v1/commercial/orders";
 const commercialControlPlaneBase = "https://api.privatedao.org";
 const solanaConnection = createSolanaBrowserConnection(getSolanaRpcEndpoint(), "confirmed");
+const checkoutStorageKey = "privatedao:commercial-checkout:v2";
+
+type PaymentState = "idle" | "submitted" | "confirming" | "pending" | "verified" | "failed";
 
 const contactLinks = [
   { label: "Telegram", href: "https://t.me/privateDAOOS" },
@@ -100,7 +104,49 @@ export function CommercialCheckout() {
   const [payment, setPayment] = useState<OrderResponse["payment"]>();
   const [receipt, setReceipt] = useState<VerifyResponse>();
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState<"prepare" | "verify" | null>(null);
+  const [paymentState, setPaymentState] = useState<PaymentState>("idle");
+  const [loading, setLoading] = useState<"prepare" | "pay" | "verify" | null>(null);
+
+  function persistCheckoutState(next: {
+    order?: OrderResponse["order"];
+    payment?: OrderResponse["payment"];
+    paymentHash?: string;
+    paymentState?: PaymentState;
+  }) {
+    try {
+      window.localStorage.setItem(checkoutStorageKey, JSON.stringify(next));
+    } catch {
+      // The in-memory state remains usable when browser storage is unavailable.
+    }
+  }
+
+  useEffect(() => {
+    try {
+      const saved = JSON.parse(window.localStorage.getItem(checkoutStorageKey) || "null") as {
+        order?: OrderResponse["order"];
+        payment?: OrderResponse["payment"];
+        paymentHash?: string;
+        paymentState?: PaymentState;
+      } | null;
+      if (!saved?.order) return;
+      setOrder(saved.order);
+      setPayment(saved.payment);
+      setPaymentHash(saved.paymentHash || "");
+      setPaymentState(saved.paymentState || (saved.paymentHash ? "pending" : "idle"));
+      setCheckout({ checkoutId: saved.order.orderId, organizationId: saved.order.organizationId, organizationName: saved.order.organizationName, licenseType: saved.order.plan, priceUsd: null, cadence: "monthly", trialDays: 14, paymentAsset: saved.order.asset, paymentAssetLabel: saved.order.asset, network: saved.order.network, treasuryAddress: saved.order.treasuryAddress, memo: saved.order.memo });
+    } catch {
+      window.localStorage.removeItem(checkoutStorageKey);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!order) return;
+    try {
+      window.localStorage.setItem(checkoutStorageKey, JSON.stringify({ order, payment, paymentHash, paymentState }));
+    } catch {
+      // Checkout can still be verified from the current page when storage is unavailable.
+    }
+  }, [order, payment, paymentHash, paymentState]);
 
   const canVerify = useMemo(() => Boolean(order?.orderId && paymentHash.trim()), [order, paymentHash]);
 
@@ -118,6 +164,8 @@ export function CommercialCheckout() {
       if (!response.ok || !payload.ok || !payload.order) throw new Error(payload.error || "Checkout preparation failed.");
       setOrder(payload.order);
       setPayment(payload.payment);
+      setPaymentHash("");
+      setPaymentState("idle");
       setCheckout({ checkoutId: payload.order.orderId, organizationId: payload.order.organizationId, organizationName: payload.order.organizationName, licenseType: payload.order.plan, priceUsd: null, cadence: "monthly", trialDays: 14, paymentAsset: payload.order.asset, paymentAssetLabel: payload.order.asset, network: payload.order.network, treasuryAddress: payload.order.treasuryAddress, memo: payload.order.memo });
     } catch (prepareError) {
       setError(prepareError instanceof Error ? prepareError.message : "Checkout preparation failed.");
@@ -130,6 +178,7 @@ export function CommercialCheckout() {
     if (!order) return;
     setLoading("verify");
     setError("");
+    setPaymentState("confirming");
     try {
       const response = await fetch(`${commercialCheckoutApiBase}/verify`, {
         method: "POST",
@@ -140,8 +189,13 @@ export function CommercialCheckout() {
         }),
       });
       const payload = (await response.json()) as VerifyResponse;
-      if (!response.ok || !payload.ok) throw new Error(payload.error || "Payment verification failed.");
+      if (!response.ok || !payload.ok) {
+        const pending = payload.status === "payment-not-verified";
+        setPaymentState(pending ? "pending" : "failed");
+        throw new Error(pending ? "Payment is submitted but not confirmed by the verification service yet. Keep this hash and retry; do not pay again." : payload.error || "Payment verification failed.");
+      }
       setReceipt(payload);
+      setPaymentState("verified");
     } catch (verifyError) {
       setError(verifyError instanceof Error ? verifyError.message : "Payment verification failed.");
     } finally {
@@ -149,9 +203,20 @@ export function CommercialCheckout() {
     }
   }
 
+  async function waitForConfirmation(signature: string, timeoutMs = 120_000) {
+    const deadline = Date.now() + timeoutMs;
+    while (Date.now() < deadline) {
+      const status = (await solanaConnection.getSignatureStatuses([signature], { searchTransactionHistory: true })).value[0];
+      if (status?.err) throw new Error(`Solana transaction failed: ${JSON.stringify(status.err)}`);
+      if (status?.confirmationStatus === "confirmed" || status?.confirmationStatus === "finalized") return status;
+      await new Promise((resolve) => setTimeout(resolve, 1_500));
+    }
+    throw new Error("Transaction submitted, but confirmation is still pending. The hash has been saved; retry verification later and do not pay again.");
+  }
+
   async function payFromWallet() {
     if (!publicKey || !order || !payment) { setError("Connect a Solana wallet and prepare an order first."); return; }
-    setLoading("verify"); setError("");
+    setLoading("pay"); setError(""); setReceipt(undefined); setPaymentState("submitted");
     try {
       const transaction = new Transaction();
       if (order.asset === "SOL") {
@@ -164,10 +229,20 @@ export function CommercialCheckout() {
         transaction.add(createTransferCheckedInstruction(source, mint, destination, publicKey, BigInt(order.amountAtomic), payment.decimals, [], TOKEN_PROGRAM_ID));
       }
       transaction.add(new TransactionInstruction({ keys: [], programId: new PublicKey("MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr"), data: Buffer.from(order.memo, "utf8") }));
-      const signature = await sendAndConfirmBrowserTransaction(solanaConnection, transaction, sendTransaction);
+      const signature = await sendBrowserTransaction(solanaConnection, transaction, sendTransaction);
       setPaymentHash(signature);
+      setPaymentState("confirming");
+      // Persist the signature synchronously before any confirmation wait. A reload
+      // must never turn an already-submitted payment back into an empty form.
+      persistCheckoutState({ order, payment, paymentHash: signature, paymentState: "confirming" });
+      await waitForConfirmation(signature);
       await verifyPayment(signature);
-    } catch (paymentError) { setError(paymentError instanceof Error ? paymentError.message : "Wallet payment failed."); setLoading(null); }
+    } catch (paymentError) {
+      const message = paymentError instanceof Error ? paymentError.message : "Wallet payment failed.";
+      setPaymentState(message.includes("submitted") ? "pending" : "failed");
+      setError(message);
+      setLoading(null);
+    }
   }
 
   async function copyTreasuryAddress() {
@@ -278,10 +353,11 @@ export function CommercialCheckout() {
           <div className="flex flex-wrap gap-3">
             <button type="button" onClick={payFromWallet} className={cn(buttonVariants({ size: "sm" }))} disabled={!connected || !order || loading !== null}><Wallet className="h-4 w-4" />Pay from wallet</button>
             <button type="button" onClick={() => verifyPayment()} className={cn(buttonVariants({ size: "sm" }), "w-fit")} disabled={!canVerify || loading !== null}>
-              {loading === "verify" ? "Verifying..." : "Verify and issue license"}
+              {loading === "verify" ? "Verifying..." : paymentState === "pending" ? "Retry verification" : "Verify and issue license"}
               <CheckCircle2 className="h-4 w-4" />
             </button>
           </div>
+          {paymentHash ? <div className="rounded-xl border border-cyan-200/15 bg-cyan-200/[0.05] p-3 text-sm text-cyan-50">Payment state: <strong>{paymentState}</strong>. The transaction hash is retained locally for recovery after refresh.</div> : null}
         </div>
       ) : null}
 

@@ -14,6 +14,18 @@ Historical Devnet proof registry program: `5AhUsbQ4mJ8Xh7QJEomuS85qGgmK9iNvFqzF6
 (`docs/proof-registry.json`); this is retained as provenance and is not the
 current Testnet deployment.
 
+## Release language
+
+The public product interface stays customer-facing and does not use
+environment badges or protocol shorthand as marketing copy. Exact environment
+names such as `Testnet`, `Devnet`, and `Mainnet` remain in this repository's
+engineering evidence, runtime metadata, and verification reports so reviewers
+can distinguish proven execution from planned or historical work.
+
+The repository is the authoritative place to review those boundaries. A
+network appearing in configuration or documentation is not, by itself, a
+claim that every PrivateDAO product executes on that network.
+
 An organization does **not** need to become a Web3 or crypto company to use
 PrivateDAO. A company, institution, financial team, DAO, data provider, or
 Web3 operator can start with a familiar business workflow and add wallets,
@@ -57,9 +69,6 @@ value.
 - **PrivateDAO Agent Exchange** - an MCP-compatible service marketplace for
   verification, blockchain intelligence, market context, agent discovery, and
   verifiable receipts.
-- **PDAO Worlds** - an independent community game about privacy, trust,
-  evidence, and coordination. It is a separate product and does not define
-  the commercial workflow runtime.
 
 ### PDAO token surface
 
@@ -124,6 +133,19 @@ package does not store private keys, contain a wallet signer, or invent a
 successful receipt. A configured network is not considered supported merely
 because it appears in a UI or configuration file; it needs a real adapter and
 independent evidence.
+
+Engineer-facing architecture and BNB evidence:
+
+- [Engineer index](docs/architecture/ENGINEER-INDEX.md)
+- [Current engineering state](docs/architecture/current-state-20261011.md)
+- [Production surface handoff](docs/architecture/PRODUCTION-SURFACE-HANDOFF.md)
+- [Engineering map and evidence rules](docs/architecture/README.md)
+- [Kernel and network adapter architecture](docs/architecture/kernel-network-adapters.md)
+- [Product and network evidence map](docs/architecture/product-network-evidence.md)
+- [BNB Testnet E2E boundary](docs/integrations/bnb-testnet-e2e.md)
+- [BNB ecosystem reference boundary](docs/integrations/bnb-ecosystem-reference.md)
+- [Integration evidence index](docs/integrations/README.md)
+- [Network capability matrix](NETWORK_CAPABILITY_MATRIX.md)
 
 ## Review and operating references
 
@@ -194,6 +216,17 @@ material. Ethereum, Base, Arbitrum, Robinhood, Zcash, Hyperliquid, and other
 network entries must be read through the capability matrix and their linked
 evidence rather than treated as one universal support claim.
 
+### Base Builder Codes
+
+PrivateDAO's Base Sepolia Builder Code integration is published and limited to
+eligible Base transactions. The public evidence page is
+[`/integrations/base`](https://privatedao.org/integrations/base), and the
+technical announcement is [`docs/base-builder-announcement.md`](docs/base-builder-announcement.md).
+Existing Base receipts remain valid testnet evidence, but they predate Builder
+Code wiring. A newly funded Base Sepolia write is still required before
+attribution can be reported as verified. No Base Mainnet execution,
+partnership, grant award, or endorsement is claimed.
+
 Start with:
 
 - [`docs/current-network-state-2026-05-24.md`](docs/current-network-state-2026-05-24.md)
@@ -216,7 +249,6 @@ gates.
 - Payroll: <https://privatedao.org/payroll/>
 - Verification: <https://privatedao.org/verify/>
 - PDAO information: <https://privatedao.org/token/>
-- PDAO Worlds: <https://game.privatedao.org/game/godot/index.html>
 - Machine-readable guide: <https://privatedao.org/llms.txt>
 - Machine-readable manifest: <https://privatedao.org/ai.json>
 - Site execution route inventory: <https://privatedao.org/documents/site-execution-route-inventory-2026-05-27/>

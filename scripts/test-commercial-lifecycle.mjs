@@ -24,9 +24,15 @@ child.stdout.on("data", (chunk) => { output += chunk.toString(); });
 child.stderr.on("data", (chunk) => { output += chunk.toString(); });
 
 async function waitForHealth() {
-  const deadline = Date.now() + 30_000;
+  // The read-node performs a cold TypeScript/SQLite initialization before it
+  // binds the socket. Keep the readiness budget separate from request timeouts
+  // so a slow local cold start is not reported as a service failure.
+  const deadline = Date.now() + 120_000;
   while (Date.now() < deadline) {
     if (output.includes(`PrivateDAO read node listening on http://127.0.0.1:${port}`)) return;
+    if (child.exitCode !== null) {
+      throw new Error(`read-node exited before becoming healthy (code ${child.exitCode}): ${output.slice(-2000)}`);
+    }
     await new Promise((resolve) => setTimeout(resolve, 250));
   }
   throw new Error(`read-node did not become healthy: ${output.slice(-1000)}`);

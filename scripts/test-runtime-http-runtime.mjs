@@ -9,7 +9,7 @@ const runtime = createHttpBackedPrivateDaoRuntime({
   baseUrl: "https://api.example.test",
   providerId: "http-test-provider",
   network: "solana-devnet",
-  capabilities: ["payroll.settle"],
+  capabilities: ["payroll.calculate"],
   fetchImpl: async (input, init = {}) => {
     const url = String(input);
     if (url.endsWith("/prepare")) {
@@ -27,7 +27,7 @@ const runtime = createHttpBackedPrivateDaoRuntime({
     if (url.endsWith("/receipt")) return json({
       executionId: "exec-runtime-1",
       requestId: "request-runtime-1",
-      capability: "payroll.settle",
+      capability: "payroll.calculate",
       network: "solana-devnet",
       state: "finalized",
       signatures: ["observed-signature"],
@@ -42,7 +42,7 @@ const intent = {
     requestId: "request-runtime-1",
     idempotencyKey: "idempotency-runtime-1",
     product: "payroll",
-    capability: "payroll.settle",
+    capability: "payroll.calculate",
     network: "solana-devnet",
   },
   payload: { budget: "1000" },

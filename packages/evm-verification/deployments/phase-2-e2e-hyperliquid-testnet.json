@@ -1,0 +1,69 @@
+{
+  "generatedAt": "2026-10-11T14:08:00.682Z",
+  "status": "testnet_verified",
+  "scope": [
+    "hyperliquid-testnet"
+  ],
+  "networks": [
+    {
+      "network": "hyperliquid-testnet",
+      "chainId": 998,
+      "attribution": {
+        "dataSuffixConfigured": false
+      },
+      "contracts": {
+        "verifier": {
+          "address": "0x26e3515d02bb3d8122fad109d159f43e81e8beeb",
+          "hash": "0xcdaf672f45ab25a60d878181f3795aab675e25ada15e52183d0657e27475a2a1",
+          "blockNumber": "66624464"
+        },
+        "blind": {
+          "address": "0xdd01da1b53ba46bf1ce8c71bc1c5e86e8784694b",
+          "hash": "0x3ad66e9f72081122ce2f724931795d2de41b35171ff5e5612dad7b46b26a5d79",
+          "blockNumber": "66624469"
+        },
+        "record": {
+          "address": "0x6f813e1221cb5f760bb5c467983c014bbe4b3b5c",
+          "hash": "0xa7deaa52afce3b731ac7393f964b6daa29ffceafb83dc1d5cdf902bc089da9c1",
+          "blockNumber": "66624474"
+        }
+      },
+      "record": {
+        "workflow": "record-verification",
+        "txHash": "0x229332900b11e0319adbf39b2aedc87de5bb570a58cce3831f2663cc9165cec7",
+        "blockNumber": "66624478",
+        "status": "success",
+        "verificationId": "0x532bb582a9b0f3fa13dab1751be3ff9457a88e0340a2b7df846dadb6e88bc252",
+        "explorerUrl": "https://www.hyperscan.com/tx/0x229332900b11e0319adbf39b2aedc87de5bb570a58cce3831f2663cc9165cec7"
+      },
+      "blind": {
+        "workflow": "blind-verification",
+        "txHash": "0x4b09c1bb9d80ffd50374c8d34a3f9ec61bd58af3f61c42ef45e27673386ba5c1",
+        "blockNumber": "66624492",
+        "status": "success",
+        "verificationId": "0xc58fe52a37421d78debbe6ae4dff8acb646499f18be2aa6c10e3068177db230b",
+        "explorerUrl": "https://www.hyperscan.com/tx/0x4b09c1bb9d80ffd50374c8d34a3f9ec61bd58af3f61c42ef45e27673386ba5c1"
+      },
+      "revocation": {
+        "recordTxHash": "0x9033a9fac4dbdc60d939dbc6d9bdba7b73b97100ff6eab113716dc9d4fa1928d",
+        "blindTxHash": "0x7fdb433f422075dfaf37e88bee5405f6feefa719d821c56738267bdeb8dd8a47",
+        "disposableRecordVerificationId": "0x252c92182f805c575911d9a951ed021cb8c93476a589c15acf2b0d9ac06543a7",
+        "disposableBlindVerificationId": "0x5b51f784d4fa823a48142ff43de3eb1913b89346a144287ea9b69f259a1745b9"
+      },
+      "checks": {
+        "recordVerified": true,
+        "blindProofVerified": true,
+        "wrongChainRejected": true,
+        "alteredProofRejected": true,
+        "expiredRecordRejected": true,
+        "expiredBlindRejected": true,
+        "recordRevoked": true,
+        "blindProofRevoked": true
+      },
+      "links": {
+        "record": "https://privatedao.org/verify/evm?network=hyperliquid-testnet&type=record&id=0x532bb582a9b0f3fa13dab1751be3ff9457a88e0340a2b7df846dadb6e88bc252",
+        "blind": "https://privatedao.org/verify/evm?network=hyperliquid-testnet&type=blind&id=0xc58fe52a37421d78debbe6ae4dff8acb646499f18be2aa6c10e3068177db230b"
+      }
+    }
+  ]
+}

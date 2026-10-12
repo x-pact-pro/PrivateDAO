@@ -1,6 +1,6 @@
 import { runtimeCatalog } from "@/lib/runtime-catalog.generated";
 
-const VERIFIED_EVIDENCE = new Set(["devnet_verified", "testnet_verified", "mainnet_live"] as const);
+const VERIFIED_EVIDENCE = new Set<string>(["devnet_verified", "testnet_verified", "mainnet_live"]);
 
 export const dynamic = "force-static";
 
@@ -16,7 +16,7 @@ export function GET() {
     products: runtimeCatalog.products.map((product) => ({
       ...product,
       capabilities: product.capabilities.map((capability) => {
-        const modes = capability.applicationBindings.map((binding) => binding.mode);
+        const modes: string[] = capability.applicationBindings.map((binding) => binding.mode);
         const evidenceBacked = capability.applicationBindings.some(
           (binding) => binding.mode === "kernel-gateway" && binding.supportsExecution && VERIFIED_EVIDENCE.has(binding.evidenceStatus),
         );

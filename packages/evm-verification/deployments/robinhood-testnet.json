@@ -1,0 +1,22 @@
+{
+  "network": "robinhood-testnet",
+  "chainId": 46630,
+  "environment": "testnet",
+  "contracts": {
+    "verifier": {
+      "address": "0xc4d37f8fb01dd8575ed8a5e8432eaa284abc41ec",
+      "hash": "0xbfd04f34c3946dbf565e1550c6d06e15afe0a634d074ee8b843c7336ab1ca8db",
+      "blockNumber": "132942007"
+    },
+    "blind": {
+      "address": "0x1cd4aabb6c323072d48cb41b86b52dcd0ae7b4fb",
+      "hash": "0xb7fb098892653fc4fffdffec8485bb8a35d70b12d015c9e2535b1d883479ebd4",
+      "blockNumber": "132942037"
+    },
+    "record": {
+      "address": "0xe3e09b0113048a23a92c437924097e6b1c438163",
+      "hash": "0x722605da48bd17bf512cdb9d84a47aadc7569fef84749fb333e8701623529288",
+      "blockNumber": "132942066"
+    }
+  }
+}

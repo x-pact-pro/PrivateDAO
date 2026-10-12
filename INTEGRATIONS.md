@@ -8,17 +8,43 @@ is executable.
 
 ## Current executable boundary
 
-The Kernel catalog currently exposes the following products on Solana Devnet:
+The Kernel catalog exposes the core PrivateDAO products through the same
+product/workflow boundary on the nine current testnet lanes:
+
+`solana-devnet`, `ethereum-sepolia`, `base-sepolia`, `tempo-testnet`,
+`zcash-testnet`, `arbitrum-sepolia`, `robinhood-testnet`,
+`hyperliquid-testnet` (HyperEVM), and `hypercore-testnet` (native HyperCore).
+
+The web client selects only the product, workflow, and preferred network. The
+Kernel resolves the network adapter or policy provider behind that selection.
+The table below describes the product boundary, not a claim that every lane
+has an on-chain contract deployment or funded settlement proof.
 
 | Product | Kernel capabilities | Application exposure |
 |---|---|---|
-| Blind Verification | `verification.blind.prove` | legacy provider route |
-| Record Verification | `verification.record.create`, `verification.record.verify` | create unbound; verify legacy provider route |
-| Confidential Payroll | `payroll.calculate`, `payroll.approve`, `payroll.settle` | calculate/approve unbound; settlement legacy provider route |
-| Private Treasury | `treasury.policy.check` | unbound |
-| Private Governance | `governance.proposal.execute` | unbound |
-| Private Auctions | `auction.bid.commit`, `auction.settle` | legacy provider routes |
+| Blind Verification | `verification.blind.prove` | Kernel gateway; proof/contract evidence varies by network |
+| Record Verification | `verification.record.create`, `verification.record.verify` | Kernel gateway; anchor evidence varies by network |
+| Confidential Payroll | `payroll.calculate`, `payroll.approve` | Kernel gateway; settlement is separately gated and not advertised without a native provider |
+| Private Treasury | `treasury.policy.check` | Kernel gateway; policy and settlement evidence are tracked separately |
+| Private Governance | `governance.proposal.execute` | Kernel gateway; policy fallback is used where no contract deployment is evidenced |
+| Private Auctions | `auction.bid.commit`, `auction.settle` | Kernel gateway; financial settlement is separately gated |
 | Agent Marketplace | `agent.discover`, `agent.invoke` | hosted outside this web boundary |
+
+`payroll.settle` remains an internal adapter capability for separately gated
+Testnet execution and is not part of the customer product catalog. Umbra is a
+legacy Solana provider and is disabled for current product execution; removing
+it from Solana does not remove Confidential Payroll, Governance, Verification,
+Treasury, or Auctions from the Kernel product surface.
+
+Ethereum Sepolia, Base Sepolia, Tempo Testnet, Arbitrum Sepolia, Solana Devnet,
+and the Zcash Testnet policy lane have committed evidence at different levels.
+Robinhood Testnet now has verified organizational E2E evidence for Treasury,
+Governance, and Auctions; its Blind Verification, Record Verification, and
+Payroll lanes remain Kernel policy paths until independently evidenced.
+Hyperliquid HyperEVM and HyperCore currently expose network-scoped
+Kernel policy/readiness paths; they are not advertised as funded on-chain
+settlement until independent transaction, confirmation, and reconciliation
+evidence exists.
 
 The application binding ledger is authoritative for whether a route is
 `kernel-gateway`, `legacy-provider`, or `unbound`. Only a `kernel-gateway`

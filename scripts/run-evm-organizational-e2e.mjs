@@ -17,11 +17,14 @@ import {
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 import { createClient as createTempoClient } from "viem/tempo";
 import { tempoModerato } from "viem/chains";
+import { Attribution } from "ox/erc8021";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const PACKAGE = path.join(ROOT, "packages/evm-verification");
 const TEMPO_FEE_TOKEN = "0x20c0000000000000000000000000000000000001";
 const TEMPO_TOKEN_DECIMALS = 6;
+const BASE_BUILDER_CODE = process.env.PDAO_BASE_BUILDER_CODE?.trim() || "bc_dxjpt7gf";
+const BASE_BUILDER_WALLET = (process.env.PDAO_BASE_BUILDER_WALLET?.trim() || "0x1c3D6757651B617D7e5c08aE6F7a7F65eEafD75F").toLowerCase();
 const NETWORK = process.env.PDAO_EVM_NETWORK?.trim() || "ethereum-sepolia";
 const NETWORK_CONFIG = {
   "ethereum-sepolia": { chainId: 11155111, rpcEnv: "PDAO_EVM_ETHEREUM_SEPOLIA_RPC_URL", currency: { name: "Sepolia Ether", symbol: "ETH", decimals: 18 } },
@@ -49,6 +52,12 @@ const chain = defineChain({
   rpcUrls: { default: { http: [rpcUrl] } },
 });
 const deployer = privateKeyToAccount(deployerKey);
+const deployerDataSuffix = NETWORK === "base-sepolia"
+  ? (() => {
+      assert.equal(deployer.address.toLowerCase(), BASE_BUILDER_WALLET, "Base Builder Code wallet does not match the organizational E2E deployer.");
+      return Attribution.toDataSuffix({ codes: [BASE_BUILDER_CODE] });
+    })()
+  : undefined;
 const rpcTimeoutMs = Number(process.env.PDAO_EVM_RPC_TIMEOUT_MS || 120_000);
 if (!Number.isInteger(rpcTimeoutMs) || rpcTimeoutMs < 10_000 || rpcTimeoutMs > 300_000) {
   throw new Error("PDAO_EVM_RPC_TIMEOUT_MS must be an integer between 10000 and 300000.");
@@ -60,13 +69,16 @@ const transport = http(rpcUrl, {
   retryCount: Number(process.env.PDAO_EVM_RPC_RETRY_COUNT || 0),
   retryDelay: 1_000,
 });
-const writeGasLimit = BigInt(process.env.PDAO_EVM_WRITE_GAS_LIMIT || "200000");
+const writeGasLimit = BigInt(process.env.PDAO_EVM_WRITE_GAS_LIMIT || "600000");
 if (writeGasLimit < 50_000n || writeGasLimit > 2_000_000n) throw new Error("PDAO_EVM_WRITE_GAS_LIMIT must be between 50000 and 2000000.");
 const deployerTempoClient = NETWORK === "tempo-testnet"
   ? createTempoClient({ account: deployer, chain: tempoModerato.extend({ feeToken: TEMPO_FEE_TOKEN }), transport })
   : null;
 const publicClient = deployerTempoClient ?? createPublicClient({ chain, transport });
-const deployerWallet = deployerTempoClient ?? createWalletClient({ account: deployer, chain, transport });
+const deployerWallet = deployerTempoClient ?? createWalletClient({ account: deployer, chain, transport, ...(deployerDataSuffix ? { dataSuffix: deployerDataSuffix } : {}) });
+// Raw native transfers must not carry ERC-8021 suffix data: payable receive-only
+// contracts reject non-empty calldata. Keep attribution on eligible contract calls.
+const deployerTransferWallet = deployerTempoClient ?? createWalletClient({ account: deployer, chain, transport });
 let checker;
 for (let attempt = 0; attempt < 8; attempt += 1) {
   const candidate = privateKeyToAccount(generatePrivateKey());
@@ -91,6 +103,8 @@ const erc20Abi = parseAbi([
 
 const treasuryAbi = JSON.parse(await readFile(path.join(PACKAGE, `artifacts/${tempoTokenMode ? "PrivateDaoTokenTreasury" : "PrivateDaoTreasury"}.abi`), "utf8"));
 const treasuryBytecode = `0x${(await readFile(path.join(PACKAGE, `artifacts/${tempoTokenMode ? "PrivateDaoTokenTreasury" : "PrivateDaoTreasury"}.bin`), "utf8")).trim()}`;
+const payrollAbi = JSON.parse(await readFile(path.join(PACKAGE, "artifacts/PrivateDaoPayroll.abi"), "utf8"));
+const payrollBytecode = `0x${(await readFile(path.join(PACKAGE, "artifacts/PrivateDaoPayroll.bin"), "utf8")).trim()}`;
 const governanceAbi = JSON.parse(await readFile(path.join(PACKAGE, "artifacts/PrivateDaoGovernance.abi"), "utf8"));
 const governanceBytecode = `0x${(await readFile(path.join(PACKAGE, "artifacts/PrivateDaoGovernance.bin"), "utf8")).trim()}`;
 const auctionAbi = JSON.parse(await readFile(path.join(PACKAGE, `artifacts/${tempoTokenMode ? "PrivateDaoTokenSealedAuction" : "PrivateDaoSealedAuction"}.abi`), "utf8"));
@@ -125,7 +139,7 @@ async function feeOverrides() {
   return { maxFeePerGas: scaled, maxPriorityFeePerGas: gasPrice };
 }
 const tx = async (hash) => {
-  const receipt = await publicClient.waitForTransactionReceipt({ hash });
+  const receipt = await publicClient.waitForTransactionReceipt({ hash, timeout: rpcTimeoutMs });
   assert.equal(receipt.status, "success", `transaction reverted: ${hash}`);
   return receipt;
 };
@@ -161,6 +175,7 @@ const deployments = {
   environment: "testnet",
   deployer: deployer.address,
   checker: checker.address,
+  attribution: deployerDataSuffix ? { builderCode: BASE_BUILDER_CODE, walletAddress: deployer.address, dataSuffixConfigured: true } : { dataSuffixConfigured: false },
   createdAt: new Date().toISOString(),
   contracts: {},
   evidence: {},
@@ -168,7 +183,7 @@ const deployments = {
 
 const checkerFundingHash = tempoTokenMode
   ? await write(deployerWallet, TEMPO_FEE_TOKEN, erc20Abi, "transfer", [checker.address, parseUnits("10", TEMPO_TOKEN_DECIMALS)])
-  : await deployerWallet.sendTransaction({ to: checker.address, value: parseEther("0.002"), nonce: await takeNonce(deployerWallet.account), ...(await feeOverrides()) });
+  : await deployerTransferWallet.sendTransaction({ to: checker.address, value: parseEther("0.002"), nonce: await takeNonce(deployerTransferWallet.account), ...(await feeOverrides()) });
 if (!tempoTokenMode) await tx(checkerFundingHash);
 
 const treasury = await deploy(deployerWallet, treasuryAbi, treasuryBytecode, tempoTokenMode ? [checker.address, TEMPO_FEE_TOKEN] : [checker.address]);
@@ -177,7 +192,7 @@ const treasuryAmount = tempoTokenMode ? parseUnits("1", TEMPO_TOKEN_DECIMALS) : 
 const treasuryApprovalHash = tempoTokenMode ? await write(deployerWallet, TEMPO_FEE_TOKEN, erc20Abi, "approve", [treasury.address, treasuryAmount]) : null;
 const treasuryFundingHash = tempoTokenMode
   ? await write(deployerWallet, treasury.address, treasuryAbi, "deposit", [treasuryAmount])
-  : await deployerWallet.sendTransaction({ to: treasury.address, value: treasuryAmount, gas: 100_000n, nonce: await takeNonce(deployerWallet.account), ...(await feeOverrides()) });
+  : await deployerTransferWallet.sendTransaction({ to: treasury.address, value: treasuryAmount, gas: 100_000n, nonce: await takeNonce(deployerTransferWallet.account), ...(await feeOverrides()) });
 if (!tempoTokenMode) await tx(treasuryFundingHash);
 const budgetId = keccak256(`0x${Buffer.from(`budget:${runId}`).toString("hex")}`);
 const paymentId = keccak256(`0x${Buffer.from(`payment:${runId}`).toString("hex")}`);
@@ -209,6 +224,31 @@ for (let attempt = 0; attempt < 90; attempt += 1) {
 }
 assert.equal(Number(payment[3]), 3, "treasury payment was not executed after receipt confirmation");
 deployments.evidence.treasury = { checkerFundingHash, treasuryApprovalHash, treasuryFundingHash, requestedHash, approvedHash, executedHash, paymentId, status: "executed" };
+
+// Payroll keeps employee and policy details off-chain. The chain binds only a
+// batch commitment to the approved payout and its final settlement receipt.
+// Tempo uses a tokenized fee/payment model and therefore keeps this native
+// value payroll lane disabled until a token-payroll contract is evidenced.
+if (!tempoTokenMode) {
+  const payroll = await deploy(deployerWallet, payrollAbi, payrollBytecode, [checker.address]);
+  deployments.contracts.payroll = payroll;
+  const payrollBatchId = keccak256(`0x${Buffer.from(`payroll-batch:${runId}`).toString("hex")}`);
+  const payrollBatchCommitment = keccak256(`0x${Buffer.from(`payroll-commitment:${runId}`).toString("hex")}`);
+  const payrollAmount = parseEther("0.0001");
+  const payrollFundingHash = await deployerTransferWallet.sendTransaction({ to: payroll.address, value: payrollAmount, gas: 100_000n, nonce: await takeNonce(deployerTransferWallet.account), ...(await feeOverrides()) });
+  await tx(payrollFundingHash);
+  const payrollCreateHash = await write(deployerWallet, payroll.address, payrollAbi, "createPayroll", [payrollBatchId, payrollBatchCommitment, recipient, payrollAmount]);
+  const payrollApproveHash = await write(checkerWallet, payroll.address, payrollAbi, "approvePayroll", [payrollBatchId]);
+  const payrollSettleHash = await write(deployerWallet, payroll.address, payrollAbi, "settlePayroll", [payrollBatchId]);
+  let payrollBatch;
+  for (let attempt = 0; attempt < 20; attempt += 1) {
+    payrollBatch = await publicClient.readContract({ address: payroll.address, abi: payrollAbi, functionName: "batches", args: [payrollBatchId] });
+    if (Number(payrollBatch[3]) === 3) break;
+    await sleep(1_000);
+  }
+  assert.equal(Number(payrollBatch[3]), 3, "payroll batch was not settled");
+  deployments.evidence.payroll = { payrollFundingHash, payrollCreateHash, payrollApproveHash, payrollSettleHash, payrollBatchId, payrollBatchCommitment, status: "settled" };
+}
 
 const governance = await deploy(deployerWallet, governanceAbi, governanceBytecode, []);
 deployments.contracts.governance = governance;

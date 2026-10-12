@@ -1,0 +1,539 @@
+{
+  "schema": "privatedao.engineer-architecture-index.v1",
+  "generatedAt": "2026-10-12T06:47:56.623Z",
+  "bridgeFree": true,
+  "sources": {
+    "protocol": "packages/privatedao-runtime/src/protocol.ts",
+    "catalog": "packages/privatedao-runtime/src/catalog.ts",
+    "networks": "packages/privatedao-runtime/src/networks.ts",
+    "bindings": "packages/privatedao-runtime/src/application-bindings.ts",
+    "nativeCapabilityRegistry": "packages/privatedao-runtime/src/native-capability-registry.ts",
+    "evidenceDirectory": "packages/evm-verification/deployments/"
+  },
+  "requestPath": [
+    "product",
+    "protocol",
+    "kernel-gateway",
+    "family-adapter",
+    "network-adapter",
+    "provider-wallet",
+    "rpc-or-node",
+    "receipt",
+    "reconciliation-evidence"
+  ],
+  "families": [
+    {
+      "family": "solana",
+      "networks": [
+        {
+          "id": "solana-devnet",
+          "label": "Solana Devnet",
+          "environment": "devnet",
+          "chainId": null,
+          "adapterId": "solana-devnet",
+          "finalityModel": "confirmed/finalized commitment"
+        },
+        {
+          "id": "solana-mainnet-beta",
+          "label": "Solana Mainnet",
+          "environment": "mainnet",
+          "chainId": null,
+          "adapterId": "solana-mainnet-beta",
+          "finalityModel": "confirmed/finalized commitment"
+        }
+      ]
+    },
+    {
+      "family": "evm",
+      "networks": [
+        {
+          "id": "ethereum-sepolia",
+          "label": "Ethereum Sepolia",
+          "environment": "testnet",
+          "chainId": "11155111",
+          "adapterId": "evm-ethereum-sepolia",
+          "finalityModel": "EVM block finality"
+        },
+        {
+          "id": "ethereum-mainnet",
+          "label": "Ethereum Mainnet",
+          "environment": "mainnet",
+          "chainId": "1",
+          "adapterId": "evm-ethereum-mainnet",
+          "finalityModel": "EVM block finality"
+        },
+        {
+          "id": "arbitrum-sepolia",
+          "label": "Arbitrum Sepolia",
+          "environment": "testnet",
+          "chainId": "421614",
+          "adapterId": "evm-arbitrum-sepolia",
+          "finalityModel": "Arbitrum batch/finality lifecycle"
+        },
+        {
+          "id": "arbitrum-one",
+          "label": "Arbitrum One",
+          "environment": "mainnet",
+          "chainId": "42161",
+          "adapterId": "evm-arbitrum-one",
+          "finalityModel": "Arbitrum batch/finality lifecycle"
+        },
+        {
+          "id": "bnb-testnet",
+          "label": "BNB Smart Chain Testnet",
+          "environment": "testnet",
+          "chainId": "97",
+          "adapterId": "evm-bnb-testnet",
+          "finalityModel": "EVM block finality"
+        },
+        {
+          "id": "bnb-mainnet",
+          "label": "BNB Smart Chain",
+          "environment": "mainnet",
+          "chainId": "56",
+          "adapterId": "evm-bnb-mainnet",
+          "finalityModel": "EVM block finality"
+        },
+        {
+          "id": "base-sepolia",
+          "label": "Base Sepolia",
+          "environment": "testnet",
+          "chainId": "84532",
+          "adapterId": "evm-base-sepolia",
+          "finalityModel": "EVM block finality"
+        },
+        {
+          "id": "base-mainnet",
+          "label": "Base Mainnet",
+          "environment": "mainnet",
+          "chainId": "8453",
+          "adapterId": "evm-base-mainnet",
+          "finalityModel": "EVM block finality"
+        },
+        {
+          "id": "robinhood-testnet",
+          "label": "Robinhood Chain Testnet",
+          "environment": "testnet",
+          "chainId": "46630",
+          "adapterId": "evm-robinhood-testnet",
+          "finalityModel": "Arbitrum rollup finality lifecycle"
+        },
+        {
+          "id": "robinhood-mainnet",
+          "label": "Robinhood Chain",
+          "environment": "mainnet",
+          "chainId": "4663",
+          "adapterId": "evm-robinhood-mainnet",
+          "finalityModel": "Arbitrum rollup finality lifecycle"
+        },
+        {
+          "id": "tempo-testnet",
+          "label": "Tempo Testnet",
+          "environment": "testnet",
+          "chainId": "42431",
+          "adapterId": "evm-tempo-testnet",
+          "finalityModel": "EVM block finality"
+        },
+        {
+          "id": "tempo-mainnet",
+          "label": "Tempo Mainnet",
+          "environment": "mainnet",
+          "chainId": null,
+          "adapterId": "evm-tempo-mainnet",
+          "finalityModel": "EVM block finality"
+        },
+        {
+          "id": "hyperliquid-testnet",
+          "label": "Hyperliquid Testnet",
+          "environment": "testnet",
+          "chainId": "998",
+          "adapterId": "evm-hyperliquid-testnet",
+          "finalityModel": "HyperBFT/EVM block finality"
+        }
+      ]
+    },
+    {
+      "family": "utxo",
+      "networks": [
+        {
+          "id": "zcash-testnet",
+          "label": "Zcash Testnet",
+          "environment": "testnet",
+          "chainId": null,
+          "adapterId": "zcash-testnet-zallet",
+          "finalityModel": "shielded transaction confirmation"
+        }
+      ]
+    },
+    {
+      "family": "stellar",
+      "networks": [
+        {
+          "id": "stellar-testnet",
+          "label": "Stellar Testnet",
+          "environment": "testnet",
+          "chainId": "Test SDF Network ; September 2015",
+          "adapterId": "stellar-testnet-horizon",
+          "finalityModel": "Stellar closed-ledger confirmation"
+        }
+      ]
+    },
+    {
+      "family": "exchange",
+      "networks": [
+        {
+          "id": "hypercore-testnet",
+          "label": "HyperCore Testnet",
+          "environment": "testnet",
+          "chainId": null,
+          "adapterId": "hyperliquid-core-testnet",
+          "finalityModel": "HyperCore state/API confirmation"
+        }
+      ]
+    }
+  ],
+  "products": [
+    {
+      "id": "blind-verification",
+      "name": "Blind Verification",
+      "availability": "available",
+      "declaredNetworks": [
+        "solana-devnet",
+        "ethereum-sepolia",
+        "arbitrum-sepolia",
+        "tempo-testnet",
+        "base-sepolia",
+        "bnb-testnet",
+        "zcash-testnet",
+        "stellar-testnet",
+        "robinhood-testnet",
+        "hyperliquid-testnet",
+        "hypercore-testnet"
+      ],
+      "capabilities": [
+        {
+          "id": "verification.blind.prove",
+          "networks": [
+            "solana-devnet",
+            "ethereum-sepolia",
+            "arbitrum-sepolia",
+            "tempo-testnet",
+            "base-sepolia",
+            "bnb-testnet",
+            "zcash-testnet",
+            "stellar-testnet",
+            "robinhood-testnet",
+            "hyperliquid-testnet",
+            "hypercore-testnet"
+          ],
+          "requiresSignature": false,
+          "supportsAsync": true
+        }
+      ],
+      "bindingCount": 11
+    },
+    {
+      "id": "record-verification",
+      "name": "Record Verification",
+      "availability": "available",
+      "declaredNetworks": [
+        "solana-devnet",
+        "ethereum-sepolia",
+        "arbitrum-sepolia",
+        "tempo-testnet",
+        "base-sepolia",
+        "bnb-testnet",
+        "zcash-testnet",
+        "stellar-testnet",
+        "robinhood-testnet",
+        "hyperliquid-testnet",
+        "hypercore-testnet"
+      ],
+      "capabilities": [
+        {
+          "id": "verification.record.create",
+          "networks": [
+            "solana-devnet",
+            "ethereum-sepolia",
+            "arbitrum-sepolia",
+            "tempo-testnet",
+            "base-sepolia",
+            "bnb-testnet",
+            "zcash-testnet",
+            "stellar-testnet",
+            "robinhood-testnet",
+            "hyperliquid-testnet",
+            "hypercore-testnet"
+          ],
+          "requiresSignature": false,
+          "supportsAsync": true
+        },
+        {
+          "id": "verification.record.verify",
+          "networks": [
+            "solana-devnet",
+            "ethereum-sepolia",
+            "arbitrum-sepolia",
+            "tempo-testnet",
+            "base-sepolia",
+            "bnb-testnet",
+            "zcash-testnet",
+            "stellar-testnet",
+            "robinhood-testnet",
+            "hyperliquid-testnet",
+            "hypercore-testnet"
+          ],
+          "requiresSignature": false,
+          "supportsAsync": true
+        }
+      ],
+      "bindingCount": 22
+    },
+    {
+      "id": "payroll",
+      "name": "Confidential Payroll",
+      "availability": "available",
+      "declaredNetworks": [
+        "solana-devnet",
+        "ethereum-sepolia",
+        "arbitrum-sepolia",
+        "tempo-testnet",
+        "base-sepolia",
+        "bnb-testnet",
+        "zcash-testnet",
+        "stellar-testnet",
+        "robinhood-testnet",
+        "hyperliquid-testnet",
+        "hypercore-testnet"
+      ],
+      "capabilities": [
+        {
+          "id": "payroll.calculate",
+          "networks": [
+            "solana-devnet",
+            "ethereum-sepolia",
+            "arbitrum-sepolia",
+            "tempo-testnet",
+            "base-sepolia",
+            "bnb-testnet",
+            "zcash-testnet",
+            "stellar-testnet",
+            "robinhood-testnet",
+            "hyperliquid-testnet",
+            "hypercore-testnet"
+          ],
+          "requiresSignature": false,
+          "supportsAsync": true
+        },
+        {
+          "id": "payroll.approve",
+          "networks": [
+            "solana-devnet",
+            "ethereum-sepolia",
+            "arbitrum-sepolia",
+            "tempo-testnet",
+            "base-sepolia",
+            "bnb-testnet",
+            "zcash-testnet",
+            "stellar-testnet",
+            "robinhood-testnet",
+            "hyperliquid-testnet",
+            "hypercore-testnet"
+          ],
+          "requiresSignature": true,
+          "supportsAsync": true
+        },
+        {
+          "id": "payroll.settle",
+          "networks": [
+            "zcash-testnet",
+            "bnb-testnet",
+            "stellar-testnet"
+          ],
+          "requiresSignature": true,
+          "supportsAsync": true
+        }
+      ],
+      "bindingCount": 25
+    },
+    {
+      "id": "treasury",
+      "name": "Private Treasury",
+      "availability": "available",
+      "declaredNetworks": [
+        "solana-devnet",
+        "ethereum-sepolia",
+        "arbitrum-sepolia",
+        "tempo-testnet",
+        "base-sepolia",
+        "bnb-testnet",
+        "zcash-testnet",
+        "stellar-testnet",
+        "robinhood-testnet",
+        "hyperliquid-testnet",
+        "hypercore-testnet"
+      ],
+      "capabilities": [
+        {
+          "id": "treasury.policy.check",
+          "networks": [
+            "solana-devnet",
+            "ethereum-sepolia",
+            "arbitrum-sepolia",
+            "tempo-testnet",
+            "base-sepolia",
+            "bnb-testnet",
+            "zcash-testnet",
+            "stellar-testnet",
+            "robinhood-testnet",
+            "hyperliquid-testnet",
+            "hypercore-testnet"
+          ],
+          "requiresSignature": false,
+          "supportsAsync": true
+        }
+      ],
+      "bindingCount": 11
+    },
+    {
+      "id": "governance",
+      "name": "Private Governance",
+      "availability": "available",
+      "declaredNetworks": [
+        "solana-devnet",
+        "ethereum-sepolia",
+        "arbitrum-sepolia",
+        "tempo-testnet",
+        "base-sepolia",
+        "bnb-testnet",
+        "zcash-testnet",
+        "stellar-testnet",
+        "robinhood-testnet",
+        "hyperliquid-testnet",
+        "hypercore-testnet"
+      ],
+      "capabilities": [
+        {
+          "id": "governance.proposal.execute",
+          "networks": [
+            "solana-devnet",
+            "ethereum-sepolia",
+            "arbitrum-sepolia",
+            "tempo-testnet",
+            "base-sepolia",
+            "bnb-testnet",
+            "zcash-testnet",
+            "stellar-testnet",
+            "robinhood-testnet",
+            "hyperliquid-testnet",
+            "hypercore-testnet"
+          ],
+          "requiresSignature": true,
+          "supportsAsync": true
+        }
+      ],
+      "bindingCount": 11
+    },
+    {
+      "id": "auction",
+      "name": "Private Auctions",
+      "availability": "available",
+      "declaredNetworks": [
+        "solana-devnet",
+        "ethereum-sepolia",
+        "arbitrum-sepolia",
+        "tempo-testnet",
+        "base-sepolia",
+        "bnb-testnet",
+        "zcash-testnet",
+        "stellar-testnet",
+        "robinhood-testnet",
+        "hyperliquid-testnet",
+        "hypercore-testnet"
+      ],
+      "capabilities": [
+        {
+          "id": "auction.bid.commit",
+          "networks": [
+            "solana-devnet",
+            "ethereum-sepolia",
+            "arbitrum-sepolia",
+            "tempo-testnet",
+            "base-sepolia",
+            "bnb-testnet",
+            "zcash-testnet",
+            "stellar-testnet",
+            "robinhood-testnet",
+            "hyperliquid-testnet",
+            "hypercore-testnet"
+          ],
+          "requiresSignature": false,
+          "supportsAsync": true
+        },
+        {
+          "id": "auction.settle",
+          "networks": [
+            "solana-devnet",
+            "ethereum-sepolia",
+            "arbitrum-sepolia",
+            "tempo-testnet",
+            "base-sepolia",
+            "bnb-testnet",
+            "zcash-testnet",
+            "stellar-testnet",
+            "robinhood-testnet",
+            "hyperliquid-testnet",
+            "hypercore-testnet"
+          ],
+          "requiresSignature": false,
+          "supportsAsync": true
+        }
+      ],
+      "bindingCount": 22
+    },
+    {
+      "id": "agent",
+      "name": "Agent Marketplace",
+      "availability": "available",
+      "declaredNetworks": [
+        "solana-devnet",
+        "solana-mainnet-beta"
+      ],
+      "capabilities": [
+        {
+          "id": "agent.discover",
+          "networks": [
+            "solana-devnet",
+            "solana-mainnet-beta"
+          ],
+          "requiresSignature": false,
+          "supportsAsync": true
+        },
+        {
+          "id": "agent.invoke",
+          "networks": [
+            "solana-devnet",
+            "solana-mainnet-beta"
+          ],
+          "requiresSignature": true,
+          "supportsAsync": true
+        }
+      ],
+      "bindingCount": 4
+    }
+  ],
+  "evidenceSummary": {
+    "entries": 216,
+    "testnetVerified": 61,
+    "devnetVerified": 6,
+    "mainnetLive": 2,
+    "statuses": [
+      "devnet_verified",
+      "implementation",
+      "mainnet_live",
+      "planned",
+      "testnet_ready",
+      "testnet_verified"
+    ]
+  }
+}

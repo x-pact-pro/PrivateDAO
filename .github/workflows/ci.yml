@@ -100,6 +100,21 @@ jobs:
       - name: Runtime kernel typecheck
         run: npm run typecheck:runtime
 
+      - name: Verify product Kernel boundary
+        run: npm run verify:product-gateway-boundary
+
+      - name: Verify commercial capability coherence
+        run: npm run verify:commercial:coherence
+
+      - name: Verify multichain capability registry
+        run: |
+          npm run test:native-capability-registry
+          npm run verify:native-capability-matrix
+          npm run verify:public-game-removed
+          npm run test:stellar:product-workflow
+          npm run verify:stellar:coherence
+          npm run verify:stellar:product-e2e
+
       - name: EVM foundation tests
         run: npm run test:runtime:evm-foundation
 

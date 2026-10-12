@@ -10,9 +10,9 @@ publish the website, APIs, or game automatically.
 `canonical-live` is a synchronized reference branch. It must point to the same
 commit as `main` after every approved repository release.
 
-The live website and PDAO Worlds game are separate deployment surfaces. Their
-runtime assets and secrets must not be replaced by repository cleanup or by
-Kernel work.
+The live website is the commercial deployment surface. The former PDAO Worlds
+game surface was removed from the public site on 2026-10-12 and archived on the
+external backup volume; its assets are not part of the active build.
 
 ## Active architecture
 
@@ -39,7 +39,7 @@ Kernel work.
 
 The active product families are Blind Verification, Record Verification,
 Confidential Payroll, Private Treasury, Private Governance, Private Auctions,
-and the Agent Marketplace. PDAO Worlds remains an independent game product.
+and the Agent Marketplace.
 
 ## Archive policy
 

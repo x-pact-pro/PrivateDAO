@@ -12,7 +12,13 @@ export const runtimeCatalog = {
         "ethereum-sepolia",
         "arbitrum-sepolia",
         "tempo-testnet",
-        "base-sepolia"
+        "base-sepolia",
+        "bnb-testnet",
+        "zcash-testnet",
+        "stellar-testnet",
+        "robinhood-testnet",
+        "hyperliquid-testnet",
+        "hypercore-testnet"
       ],
       "capabilities": [
         {
@@ -27,17 +33,17 @@ export const runtimeCatalog = {
               "mode": "kernel-gateway",
               "entrypoint": "kernel://verification.blind.prove",
               "method": null,
-              "note": "Kernel adapter delegates to the HTTPS proof service and accepts only an observed successful public proof package.",
-              "evidenceStatus": "implementation",
-              "evidence": "none",
-              "supportsExecution": false,
-              "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "note": "Solana Devnet blind verification runs through the Kernel policy provider; on-chain settlement is not implied by this workflow.",
+              "evidenceStatus": "testnet_ready",
+              "evidence": "kernel-policy-testnet",
+              "supportsExecution": true,
+              "supportsProof": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "SOL"
               ],
-              "provider": "solana-devnet"
+              "provider": "privatedao-kernel-policy"
             },
             {
               "network": "ethereum-sepolia",
@@ -106,6 +112,108 @@ export const runtimeCatalog = {
                 "ETH"
               ],
               "provider": "evm-base-sepolia"
+            },
+            {
+              "network": "bnb-testnet",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://verification.blind.prove",
+              "method": null,
+              "note": "This network uses the Kernel policy verification path; no contract write or settlement claim is made before funded E2E evidence.",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "supportsExecution": true,
+              "supportsProof": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "BNB"
+              ],
+              "provider": "evm-bnb-testnet"
+            },
+            {
+              "network": "zcash-testnet",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://verification.blind.prove",
+              "method": null,
+              "note": "Zcash Testnet blind verification runs through the Kernel policy provider; no Zcash settlement or wallet movement is implied.",
+              "evidenceStatus": "testnet_ready",
+              "evidence": "runtime-only",
+              "supportsExecution": true,
+              "supportsProof": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "TAZ"
+              ],
+              "provider": "privatedao-kernel-policy"
+            },
+            {
+              "network": "stellar-testnet",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://verification.blind.prove",
+              "method": null,
+              "note": "Stellar Testnet uses the shared Kernel workflow and Horizon adapter; proof payloads remain private and no transaction is implied until a signed XDR is supplied.",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "supportsExecution": true,
+              "supportsProof": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "XLM"
+              ],
+              "provider": "stellar-testnet-horizon"
+            },
+            {
+              "network": "robinhood-testnet",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://verification.blind.prove",
+              "method": null,
+              "note": "This network uses the Kernel policy verification path; no contract write or settlement claim is made before funded E2E evidence.",
+              "evidenceStatus": "testnet_ready",
+              "evidence": "runtime-only",
+              "supportsExecution": true,
+              "supportsProof": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "ETH"
+              ],
+              "provider": "privatedao-kernel-policy"
+            },
+            {
+              "network": "hyperliquid-testnet",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://verification.blind.prove",
+              "method": null,
+              "note": "This network uses the Kernel policy verification path; no contract write or settlement claim is made before funded E2E evidence.",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "supportsExecution": true,
+              "supportsProof": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": false,
+              "supportedAssets": [
+                "HYPE"
+              ],
+              "provider": "evm-hyperliquid-testnet"
+            },
+            {
+              "network": "hypercore-testnet",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://verification.blind.prove",
+              "method": null,
+              "note": "This network uses the Kernel policy verification path; no contract write or settlement claim is made before funded E2E evidence.",
+              "evidenceStatus": "testnet_ready",
+              "evidence": "runtime-only",
+              "supportsExecution": true,
+              "supportsProof": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "USDC"
+              ],
+              "provider": "privatedao-kernel-policy"
             }
           ],
           "networkAvailability": [
@@ -116,16 +224,16 @@ export const runtimeCatalog = {
               "chainId": null,
               "declared": true,
               "mode": "kernel-gateway",
-              "evidenceStatus": "implementation",
-              "evidence": "none",
+              "evidenceStatus": "testnet_ready",
+              "evidence": "kernel-policy-testnet",
               "executable": false,
-              "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsProof": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "SOL"
               ],
-              "provider": "solana-devnet"
+              "provider": "privatedao-kernel-policy"
             },
             {
               "network": "solana-mainnet-beta",
@@ -222,14 +330,14 @@ export const runtimeCatalog = {
               "stage": "available",
               "environment": "testnet",
               "chainId": "97",
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
-              "executable": false,
-              "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "executable": true,
+              "supportsProof": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "BNB"
               ],
@@ -294,18 +402,18 @@ export const runtimeCatalog = {
               "stage": "available",
               "environment": "testnet",
               "chainId": "46630",
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_ready",
+              "evidence": "runtime-only",
               "executable": false,
-              "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsProof": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "ETH"
               ],
-              "provider": "evm-robinhood-testnet"
+              "provider": "privatedao-kernel-policy"
             },
             {
               "network": "robinhood-mainnet",
@@ -363,39 +471,75 @@ export const runtimeCatalog = {
             },
             {
               "network": "zcash-testnet",
-              "stage": "planned",
+              "stage": "available",
               "environment": "testnet",
               "chainId": null,
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_ready",
+              "evidence": "runtime-only",
               "executable": false,
-              "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsProof": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
-                "ZEC"
+                "TAZ"
               ],
-              "provider": null
+              "provider": "privatedao-kernel-policy"
             },
             {
               "network": "hyperliquid-testnet",
               "stage": "available",
               "environment": "testnet",
               "chainId": "998",
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
-              "executable": false,
-              "supportsProof": false,
-              "supportsReceipt": false,
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "executable": true,
+              "supportsProof": true,
+              "supportsReceipt": true,
               "supportsReconciliation": false,
               "supportedAssets": [
                 "HYPE"
               ],
               "provider": "evm-hyperliquid-testnet"
+            },
+            {
+              "network": "stellar-testnet",
+              "stage": "available",
+              "environment": "testnet",
+              "chainId": "Test SDF Network ; September 2015",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "executable": true,
+              "supportsProof": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "XLM"
+              ],
+              "provider": "stellar-testnet-horizon"
+            },
+            {
+              "network": "hypercore-testnet",
+              "stage": "available",
+              "environment": "testnet",
+              "chainId": null,
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_ready",
+              "evidence": "runtime-only",
+              "executable": false,
+              "supportsProof": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "USDC"
+              ],
+              "provider": "privatedao-kernel-policy"
             }
           ]
         }
@@ -410,7 +554,13 @@ export const runtimeCatalog = {
         "ethereum-sepolia",
         "arbitrum-sepolia",
         "tempo-testnet",
-        "base-sepolia"
+        "base-sepolia",
+        "bnb-testnet",
+        "zcash-testnet",
+        "stellar-testnet",
+        "robinhood-testnet",
+        "hyperliquid-testnet",
+        "hypercore-testnet"
       ],
       "capabilities": [
         {
@@ -425,17 +575,17 @@ export const runtimeCatalog = {
               "mode": "kernel-gateway",
               "entrypoint": "kernel://verification.record.create",
               "method": null,
-              "note": "Kernel-native digest and selective disclosure artifact; no public URL or on-chain anchor is created.",
-              "evidenceStatus": "implementation",
-              "evidence": "none",
-              "supportsExecution": false,
-              "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "note": "Solana Devnet record creation runs through the Kernel policy provider; the source record remains off-chain.",
+              "evidenceStatus": "testnet_ready",
+              "evidence": "kernel-policy-testnet",
+              "supportsExecution": true,
+              "supportsProof": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "SOL"
               ],
-              "provider": "solana-devnet"
+              "provider": "privatedao-kernel-policy"
             },
             {
               "network": "ethereum-sepolia",
@@ -504,6 +654,108 @@ export const runtimeCatalog = {
                 "ETH"
               ],
               "provider": "evm-base-sepolia"
+            },
+            {
+              "network": "bnb-testnet",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://verification.record.create",
+              "method": null,
+              "note": "Record creation is routed through the Kernel policy provider; the source record remains off-chain until network E2E is verified.",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "supportsExecution": true,
+              "supportsProof": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "BNB"
+              ],
+              "provider": "evm-bnb-testnet"
+            },
+            {
+              "network": "zcash-testnet",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://verification.record.create",
+              "method": null,
+              "note": "Zcash Testnet record creation is a Kernel verification artifact; the source record remains off-chain and no Zcash transaction is implied.",
+              "evidenceStatus": "testnet_ready",
+              "evidence": "runtime-only",
+              "supportsExecution": true,
+              "supportsProof": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "TAZ"
+              ],
+              "provider": "privatedao-kernel-policy"
+            },
+            {
+              "network": "stellar-testnet",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://verification.record.create",
+              "method": null,
+              "note": "Stellar Testnet record creation is routed through the Kernel and can be anchored with a reviewed Stellar operation; source records remain off-chain.",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "supportsExecution": true,
+              "supportsProof": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "XLM"
+              ],
+              "provider": "stellar-testnet-horizon"
+            },
+            {
+              "network": "robinhood-testnet",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://verification.record.create",
+              "method": null,
+              "note": "Record creation is routed through the Kernel policy provider; the source record remains off-chain until network E2E is verified.",
+              "evidenceStatus": "testnet_ready",
+              "evidence": "runtime-only",
+              "supportsExecution": true,
+              "supportsProof": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "ETH"
+              ],
+              "provider": "privatedao-kernel-policy"
+            },
+            {
+              "network": "hyperliquid-testnet",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://verification.record.create",
+              "method": null,
+              "note": "Record creation is routed through the Kernel policy provider; the source record remains off-chain until network E2E is verified.",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "supportsExecution": true,
+              "supportsProof": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": false,
+              "supportedAssets": [
+                "HYPE"
+              ],
+              "provider": "evm-hyperliquid-testnet"
+            },
+            {
+              "network": "hypercore-testnet",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://verification.record.create",
+              "method": null,
+              "note": "Record creation is routed through the Kernel policy provider; the source record remains off-chain until network E2E is verified.",
+              "evidenceStatus": "testnet_ready",
+              "evidence": "runtime-only",
+              "supportsExecution": true,
+              "supportsProof": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "USDC"
+              ],
+              "provider": "privatedao-kernel-policy"
             }
           ],
           "networkAvailability": [
@@ -514,16 +766,16 @@ export const runtimeCatalog = {
               "chainId": null,
               "declared": true,
               "mode": "kernel-gateway",
-              "evidenceStatus": "implementation",
-              "evidence": "none",
+              "evidenceStatus": "testnet_ready",
+              "evidence": "kernel-policy-testnet",
               "executable": false,
-              "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsProof": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "SOL"
               ],
-              "provider": "solana-devnet"
+              "provider": "privatedao-kernel-policy"
             },
             {
               "network": "solana-mainnet-beta",
@@ -620,14 +872,14 @@ export const runtimeCatalog = {
               "stage": "available",
               "environment": "testnet",
               "chainId": "97",
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
-              "executable": false,
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "executable": true,
               "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "BNB"
               ],
@@ -692,18 +944,18 @@ export const runtimeCatalog = {
               "stage": "available",
               "environment": "testnet",
               "chainId": "46630",
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_ready",
+              "evidence": "runtime-only",
               "executable": false,
-              "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsProof": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "ETH"
               ],
-              "provider": "evm-robinhood-testnet"
+              "provider": "privatedao-kernel-policy"
             },
             {
               "network": "robinhood-mainnet",
@@ -761,39 +1013,75 @@ export const runtimeCatalog = {
             },
             {
               "network": "zcash-testnet",
-              "stage": "planned",
+              "stage": "available",
               "environment": "testnet",
               "chainId": null,
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_ready",
+              "evidence": "runtime-only",
               "executable": false,
-              "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsProof": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
-                "ZEC"
+                "TAZ"
               ],
-              "provider": null
+              "provider": "privatedao-kernel-policy"
             },
             {
               "network": "hyperliquid-testnet",
               "stage": "available",
               "environment": "testnet",
               "chainId": "998",
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
-              "executable": false,
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "executable": true,
               "supportsProof": false,
-              "supportsReceipt": false,
+              "supportsReceipt": true,
               "supportsReconciliation": false,
               "supportedAssets": [
                 "HYPE"
               ],
               "provider": "evm-hyperliquid-testnet"
+            },
+            {
+              "network": "stellar-testnet",
+              "stage": "available",
+              "environment": "testnet",
+              "chainId": "Test SDF Network ; September 2015",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "executable": true,
+              "supportsProof": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "XLM"
+              ],
+              "provider": "stellar-testnet-horizon"
+            },
+            {
+              "network": "hypercore-testnet",
+              "stage": "available",
+              "environment": "testnet",
+              "chainId": null,
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_ready",
+              "evidence": "runtime-only",
+              "executable": false,
+              "supportsProof": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "USDC"
+              ],
+              "provider": "privatedao-kernel-policy"
             }
           ]
         },
@@ -809,17 +1097,17 @@ export const runtimeCatalog = {
               "mode": "kernel-gateway",
               "entrypoint": "kernel://verification.record.verify",
               "method": null,
-              "note": "Kernel-native digest verification; no source payload is returned and no on-chain anchor is claimed.",
-              "evidenceStatus": "implementation",
-              "evidence": "none",
-              "supportsExecution": false,
-              "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "note": "Solana Devnet record verification runs through the Kernel policy provider without returning source data.",
+              "evidenceStatus": "testnet_ready",
+              "evidence": "kernel-policy-testnet",
+              "supportsExecution": true,
+              "supportsProof": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "SOL"
               ],
-              "provider": "solana-devnet"
+              "provider": "privatedao-kernel-policy"
             },
             {
               "network": "ethereum-sepolia",
@@ -888,6 +1176,108 @@ export const runtimeCatalog = {
                 "ETH"
               ],
               "provider": "evm-base-sepolia"
+            },
+            {
+              "network": "bnb-testnet",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://verification.record.verify",
+              "method": null,
+              "note": "Record verification is routed through the Kernel without exposing source data or claiming a chain anchor.",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "supportsExecution": true,
+              "supportsProof": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "BNB"
+              ],
+              "provider": "evm-bnb-testnet"
+            },
+            {
+              "network": "zcash-testnet",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://verification.record.verify",
+              "method": null,
+              "note": "Zcash Testnet record verification is performed by the Kernel without exposing source data or requiring a wallet transaction.",
+              "evidenceStatus": "testnet_ready",
+              "evidence": "runtime-only",
+              "supportsExecution": true,
+              "supportsProof": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "TAZ"
+              ],
+              "provider": "privatedao-kernel-policy"
+            },
+            {
+              "network": "stellar-testnet",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://verification.record.verify",
+              "method": null,
+              "note": "Stellar Testnet verification is routed through the Kernel without exposing source data.",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "supportsExecution": true,
+              "supportsProof": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "XLM"
+              ],
+              "provider": "stellar-testnet-horizon"
+            },
+            {
+              "network": "robinhood-testnet",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://verification.record.verify",
+              "method": null,
+              "note": "Record verification is routed through the Kernel without exposing source data or claiming a chain anchor.",
+              "evidenceStatus": "testnet_ready",
+              "evidence": "runtime-only",
+              "supportsExecution": true,
+              "supportsProof": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "ETH"
+              ],
+              "provider": "privatedao-kernel-policy"
+            },
+            {
+              "network": "hyperliquid-testnet",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://verification.record.verify",
+              "method": null,
+              "note": "Record verification is routed through the Kernel without exposing source data or claiming a chain anchor.",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "supportsExecution": true,
+              "supportsProof": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": false,
+              "supportedAssets": [
+                "HYPE"
+              ],
+              "provider": "evm-hyperliquid-testnet"
+            },
+            {
+              "network": "hypercore-testnet",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://verification.record.verify",
+              "method": null,
+              "note": "Record verification is routed through the Kernel without exposing source data or claiming a chain anchor.",
+              "evidenceStatus": "testnet_ready",
+              "evidence": "runtime-only",
+              "supportsExecution": true,
+              "supportsProof": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "USDC"
+              ],
+              "provider": "privatedao-kernel-policy"
             }
           ],
           "networkAvailability": [
@@ -898,16 +1288,16 @@ export const runtimeCatalog = {
               "chainId": null,
               "declared": true,
               "mode": "kernel-gateway",
-              "evidenceStatus": "implementation",
-              "evidence": "none",
+              "evidenceStatus": "testnet_ready",
+              "evidence": "kernel-policy-testnet",
               "executable": false,
-              "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsProof": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "SOL"
               ],
-              "provider": "solana-devnet"
+              "provider": "privatedao-kernel-policy"
             },
             {
               "network": "solana-mainnet-beta",
@@ -1004,14 +1394,14 @@ export const runtimeCatalog = {
               "stage": "available",
               "environment": "testnet",
               "chainId": "97",
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
-              "executable": false,
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "executable": true,
               "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "BNB"
               ],
@@ -1076,18 +1466,18 @@ export const runtimeCatalog = {
               "stage": "available",
               "environment": "testnet",
               "chainId": "46630",
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_ready",
+              "evidence": "runtime-only",
               "executable": false,
-              "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsProof": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "ETH"
               ],
-              "provider": "evm-robinhood-testnet"
+              "provider": "privatedao-kernel-policy"
             },
             {
               "network": "robinhood-mainnet",
@@ -1145,39 +1535,75 @@ export const runtimeCatalog = {
             },
             {
               "network": "zcash-testnet",
-              "stage": "planned",
+              "stage": "available",
               "environment": "testnet",
               "chainId": null,
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_ready",
+              "evidence": "runtime-only",
               "executable": false,
-              "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsProof": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
-                "ZEC"
+                "TAZ"
               ],
-              "provider": null
+              "provider": "privatedao-kernel-policy"
             },
             {
               "network": "hyperliquid-testnet",
               "stage": "available",
               "environment": "testnet",
               "chainId": "998",
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
-              "executable": false,
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "executable": true,
               "supportsProof": false,
-              "supportsReceipt": false,
+              "supportsReceipt": true,
               "supportsReconciliation": false,
               "supportedAssets": [
                 "HYPE"
               ],
               "provider": "evm-hyperliquid-testnet"
+            },
+            {
+              "network": "stellar-testnet",
+              "stage": "available",
+              "environment": "testnet",
+              "chainId": "Test SDF Network ; September 2015",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "executable": true,
+              "supportsProof": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "XLM"
+              ],
+              "provider": "stellar-testnet-horizon"
+            },
+            {
+              "network": "hypercore-testnet",
+              "stage": "available",
+              "environment": "testnet",
+              "chainId": null,
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_ready",
+              "evidence": "runtime-only",
+              "executable": false,
+              "supportsProof": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "USDC"
+              ],
+              "provider": "privatedao-kernel-policy"
             }
           ]
         }
@@ -1188,7 +1614,17 @@ export const runtimeCatalog = {
       "name": "Confidential Payroll",
       "availability": "available",
       "networks": [
-        "solana-devnet"
+        "solana-devnet",
+        "ethereum-sepolia",
+        "arbitrum-sepolia",
+        "tempo-testnet",
+        "base-sepolia",
+        "bnb-testnet",
+        "zcash-testnet",
+        "stellar-testnet",
+        "robinhood-testnet",
+        "hyperliquid-testnet",
+        "hypercore-testnet"
       ],
       "capabilities": [
         {
@@ -1213,7 +1649,177 @@ export const runtimeCatalog = {
               "supportedAssets": [
                 "WSOL"
               ],
-              "provider": "umbra-solana-devnet"
+              "provider": "privatedao-payroll-kernel"
+            },
+            {
+              "network": "ethereum-sepolia",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://payroll.calculate",
+              "method": null,
+              "note": "Kernel payroll calculation is network-selectable; no private settlement or wallet movement is performed by this capability.",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "kernel-policy-testnet",
+              "supportsExecution": true,
+              "supportsProof": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": false,
+              "supportedAssets": [
+                "ETH"
+              ],
+              "provider": "privatedao-payroll-kernel"
+            },
+            {
+              "network": "arbitrum-sepolia",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://payroll.calculate",
+              "method": null,
+              "note": "Kernel payroll calculation is network-selectable; no private settlement or wallet movement is performed by this capability.",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "kernel-policy-testnet",
+              "supportsExecution": true,
+              "supportsProof": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": false,
+              "supportedAssets": [
+                "ETH"
+              ],
+              "provider": "privatedao-payroll-kernel"
+            },
+            {
+              "network": "tempo-testnet",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://payroll.calculate",
+              "method": null,
+              "note": "Kernel payroll calculation is network-selectable; no private settlement or wallet movement is performed by this capability.",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "kernel-policy-testnet",
+              "supportsExecution": true,
+              "supportsProof": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": false,
+              "supportedAssets": [
+                "USD"
+              ],
+              "provider": "privatedao-payroll-kernel"
+            },
+            {
+              "network": "base-sepolia",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://payroll.calculate",
+              "method": null,
+              "note": "Kernel payroll calculation is network-selectable; no private settlement or wallet movement is performed by this capability.",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "kernel-policy-testnet",
+              "supportsExecution": true,
+              "supportsProof": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": false,
+              "supportedAssets": [
+                "ETH"
+              ],
+              "provider": "privatedao-payroll-kernel"
+            },
+            {
+              "network": "bnb-testnet",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://payroll.calculate",
+              "method": null,
+              "note": "Payroll calculation is network-selectable through the Kernel; private settlement remains separately gated.",
+              "evidenceStatus": "testnet_ready",
+              "evidence": "runtime-only",
+              "supportsExecution": true,
+              "supportsProof": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "BNB"
+              ],
+              "provider": "privatedao-kernel-policy"
+            },
+            {
+              "network": "zcash-testnet",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://payroll.calculate",
+              "method": null,
+              "note": "Zcash Testnet payroll calculation is Kernel-only until the Zallet/Zebra compatibility gate enables the network.",
+              "evidenceStatus": "testnet_ready",
+              "evidence": "runtime-only",
+              "supportsExecution": true,
+              "supportsProof": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "TAZ"
+              ],
+              "provider": "privatedao-kernel-policy"
+            },
+            {
+              "network": "stellar-testnet",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://payroll.calculate",
+              "method": null,
+              "note": "Payroll calculation remains a deterministic Kernel workflow; Stellar is the selectable execution context.",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "supportsExecution": true,
+              "supportsProof": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "XLM"
+              ],
+              "provider": "stellar-testnet-horizon"
+            },
+            {
+              "network": "robinhood-testnet",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://payroll.calculate",
+              "method": null,
+              "note": "Payroll calculation is network-selectable through the Kernel; private settlement remains separately gated.",
+              "evidenceStatus": "testnet_ready",
+              "evidence": "runtime-only",
+              "supportsExecution": true,
+              "supportsProof": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "ETH"
+              ],
+              "provider": "privatedao-kernel-policy"
+            },
+            {
+              "network": "hyperliquid-testnet",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://payroll.calculate",
+              "method": null,
+              "note": "Payroll calculation is network-selectable through the Kernel; private settlement remains separately gated.",
+              "evidenceStatus": "testnet_ready",
+              "evidence": "runtime-only",
+              "supportsExecution": true,
+              "supportsProof": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "HYPE"
+              ],
+              "provider": "privatedao-kernel-policy"
+            },
+            {
+              "network": "hypercore-testnet",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://payroll.calculate",
+              "method": null,
+              "note": "Payroll calculation is network-selectable through the Kernel; private settlement remains separately gated.",
+              "evidenceStatus": "testnet_ready",
+              "evidence": "runtime-only",
+              "supportsExecution": true,
+              "supportsProof": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "USDC"
+              ],
+              "provider": "privatedao-kernel-policy"
             }
           ],
           "networkAvailability": [
@@ -1233,7 +1839,7 @@ export const runtimeCatalog = {
               "supportedAssets": [
                 "WSOL"
               ],
-              "provider": "umbra-solana-devnet"
+              "provider": "privatedao-payroll-kernel"
             },
             {
               "network": "solana-mainnet-beta",
@@ -1258,18 +1864,18 @@ export const runtimeCatalog = {
               "stage": "available",
               "environment": "testnet",
               "chainId": "11155111",
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
-              "executable": false,
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "kernel-policy-testnet",
+              "executable": true,
               "supportsProof": false,
-              "supportsReceipt": false,
+              "supportsReceipt": true,
               "supportsReconciliation": false,
               "supportedAssets": [
                 "ETH"
               ],
-              "provider": "evm-ethereum-sepolia"
+              "provider": "privatedao-payroll-kernel"
             },
             {
               "network": "ethereum-mainnet",
@@ -1294,18 +1900,18 @@ export const runtimeCatalog = {
               "stage": "available",
               "environment": "testnet",
               "chainId": "421614",
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
-              "executable": false,
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "kernel-policy-testnet",
+              "executable": true,
               "supportsProof": false,
-              "supportsReceipt": false,
+              "supportsReceipt": true,
               "supportsReconciliation": false,
               "supportedAssets": [
                 "ETH"
               ],
-              "provider": "evm-arbitrum-sepolia"
+              "provider": "privatedao-payroll-kernel"
             },
             {
               "network": "arbitrum-one",
@@ -1330,18 +1936,18 @@ export const runtimeCatalog = {
               "stage": "available",
               "environment": "testnet",
               "chainId": "97",
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_ready",
+              "evidence": "runtime-only",
               "executable": false,
               "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "BNB"
               ],
-              "provider": "evm-bnb-testnet"
+              "provider": "privatedao-kernel-policy"
             },
             {
               "network": "bnb-mainnet",
@@ -1366,18 +1972,18 @@ export const runtimeCatalog = {
               "stage": "available",
               "environment": "testnet",
               "chainId": "84532",
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
-              "executable": false,
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "kernel-policy-testnet",
+              "executable": true,
               "supportsProof": false,
-              "supportsReceipt": false,
+              "supportsReceipt": true,
               "supportsReconciliation": false,
               "supportedAssets": [
                 "ETH"
               ],
-              "provider": "evm-base-sepolia"
+              "provider": "privatedao-payroll-kernel"
             },
             {
               "network": "base-mainnet",
@@ -1402,18 +2008,18 @@ export const runtimeCatalog = {
               "stage": "available",
               "environment": "testnet",
               "chainId": "46630",
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_ready",
+              "evidence": "runtime-only",
               "executable": false,
               "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "ETH"
               ],
-              "provider": "evm-robinhood-testnet"
+              "provider": "privatedao-kernel-policy"
             },
             {
               "network": "robinhood-mainnet",
@@ -1438,18 +2044,18 @@ export const runtimeCatalog = {
               "stage": "available",
               "environment": "testnet",
               "chainId": "42431",
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
-              "executable": false,
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "kernel-policy-testnet",
+              "executable": true,
               "supportsProof": false,
-              "supportsReceipt": false,
+              "supportsReceipt": true,
               "supportsReconciliation": false,
               "supportedAssets": [
                 "USD"
               ],
-              "provider": "evm-tempo-testnet"
+              "provider": "privatedao-payroll-kernel"
             },
             {
               "network": "tempo-mainnet",
@@ -1471,39 +2077,75 @@ export const runtimeCatalog = {
             },
             {
               "network": "zcash-testnet",
-              "stage": "planned",
+              "stage": "available",
               "environment": "testnet",
               "chainId": null,
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_ready",
+              "evidence": "runtime-only",
               "executable": false,
               "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
-                "ZEC"
+                "TAZ"
               ],
-              "provider": null
+              "provider": "privatedao-kernel-policy"
             },
             {
               "network": "hyperliquid-testnet",
               "stage": "available",
               "environment": "testnet",
               "chainId": "998",
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_ready",
+              "evidence": "runtime-only",
               "executable": false,
               "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "HYPE"
               ],
-              "provider": "evm-hyperliquid-testnet"
+              "provider": "privatedao-kernel-policy"
+            },
+            {
+              "network": "stellar-testnet",
+              "stage": "available",
+              "environment": "testnet",
+              "chainId": "Test SDF Network ; September 2015",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "executable": true,
+              "supportsProof": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "XLM"
+              ],
+              "provider": "stellar-testnet-horizon"
+            },
+            {
+              "network": "hypercore-testnet",
+              "stage": "available",
+              "environment": "testnet",
+              "chainId": null,
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_ready",
+              "evidence": "runtime-only",
+              "executable": false,
+              "supportsProof": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "USDC"
+              ],
+              "provider": "privatedao-kernel-policy"
             }
           ]
         },
@@ -1529,7 +2171,177 @@ export const runtimeCatalog = {
               "supportedAssets": [
                 "WSOL"
               ],
-              "provider": "umbra-solana-devnet"
+              "provider": "privatedao-payroll-kernel"
+            },
+            {
+              "network": "ethereum-sepolia",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://payroll.approve",
+              "method": null,
+              "note": "Kernel Maker/Checker approval is network-selectable; settlement remains a separate network-specific gate.",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "kernel-policy-testnet",
+              "supportsExecution": true,
+              "supportsProof": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": false,
+              "supportedAssets": [
+                "ETH"
+              ],
+              "provider": "privatedao-payroll-kernel"
+            },
+            {
+              "network": "arbitrum-sepolia",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://payroll.approve",
+              "method": null,
+              "note": "Kernel Maker/Checker approval is network-selectable; settlement remains a separate network-specific gate.",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "kernel-policy-testnet",
+              "supportsExecution": true,
+              "supportsProof": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": false,
+              "supportedAssets": [
+                "ETH"
+              ],
+              "provider": "privatedao-payroll-kernel"
+            },
+            {
+              "network": "tempo-testnet",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://payroll.approve",
+              "method": null,
+              "note": "Kernel Maker/Checker approval is network-selectable; settlement remains a separate network-specific gate.",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "kernel-policy-testnet",
+              "supportsExecution": true,
+              "supportsProof": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": false,
+              "supportedAssets": [
+                "USD"
+              ],
+              "provider": "privatedao-payroll-kernel"
+            },
+            {
+              "network": "base-sepolia",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://payroll.approve",
+              "method": null,
+              "note": "Kernel Maker/Checker approval is network-selectable; settlement remains a separate network-specific gate.",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "kernel-policy-testnet",
+              "supportsExecution": true,
+              "supportsProof": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": false,
+              "supportedAssets": [
+                "ETH"
+              ],
+              "provider": "privatedao-payroll-kernel"
+            },
+            {
+              "network": "bnb-testnet",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://payroll.approve",
+              "method": null,
+              "note": "Payroll Maker/Checker approval is network-selectable through the Kernel; settlement remains separately gated.",
+              "evidenceStatus": "testnet_ready",
+              "evidence": "runtime-only",
+              "supportsExecution": true,
+              "supportsProof": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "BNB"
+              ],
+              "provider": "privatedao-kernel-policy"
+            },
+            {
+              "network": "zcash-testnet",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://payroll.approve",
+              "method": null,
+              "note": "Zcash Testnet Maker/Checker approval remains a Kernel policy gate before settlement.",
+              "evidenceStatus": "testnet_ready",
+              "evidence": "runtime-only",
+              "supportsExecution": true,
+              "supportsProof": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "TAZ"
+              ],
+              "provider": "privatedao-kernel-policy"
+            },
+            {
+              "network": "stellar-testnet",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://payroll.approve",
+              "method": null,
+              "note": "Payroll Maker/Checker approval remains a Kernel policy gate on Stellar Testnet.",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "supportsExecution": true,
+              "supportsProof": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "XLM"
+              ],
+              "provider": "stellar-testnet-horizon"
+            },
+            {
+              "network": "robinhood-testnet",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://payroll.approve",
+              "method": null,
+              "note": "Payroll Maker/Checker approval is network-selectable through the Kernel; settlement remains separately gated.",
+              "evidenceStatus": "testnet_ready",
+              "evidence": "runtime-only",
+              "supportsExecution": true,
+              "supportsProof": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "ETH"
+              ],
+              "provider": "privatedao-kernel-policy"
+            },
+            {
+              "network": "hyperliquid-testnet",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://payroll.approve",
+              "method": null,
+              "note": "Payroll Maker/Checker approval is network-selectable through the Kernel; settlement remains separately gated.",
+              "evidenceStatus": "testnet_ready",
+              "evidence": "runtime-only",
+              "supportsExecution": true,
+              "supportsProof": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "HYPE"
+              ],
+              "provider": "privatedao-kernel-policy"
+            },
+            {
+              "network": "hypercore-testnet",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://payroll.approve",
+              "method": null,
+              "note": "Payroll Maker/Checker approval is network-selectable through the Kernel; settlement remains separately gated.",
+              "evidenceStatus": "testnet_ready",
+              "evidence": "runtime-only",
+              "supportsExecution": true,
+              "supportsProof": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "USDC"
+              ],
+              "provider": "privatedao-kernel-policy"
             }
           ],
           "networkAvailability": [
@@ -1549,7 +2361,7 @@ export const runtimeCatalog = {
               "supportedAssets": [
                 "WSOL"
               ],
-              "provider": "umbra-solana-devnet"
+              "provider": "privatedao-payroll-kernel"
             },
             {
               "network": "solana-mainnet-beta",
@@ -1574,18 +2386,18 @@ export const runtimeCatalog = {
               "stage": "available",
               "environment": "testnet",
               "chainId": "11155111",
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
-              "executable": false,
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "kernel-policy-testnet",
+              "executable": true,
               "supportsProof": false,
-              "supportsReceipt": false,
+              "supportsReceipt": true,
               "supportsReconciliation": false,
               "supportedAssets": [
                 "ETH"
               ],
-              "provider": "evm-ethereum-sepolia"
+              "provider": "privatedao-payroll-kernel"
             },
             {
               "network": "ethereum-mainnet",
@@ -1610,18 +2422,18 @@ export const runtimeCatalog = {
               "stage": "available",
               "environment": "testnet",
               "chainId": "421614",
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
-              "executable": false,
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "kernel-policy-testnet",
+              "executable": true,
               "supportsProof": false,
-              "supportsReceipt": false,
+              "supportsReceipt": true,
               "supportsReconciliation": false,
               "supportedAssets": [
                 "ETH"
               ],
-              "provider": "evm-arbitrum-sepolia"
+              "provider": "privatedao-payroll-kernel"
             },
             {
               "network": "arbitrum-one",
@@ -1646,18 +2458,18 @@ export const runtimeCatalog = {
               "stage": "available",
               "environment": "testnet",
               "chainId": "97",
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_ready",
+              "evidence": "runtime-only",
               "executable": false,
               "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "BNB"
               ],
-              "provider": "evm-bnb-testnet"
+              "provider": "privatedao-kernel-policy"
             },
             {
               "network": "bnb-mainnet",
@@ -1682,18 +2494,18 @@ export const runtimeCatalog = {
               "stage": "available",
               "environment": "testnet",
               "chainId": "84532",
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
-              "executable": false,
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "kernel-policy-testnet",
+              "executable": true,
               "supportsProof": false,
-              "supportsReceipt": false,
+              "supportsReceipt": true,
               "supportsReconciliation": false,
               "supportedAssets": [
                 "ETH"
               ],
-              "provider": "evm-base-sepolia"
+              "provider": "privatedao-payroll-kernel"
             },
             {
               "network": "base-mainnet",
@@ -1718,18 +2530,18 @@ export const runtimeCatalog = {
               "stage": "available",
               "environment": "testnet",
               "chainId": "46630",
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_ready",
+              "evidence": "runtime-only",
               "executable": false,
               "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "ETH"
               ],
-              "provider": "evm-robinhood-testnet"
+              "provider": "privatedao-kernel-policy"
             },
             {
               "network": "robinhood-mainnet",
@@ -1754,18 +2566,18 @@ export const runtimeCatalog = {
               "stage": "available",
               "environment": "testnet",
               "chainId": "42431",
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
-              "executable": false,
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "kernel-policy-testnet",
+              "executable": true,
               "supportsProof": false,
-              "supportsReceipt": false,
+              "supportsReceipt": true,
               "supportsReconciliation": false,
               "supportedAssets": [
                 "USD"
               ],
-              "provider": "evm-tempo-testnet"
+              "provider": "privatedao-payroll-kernel"
             },
             {
               "network": "tempo-mainnet",
@@ -1787,39 +2599,75 @@ export const runtimeCatalog = {
             },
             {
               "network": "zcash-testnet",
-              "stage": "planned",
+              "stage": "available",
               "environment": "testnet",
               "chainId": null,
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_ready",
+              "evidence": "runtime-only",
               "executable": false,
               "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
-                "ZEC"
+                "TAZ"
               ],
-              "provider": null
+              "provider": "privatedao-kernel-policy"
             },
             {
               "network": "hyperliquid-testnet",
               "stage": "available",
               "environment": "testnet",
               "chainId": "998",
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_ready",
+              "evidence": "runtime-only",
               "executable": false,
               "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "HYPE"
               ],
-              "provider": "evm-hyperliquid-testnet"
+              "provider": "privatedao-kernel-policy"
+            },
+            {
+              "network": "stellar-testnet",
+              "stage": "available",
+              "environment": "testnet",
+              "chainId": "Test SDF Network ; September 2015",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "executable": true,
+              "supportsProof": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "XLM"
+              ],
+              "provider": "stellar-testnet-horizon"
+            },
+            {
+              "network": "hypercore-testnet",
+              "stage": "available",
+              "environment": "testnet",
+              "chainId": null,
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_ready",
+              "evidence": "runtime-only",
+              "executable": false,
+              "supportsProof": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "USDC"
+              ],
+              "provider": "privatedao-kernel-policy"
             }
           ]
         },
@@ -1831,21 +2679,55 @@ export const runtimeCatalog = {
           "receiptSchema": "privatedao.execution-receipt.v1",
           "applicationBindings": [
             {
-              "network": "solana-devnet",
-              "mode": "legacy-provider",
-              "entrypoint": "/api/private-payout/prepare",
-              "method": "POST",
-              "note": "Existing private-payout provider route; it is not evidence of an end-to-end payroll settlement.",
-              "evidenceStatus": "devnet_verified",
-              "evidence": "devnet-e2e",
+              "network": "zcash-testnet",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://payroll.settle",
+              "method": null,
+              "note": "Zcash Testnet payroll settlement is backed by the confirmed Zallet/Zebra receipt and remains Testnet-only with broadcast controlled by the secure runtime gate.",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
               "supportsExecution": true,
-              "supportsProof": true,
+              "supportsProof": false,
               "supportsReceipt": true,
               "supportsReconciliation": true,
               "supportedAssets": [
-                "WSOL"
+                "TAZ"
               ],
-              "provider": "umbra-solana-devnet"
+              "provider": "zcash-testnet-zallet"
+            },
+            {
+              "network": "bnb-testnet",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://payroll.settle",
+              "method": null,
+              "note": "BNB Testnet payroll settlement binds an off-chain payroll commitment to a real Maker/Checker payout receipt; employee records and policy details remain off-chain.",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "supportsExecution": true,
+              "supportsProof": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "BNB"
+              ],
+              "provider": "evm-bnb-testnet-organizational"
+            },
+            {
+              "network": "stellar-testnet",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://payroll.settle",
+              "method": null,
+              "note": "Stellar Testnet payroll settlement is Kernel-ready for commitment-bound XDR preparation and signing; funded payout E2E remains pending.",
+              "evidenceStatus": "testnet_ready",
+              "evidence": "runtime-only",
+              "supportsExecution": true,
+              "supportsProof": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "XLM"
+              ],
+              "provider": "stellar-testnet-horizon"
             }
           ],
           "networkAvailability": [
@@ -1854,18 +2736,18 @@ export const runtimeCatalog = {
               "stage": "available",
               "environment": "devnet",
               "chainId": null,
-              "declared": true,
-              "mode": "legacy-provider",
-              "evidenceStatus": "devnet_verified",
-              "evidence": "devnet-e2e",
+              "declared": false,
+              "mode": "unbound",
+              "evidenceStatus": "planned",
+              "evidence": "none",
               "executable": false,
-              "supportsProof": true,
-              "supportsReceipt": true,
-              "supportsReconciliation": true,
+              "supportsProof": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
               "supportedAssets": [
-                "WSOL"
+                "SOL"
               ],
-              "provider": "umbra-solana-devnet"
+              "provider": "solana-devnet"
             },
             {
               "network": "solana-mainnet-beta",
@@ -1962,18 +2844,18 @@ export const runtimeCatalog = {
               "stage": "available",
               "environment": "testnet",
               "chainId": "97",
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
-              "executable": false,
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "executable": true,
               "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "BNB"
               ],
-              "provider": "evm-bnb-testnet"
+              "provider": "evm-bnb-testnet-organizational"
             },
             {
               "network": "bnb-mainnet",
@@ -2103,21 +2985,21 @@ export const runtimeCatalog = {
             },
             {
               "network": "zcash-testnet",
-              "stage": "planned",
+              "stage": "available",
               "environment": "testnet",
               "chainId": null,
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
-              "executable": false,
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "executable": true,
               "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
-                "ZEC"
+                "TAZ"
               ],
-              "provider": null
+              "provider": "zcash-testnet-zallet"
             },
             {
               "network": "hyperliquid-testnet",
@@ -2136,6 +3018,42 @@ export const runtimeCatalog = {
                 "HYPE"
               ],
               "provider": "evm-hyperliquid-testnet"
+            },
+            {
+              "network": "stellar-testnet",
+              "stage": "available",
+              "environment": "testnet",
+              "chainId": "Test SDF Network ; September 2015",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_ready",
+              "evidence": "runtime-only",
+              "executable": false,
+              "supportsProof": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "XLM"
+              ],
+              "provider": "stellar-testnet-horizon"
+            },
+            {
+              "network": "hypercore-testnet",
+              "stage": "available",
+              "environment": "testnet",
+              "chainId": null,
+              "declared": false,
+              "mode": "unbound",
+              "evidenceStatus": "planned",
+              "evidence": "none",
+              "executable": false,
+              "supportsProof": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "supportedAssets": [
+                "USDC"
+              ],
+              "provider": "hyperliquid-core-testnet"
             }
           ]
         }
@@ -2149,7 +3067,14 @@ export const runtimeCatalog = {
         "solana-devnet",
         "ethereum-sepolia",
         "arbitrum-sepolia",
-        "tempo-testnet"
+        "tempo-testnet",
+        "base-sepolia",
+        "bnb-testnet",
+        "zcash-testnet",
+        "stellar-testnet",
+        "robinhood-testnet",
+        "hyperliquid-testnet",
+        "hypercore-testnet"
       ],
       "capabilities": [
         {
@@ -2165,12 +3090,12 @@ export const runtimeCatalog = {
               "entrypoint": "kernel://treasury.policy.check",
               "method": null,
               "note": "Kernel-native deterministic policy evaluation; no wallet signature or treasury movement is performed.",
-              "evidenceStatus": "implementation",
-              "evidence": "none",
-              "supportsExecution": false,
+              "evidenceStatus": "devnet_verified",
+              "evidence": "devnet-e2e",
+              "supportsExecution": true,
               "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "SOL"
               ],
@@ -2226,6 +3151,125 @@ export const runtimeCatalog = {
                 "AlphaUSD"
               ],
               "provider": "evm-tempo-testnet-organizational"
+            },
+            {
+              "network": "base-sepolia",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://treasury.policy.check",
+              "method": null,
+              "note": "Base Sepolia organizational Treasury passed real funding, budget, Maker/Checker approval, execution, receipt, and state reconciliation checks in the committed E2E artifact.",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "supportsExecution": true,
+              "supportsProof": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "ETH"
+              ],
+              "provider": "evm-base-sepolia-organizational"
+            },
+            {
+              "network": "bnb-testnet",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://treasury.policy.check",
+              "method": null,
+              "note": "Treasury policy checks run through the Kernel; no asset movement or settlement is implied.",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "supportsExecution": true,
+              "supportsProof": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "BNB"
+              ],
+              "provider": "evm-bnb-testnet-organizational"
+            },
+            {
+              "network": "zcash-testnet",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://treasury.policy.check",
+              "method": null,
+              "note": "Zcash Testnet Treasury policy checks run in the Kernel; this binding does not claim Zcash treasury settlement.",
+              "evidenceStatus": "testnet_ready",
+              "evidence": "runtime-only",
+              "supportsExecution": true,
+              "supportsProof": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "TAZ"
+              ],
+              "provider": "privatedao-kernel-policy"
+            },
+            {
+              "network": "stellar-testnet",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://treasury.policy.check",
+              "method": null,
+              "note": "Treasury policy evaluation is Kernel-backed; no asset movement is implied.",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "supportsExecution": true,
+              "supportsProof": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "XLM"
+              ],
+              "provider": "stellar-testnet-horizon"
+            },
+            {
+              "network": "robinhood-testnet",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://treasury.policy.check",
+              "method": null,
+              "note": "Treasury policy checks run through the Kernel; no asset movement or settlement is implied.",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "supportsExecution": true,
+              "supportsProof": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "ETH"
+              ],
+              "provider": "evm-robinhood-testnet-organizational"
+            },
+            {
+              "network": "hyperliquid-testnet",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://treasury.policy.check",
+              "method": null,
+              "note": "Treasury policy checks run through the Kernel; no asset movement or settlement is implied.",
+              "evidenceStatus": "testnet_ready",
+              "evidence": "runtime-only",
+              "supportsExecution": true,
+              "supportsProof": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "HYPE"
+              ],
+              "provider": "privatedao-kernel-policy"
+            },
+            {
+              "network": "hypercore-testnet",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://treasury.policy.check",
+              "method": null,
+              "note": "Treasury policy checks run through the Kernel; no asset movement or settlement is implied.",
+              "evidenceStatus": "testnet_ready",
+              "evidence": "runtime-only",
+              "supportsExecution": true,
+              "supportsProof": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "USDC"
+              ],
+              "provider": "privatedao-kernel-policy"
             }
           ],
           "networkAvailability": [
@@ -2236,12 +3280,12 @@ export const runtimeCatalog = {
               "chainId": null,
               "declared": true,
               "mode": "kernel-gateway",
-              "evidenceStatus": "implementation",
-              "evidence": "none",
-              "executable": false,
+              "evidenceStatus": "devnet_verified",
+              "evidence": "devnet-e2e",
+              "executable": true,
               "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "SOL"
               ],
@@ -2342,18 +3386,18 @@ export const runtimeCatalog = {
               "stage": "available",
               "environment": "testnet",
               "chainId": "97",
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
-              "executable": false,
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "executable": true,
               "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "BNB"
               ],
-              "provider": "evm-bnb-testnet"
+              "provider": "evm-bnb-testnet-organizational"
             },
             {
               "network": "bnb-mainnet",
@@ -2378,18 +3422,18 @@ export const runtimeCatalog = {
               "stage": "available",
               "environment": "testnet",
               "chainId": "84532",
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
-              "executable": false,
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "executable": true,
               "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "ETH"
               ],
-              "provider": "evm-base-sepolia"
+              "provider": "evm-base-sepolia-organizational"
             },
             {
               "network": "base-mainnet",
@@ -2414,18 +3458,18 @@ export const runtimeCatalog = {
               "stage": "available",
               "environment": "testnet",
               "chainId": "46630",
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
-              "executable": false,
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "executable": true,
               "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "ETH"
               ],
-              "provider": "evm-robinhood-testnet"
+              "provider": "evm-robinhood-testnet-organizational"
             },
             {
               "network": "robinhood-mainnet",
@@ -2483,39 +3527,75 @@ export const runtimeCatalog = {
             },
             {
               "network": "zcash-testnet",
-              "stage": "planned",
+              "stage": "available",
               "environment": "testnet",
               "chainId": null,
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_ready",
+              "evidence": "runtime-only",
               "executable": false,
               "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
-                "ZEC"
+                "TAZ"
               ],
-              "provider": null
+              "provider": "privatedao-kernel-policy"
             },
             {
               "network": "hyperliquid-testnet",
               "stage": "available",
               "environment": "testnet",
               "chainId": "998",
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_ready",
+              "evidence": "runtime-only",
               "executable": false,
               "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "HYPE"
               ],
-              "provider": "evm-hyperliquid-testnet"
+              "provider": "privatedao-kernel-policy"
+            },
+            {
+              "network": "stellar-testnet",
+              "stage": "available",
+              "environment": "testnet",
+              "chainId": "Test SDF Network ; September 2015",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "executable": true,
+              "supportsProof": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "XLM"
+              ],
+              "provider": "stellar-testnet-horizon"
+            },
+            {
+              "network": "hypercore-testnet",
+              "stage": "available",
+              "environment": "testnet",
+              "chainId": null,
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_ready",
+              "evidence": "runtime-only",
+              "executable": false,
+              "supportsProof": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "USDC"
+              ],
+              "provider": "privatedao-kernel-policy"
             }
           ]
         }
@@ -2529,7 +3609,14 @@ export const runtimeCatalog = {
         "solana-devnet",
         "ethereum-sepolia",
         "arbitrum-sepolia",
-        "tempo-testnet"
+        "tempo-testnet",
+        "base-sepolia",
+        "bnb-testnet",
+        "zcash-testnet",
+        "stellar-testnet",
+        "robinhood-testnet",
+        "hyperliquid-testnet",
+        "hypercore-testnet"
       ],
       "capabilities": [
         {
@@ -2541,16 +3628,16 @@ export const runtimeCatalog = {
           "applicationBindings": [
             {
               "network": "solana-devnet",
-              "mode": "unbound",
-              "entrypoint": null,
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://governance.proposal.execute",
               "method": null,
-              "note": "No exact Kernel-backed governance execution action is exposed by the web app.",
-              "evidenceStatus": "implementation",
-              "evidence": "none",
-              "supportsExecution": false,
-              "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "note": "Solana Devnet governance uses the existing PrivateDAO program transaction builder through the browser-signing Kernel boundary.",
+              "evidenceStatus": "devnet_verified",
+              "evidence": "devnet-e2e",
+              "supportsExecution": true,
+              "supportsProof": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "SOL"
               ],
@@ -2606,6 +3693,125 @@ export const runtimeCatalog = {
                 "AlphaUSD"
               ],
               "provider": "evm-tempo-testnet-organizational"
+            },
+            {
+              "network": "base-sepolia",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://governance.proposal.execute",
+              "method": null,
+              "note": "Base Sepolia commit/reveal governance passed real proposal creation, early-reveal rejection, vote reveal, finalization, receipt, and state checks in the committed E2E artifact.",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "supportsExecution": true,
+              "supportsProof": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "ETH"
+              ],
+              "provider": "evm-base-sepolia-organizational"
+            },
+            {
+              "network": "bnb-testnet",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://governance.proposal.execute",
+              "method": null,
+              "note": "Governance authority approval runs through the Kernel policy provider; on-chain execution awaits funded E2E evidence.",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "supportsExecution": true,
+              "supportsProof": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "BNB"
+              ],
+              "provider": "evm-bnb-testnet-organizational"
+            },
+            {
+              "network": "zcash-testnet",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://governance.proposal.execute",
+              "method": null,
+              "note": "Zcash Testnet governance is a Kernel policy approval with an auditable receipt; it does not claim Zcash on-chain governance settlement.",
+              "evidenceStatus": "testnet_ready",
+              "evidence": "runtime-only",
+              "supportsExecution": true,
+              "supportsProof": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "TAZ"
+              ],
+              "provider": "privatedao-kernel-policy"
+            },
+            {
+              "network": "stellar-testnet",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://governance.proposal.execute",
+              "method": null,
+              "note": "Governance approval is Kernel-backed; Stellar transaction execution remains signature-gated.",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "supportsExecution": true,
+              "supportsProof": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "XLM"
+              ],
+              "provider": "stellar-testnet-horizon"
+            },
+            {
+              "network": "robinhood-testnet",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://governance.proposal.execute",
+              "method": null,
+              "note": "Governance authority approval runs through the Kernel policy provider; on-chain execution awaits funded E2E evidence.",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "supportsExecution": true,
+              "supportsProof": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "ETH"
+              ],
+              "provider": "evm-robinhood-testnet-organizational"
+            },
+            {
+              "network": "hyperliquid-testnet",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://governance.proposal.execute",
+              "method": null,
+              "note": "Governance authority approval runs through the Kernel policy provider; on-chain execution awaits funded E2E evidence.",
+              "evidenceStatus": "testnet_ready",
+              "evidence": "runtime-only",
+              "supportsExecution": true,
+              "supportsProof": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "HYPE"
+              ],
+              "provider": "privatedao-kernel-policy"
+            },
+            {
+              "network": "hypercore-testnet",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://governance.proposal.execute",
+              "method": null,
+              "note": "Governance authority approval runs through the Kernel policy provider; on-chain execution awaits funded E2E evidence.",
+              "evidenceStatus": "testnet_ready",
+              "evidence": "runtime-only",
+              "supportsExecution": true,
+              "supportsProof": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "USDC"
+              ],
+              "provider": "privatedao-kernel-policy"
             }
           ],
           "networkAvailability": [
@@ -2615,13 +3821,13 @@ export const runtimeCatalog = {
               "environment": "devnet",
               "chainId": null,
               "declared": true,
-              "mode": "unbound",
-              "evidenceStatus": "implementation",
-              "evidence": "none",
-              "executable": false,
-              "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "devnet_verified",
+              "evidence": "devnet-e2e",
+              "executable": true,
+              "supportsProof": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "SOL"
               ],
@@ -2722,18 +3928,18 @@ export const runtimeCatalog = {
               "stage": "available",
               "environment": "testnet",
               "chainId": "97",
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
-              "executable": false,
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "executable": true,
               "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "BNB"
               ],
-              "provider": "evm-bnb-testnet"
+              "provider": "evm-bnb-testnet-organizational"
             },
             {
               "network": "bnb-mainnet",
@@ -2758,18 +3964,18 @@ export const runtimeCatalog = {
               "stage": "available",
               "environment": "testnet",
               "chainId": "84532",
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
-              "executable": false,
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "executable": true,
               "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "ETH"
               ],
-              "provider": "evm-base-sepolia"
+              "provider": "evm-base-sepolia-organizational"
             },
             {
               "network": "base-mainnet",
@@ -2794,18 +4000,18 @@ export const runtimeCatalog = {
               "stage": "available",
               "environment": "testnet",
               "chainId": "46630",
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
-              "executable": false,
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "executable": true,
               "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "ETH"
               ],
-              "provider": "evm-robinhood-testnet"
+              "provider": "evm-robinhood-testnet-organizational"
             },
             {
               "network": "robinhood-mainnet",
@@ -2863,39 +4069,75 @@ export const runtimeCatalog = {
             },
             {
               "network": "zcash-testnet",
-              "stage": "planned",
+              "stage": "available",
               "environment": "testnet",
               "chainId": null,
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_ready",
+              "evidence": "runtime-only",
               "executable": false,
-              "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsProof": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
-                "ZEC"
+                "TAZ"
               ],
-              "provider": null
+              "provider": "privatedao-kernel-policy"
             },
             {
               "network": "hyperliquid-testnet",
               "stage": "available",
               "environment": "testnet",
               "chainId": "998",
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_ready",
+              "evidence": "runtime-only",
               "executable": false,
-              "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsProof": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "HYPE"
               ],
-              "provider": "evm-hyperliquid-testnet"
+              "provider": "privatedao-kernel-policy"
+            },
+            {
+              "network": "stellar-testnet",
+              "stage": "available",
+              "environment": "testnet",
+              "chainId": "Test SDF Network ; September 2015",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "executable": true,
+              "supportsProof": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "XLM"
+              ],
+              "provider": "stellar-testnet-horizon"
+            },
+            {
+              "network": "hypercore-testnet",
+              "stage": "available",
+              "environment": "testnet",
+              "chainId": null,
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_ready",
+              "evidence": "runtime-only",
+              "executable": false,
+              "supportsProof": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "USDC"
+              ],
+              "provider": "privatedao-kernel-policy"
             }
           ]
         }
@@ -2909,7 +4151,14 @@ export const runtimeCatalog = {
         "solana-devnet",
         "ethereum-sepolia",
         "arbitrum-sepolia",
-        "tempo-testnet"
+        "tempo-testnet",
+        "base-sepolia",
+        "bnb-testnet",
+        "zcash-testnet",
+        "stellar-testnet",
+        "robinhood-testnet",
+        "hyperliquid-testnet",
+        "hypercore-testnet"
       ],
       "capabilities": [
         {
@@ -2924,13 +4173,13 @@ export const runtimeCatalog = {
               "mode": "kernel-gateway",
               "entrypoint": "kernel://auction.bid.commit",
               "method": null,
-              "note": "Kernel adapter delegates to the HTTPS sealed-bid commitment service; it returns observed public commitments and does not claim a wallet signature or token movement.",
-              "evidenceStatus": "implementation",
-              "evidence": "none",
-              "supportsExecution": false,
-              "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "note": "Kernel-local SHA-256 sealed-bid commitment proof is available on Solana Devnet; this path does not claim MagicBlock settlement or Groth16.",
+              "evidenceStatus": "devnet_verified",
+              "evidence": "devnet-e2e",
+              "supportsExecution": true,
+              "supportsProof": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "SOL"
               ],
@@ -2986,6 +4235,125 @@ export const runtimeCatalog = {
                 "AlphaUSD"
               ],
               "provider": "evm-tempo-testnet-organizational"
+            },
+            {
+              "network": "base-sepolia",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://auction.bid.commit",
+              "method": null,
+              "note": "Base Sepolia sealed auction passed real commit, altered-reveal rejection, reveal, finalization, settlement, receipt, and state checks in the committed E2E artifact.",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "supportsExecution": true,
+              "supportsProof": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "ETH"
+              ],
+              "provider": "evm-base-sepolia-organizational"
+            },
+            {
+              "network": "bnb-testnet",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://auction.bid.commit",
+              "method": null,
+              "note": "Sealed-bid commitment runs through the Kernel; financial bid settlement is not claimed.",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "supportsExecution": true,
+              "supportsProof": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "BNB"
+              ],
+              "provider": "evm-bnb-testnet-organizational"
+            },
+            {
+              "network": "zcash-testnet",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://auction.bid.commit",
+              "method": null,
+              "note": "Zcash Testnet sealed-bid commitments are computed in the Kernel; this binding does not claim on-chain Zcash auction settlement.",
+              "evidenceStatus": "testnet_ready",
+              "evidence": "runtime-only",
+              "supportsExecution": true,
+              "supportsProof": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "TAZ"
+              ],
+              "provider": "privatedao-kernel-policy"
+            },
+            {
+              "network": "stellar-testnet",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://auction.bid.commit",
+              "method": null,
+              "note": "Sealed-bid commitments are computed in the Kernel; no bid settlement is claimed without a verified Stellar operation.",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "supportsExecution": true,
+              "supportsProof": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "XLM"
+              ],
+              "provider": "stellar-testnet-horizon"
+            },
+            {
+              "network": "robinhood-testnet",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://auction.bid.commit",
+              "method": null,
+              "note": "Sealed-bid commitment runs through the Kernel; financial bid settlement is not claimed.",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "supportsExecution": true,
+              "supportsProof": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "ETH"
+              ],
+              "provider": "evm-robinhood-testnet-organizational"
+            },
+            {
+              "network": "hyperliquid-testnet",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://auction.bid.commit",
+              "method": null,
+              "note": "Sealed-bid commitment runs through the Kernel; financial bid settlement is not claimed.",
+              "evidenceStatus": "testnet_ready",
+              "evidence": "runtime-only",
+              "supportsExecution": true,
+              "supportsProof": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "HYPE"
+              ],
+              "provider": "privatedao-kernel-policy"
+            },
+            {
+              "network": "hypercore-testnet",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://auction.bid.commit",
+              "method": null,
+              "note": "Sealed-bid commitment runs through the Kernel; financial bid settlement is not claimed.",
+              "evidenceStatus": "testnet_ready",
+              "evidence": "runtime-only",
+              "supportsExecution": true,
+              "supportsProof": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "USDC"
+              ],
+              "provider": "privatedao-kernel-policy"
             }
           ],
           "networkAvailability": [
@@ -2996,12 +4364,12 @@ export const runtimeCatalog = {
               "chainId": null,
               "declared": true,
               "mode": "kernel-gateway",
-              "evidenceStatus": "implementation",
-              "evidence": "none",
-              "executable": false,
-              "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "evidenceStatus": "devnet_verified",
+              "evidence": "devnet-e2e",
+              "executable": true,
+              "supportsProof": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "SOL"
               ],
@@ -3102,18 +4470,18 @@ export const runtimeCatalog = {
               "stage": "available",
               "environment": "testnet",
               "chainId": "97",
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
-              "executable": false,
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "executable": true,
               "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "BNB"
               ],
-              "provider": "evm-bnb-testnet"
+              "provider": "evm-bnb-testnet-organizational"
             },
             {
               "network": "bnb-mainnet",
@@ -3138,18 +4506,18 @@ export const runtimeCatalog = {
               "stage": "available",
               "environment": "testnet",
               "chainId": "84532",
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
-              "executable": false,
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "executable": true,
               "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "ETH"
               ],
-              "provider": "evm-base-sepolia"
+              "provider": "evm-base-sepolia-organizational"
             },
             {
               "network": "base-mainnet",
@@ -3174,18 +4542,18 @@ export const runtimeCatalog = {
               "stage": "available",
               "environment": "testnet",
               "chainId": "46630",
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
-              "executable": false,
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "executable": true,
               "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "ETH"
               ],
-              "provider": "evm-robinhood-testnet"
+              "provider": "evm-robinhood-testnet-organizational"
             },
             {
               "network": "robinhood-mainnet",
@@ -3243,39 +4611,75 @@ export const runtimeCatalog = {
             },
             {
               "network": "zcash-testnet",
-              "stage": "planned",
+              "stage": "available",
               "environment": "testnet",
               "chainId": null,
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_ready",
+              "evidence": "runtime-only",
               "executable": false,
-              "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsProof": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
-                "ZEC"
+                "TAZ"
               ],
-              "provider": null
+              "provider": "privatedao-kernel-policy"
             },
             {
               "network": "hyperliquid-testnet",
               "stage": "available",
               "environment": "testnet",
               "chainId": "998",
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_ready",
+              "evidence": "runtime-only",
               "executable": false,
-              "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsProof": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "HYPE"
               ],
-              "provider": "evm-hyperliquid-testnet"
+              "provider": "privatedao-kernel-policy"
+            },
+            {
+              "network": "stellar-testnet",
+              "stage": "available",
+              "environment": "testnet",
+              "chainId": "Test SDF Network ; September 2015",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "executable": true,
+              "supportsProof": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "XLM"
+              ],
+              "provider": "stellar-testnet-horizon"
+            },
+            {
+              "network": "hypercore-testnet",
+              "stage": "available",
+              "environment": "testnet",
+              "chainId": null,
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_ready",
+              "evidence": "runtime-only",
+              "executable": false,
+              "supportsProof": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "USDC"
+              ],
+              "provider": "privatedao-kernel-policy"
             }
           ]
         },
@@ -3291,13 +4695,13 @@ export const runtimeCatalog = {
               "mode": "kernel-gateway",
               "entrypoint": "kernel://auction.settle",
               "method": null,
-              "note": "Kernel adapter delegates to the HTTPS outcome-proof service; it proves an already-bound result and does not claim token movement or an on-chain signature.",
-              "evidenceStatus": "implementation",
-              "evidence": "none",
-              "supportsExecution": false,
-              "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "note": "Kernel-local SHA-256 outcome commitment proof is available on Solana Devnet; this path does not claim MagicBlock settlement or Groth16.",
+              "evidenceStatus": "devnet_verified",
+              "evidence": "devnet-e2e",
+              "supportsExecution": true,
+              "supportsProof": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "SOL"
               ],
@@ -3353,6 +4757,125 @@ export const runtimeCatalog = {
                 "AlphaUSD"
               ],
               "provider": "evm-tempo-testnet-organizational"
+            },
+            {
+              "network": "base-sepolia",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://auction.settle",
+              "method": null,
+              "note": "Base Sepolia sealed auction settlement is backed by the committed organizational E2E evidence artifact.",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "supportsExecution": true,
+              "supportsProof": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "ETH"
+              ],
+              "provider": "evm-base-sepolia-organizational"
+            },
+            {
+              "network": "bnb-testnet",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://auction.settle",
+              "method": null,
+              "note": "Auction outcome proof runs through the Kernel; financial settlement is not claimed.",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "supportsExecution": true,
+              "supportsProof": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "BNB"
+              ],
+              "provider": "evm-bnb-testnet-organizational"
+            },
+            {
+              "network": "zcash-testnet",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://auction.settle",
+              "method": null,
+              "note": "Zcash Testnet auction outcome proofs are Kernel artifacts; no Zcash financial settlement is implied.",
+              "evidenceStatus": "testnet_ready",
+              "evidence": "runtime-only",
+              "supportsExecution": true,
+              "supportsProof": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "TAZ"
+              ],
+              "provider": "privatedao-kernel-policy"
+            },
+            {
+              "network": "stellar-testnet",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://auction.settle",
+              "method": null,
+              "note": "Auction outcome proof is Kernel-backed; financial settlement remains signature-gated.",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "supportsExecution": true,
+              "supportsProof": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "XLM"
+              ],
+              "provider": "stellar-testnet-horizon"
+            },
+            {
+              "network": "robinhood-testnet",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://auction.settle",
+              "method": null,
+              "note": "Auction outcome proof runs through the Kernel; financial settlement is not claimed.",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "supportsExecution": true,
+              "supportsProof": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "ETH"
+              ],
+              "provider": "evm-robinhood-testnet-organizational"
+            },
+            {
+              "network": "hyperliquid-testnet",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://auction.settle",
+              "method": null,
+              "note": "Auction outcome proof runs through the Kernel; financial settlement is not claimed.",
+              "evidenceStatus": "testnet_ready",
+              "evidence": "runtime-only",
+              "supportsExecution": true,
+              "supportsProof": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "HYPE"
+              ],
+              "provider": "privatedao-kernel-policy"
+            },
+            {
+              "network": "hypercore-testnet",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://auction.settle",
+              "method": null,
+              "note": "Auction outcome proof runs through the Kernel; financial settlement is not claimed.",
+              "evidenceStatus": "testnet_ready",
+              "evidence": "runtime-only",
+              "supportsExecution": true,
+              "supportsProof": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "USDC"
+              ],
+              "provider": "privatedao-kernel-policy"
             }
           ],
           "networkAvailability": [
@@ -3363,12 +4886,12 @@ export const runtimeCatalog = {
               "chainId": null,
               "declared": true,
               "mode": "kernel-gateway",
-              "evidenceStatus": "implementation",
-              "evidence": "none",
-              "executable": false,
-              "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "evidenceStatus": "devnet_verified",
+              "evidence": "devnet-e2e",
+              "executable": true,
+              "supportsProof": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "SOL"
               ],
@@ -3469,18 +4992,18 @@ export const runtimeCatalog = {
               "stage": "available",
               "environment": "testnet",
               "chainId": "97",
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
-              "executable": false,
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "executable": true,
               "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "BNB"
               ],
-              "provider": "evm-bnb-testnet"
+              "provider": "evm-bnb-testnet-organizational"
             },
             {
               "network": "bnb-mainnet",
@@ -3505,18 +5028,18 @@ export const runtimeCatalog = {
               "stage": "available",
               "environment": "testnet",
               "chainId": "84532",
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
-              "executable": false,
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "executable": true,
               "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "ETH"
               ],
-              "provider": "evm-base-sepolia"
+              "provider": "evm-base-sepolia-organizational"
             },
             {
               "network": "base-mainnet",
@@ -3541,18 +5064,18 @@ export const runtimeCatalog = {
               "stage": "available",
               "environment": "testnet",
               "chainId": "46630",
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
-              "executable": false,
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "executable": true,
               "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "ETH"
               ],
-              "provider": "evm-robinhood-testnet"
+              "provider": "evm-robinhood-testnet-organizational"
             },
             {
               "network": "robinhood-mainnet",
@@ -3610,39 +5133,75 @@ export const runtimeCatalog = {
             },
             {
               "network": "zcash-testnet",
-              "stage": "planned",
+              "stage": "available",
               "environment": "testnet",
               "chainId": null,
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_ready",
+              "evidence": "runtime-only",
               "executable": false,
-              "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsProof": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
-                "ZEC"
+                "TAZ"
               ],
-              "provider": null
+              "provider": "privatedao-kernel-policy"
             },
             {
               "network": "hyperliquid-testnet",
               "stage": "available",
               "environment": "testnet",
               "chainId": "998",
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_ready",
+              "evidence": "runtime-only",
               "executable": false,
-              "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsProof": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "HYPE"
               ],
-              "provider": "evm-hyperliquid-testnet"
+              "provider": "privatedao-kernel-policy"
+            },
+            {
+              "network": "stellar-testnet",
+              "stage": "available",
+              "environment": "testnet",
+              "chainId": "Test SDF Network ; September 2015",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "executable": true,
+              "supportsProof": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "XLM"
+              ],
+              "provider": "stellar-testnet-horizon"
+            },
+            {
+              "network": "hypercore-testnet",
+              "stage": "available",
+              "environment": "testnet",
+              "chainId": null,
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_ready",
+              "evidence": "runtime-only",
+              "executable": false,
+              "supportsProof": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "USDC"
+              ],
+              "provider": "privatedao-kernel-policy"
             }
           ]
         }
@@ -3954,7 +5513,7 @@ export const runtimeCatalog = {
             },
             {
               "network": "zcash-testnet",
-              "stage": "planned",
+              "stage": "available",
               "environment": "testnet",
               "chainId": null,
               "declared": false,
@@ -3966,9 +5525,9 @@ export const runtimeCatalog = {
               "supportsReceipt": false,
               "supportsReconciliation": false,
               "supportedAssets": [
-                "ZEC"
+                "TAZ"
               ],
-              "provider": null
+              "provider": "zcash-testnet-zallet"
             },
             {
               "network": "hyperliquid-testnet",
@@ -3987,6 +5546,40 @@ export const runtimeCatalog = {
                 "HYPE"
               ],
               "provider": "evm-hyperliquid-testnet"
+            },
+            {
+              "network": "stellar-testnet",
+              "stage": "available",
+              "environment": "testnet",
+              "chainId": "Test SDF Network ; September 2015",
+              "declared": false,
+              "mode": "unbound",
+              "evidenceStatus": "planned",
+              "evidence": "none",
+              "executable": false,
+              "supportsProof": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "supportedAssets": [],
+              "provider": "stellar-testnet-horizon"
+            },
+            {
+              "network": "hypercore-testnet",
+              "stage": "available",
+              "environment": "testnet",
+              "chainId": null,
+              "declared": false,
+              "mode": "unbound",
+              "evidenceStatus": "planned",
+              "evidence": "none",
+              "executable": false,
+              "supportsProof": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "supportedAssets": [
+                "USDC"
+              ],
+              "provider": "hyperliquid-core-testnet"
             }
           ]
         },
@@ -4287,7 +5880,7 @@ export const runtimeCatalog = {
             },
             {
               "network": "zcash-testnet",
-              "stage": "planned",
+              "stage": "available",
               "environment": "testnet",
               "chainId": null,
               "declared": false,
@@ -4299,9 +5892,9 @@ export const runtimeCatalog = {
               "supportsReceipt": false,
               "supportsReconciliation": false,
               "supportedAssets": [
-                "ZEC"
+                "TAZ"
               ],
-              "provider": null
+              "provider": "zcash-testnet-zallet"
             },
             {
               "network": "hyperliquid-testnet",
@@ -4320,6 +5913,40 @@ export const runtimeCatalog = {
                 "HYPE"
               ],
               "provider": "evm-hyperliquid-testnet"
+            },
+            {
+              "network": "stellar-testnet",
+              "stage": "available",
+              "environment": "testnet",
+              "chainId": "Test SDF Network ; September 2015",
+              "declared": false,
+              "mode": "unbound",
+              "evidenceStatus": "planned",
+              "evidence": "none",
+              "executable": false,
+              "supportsProof": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "supportedAssets": [],
+              "provider": "stellar-testnet-horizon"
+            },
+            {
+              "network": "hypercore-testnet",
+              "stage": "available",
+              "environment": "testnet",
+              "chainId": null,
+              "declared": false,
+              "mode": "unbound",
+              "evidenceStatus": "planned",
+              "evidence": "none",
+              "executable": false,
+              "supportsProof": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "supportedAssets": [
+                "USDC"
+              ],
+              "provider": "hyperliquid-core-testnet"
             }
           ]
         }
@@ -4454,8 +6081,9 @@ export const runtimeCatalog = {
       "id": "zcash-testnet",
       "label": "Zcash Testnet",
       "family": "utxo",
-      "stage": "planned",
-      "environment": "testnet"
+      "stage": "available",
+      "environment": "testnet",
+      "adapterId": "zcash-testnet-zallet"
     },
     {
       "id": "hyperliquid-testnet",
@@ -4465,6 +6093,23 @@ export const runtimeCatalog = {
       "environment": "testnet",
       "chainId": "998",
       "adapterId": "evm-hyperliquid-testnet"
+    },
+    {
+      "id": "stellar-testnet",
+      "label": "Stellar Testnet",
+      "family": "stellar",
+      "stage": "available",
+      "environment": "testnet",
+      "chainId": "Test SDF Network ; September 2015",
+      "adapterId": "stellar-testnet-horizon"
+    },
+    {
+      "id": "hypercore-testnet",
+      "label": "HyperCore Testnet",
+      "family": "exchange",
+      "stage": "available",
+      "environment": "testnet",
+      "adapterId": "hyperliquid-core-testnet"
     }
   ],
   "paymentRails": [
