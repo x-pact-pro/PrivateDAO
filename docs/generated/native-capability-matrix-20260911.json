@@ -1,6 +1,6 @@
 {
   "schema": "privatedao.native-capability-matrix.v1",
-  "generatedAt": "2026-10-12T09:51:22.633Z",
+  "generatedAt": "2026-10-12T10:05:17.862Z",
   "bridgeFree": true,
   "entries": [
     {
@@ -309,21 +309,25 @@
       "supportedAssets": [
         "ETH"
       ],
-      "contracts": [],
-      "verifier": null,
-      "provider": "privatedao-kernel-policy",
-      "walletModel": "none",
+      "contracts": [
+        "0xc4d37f8fb01dd8575ed8a5e8432eaa284abc41ec",
+        "0x1cd4aabb6c323072d48cb41b86b52dcd0ae7b4fb",
+        "0xe3e09b0113048a23a92c437924097e6b1c438163"
+      ],
+      "verifier": "0xc4d37f8fb01dd8575ed8a5e8432eaa284abc41ec",
+      "provider": "evm-robinhood-testnet",
+      "walletModel": "provider-wallet",
       "supportsExecution": true,
       "supportsPrivateExecution": false,
       "supportsPrivateSettlement": false,
       "supportsProof": true,
       "supportsReceipt": true,
-      "supportsReconciliation": true,
+      "supportsReconciliation": false,
       "supportsMainnet": false,
-      "status": "testnet_ready",
-      "lastVerifiedCommit": null,
-      "lastVerifiedTimestamp": null,
-      "evidence": "runtime-only"
+      "status": "testnet_verified",
+      "lastVerifiedCommit": "8449317fc",
+      "lastVerifiedTimestamp": "2026-10-11T12:13:57.179Z",
+      "evidence": "testnet-e2e"
     },
     {
       "product": "blind-verification",
@@ -833,21 +837,25 @@
       "supportedAssets": [
         "ETH"
       ],
-      "contracts": [],
-      "verifier": null,
-      "provider": "privatedao-kernel-policy",
-      "walletModel": "none",
+      "contracts": [
+        "0xc4d37f8fb01dd8575ed8a5e8432eaa284abc41ec",
+        "0x1cd4aabb6c323072d48cb41b86b52dcd0ae7b4fb",
+        "0xe3e09b0113048a23a92c437924097e6b1c438163"
+      ],
+      "verifier": "0xc4d37f8fb01dd8575ed8a5e8432eaa284abc41ec",
+      "provider": "evm-robinhood-testnet",
+      "walletModel": "provider-wallet",
       "supportsExecution": true,
       "supportsPrivateExecution": false,
       "supportsPrivateSettlement": false,
-      "supportsProof": true,
+      "supportsProof": false,
       "supportsReceipt": true,
-      "supportsReconciliation": true,
+      "supportsReconciliation": false,
       "supportsMainnet": false,
-      "status": "testnet_ready",
-      "lastVerifiedCommit": null,
-      "lastVerifiedTimestamp": null,
-      "evidence": "runtime-only"
+      "status": "testnet_verified",
+      "lastVerifiedCommit": "8449317fc",
+      "lastVerifiedTimestamp": "2026-10-11T12:13:57.179Z",
+      "evidence": "testnet-e2e"
     },
     {
       "product": "record-verification",
@@ -1357,21 +1365,25 @@
       "supportedAssets": [
         "ETH"
       ],
-      "contracts": [],
-      "verifier": null,
-      "provider": "privatedao-kernel-policy",
-      "walletModel": "none",
+      "contracts": [
+        "0xc4d37f8fb01dd8575ed8a5e8432eaa284abc41ec",
+        "0x1cd4aabb6c323072d48cb41b86b52dcd0ae7b4fb",
+        "0xe3e09b0113048a23a92c437924097e6b1c438163"
+      ],
+      "verifier": "0xc4d37f8fb01dd8575ed8a5e8432eaa284abc41ec",
+      "provider": "evm-robinhood-testnet",
+      "walletModel": "provider-wallet",
       "supportsExecution": true,
       "supportsPrivateExecution": false,
       "supportsPrivateSettlement": false,
-      "supportsProof": true,
+      "supportsProof": false,
       "supportsReceipt": true,
-      "supportsReconciliation": true,
+      "supportsReconciliation": false,
       "supportsMainnet": false,
-      "status": "testnet_ready",
-      "lastVerifiedCommit": null,
-      "lastVerifiedTimestamp": null,
-      "evidence": "runtime-only"
+      "status": "testnet_verified",
+      "lastVerifiedCommit": "8449317fc",
+      "lastVerifiedTimestamp": "2026-10-11T12:13:57.179Z",
+      "evidence": "testnet-e2e"
     },
     {
       "product": "record-verification",

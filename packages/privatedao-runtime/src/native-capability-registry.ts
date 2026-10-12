@@ -87,6 +87,18 @@ const HYPERLIQUID_TESTNET_EVIDENCE = {
   timestamp: "2026-10-11T14:08:00.682Z",
 } as const;
 
+const ROBINHOOD_TESTNET_EVIDENCE = {
+  verifier: "0xc4d37f8fb01dd8575ed8a5e8432eaa284abc41ec",
+  contracts: [
+    "0xc4d37f8fb01dd8575ed8a5e8432eaa284abc41ec",
+    "0x1cd4aabb6c323072d48cb41b86b52dcd0ae7b4fb",
+    "0xe3e09b0113048a23a92c437924097e6b1c438163",
+  ],
+  provider: "evm-robinhood-testnet",
+  commit: "8449317fc",
+  timestamp: "2026-10-11T12:13:57.179Z",
+} as const;
+
 const ARBITRUM_SEPOLIA_EVIDENCE = {
   verifier: "0x53aa3e1d6c7a0844c900c5f4e0d4b5967a3367dc",
   contracts: [
@@ -354,6 +366,27 @@ function applyHyperliquidTestnetEvidence(entry: NativeCapabilityEntry): NativeCa
     status: "testnet_verified",
     lastVerifiedCommit: HYPERLIQUID_TESTNET_EVIDENCE.commit,
     lastVerifiedTimestamp: HYPERLIQUID_TESTNET_EVIDENCE.timestamp,
+    evidence: "testnet-e2e",
+  };
+}
+
+function applyRobinhoodTestnetEvidence(entry: NativeCapabilityEntry): NativeCapabilityEntry {
+  const isBlind = entry.product === "blind-verification" && entry.capability === "verification.blind.prove";
+  const isRecord = entry.product === "record-verification" && ["verification.record.create", "verification.record.verify"].includes(entry.capability);
+  if (entry.network !== "robinhood-testnet" || (!isBlind && !isRecord)) return entry;
+  return {
+    ...entry,
+    provider: ROBINHOOD_TESTNET_EVIDENCE.provider,
+    contracts: ROBINHOOD_TESTNET_EVIDENCE.contracts,
+    verifier: ROBINHOOD_TESTNET_EVIDENCE.verifier,
+    walletModel: "provider-wallet",
+    supportsExecution: true,
+    supportsProof: isBlind,
+    supportsReceipt: true,
+    supportsReconciliation: false,
+    status: "testnet_verified",
+    lastVerifiedCommit: ROBINHOOD_TESTNET_EVIDENCE.commit,
+    lastVerifiedTimestamp: ROBINHOOD_TESTNET_EVIDENCE.timestamp,
     evidence: "testnet-e2e",
   };
 }
@@ -643,7 +676,8 @@ export function buildNativeCapabilityRegistry(): readonly NativeCapabilityEntry[
         const withSolanaOrg = applySolanaDevnetOrganizationalEvidence(withFuturePolicy);
         const withBnb = applyBnbTestnetEvidence(withSolanaOrg);
         const withHyperliquid = applyHyperliquidTestnetEvidence(withBnb);
-        const withStellar = applyStellarTestnetReadiness(withHyperliquid);
+        const withRobinhood = applyRobinhoodTestnetEvidence(withHyperliquid);
+        const withStellar = applyStellarTestnetReadiness(withRobinhood);
         return applyOrganizationalEvidence(withStellar);
       }),
     ),

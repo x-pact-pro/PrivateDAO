@@ -170,16 +170,16 @@ export const runtimeCatalog = {
               "entrypoint": "kernel://verification.blind.prove",
               "method": null,
               "note": "This network uses the Kernel policy verification path; no contract write or settlement claim is made before funded E2E evidence.",
-              "evidenceStatus": "testnet_ready",
-              "evidence": "runtime-only",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
               "supportsExecution": true,
               "supportsProof": true,
               "supportsReceipt": true,
-              "supportsReconciliation": true,
+              "supportsReconciliation": false,
               "supportedAssets": [
                 "ETH"
               ],
-              "provider": "privatedao-kernel-policy"
+              "provider": "evm-robinhood-testnet"
             },
             {
               "network": "hyperliquid-testnet",
@@ -404,16 +404,16 @@ export const runtimeCatalog = {
               "chainId": "46630",
               "declared": true,
               "mode": "kernel-gateway",
-              "evidenceStatus": "testnet_ready",
-              "evidence": "runtime-only",
-              "executable": false,
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "executable": true,
               "supportsProof": true,
               "supportsReceipt": true,
-              "supportsReconciliation": true,
+              "supportsReconciliation": false,
               "supportedAssets": [
                 "ETH"
               ],
-              "provider": "privatedao-kernel-policy"
+              "provider": "evm-robinhood-testnet"
             },
             {
               "network": "robinhood-mainnet",
@@ -712,16 +712,16 @@ export const runtimeCatalog = {
               "entrypoint": "kernel://verification.record.create",
               "method": null,
               "note": "Record creation is routed through the Kernel policy provider; the source record remains off-chain until network E2E is verified.",
-              "evidenceStatus": "testnet_ready",
-              "evidence": "runtime-only",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
               "supportsExecution": true,
-              "supportsProof": true,
+              "supportsProof": false,
               "supportsReceipt": true,
-              "supportsReconciliation": true,
+              "supportsReconciliation": false,
               "supportedAssets": [
                 "ETH"
               ],
-              "provider": "privatedao-kernel-policy"
+              "provider": "evm-robinhood-testnet"
             },
             {
               "network": "hyperliquid-testnet",
@@ -946,16 +946,16 @@ export const runtimeCatalog = {
               "chainId": "46630",
               "declared": true,
               "mode": "kernel-gateway",
-              "evidenceStatus": "testnet_ready",
-              "evidence": "runtime-only",
-              "executable": false,
-              "supportsProof": true,
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "executable": true,
+              "supportsProof": false,
               "supportsReceipt": true,
-              "supportsReconciliation": true,
+              "supportsReconciliation": false,
               "supportedAssets": [
                 "ETH"
               ],
-              "provider": "privatedao-kernel-policy"
+              "provider": "evm-robinhood-testnet"
             },
             {
               "network": "robinhood-mainnet",
@@ -1234,16 +1234,16 @@ export const runtimeCatalog = {
               "entrypoint": "kernel://verification.record.verify",
               "method": null,
               "note": "Record verification is routed through the Kernel without exposing source data or claiming a chain anchor.",
-              "evidenceStatus": "testnet_ready",
-              "evidence": "runtime-only",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
               "supportsExecution": true,
-              "supportsProof": true,
+              "supportsProof": false,
               "supportsReceipt": true,
-              "supportsReconciliation": true,
+              "supportsReconciliation": false,
               "supportedAssets": [
                 "ETH"
               ],
-              "provider": "privatedao-kernel-policy"
+              "provider": "evm-robinhood-testnet"
             },
             {
               "network": "hyperliquid-testnet",
@@ -1468,16 +1468,16 @@ export const runtimeCatalog = {
               "chainId": "46630",
               "declared": true,
               "mode": "kernel-gateway",
-              "evidenceStatus": "testnet_ready",
-              "evidence": "runtime-only",
-              "executable": false,
-              "supportsProof": true,
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "executable": true,
+              "supportsProof": false,
               "supportsReceipt": true,
-              "supportsReconciliation": true,
+              "supportsReconciliation": false,
               "supportedAssets": [
                 "ETH"
               ],
-              "provider": "privatedao-kernel-policy"
+              "provider": "evm-robinhood-testnet"
             },
             {
               "network": "robinhood-mainnet",
