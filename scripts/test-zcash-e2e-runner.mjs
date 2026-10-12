@@ -62,11 +62,38 @@ if (method === "getwalletinfo") {
 
   const artifact = JSON.parse(await readFile(outputPath, "utf8"));
   assert.equal(artifact.network, "zcash-testnet");
+  assert.equal(artifact.product, "payroll");
+  assert.equal(artifact.capability, "payroll.settle");
+  assert.equal(artifact.workflow, "PrivateDAO Zcash Testnet E2E: payroll/payroll.settle");
   assert.equal(artifact.state, "prepared");
   assert.equal(artifact.balanceReadinessChecked, true);
   assert.equal(artifact.broadcastAttempted, false);
   assert.equal(artifact.atomicAmount, "10000");
   assert.ok(Array.isArray(artifact.requiredSigners));
+
+  const governanceOutput = join(tmp, "governance-dry-run-artifact.json");
+  const governance = await runScript({
+    ...baseEnv,
+    PDAO_ZCASH_ALLOW_BALANCE_CHECK: "1",
+    PDAO_ZCASH_DRY_RUN: "1",
+    PDAO_ZCASH_PRODUCT: "governance",
+    PDAO_ZCASH_CAPABILITY: "governance.proposal.execute",
+    PDAO_ZCASH_E2E_OUTPUT: governanceOutput,
+  });
+  assert.equal(governance.code, 0);
+  const governanceArtifact = JSON.parse(await readFile(governanceOutput, "utf8"));
+  assert.equal(governanceArtifact.product, "governance");
+  assert.equal(governanceArtifact.capability, "governance.proposal.execute");
+
+  const invalid = await runScript({
+    ...baseEnv,
+    PDAO_ZCASH_ALLOW_BALANCE_CHECK: "1",
+    PDAO_ZCASH_DRY_RUN: "1",
+    PDAO_ZCASH_PRODUCT: "governance",
+    PDAO_ZCASH_CAPABILITY: "auction.settle",
+  });
+  assert.notEqual(invalid.code, 0);
+  assert.match(`${invalid.stdout}\n${invalid.stderr}`, /Unsupported Zcash product\/capability pair/);
 } finally {
   await rm(tmp, { recursive: true, force: true });
 }

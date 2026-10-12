@@ -19,6 +19,8 @@ const configPath = required("PDAO_ZCASH_ZALLET_CONFIG");
 const sourceAddress = required("PDAO_ZCASH_SOURCE_ADDRESS");
 const recipientAddress = process.env.PDAO_ZCASH_RECIPIENT_ADDRESS?.trim() || sourceAddress;
 const atomicAmount = process.env.PDAO_ZCASH_ATOMIC_AMOUNT?.trim() || "10000";
+const product = process.env.PDAO_ZCASH_PRODUCT?.trim() || "payroll";
+const capability = process.env.PDAO_ZCASH_CAPABILITY?.trim() || "payroll.settle";
 const confirmationDepth = Number(process.env.PDAO_ZCASH_CONFIRMATIONS || "1");
 const receiptTimeoutMs = Number(process.env.PDAO_ZCASH_RECEIPT_TIMEOUT_MS || "900000");
 const operationTimeoutMs = Number(process.env.PDAO_ZCASH_OPERATION_TIMEOUT_MS || "900000");
@@ -28,6 +30,17 @@ const dryRun = process.env.PDAO_ZCASH_DRY_RUN === "1";
 const outputPath = process.env.PDAO_ZCASH_E2E_OUTPUT?.trim();
 assert.match(atomicAmount, /^\d+$/);
 assert.ok(BigInt(atomicAmount) > 0n);
+const productCapabilities = new Map([
+  ["blind-verification", new Set(["verification.blind.prove"])],
+  ["record-verification", new Set(["verification.record.create", "verification.record.verify"])],
+  ["payroll", new Set(["payroll.calculate", "payroll.approve", "payroll.settle"])],
+  ["treasury", new Set(["treasury.policy.check"])],
+  ["governance", new Set(["governance.proposal.execute"])],
+  ["auction", new Set(["auction.bid.commit", "auction.settle"])],
+]);
+if (!productCapabilities.has(product) || !productCapabilities.get(product).has(capability)) {
+  throw new Error(`Unsupported Zcash product/capability pair: ${product}/${capability}`);
+}
 assert.ok(Number.isInteger(confirmationDepth) && confirmationDepth >= 1);
 assert.ok(Number.isFinite(operationTimeoutMs) && operationTimeoutMs >= 30_000);
 if (!allowBalanceReadinessProbe) {
@@ -52,7 +65,7 @@ const transport = new ZalletCliTransport({
 const adapter = new ZcashNetworkAdapter({
   id: "privatedao-zcash-testnet-zallet",
   config: ZCASH_NETWORK_CONFIGS[0],
-  capabilities: ["payroll.settle", "treasury.policy.check"],
+  capabilities: [capability],
   transport,
 });
 
@@ -64,8 +77,8 @@ const intent = {
   context: {
     requestId,
     idempotencyKey: requestId,
-    product: "payroll",
-    capability: "payroll.settle",
+    product,
+    capability,
     organizationId: "privatedao-devnet-e2e",
     actorId: "zallet-testnet-signer",
     network: "zcash-testnet",
@@ -130,7 +143,9 @@ await emitResult({
 async function emitResult(result) {
   const payload = {
     generatedAt: new Date().toISOString(),
-    product: "PrivateDAO Zcash Testnet E2E",
+    product,
+    capability,
+    workflow: `PrivateDAO Zcash Testnet E2E: ${product}/${capability}`,
     ...result,
   };
   const text = `${JSON.stringify(payload, null, 2)}\n`;
