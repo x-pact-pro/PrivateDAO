@@ -30,9 +30,6 @@ const results = [];
 for (const [product, capability] of products) {
   const result = await runOne(product, capability);
   results.push(result);
-  if (result.status !== "pass") {
-    throw new Error(`${product}/${capability} failed; later product lanes were not attempted.`);
-  }
 }
 
 const artifact = {
@@ -46,6 +43,11 @@ const artifact = {
 await mkdir(path.dirname(outputPath), { recursive: true });
 await writeFile(outputPath, `${JSON.stringify(artifact, null, 2)}\n`, { mode: 0o600 });
 console.log(JSON.stringify({ schema: artifact.schema, network: artifact.network, productCount: results.length, outputPath }, null, 2));
+
+const failures = results.filter((result) => result.status !== "pass");
+if (failures.length > 0) {
+  throw new Error(`${failures.length}/${results.length} Zcash product lanes failed; see ${outputPath} for per-lane diagnostics.`);
+}
 
 async function runOne(product, capability) {
   const tempOutput = `${outputPath}.${product}.json`;
@@ -77,7 +79,14 @@ async function runOne(product, capability) {
     });
   });
   if (status.code !== 0) {
-    return { product, capability, status: "fail", exitCode: status.code, signal: status.signal };
+    return {
+      product,
+      capability,
+      status: "fail",
+      exitCode: status.code,
+      signal: status.signal,
+      diagnostic: diagnosticTail(stdout, stderr),
+    };
   }
   const evidence = JSON.parse(await readFile(tempOutput, "utf8"));
   assert.equal(evidence.network, "zcash-testnet");
@@ -94,4 +103,12 @@ async function runOne(product, capability) {
     stdoutTail: stdout.trim().split("\n").slice(-3),
     stderrTail: stderr.trim().split("\n").slice(-3),
   };
+}
+
+function diagnosticTail(stdout, stderr) {
+  const lines = `${stdout}\n${stderr}`
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean);
+  return lines.slice(-8);
 }
