@@ -2,10 +2,11 @@
 
 ## Canonical branch
 
-`main` is the canonical development and integration branch for the PrivateDAO
-Kernel and product contracts. `canonical-live` is kept synchronized with
-`main` until the deployment cutover is separately verified. The immutable
-pre-Kernel snapshot is preserved as the Git tag
+`main` is the repository's nominal development branch. The current reviewed
+Kernel/evidence work is on `canonical-live` and `codex/pdao-holder-access`;
+these branches are not currently synchronized with `main`. A reconciliation
+merge must be reviewed and verified before `main` can be treated as the same
+release source. The immutable pre-Kernel snapshot is preserved as the Git tag
 `archive/legacy-integrations-20260909`.
 
 The repository's operational branch set is intentionally small: `main` and

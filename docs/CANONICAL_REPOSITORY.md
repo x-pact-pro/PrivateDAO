@@ -7,8 +7,11 @@ GitHub repository is private and is used for source control and CI only. AWS /
 EC2 remains the production deployment authority; merging to `main` does not
 publish the website, APIs, or game automatically.
 
-`canonical-live` is a synchronized reference branch. It must point to the same
-commit as `main` after every approved repository release.
+`canonical-live` is the reviewed release/reference branch used by the current
+Kernel evidence work. It is not assumed to be synchronized with `main` until
+an explicit reconciliation merge has been reviewed and verified. At the
+current audit, `main` and `canonical-live` are divergent; do not describe them
+as interchangeable deployment sources.
 
 The live website is the commercial deployment surface. The former PDAO Worlds
 game surface was removed from the public site on 2026-10-12 and archived on the
