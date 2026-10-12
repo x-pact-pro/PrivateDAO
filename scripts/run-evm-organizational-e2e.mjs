@@ -42,8 +42,7 @@ const RPC_ENV = networkConfig.rpcEnv;
 const rawKey = process.env.PDAO_EVM_DEPLOYER_PRIVATE_KEY?.trim();
 const deployerKey = rawKey && /^[0-9a-fA-F]{64}$/.test(rawKey) ? `0x${rawKey}` : rawKey;
 if (!deployerKey || !/^0x[0-9a-fA-F]{64}$/.test(deployerKey)) throw new Error("PDAO_EVM_DEPLOYER_PRIVATE_KEY is required for Testnet execution.");
-const rpcUrl = process.env[RPC_ENV];
-if (!rpcUrl || !/^https:\/\//.test(rpcUrl)) throw new Error(`${RPC_ENV} must be an explicit HTTPS RPC URL.`);
+const rpcUrl = await resolveRpcUrl(RPC_ENV, NETWORK);
 
 const chain = defineChain({
   id: CHAIN_ID,
@@ -111,6 +110,28 @@ const governanceAbi = JSON.parse(await readFile(path.join(PACKAGE, "artifacts/Pr
 const governanceBytecode = `0x${(await readFile(path.join(PACKAGE, "artifacts/PrivateDaoGovernance.bin"), "utf8")).trim()}`;
 const auctionAbi = JSON.parse(await readFile(path.join(PACKAGE, `artifacts/${tempoTokenMode ? "PrivateDaoTokenSealedAuction" : "PrivateDaoSealedAuction"}.abi`), "utf8"));
 const auctionBytecode = `0x${(await readFile(path.join(PACKAGE, `artifacts/${tempoTokenMode ? "PrivateDaoTokenSealedAuction" : "PrivateDaoSealedAuction"}.bin`), "utf8")).trim()}`;
+
+async function resolveRpcUrl(envName, network) {
+  const explicit = process.env[envName]?.trim();
+  if (explicit) {
+    if (!/^https:\/\//.test(explicit)) throw new Error(`${envName} must be an HTTPS RPC URL.`);
+    return explicit;
+  }
+  const keyFile = process.env.PDAO_ALCHEMY_API_KEY_FILE?.trim();
+  const slug = {
+    "ethereum-sepolia": "eth-sepolia",
+    "arbitrum-sepolia": "arb-sepolia",
+    "base-sepolia": "base-sepolia",
+    "hyperliquid-testnet": "hyperliquid-testnet",
+    "tempo-testnet": "tempo-moderato",
+  }[network];
+  if (!keyFile || !slug) throw new Error(`${envName} must be an explicit HTTPS RPC URL; no supported Alchemy file fallback is configured for ${network}.`);
+  const contents = await readFile(keyFile, "utf8");
+  const line = contents.split(/\r?\n/).find((candidate) => /^\s*(?:export\s+)?ALCHEMY_API_KEY\s*=/.test(candidate));
+  const key = line?.replace(/^\s*(?:export\s+)?ALCHEMY_API_KEY\s*=\s*/, "").trim().replace(/^['"]|['"]$/g, "");
+  if (!key || !/^[A-Za-z0-9_-]+$/.test(key)) throw new Error("ALCHEMY_API_KEY_FILE does not contain a valid Alchemy key entry.");
+  return `https://${slug}.g.alchemy.com/v2/${key}`;
+}
 
 const runId = `${Date.now()}-${process.pid}`;
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
