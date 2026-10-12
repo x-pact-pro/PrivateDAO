@@ -84,6 +84,7 @@ for (const network of ["bnb-testnet", "robinhood-testnet", "hyperliquid-testnet"
   assert.equal(policyRows.length, expectedRows, `${network} must expose all declared product lanes`);
   const expectedPolicyRows = network === "hyperliquid-testnet" ? 6 : network === "hypercore-testnet" ? 9 : 0;
   assert.equal(policyRows.filter((entry) => entry.status === "testnet_ready" && entry.evidence === "runtime-only").length, expectedPolicyRows, `${network} policy rows must not claim unsupported on-chain E2E`);
+  assert.equal(policyRows.filter((entry) => entry.status === "testnet_ready" && entry.evidence === "runtime-only").every((entry) => !entry.supportsExecution && !entry.supportsReceipt && !entry.supportsReconciliation), true, `${network} runtime-only rows must fail closed for execution and receipts`);
 }
 
 const stellarVerified = entries.filter((entry) => entry.network === "stellar-testnet" && entry.product !== "agent");

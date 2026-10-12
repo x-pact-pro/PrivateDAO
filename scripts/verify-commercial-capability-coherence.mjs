@@ -21,8 +21,13 @@ for (const entry of entries) {
   if (!binding || binding.mode === "unbound") failures.push(`${key}: missing executable Kernel binding`);
   if (!network.adapterId) failures.push(`${key}: missing network adapter`);
   if (!entry.provider) failures.push(`${key}: missing provider`);
-  if (!entry.supportsExecution) failures.push(`${key}: execution is not available`);
-  if (!entry.supportsReceipt) failures.push(`${key}: receipt support is missing`);
+  const evidenceBacked = ["testnet_verified", "devnet_verified", "mainnet_live"].includes(entry.status);
+  if (evidenceBacked && !entry.supportsExecution) failures.push(`${key}: verified/live capability is not executable`);
+  if (evidenceBacked && !entry.supportsReceipt) failures.push(`${key}: verified/live capability is missing receipt support`);
+  const futureOnchainLane = ["bnb-testnet", "robinhood-testnet", "hyperliquid-testnet", "hypercore-testnet"].includes(entry.network);
+  if (futureOnchainLane && entry.status === "testnet_ready" && entry.evidence === "runtime-only" && (entry.supportsExecution || entry.supportsReceipt || entry.supportsReconciliation)) {
+    failures.push(`${key}: runtime-only readiness overclaims execution, receipt, or reconciliation`);
+  }
 
   if (["testnet_verified", "devnet_verified"].includes(entry.status) && !verifiedEvidence.has(entry.evidence)) {
     failures.push(`${key}: verified status has no accepted evidence (${entry.evidence})`);
