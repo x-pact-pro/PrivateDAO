@@ -74,6 +74,7 @@
     "test:commercial-network-matrix": "node --import tsx scripts/test-commercial-network-matrix.mjs",
     "verify:11-network-e2e": "node --import tsx scripts/verify-11-network-e2e.mjs",
     "test:runtime:hypercore": "node --import tsx scripts/test-hypercore-network.mjs",
+    "verify:hypercore:testnet": "node --import tsx scripts/verify-hypercore-testnet-health.mjs",
     "test:kernel:solana-payroll": "node --import tsx scripts/test-solana-payroll-kernel.mjs",
     "test:solana-payroll-timeout": "node --import tsx scripts/test-solana-payroll-timeout.mjs",
     "test:zcash:foundation": "node --import tsx scripts/test-zcash-foundation.mjs",
