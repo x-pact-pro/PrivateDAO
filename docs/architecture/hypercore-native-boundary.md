@@ -37,13 +37,16 @@ The current adapter provides:
 - Testnet-only endpoint validation.
 - Read-only `meta` health and universe inspection.
 - Fail-closed native action preparation.
+- Guarded EIP-712 signing for the documented `usdSend`, `spotSend`,
+  `usdClassTransfer`, and `tokenDelegate` user-signed actions.
 - Explicit action allowlist.
 - Nonce validation.
 - Automatic Testnet domain binding.
 - `broadcastEnabled: false` until a separately approved execution path exists.
 
-The adapter does not currently sign or broadcast native actions. It also does
-not claim product support from metadata health or HyperEVM receipts.
+The adapter does not currently submit native actions or produce product
+receipts. It also does not claim product support from metadata health or
+HyperEVM receipts.
 
 ## Evidence Rule
 

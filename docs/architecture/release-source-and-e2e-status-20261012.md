@@ -42,7 +42,7 @@ independent Testnet/Devnet E2E evidence status. Current result:
 | Stellar Testnet | COMPLETE | Six product lanes through Kernel, signer, Horizon, and receipts |
 | Zcash Testnet | INCOMPLETE | Payroll settlement evidence only |
 | Hyperliquid HyperEVM Testnet | INCOMPLETE | Blind/Record evidence only; organizational lanes need funded E2E |
-| HyperCore Testnet | INCOMPLETE | Native read-only adapter; no product execution E2E |
+| HyperCore Testnet | INCOMPLETE | Native health, preparation, and guarded signing; no product execution E2E |
 
 The overall gate remains `complete: false`. This is intentional and prevents
 runtime or RPC readiness from being reported as product execution.

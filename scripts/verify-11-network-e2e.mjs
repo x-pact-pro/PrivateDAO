@@ -43,8 +43,8 @@ function blockersFor(network, missingCapabilities) {
   }
   if (network === "hypercore-testnet") {
     return [
-      "The current HyperCore adapter is read-only metadata/health; native product execution is not implemented.",
-      "A native HyperCore transaction and receipt path is required before any product can be verified.",
+      "HyperCore health, action preparation, and guarded EIP-712 signing are available, but native product execution is not implemented.",
+      "A submitted native HyperCore action, confirmed response, and product-specific receipt path are required before any product can be verified.",
     ];
   }
   return ["Independent Testnet/Devnet evidence is missing for the listed capabilities."];
