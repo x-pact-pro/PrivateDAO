@@ -57,6 +57,7 @@ const signedPrepared = adapter.prepareNativeAction("usdSend", {
 const signed = await adapter.signNativeAction(signedPrepared, signer, "0x66eee");
 assert.equal(signed.broadcastEnabled, false);
 assert.equal(signed.signatureChainId, "0x66eee");
+assert.equal(signed.action.signatureChainId, "0x66eee");
 assert.equal(signedTypedData.primaryType, "HyperliquidTransaction:UsdSend");
 assert.equal(signedTypedData.domain.name, "HyperliquidSignTransaction");
 assert.equal(signedTypedData.message.hyperliquidChain, "Testnet");

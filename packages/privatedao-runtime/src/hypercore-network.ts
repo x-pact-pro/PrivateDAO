@@ -179,7 +179,12 @@ export class HyperCoreNetworkAdapter {
     if (!typed) throw new Error(`HyperCore action type ${prepared.action.type} has no supported user-signed EIP-712 mapping.`);
     const signature = await signer.signTypedData(typed);
     if (!/^0x[0-9a-f]{130}$/i.test(signature)) throw new Error("HyperCore signer returned an invalid EIP-712 signature.");
-    return { ...prepared, signature, signatureChainId };
+    return {
+      ...prepared,
+      action: { ...prepared.action, signatureChainId },
+      signature,
+      signatureChainId,
+    };
   }
 }
 
