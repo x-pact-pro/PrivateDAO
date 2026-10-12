@@ -34,8 +34,8 @@ export const runtimeCatalog = {
               "entrypoint": "kernel://verification.blind.prove",
               "method": null,
               "note": "Solana Devnet blind verification runs through the Kernel policy provider; on-chain settlement is not implied by this workflow.",
-              "evidenceStatus": "testnet_ready",
-              "evidence": "kernel-policy-testnet",
+              "evidenceStatus": "devnet_verified",
+              "evidence": "devnet-e2e",
               "supportsExecution": true,
               "supportsProof": true,
               "supportsReceipt": true,
@@ -43,7 +43,7 @@ export const runtimeCatalog = {
               "supportedAssets": [
                 "SOL"
               ],
-              "provider": "privatedao-kernel-policy"
+              "provider": "privatedao-blind-policy-proof"
             },
             {
               "network": "ethereum-sepolia",
@@ -224,16 +224,16 @@ export const runtimeCatalog = {
               "chainId": null,
               "declared": true,
               "mode": "kernel-gateway",
-              "evidenceStatus": "testnet_ready",
-              "evidence": "kernel-policy-testnet",
-              "executable": false,
+              "evidenceStatus": "devnet_verified",
+              "evidence": "devnet-e2e",
+              "executable": true,
               "supportsProof": true,
               "supportsReceipt": true,
               "supportsReconciliation": true,
               "supportedAssets": [
                 "SOL"
               ],
-              "provider": "privatedao-kernel-policy"
+              "provider": "privatedao-blind-policy-proof"
             },
             {
               "network": "solana-mainnet-beta",

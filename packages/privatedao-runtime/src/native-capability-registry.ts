@@ -165,6 +165,12 @@ const SOLANA_DEVNET_RECORD_EVIDENCE = {
   timestamp: "2026-10-12",
 } as const;
 
+const SOLANA_DEVNET_BLIND_EVIDENCE = {
+  provider: "privatedao-blind-policy-proof",
+  commit: "11edb0692",
+  timestamp: "2026-10-12",
+} as const;
+
 const TEMPO_TESTNET_EVIDENCE = {
   provider: "evm-tempo-testnet",
   verifier: "0xbf495e8147ab23bfa2024eae7c0d2f54af40279c",
@@ -518,6 +524,23 @@ function applySolanaKernelPolicyReadiness(entry: NativeCapabilityEntry): NativeC
       status: "devnet_verified",
       lastVerifiedCommit: SOLANA_DEVNET_RECORD_EVIDENCE.commit,
       lastVerifiedTimestamp: SOLANA_DEVNET_RECORD_EVIDENCE.timestamp,
+      evidence: "devnet-e2e",
+    };
+  }
+  if (entry.product === "blind-verification") {
+    return {
+      ...entry,
+      provider: SOLANA_DEVNET_BLIND_EVIDENCE.provider,
+      walletModel: "none",
+      supportsExecution: true,
+      supportsPrivateExecution: true,
+      supportsPrivateSettlement: false,
+      supportsProof: true,
+      supportsReceipt: true,
+      supportsReconciliation: true,
+      status: "devnet_verified",
+      lastVerifiedCommit: SOLANA_DEVNET_BLIND_EVIDENCE.commit,
+      lastVerifiedTimestamp: SOLANA_DEVNET_BLIND_EVIDENCE.timestamp,
       evidence: "devnet-e2e",
     };
   }

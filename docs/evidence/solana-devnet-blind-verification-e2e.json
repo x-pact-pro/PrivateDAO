@@ -1,0 +1,12 @@
+{
+  "schema": "privatedao.solana-devnet-blind-verification-e2e.v1",
+  "network": "solana-devnet",
+  "environment": "devnet",
+  "provider": "privatedao-blind-policy-proof",
+  "executionPath": "blind-verification->kernel-gateway->blind-policy-proof-provider->proof-service",
+  "workflowId": "solana-blind-kernel-e2e-1791800052518",
+  "proofHash": "51aeca834527f8b26e93648fa051fb0ca29f670c86cd92cd58bfa4d4a9fbda05",
+  "state": "reconciled",
+  "privateInputsExposed": false,
+  "verifiedAt": "2026-10-12"
+}
