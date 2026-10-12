@@ -198,13 +198,14 @@ const ORGANIZATIONAL_EVIDENCE = {
   "tempo-testnet": {
     provider: "evm-tempo-testnet-organizational",
     contracts: [
-      "0x88ef958407ee3929cc23b1737e89f0e8acdf7a57",
-      "0x1f51b3231cbb448793e41903181c68bcc96e4b5d",
-      "0x400805c6b9d4d4a3c4f604a293b0733453dde3ca",
+      "0x31ac2c4bb70fd0186d119ad8ec41e43ee2498747",
+      "0xa3496dc74db0e5b99f42161a31b700ab4320592d",
+      "0x199b059a66a5e81866ba029accf1312e88500cd8",
+      "0xcd0a9c8d713fc0e75bdfc17e6ad415eb3dc40207",
     ],
     assets: ["AlphaUSD"],
-    commit: "332565a",
-    timestamp: "2026-09-16T22:03:49.724Z",
+    commit: "84a81f98a",
+    timestamp: "2026-10-12T10:26:18.617Z",
   },
   "arbitrum-sepolia": {
     provider: "evm-arbitrum-sepolia-organizational",
@@ -652,7 +653,7 @@ function applyOrganizationalEvidence(entry: NativeCapabilityEntry): NativeCapabi
     (entry.product === "treasury" && entry.capability === "treasury.policy.check") ||
     (entry.product === "governance" && entry.capability === "governance.proposal.execute") ||
     (entry.product === "auction" && ["auction.bid.commit", "auction.settle"].includes(entry.capability)) ||
-    (entry.product === "payroll" && entry.capability === "payroll.settle" && entry.network !== "tempo-testnet");
+    (entry.product === "payroll" && ["payroll.calculate", "payroll.approve", "payroll.settle"].includes(entry.capability));
   if (!evidence || !supportedCapability) return entry;
   return {
     ...entry,

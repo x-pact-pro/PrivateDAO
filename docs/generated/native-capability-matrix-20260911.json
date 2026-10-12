@@ -1,6 +1,6 @@
 {
   "schema": "privatedao.native-capability-matrix.v1",
-  "generatedAt": "2026-10-12T10:14:37.273Z",
+  "generatedAt": "2026-10-12T10:29:55.181Z",
   "bridgeFree": true,
   "entries": [
     {
@@ -1655,21 +1655,26 @@
       "supportedAssets": [
         "ETH"
       ],
-      "contracts": [],
+      "contracts": [
+        "0x5a10a22ffbd1f2db3415c96731a07ee8d35c11bc",
+        "0x6c7362977625a0c1a403f02fef606cb6315e953f",
+        "0xb0698a8462b62654773a0171f39c0cce86c9a95d",
+        "0x5134fa0a560ae838f1e0324ce38a385a26711d68"
+      ],
       "verifier": null,
-      "provider": "privatedao-payroll-kernel",
-      "walletModel": "none",
+      "provider": "evm-ethereum-sepolia-organizational",
+      "walletModel": "external-wallet",
       "supportsExecution": true,
       "supportsPrivateExecution": false,
       "supportsPrivateSettlement": false,
       "supportsProof": false,
       "supportsReceipt": true,
-      "supportsReconciliation": false,
+      "supportsReconciliation": true,
       "supportsMainnet": false,
       "status": "testnet_verified",
-      "lastVerifiedCommit": null,
-      "lastVerifiedTimestamp": null,
-      "evidence": "kernel-policy-testnet"
+      "lastVerifiedCommit": "b0fed5204",
+      "lastVerifiedTimestamp": "2026-10-11T23:56:56.361Z",
+      "evidence": "testnet-e2e"
     },
     {
       "product": "payroll",
@@ -1711,21 +1716,26 @@
       "supportedAssets": [
         "ETH"
       ],
-      "contracts": [],
+      "contracts": [
+        "0xd3e604000917d0edd557005a8af39a33ee05ff4b",
+        "0x6b55c67d83645060cae54ea4246310246afa07d9",
+        "0xb93e85befcabcf2cf2c6c4bdd5e8b670b04c82d0",
+        "0x21c4cd7d2e039f7debfa87f51fd919be7ea912f1"
+      ],
       "verifier": null,
-      "provider": "privatedao-payroll-kernel",
-      "walletModel": "none",
+      "provider": "evm-arbitrum-sepolia-organizational",
+      "walletModel": "external-wallet",
       "supportsExecution": true,
       "supportsPrivateExecution": false,
       "supportsPrivateSettlement": false,
       "supportsProof": false,
       "supportsReceipt": true,
-      "supportsReconciliation": false,
+      "supportsReconciliation": true,
       "supportsMainnet": false,
       "status": "testnet_verified",
-      "lastVerifiedCommit": null,
-      "lastVerifiedTimestamp": null,
-      "evidence": "kernel-policy-testnet"
+      "lastVerifiedCommit": "b0fed5204",
+      "lastVerifiedTimestamp": "2026-10-12T00:15:59.960Z",
+      "evidence": "testnet-e2e"
     },
     {
       "product": "payroll",
@@ -1767,10 +1777,15 @@
       "supportedAssets": [
         "BNB"
       ],
-      "contracts": [],
+      "contracts": [
+        "0x9d03c14562852092b39c1dd96c441dd9484b5a2b",
+        "0x0a1a6467fdcc858899692c0f7d15beca2483d069",
+        "0x3fc47618e59c5bf8a19fe6a5298938fc9b8c3bdc",
+        "0x9dfc12d43a60ec0edcc2da33a6c5f943839ea392"
+      ],
       "verifier": null,
-      "provider": "privatedao-kernel-policy",
-      "walletModel": "none",
+      "provider": "evm-bnb-testnet-organizational",
+      "walletModel": "external-wallet",
       "supportsExecution": true,
       "supportsPrivateExecution": false,
       "supportsPrivateSettlement": false,
@@ -1778,10 +1793,10 @@
       "supportsReceipt": true,
       "supportsReconciliation": true,
       "supportsMainnet": false,
-      "status": "testnet_ready",
-      "lastVerifiedCommit": null,
-      "lastVerifiedTimestamp": null,
-      "evidence": "runtime-only"
+      "status": "testnet_verified",
+      "lastVerifiedCommit": "b0fed5204",
+      "lastVerifiedTimestamp": "2026-10-12T00:18:34.179Z",
+      "evidence": "testnet-e2e"
     },
     {
       "product": "payroll",
@@ -1823,21 +1838,26 @@
       "supportedAssets": [
         "ETH"
       ],
-      "contracts": [],
+      "contracts": [
+        "0xbba00deafaa326943390724ab0de021a661a0e51",
+        "0x02ab06a15a3c210a5c902513a2195e3e2b7096df",
+        "0x7801916f5bfadc99a0e14735a8f49d21d85eb61f",
+        "0xf70e48d8bb75757420c7ea231aaaff3e5df2aba0"
+      ],
       "verifier": null,
-      "provider": "privatedao-payroll-kernel",
-      "walletModel": "none",
+      "provider": "evm-base-sepolia-organizational",
+      "walletModel": "external-wallet",
       "supportsExecution": true,
       "supportsPrivateExecution": false,
       "supportsPrivateSettlement": false,
       "supportsProof": false,
       "supportsReceipt": true,
-      "supportsReconciliation": false,
+      "supportsReconciliation": true,
       "supportsMainnet": false,
       "status": "testnet_verified",
-      "lastVerifiedCommit": null,
-      "lastVerifiedTimestamp": null,
-      "evidence": "kernel-policy-testnet"
+      "lastVerifiedCommit": "b0fed5204",
+      "lastVerifiedTimestamp": "2026-10-12T00:13:22.254Z",
+      "evidence": "testnet-e2e"
     },
     {
       "product": "payroll",
@@ -1879,10 +1899,15 @@
       "supportedAssets": [
         "ETH"
       ],
-      "contracts": [],
+      "contracts": [
+        "0x251ea5ec76e21c8b694903ac8e45c1c4587a5291",
+        "0xc26ca8381e0c55e128348ae54e39aaa5a384753f",
+        "0x290c6498cef5bf0b80461aa62d8e199a79695b6d",
+        "0xba041bea600ad3f0f115f18dd24fe9a1e2623442"
+      ],
       "verifier": null,
-      "provider": "privatedao-kernel-policy",
-      "walletModel": "none",
+      "provider": "evm-robinhood-testnet-organizational",
+      "walletModel": "external-wallet",
       "supportsExecution": true,
       "supportsPrivateExecution": false,
       "supportsPrivateSettlement": false,
@@ -1890,10 +1915,10 @@
       "supportsReceipt": true,
       "supportsReconciliation": true,
       "supportsMainnet": false,
-      "status": "testnet_ready",
-      "lastVerifiedCommit": null,
-      "lastVerifiedTimestamp": null,
-      "evidence": "runtime-only"
+      "status": "testnet_verified",
+      "lastVerifiedCommit": "b0fed5204",
+      "lastVerifiedTimestamp": "2026-10-12T00:21:40.273Z",
+      "evidence": "testnet-e2e"
     },
     {
       "product": "payroll",
@@ -1933,23 +1958,28 @@
       "chainId": "42431",
       "nativeAsset": "USD",
       "supportedAssets": [
-        "USD"
+        "AlphaUSD"
       ],
-      "contracts": [],
+      "contracts": [
+        "0x31ac2c4bb70fd0186d119ad8ec41e43ee2498747",
+        "0xa3496dc74db0e5b99f42161a31b700ab4320592d",
+        "0x199b059a66a5e81866ba029accf1312e88500cd8",
+        "0xcd0a9c8d713fc0e75bdfc17e6ad415eb3dc40207"
+      ],
       "verifier": null,
-      "provider": "privatedao-payroll-kernel",
-      "walletModel": "none",
+      "provider": "evm-tempo-testnet-organizational",
+      "walletModel": "external-wallet",
       "supportsExecution": true,
       "supportsPrivateExecution": false,
       "supportsPrivateSettlement": false,
       "supportsProof": false,
       "supportsReceipt": true,
-      "supportsReconciliation": false,
+      "supportsReconciliation": true,
       "supportsMainnet": false,
       "status": "testnet_verified",
-      "lastVerifiedCommit": null,
-      "lastVerifiedTimestamp": null,
-      "evidence": "kernel-policy-testnet"
+      "lastVerifiedCommit": "84a81f98a",
+      "lastVerifiedTimestamp": "2026-10-12T10:26:18.617Z",
+      "evidence": "testnet-e2e"
     },
     {
       "product": "payroll",
@@ -2159,21 +2189,26 @@
       "supportedAssets": [
         "ETH"
       ],
-      "contracts": [],
+      "contracts": [
+        "0x5a10a22ffbd1f2db3415c96731a07ee8d35c11bc",
+        "0x6c7362977625a0c1a403f02fef606cb6315e953f",
+        "0xb0698a8462b62654773a0171f39c0cce86c9a95d",
+        "0x5134fa0a560ae838f1e0324ce38a385a26711d68"
+      ],
       "verifier": null,
-      "provider": "privatedao-payroll-kernel",
-      "walletModel": "none",
+      "provider": "evm-ethereum-sepolia-organizational",
+      "walletModel": "external-wallet",
       "supportsExecution": true,
       "supportsPrivateExecution": false,
       "supportsPrivateSettlement": false,
       "supportsProof": false,
       "supportsReceipt": true,
-      "supportsReconciliation": false,
+      "supportsReconciliation": true,
       "supportsMainnet": false,
       "status": "testnet_verified",
-      "lastVerifiedCommit": null,
-      "lastVerifiedTimestamp": null,
-      "evidence": "kernel-policy-testnet"
+      "lastVerifiedCommit": "b0fed5204",
+      "lastVerifiedTimestamp": "2026-10-11T23:56:56.361Z",
+      "evidence": "testnet-e2e"
     },
     {
       "product": "payroll",
@@ -2215,21 +2250,26 @@
       "supportedAssets": [
         "ETH"
       ],
-      "contracts": [],
+      "contracts": [
+        "0xd3e604000917d0edd557005a8af39a33ee05ff4b",
+        "0x6b55c67d83645060cae54ea4246310246afa07d9",
+        "0xb93e85befcabcf2cf2c6c4bdd5e8b670b04c82d0",
+        "0x21c4cd7d2e039f7debfa87f51fd919be7ea912f1"
+      ],
       "verifier": null,
-      "provider": "privatedao-payroll-kernel",
-      "walletModel": "none",
+      "provider": "evm-arbitrum-sepolia-organizational",
+      "walletModel": "external-wallet",
       "supportsExecution": true,
       "supportsPrivateExecution": false,
       "supportsPrivateSettlement": false,
       "supportsProof": false,
       "supportsReceipt": true,
-      "supportsReconciliation": false,
+      "supportsReconciliation": true,
       "supportsMainnet": false,
       "status": "testnet_verified",
-      "lastVerifiedCommit": null,
-      "lastVerifiedTimestamp": null,
-      "evidence": "kernel-policy-testnet"
+      "lastVerifiedCommit": "b0fed5204",
+      "lastVerifiedTimestamp": "2026-10-12T00:15:59.960Z",
+      "evidence": "testnet-e2e"
     },
     {
       "product": "payroll",
@@ -2271,10 +2311,15 @@
       "supportedAssets": [
         "BNB"
       ],
-      "contracts": [],
+      "contracts": [
+        "0x9d03c14562852092b39c1dd96c441dd9484b5a2b",
+        "0x0a1a6467fdcc858899692c0f7d15beca2483d069",
+        "0x3fc47618e59c5bf8a19fe6a5298938fc9b8c3bdc",
+        "0x9dfc12d43a60ec0edcc2da33a6c5f943839ea392"
+      ],
       "verifier": null,
-      "provider": "privatedao-kernel-policy",
-      "walletModel": "none",
+      "provider": "evm-bnb-testnet-organizational",
+      "walletModel": "external-wallet",
       "supportsExecution": true,
       "supportsPrivateExecution": false,
       "supportsPrivateSettlement": false,
@@ -2282,10 +2327,10 @@
       "supportsReceipt": true,
       "supportsReconciliation": true,
       "supportsMainnet": false,
-      "status": "testnet_ready",
-      "lastVerifiedCommit": null,
-      "lastVerifiedTimestamp": null,
-      "evidence": "runtime-only"
+      "status": "testnet_verified",
+      "lastVerifiedCommit": "b0fed5204",
+      "lastVerifiedTimestamp": "2026-10-12T00:18:34.179Z",
+      "evidence": "testnet-e2e"
     },
     {
       "product": "payroll",
@@ -2327,21 +2372,26 @@
       "supportedAssets": [
         "ETH"
       ],
-      "contracts": [],
+      "contracts": [
+        "0xbba00deafaa326943390724ab0de021a661a0e51",
+        "0x02ab06a15a3c210a5c902513a2195e3e2b7096df",
+        "0x7801916f5bfadc99a0e14735a8f49d21d85eb61f",
+        "0xf70e48d8bb75757420c7ea231aaaff3e5df2aba0"
+      ],
       "verifier": null,
-      "provider": "privatedao-payroll-kernel",
-      "walletModel": "none",
+      "provider": "evm-base-sepolia-organizational",
+      "walletModel": "external-wallet",
       "supportsExecution": true,
       "supportsPrivateExecution": false,
       "supportsPrivateSettlement": false,
       "supportsProof": false,
       "supportsReceipt": true,
-      "supportsReconciliation": false,
+      "supportsReconciliation": true,
       "supportsMainnet": false,
       "status": "testnet_verified",
-      "lastVerifiedCommit": null,
-      "lastVerifiedTimestamp": null,
-      "evidence": "kernel-policy-testnet"
+      "lastVerifiedCommit": "b0fed5204",
+      "lastVerifiedTimestamp": "2026-10-12T00:13:22.254Z",
+      "evidence": "testnet-e2e"
     },
     {
       "product": "payroll",
@@ -2383,10 +2433,15 @@
       "supportedAssets": [
         "ETH"
       ],
-      "contracts": [],
+      "contracts": [
+        "0x251ea5ec76e21c8b694903ac8e45c1c4587a5291",
+        "0xc26ca8381e0c55e128348ae54e39aaa5a384753f",
+        "0x290c6498cef5bf0b80461aa62d8e199a79695b6d",
+        "0xba041bea600ad3f0f115f18dd24fe9a1e2623442"
+      ],
       "verifier": null,
-      "provider": "privatedao-kernel-policy",
-      "walletModel": "none",
+      "provider": "evm-robinhood-testnet-organizational",
+      "walletModel": "external-wallet",
       "supportsExecution": true,
       "supportsPrivateExecution": false,
       "supportsPrivateSettlement": false,
@@ -2394,10 +2449,10 @@
       "supportsReceipt": true,
       "supportsReconciliation": true,
       "supportsMainnet": false,
-      "status": "testnet_ready",
-      "lastVerifiedCommit": null,
-      "lastVerifiedTimestamp": null,
-      "evidence": "runtime-only"
+      "status": "testnet_verified",
+      "lastVerifiedCommit": "b0fed5204",
+      "lastVerifiedTimestamp": "2026-10-12T00:21:40.273Z",
+      "evidence": "testnet-e2e"
     },
     {
       "product": "payroll",
@@ -2437,23 +2492,28 @@
       "chainId": "42431",
       "nativeAsset": "USD",
       "supportedAssets": [
-        "USD"
+        "AlphaUSD"
       ],
-      "contracts": [],
+      "contracts": [
+        "0x31ac2c4bb70fd0186d119ad8ec41e43ee2498747",
+        "0xa3496dc74db0e5b99f42161a31b700ab4320592d",
+        "0x199b059a66a5e81866ba029accf1312e88500cd8",
+        "0xcd0a9c8d713fc0e75bdfc17e6ad415eb3dc40207"
+      ],
       "verifier": null,
-      "provider": "privatedao-payroll-kernel",
-      "walletModel": "none",
+      "provider": "evm-tempo-testnet-organizational",
+      "walletModel": "external-wallet",
       "supportsExecution": true,
       "supportsPrivateExecution": false,
       "supportsPrivateSettlement": false,
       "supportsProof": false,
       "supportsReceipt": true,
-      "supportsReconciliation": false,
+      "supportsReconciliation": true,
       "supportsMainnet": false,
       "status": "testnet_verified",
-      "lastVerifiedCommit": null,
-      "lastVerifiedTimestamp": null,
-      "evidence": "kernel-policy-testnet"
+      "lastVerifiedCommit": "84a81f98a",
+      "lastVerifiedTimestamp": "2026-10-12T10:26:18.617Z",
+      "evidence": "testnet-e2e"
     },
     {
       "product": "payroll",
@@ -2966,23 +3026,28 @@
       "chainId": "42431",
       "nativeAsset": "USD",
       "supportedAssets": [
-        "USD"
+        "AlphaUSD"
       ],
-      "contracts": [],
+      "contracts": [
+        "0x31ac2c4bb70fd0186d119ad8ec41e43ee2498747",
+        "0xa3496dc74db0e5b99f42161a31b700ab4320592d",
+        "0x199b059a66a5e81866ba029accf1312e88500cd8",
+        "0xcd0a9c8d713fc0e75bdfc17e6ad415eb3dc40207"
+      ],
       "verifier": null,
-      "provider": "evm-tempo-testnet",
+      "provider": "evm-tempo-testnet-organizational",
       "walletModel": "external-wallet",
-      "supportsExecution": false,
+      "supportsExecution": true,
       "supportsPrivateExecution": false,
       "supportsPrivateSettlement": false,
       "supportsProof": false,
-      "supportsReceipt": false,
-      "supportsReconciliation": false,
+      "supportsReceipt": true,
+      "supportsReconciliation": true,
       "supportsMainnet": false,
-      "status": "planned",
-      "lastVerifiedCommit": null,
-      "lastVerifiedTimestamp": null,
-      "evidence": "none"
+      "status": "testnet_verified",
+      "lastVerifiedCommit": "84a81f98a",
+      "lastVerifiedTimestamp": "2026-10-12T10:26:18.617Z",
+      "evidence": "testnet-e2e"
     },
     {
       "product": "payroll",
@@ -3500,9 +3565,10 @@
         "AlphaUSD"
       ],
       "contracts": [
-        "0x88ef958407ee3929cc23b1737e89f0e8acdf7a57",
-        "0x1f51b3231cbb448793e41903181c68bcc96e4b5d",
-        "0x400805c6b9d4d4a3c4f604a293b0733453dde3ca"
+        "0x31ac2c4bb70fd0186d119ad8ec41e43ee2498747",
+        "0xa3496dc74db0e5b99f42161a31b700ab4320592d",
+        "0x199b059a66a5e81866ba029accf1312e88500cd8",
+        "0xcd0a9c8d713fc0e75bdfc17e6ad415eb3dc40207"
       ],
       "verifier": null,
       "provider": "evm-tempo-testnet-organizational",
@@ -3515,8 +3581,8 @@
       "supportsReconciliation": true,
       "supportsMainnet": false,
       "status": "testnet_verified",
-      "lastVerifiedCommit": "332565a",
-      "lastVerifiedTimestamp": "2026-09-16T22:03:49.724Z",
+      "lastVerifiedCommit": "84a81f98a",
+      "lastVerifiedTimestamp": "2026-10-12T10:26:18.617Z",
       "evidence": "testnet-e2e"
     },
     {
@@ -4035,9 +4101,10 @@
         "AlphaUSD"
       ],
       "contracts": [
-        "0x88ef958407ee3929cc23b1737e89f0e8acdf7a57",
-        "0x1f51b3231cbb448793e41903181c68bcc96e4b5d",
-        "0x400805c6b9d4d4a3c4f604a293b0733453dde3ca"
+        "0x31ac2c4bb70fd0186d119ad8ec41e43ee2498747",
+        "0xa3496dc74db0e5b99f42161a31b700ab4320592d",
+        "0x199b059a66a5e81866ba029accf1312e88500cd8",
+        "0xcd0a9c8d713fc0e75bdfc17e6ad415eb3dc40207"
       ],
       "verifier": null,
       "provider": "evm-tempo-testnet-organizational",
@@ -4050,8 +4117,8 @@
       "supportsReconciliation": true,
       "supportsMainnet": false,
       "status": "testnet_verified",
-      "lastVerifiedCommit": "332565a",
-      "lastVerifiedTimestamp": "2026-09-16T22:03:49.724Z",
+      "lastVerifiedCommit": "84a81f98a",
+      "lastVerifiedTimestamp": "2026-10-12T10:26:18.617Z",
       "evidence": "testnet-e2e"
     },
     {
@@ -4570,9 +4637,10 @@
         "AlphaUSD"
       ],
       "contracts": [
-        "0x88ef958407ee3929cc23b1737e89f0e8acdf7a57",
-        "0x1f51b3231cbb448793e41903181c68bcc96e4b5d",
-        "0x400805c6b9d4d4a3c4f604a293b0733453dde3ca"
+        "0x31ac2c4bb70fd0186d119ad8ec41e43ee2498747",
+        "0xa3496dc74db0e5b99f42161a31b700ab4320592d",
+        "0x199b059a66a5e81866ba029accf1312e88500cd8",
+        "0xcd0a9c8d713fc0e75bdfc17e6ad415eb3dc40207"
       ],
       "verifier": null,
       "provider": "evm-tempo-testnet-organizational",
@@ -4585,8 +4653,8 @@
       "supportsReconciliation": true,
       "supportsMainnet": false,
       "status": "testnet_verified",
-      "lastVerifiedCommit": "332565a",
-      "lastVerifiedTimestamp": "2026-09-16T22:03:49.724Z",
+      "lastVerifiedCommit": "84a81f98a",
+      "lastVerifiedTimestamp": "2026-10-12T10:26:18.617Z",
       "evidence": "testnet-e2e"
     },
     {
@@ -5105,9 +5173,10 @@
         "AlphaUSD"
       ],
       "contracts": [
-        "0x88ef958407ee3929cc23b1737e89f0e8acdf7a57",
-        "0x1f51b3231cbb448793e41903181c68bcc96e4b5d",
-        "0x400805c6b9d4d4a3c4f604a293b0733453dde3ca"
+        "0x31ac2c4bb70fd0186d119ad8ec41e43ee2498747",
+        "0xa3496dc74db0e5b99f42161a31b700ab4320592d",
+        "0x199b059a66a5e81866ba029accf1312e88500cd8",
+        "0xcd0a9c8d713fc0e75bdfc17e6ad415eb3dc40207"
       ],
       "verifier": null,
       "provider": "evm-tempo-testnet-organizational",
@@ -5120,8 +5189,8 @@
       "supportsReconciliation": true,
       "supportsMainnet": false,
       "status": "testnet_verified",
-      "lastVerifiedCommit": "332565a",
-      "lastVerifiedTimestamp": "2026-09-16T22:03:49.724Z",
+      "lastVerifiedCommit": "84a81f98a",
+      "lastVerifiedTimestamp": "2026-10-12T10:26:18.617Z",
       "evidence": "testnet-e2e"
     },
     {

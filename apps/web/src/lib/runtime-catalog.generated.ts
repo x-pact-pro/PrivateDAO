@@ -1658,15 +1658,15 @@ export const runtimeCatalog = {
               "method": null,
               "note": "Kernel payroll calculation is network-selectable; no private settlement or wallet movement is performed by this capability.",
               "evidenceStatus": "testnet_verified",
-              "evidence": "kernel-policy-testnet",
+              "evidence": "testnet-e2e",
               "supportsExecution": true,
               "supportsProof": false,
               "supportsReceipt": true,
-              "supportsReconciliation": false,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "ETH"
               ],
-              "provider": "privatedao-payroll-kernel"
+              "provider": "evm-ethereum-sepolia-organizational"
             },
             {
               "network": "arbitrum-sepolia",
@@ -1675,15 +1675,15 @@ export const runtimeCatalog = {
               "method": null,
               "note": "Kernel payroll calculation is network-selectable; no private settlement or wallet movement is performed by this capability.",
               "evidenceStatus": "testnet_verified",
-              "evidence": "kernel-policy-testnet",
+              "evidence": "testnet-e2e",
               "supportsExecution": true,
               "supportsProof": false,
               "supportsReceipt": true,
-              "supportsReconciliation": false,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "ETH"
               ],
-              "provider": "privatedao-payroll-kernel"
+              "provider": "evm-arbitrum-sepolia-organizational"
             },
             {
               "network": "tempo-testnet",
@@ -1692,15 +1692,15 @@ export const runtimeCatalog = {
               "method": null,
               "note": "Kernel payroll calculation is network-selectable; no private settlement or wallet movement is performed by this capability.",
               "evidenceStatus": "testnet_verified",
-              "evidence": "kernel-policy-testnet",
+              "evidence": "testnet-e2e",
               "supportsExecution": true,
               "supportsProof": false,
               "supportsReceipt": true,
-              "supportsReconciliation": false,
+              "supportsReconciliation": true,
               "supportedAssets": [
-                "USD"
+                "AlphaUSD"
               ],
-              "provider": "privatedao-payroll-kernel"
+              "provider": "evm-tempo-testnet-organizational"
             },
             {
               "network": "base-sepolia",
@@ -1709,15 +1709,15 @@ export const runtimeCatalog = {
               "method": null,
               "note": "Kernel payroll calculation is network-selectable; no private settlement or wallet movement is performed by this capability.",
               "evidenceStatus": "testnet_verified",
-              "evidence": "kernel-policy-testnet",
+              "evidence": "testnet-e2e",
               "supportsExecution": true,
               "supportsProof": false,
               "supportsReceipt": true,
-              "supportsReconciliation": false,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "ETH"
               ],
-              "provider": "privatedao-payroll-kernel"
+              "provider": "evm-base-sepolia-organizational"
             },
             {
               "network": "bnb-testnet",
@@ -1725,8 +1725,8 @@ export const runtimeCatalog = {
               "entrypoint": "kernel://payroll.calculate",
               "method": null,
               "note": "Payroll calculation is network-selectable through the Kernel; private settlement remains separately gated.",
-              "evidenceStatus": "testnet_ready",
-              "evidence": "runtime-only",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
               "supportsExecution": true,
               "supportsProof": false,
               "supportsReceipt": true,
@@ -1734,7 +1734,7 @@ export const runtimeCatalog = {
               "supportedAssets": [
                 "BNB"
               ],
-              "provider": "privatedao-kernel-policy"
+              "provider": "evm-bnb-testnet-organizational"
             },
             {
               "network": "zcash-testnet",
@@ -1776,8 +1776,8 @@ export const runtimeCatalog = {
               "entrypoint": "kernel://payroll.calculate",
               "method": null,
               "note": "Payroll calculation is network-selectable through the Kernel; private settlement remains separately gated.",
-              "evidenceStatus": "testnet_ready",
-              "evidence": "runtime-only",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
               "supportsExecution": true,
               "supportsProof": false,
               "supportsReceipt": true,
@@ -1785,7 +1785,7 @@ export const runtimeCatalog = {
               "supportedAssets": [
                 "ETH"
               ],
-              "provider": "privatedao-kernel-policy"
+              "provider": "evm-robinhood-testnet-organizational"
             },
             {
               "network": "hyperliquid-testnet",
@@ -1867,15 +1867,15 @@ export const runtimeCatalog = {
               "declared": true,
               "mode": "kernel-gateway",
               "evidenceStatus": "testnet_verified",
-              "evidence": "kernel-policy-testnet",
+              "evidence": "testnet-e2e",
               "executable": true,
               "supportsProof": false,
               "supportsReceipt": true,
-              "supportsReconciliation": false,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "ETH"
               ],
-              "provider": "privatedao-payroll-kernel"
+              "provider": "evm-ethereum-sepolia-organizational"
             },
             {
               "network": "ethereum-mainnet",
@@ -1903,15 +1903,15 @@ export const runtimeCatalog = {
               "declared": true,
               "mode": "kernel-gateway",
               "evidenceStatus": "testnet_verified",
-              "evidence": "kernel-policy-testnet",
+              "evidence": "testnet-e2e",
               "executable": true,
               "supportsProof": false,
               "supportsReceipt": true,
-              "supportsReconciliation": false,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "ETH"
               ],
-              "provider": "privatedao-payroll-kernel"
+              "provider": "evm-arbitrum-sepolia-organizational"
             },
             {
               "network": "arbitrum-one",
@@ -1938,16 +1938,16 @@ export const runtimeCatalog = {
               "chainId": "97",
               "declared": true,
               "mode": "kernel-gateway",
-              "evidenceStatus": "testnet_ready",
-              "evidence": "runtime-only",
-              "executable": false,
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "executable": true,
               "supportsProof": false,
               "supportsReceipt": true,
               "supportsReconciliation": true,
               "supportedAssets": [
                 "BNB"
               ],
-              "provider": "privatedao-kernel-policy"
+              "provider": "evm-bnb-testnet-organizational"
             },
             {
               "network": "bnb-mainnet",
@@ -1975,15 +1975,15 @@ export const runtimeCatalog = {
               "declared": true,
               "mode": "kernel-gateway",
               "evidenceStatus": "testnet_verified",
-              "evidence": "kernel-policy-testnet",
+              "evidence": "testnet-e2e",
               "executable": true,
               "supportsProof": false,
               "supportsReceipt": true,
-              "supportsReconciliation": false,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "ETH"
               ],
-              "provider": "privatedao-payroll-kernel"
+              "provider": "evm-base-sepolia-organizational"
             },
             {
               "network": "base-mainnet",
@@ -2010,16 +2010,16 @@ export const runtimeCatalog = {
               "chainId": "46630",
               "declared": true,
               "mode": "kernel-gateway",
-              "evidenceStatus": "testnet_ready",
-              "evidence": "runtime-only",
-              "executable": false,
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "executable": true,
               "supportsProof": false,
               "supportsReceipt": true,
               "supportsReconciliation": true,
               "supportedAssets": [
                 "ETH"
               ],
-              "provider": "privatedao-kernel-policy"
+              "provider": "evm-robinhood-testnet-organizational"
             },
             {
               "network": "robinhood-mainnet",
@@ -2047,15 +2047,15 @@ export const runtimeCatalog = {
               "declared": true,
               "mode": "kernel-gateway",
               "evidenceStatus": "testnet_verified",
-              "evidence": "kernel-policy-testnet",
+              "evidence": "testnet-e2e",
               "executable": true,
               "supportsProof": false,
               "supportsReceipt": true,
-              "supportsReconciliation": false,
+              "supportsReconciliation": true,
               "supportedAssets": [
-                "USD"
+                "AlphaUSD"
               ],
-              "provider": "privatedao-payroll-kernel"
+              "provider": "evm-tempo-testnet-organizational"
             },
             {
               "network": "tempo-mainnet",
@@ -2180,15 +2180,15 @@ export const runtimeCatalog = {
               "method": null,
               "note": "Kernel Maker/Checker approval is network-selectable; settlement remains a separate network-specific gate.",
               "evidenceStatus": "testnet_verified",
-              "evidence": "kernel-policy-testnet",
+              "evidence": "testnet-e2e",
               "supportsExecution": true,
               "supportsProof": false,
               "supportsReceipt": true,
-              "supportsReconciliation": false,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "ETH"
               ],
-              "provider": "privatedao-payroll-kernel"
+              "provider": "evm-ethereum-sepolia-organizational"
             },
             {
               "network": "arbitrum-sepolia",
@@ -2197,15 +2197,15 @@ export const runtimeCatalog = {
               "method": null,
               "note": "Kernel Maker/Checker approval is network-selectable; settlement remains a separate network-specific gate.",
               "evidenceStatus": "testnet_verified",
-              "evidence": "kernel-policy-testnet",
+              "evidence": "testnet-e2e",
               "supportsExecution": true,
               "supportsProof": false,
               "supportsReceipt": true,
-              "supportsReconciliation": false,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "ETH"
               ],
-              "provider": "privatedao-payroll-kernel"
+              "provider": "evm-arbitrum-sepolia-organizational"
             },
             {
               "network": "tempo-testnet",
@@ -2214,15 +2214,15 @@ export const runtimeCatalog = {
               "method": null,
               "note": "Kernel Maker/Checker approval is network-selectable; settlement remains a separate network-specific gate.",
               "evidenceStatus": "testnet_verified",
-              "evidence": "kernel-policy-testnet",
+              "evidence": "testnet-e2e",
               "supportsExecution": true,
               "supportsProof": false,
               "supportsReceipt": true,
-              "supportsReconciliation": false,
+              "supportsReconciliation": true,
               "supportedAssets": [
-                "USD"
+                "AlphaUSD"
               ],
-              "provider": "privatedao-payroll-kernel"
+              "provider": "evm-tempo-testnet-organizational"
             },
             {
               "network": "base-sepolia",
@@ -2231,15 +2231,15 @@ export const runtimeCatalog = {
               "method": null,
               "note": "Kernel Maker/Checker approval is network-selectable; settlement remains a separate network-specific gate.",
               "evidenceStatus": "testnet_verified",
-              "evidence": "kernel-policy-testnet",
+              "evidence": "testnet-e2e",
               "supportsExecution": true,
               "supportsProof": false,
               "supportsReceipt": true,
-              "supportsReconciliation": false,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "ETH"
               ],
-              "provider": "privatedao-payroll-kernel"
+              "provider": "evm-base-sepolia-organizational"
             },
             {
               "network": "bnb-testnet",
@@ -2247,8 +2247,8 @@ export const runtimeCatalog = {
               "entrypoint": "kernel://payroll.approve",
               "method": null,
               "note": "Payroll Maker/Checker approval is network-selectable through the Kernel; settlement remains separately gated.",
-              "evidenceStatus": "testnet_ready",
-              "evidence": "runtime-only",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
               "supportsExecution": true,
               "supportsProof": false,
               "supportsReceipt": true,
@@ -2256,7 +2256,7 @@ export const runtimeCatalog = {
               "supportedAssets": [
                 "BNB"
               ],
-              "provider": "privatedao-kernel-policy"
+              "provider": "evm-bnb-testnet-organizational"
             },
             {
               "network": "zcash-testnet",
@@ -2298,8 +2298,8 @@ export const runtimeCatalog = {
               "entrypoint": "kernel://payroll.approve",
               "method": null,
               "note": "Payroll Maker/Checker approval is network-selectable through the Kernel; settlement remains separately gated.",
-              "evidenceStatus": "testnet_ready",
-              "evidence": "runtime-only",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
               "supportsExecution": true,
               "supportsProof": false,
               "supportsReceipt": true,
@@ -2307,7 +2307,7 @@ export const runtimeCatalog = {
               "supportedAssets": [
                 "ETH"
               ],
-              "provider": "privatedao-kernel-policy"
+              "provider": "evm-robinhood-testnet-organizational"
             },
             {
               "network": "hyperliquid-testnet",
@@ -2389,15 +2389,15 @@ export const runtimeCatalog = {
               "declared": true,
               "mode": "kernel-gateway",
               "evidenceStatus": "testnet_verified",
-              "evidence": "kernel-policy-testnet",
+              "evidence": "testnet-e2e",
               "executable": true,
               "supportsProof": false,
               "supportsReceipt": true,
-              "supportsReconciliation": false,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "ETH"
               ],
-              "provider": "privatedao-payroll-kernel"
+              "provider": "evm-ethereum-sepolia-organizational"
             },
             {
               "network": "ethereum-mainnet",
@@ -2425,15 +2425,15 @@ export const runtimeCatalog = {
               "declared": true,
               "mode": "kernel-gateway",
               "evidenceStatus": "testnet_verified",
-              "evidence": "kernel-policy-testnet",
+              "evidence": "testnet-e2e",
               "executable": true,
               "supportsProof": false,
               "supportsReceipt": true,
-              "supportsReconciliation": false,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "ETH"
               ],
-              "provider": "privatedao-payroll-kernel"
+              "provider": "evm-arbitrum-sepolia-organizational"
             },
             {
               "network": "arbitrum-one",
@@ -2460,16 +2460,16 @@ export const runtimeCatalog = {
               "chainId": "97",
               "declared": true,
               "mode": "kernel-gateway",
-              "evidenceStatus": "testnet_ready",
-              "evidence": "runtime-only",
-              "executable": false,
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "executable": true,
               "supportsProof": false,
               "supportsReceipt": true,
               "supportsReconciliation": true,
               "supportedAssets": [
                 "BNB"
               ],
-              "provider": "privatedao-kernel-policy"
+              "provider": "evm-bnb-testnet-organizational"
             },
             {
               "network": "bnb-mainnet",
@@ -2497,15 +2497,15 @@ export const runtimeCatalog = {
               "declared": true,
               "mode": "kernel-gateway",
               "evidenceStatus": "testnet_verified",
-              "evidence": "kernel-policy-testnet",
+              "evidence": "testnet-e2e",
               "executable": true,
               "supportsProof": false,
               "supportsReceipt": true,
-              "supportsReconciliation": false,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "ETH"
               ],
-              "provider": "privatedao-payroll-kernel"
+              "provider": "evm-base-sepolia-organizational"
             },
             {
               "network": "base-mainnet",
@@ -2532,16 +2532,16 @@ export const runtimeCatalog = {
               "chainId": "46630",
               "declared": true,
               "mode": "kernel-gateway",
-              "evidenceStatus": "testnet_ready",
-              "evidence": "runtime-only",
-              "executable": false,
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "executable": true,
               "supportsProof": false,
               "supportsReceipt": true,
               "supportsReconciliation": true,
               "supportedAssets": [
                 "ETH"
               ],
-              "provider": "privatedao-kernel-policy"
+              "provider": "evm-robinhood-testnet-organizational"
             },
             {
               "network": "robinhood-mainnet",
@@ -2569,15 +2569,15 @@ export const runtimeCatalog = {
               "declared": true,
               "mode": "kernel-gateway",
               "evidenceStatus": "testnet_verified",
-              "evidence": "kernel-policy-testnet",
+              "evidence": "testnet-e2e",
               "executable": true,
               "supportsProof": false,
               "supportsReceipt": true,
-              "supportsReconciliation": false,
+              "supportsReconciliation": true,
               "supportedAssets": [
-                "USD"
+                "AlphaUSD"
               ],
-              "provider": "privatedao-payroll-kernel"
+              "provider": "evm-tempo-testnet-organizational"
             },
             {
               "network": "tempo-mainnet",
@@ -3022,16 +3022,16 @@ export const runtimeCatalog = {
               "chainId": "42431",
               "declared": false,
               "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
               "executable": false,
               "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
-                "USD"
+                "AlphaUSD"
               ],
-              "provider": "evm-tempo-testnet"
+              "provider": "evm-tempo-testnet-organizational"
             },
             {
               "network": "tempo-mainnet",
