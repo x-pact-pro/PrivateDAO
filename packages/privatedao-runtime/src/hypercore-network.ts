@@ -14,6 +14,31 @@ export interface HyperCoreHealth {
   reason?: string;
 }
 
+/**
+ * Native HyperCore actions are signed through the Hyperliquid exchange API;
+ * they are not EVM transactions. Preparation is intentionally separate from
+ * signing and submission so product code cannot accidentally broadcast a
+ * native action through the HyperEVM adapter.
+ */
+export type HyperCoreNativeActionType =
+  | "usdSend"
+  | "spotSend"
+  | "usdClassTransfer"
+  | "withdraw3"
+  | "cDeposit"
+  | "cWithdraw"
+  | "tokenDelegate"
+  | "vaultTransfer";
+
+export interface HyperCorePreparedAction {
+  network: HyperCoreNetworkId;
+  endpoint: string;
+  action: { type: HyperCoreNativeActionType; [key: string]: unknown };
+  nonce: number;
+  requiresSignature: true;
+  broadcastEnabled: false;
+}
+
 type FetchLike = (input: string, init?: RequestInit) => Promise<Response>;
 
 const DEFAULT_TESTNET_API = "https://api.hyperliquid-testnet.xyz/info";
@@ -86,5 +111,23 @@ export class HyperCoreNetworkAdapter {
         reason: error instanceof Error ? error.message : "HyperCore Testnet API health check failed.",
       };
     }
+  }
+
+  prepareNativeAction(
+    type: HyperCoreNativeActionType,
+    payload: Record<string, unknown>,
+    nonce = Date.now(),
+  ): HyperCorePreparedAction {
+    if (!Number.isSafeInteger(nonce) || nonce <= 0) throw new Error("HyperCore action nonce must be a positive safe integer.");
+    if (!payload || typeof payload !== "object" || Array.isArray(payload)) throw new Error("HyperCore action payload must be an object.");
+    if (typeof payload.type !== "undefined" && payload.type !== type) throw new Error("HyperCore action type does not match the prepared action.");
+    return {
+      network: this.network,
+      endpoint: this.apiUrl.replace(/\/info$/i, "/exchange"),
+      action: { ...payload, type },
+      nonce,
+      requiresSignature: true,
+      broadcastEnabled: false,
+    };
   }
 }
