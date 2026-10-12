@@ -59,6 +59,13 @@ export interface HyperCoreSignedAction extends HyperCorePreparedAction {
   broadcastEnabled: false;
 }
 
+export interface HyperCoreExchangeResult {
+  ok: boolean;
+  status: string;
+  response?: unknown;
+  error?: string;
+}
+
 type FetchLike = (input: string, init?: RequestInit) => Promise<Response>;
 
 const DEFAULT_TESTNET_API = "https://api.hyperliquid-testnet.xyz/info";
@@ -75,18 +82,25 @@ export class HyperCoreNetworkAdapter {
   readonly apiUrl: string;
 
   constructor(
-    options: { apiUrl?: string; fetchImpl?: FetchLike; timeoutMs?: number } = {},
+    options: { apiUrl?: string; exchangeUrl?: string; fetchImpl?: FetchLike; timeoutMs?: number; broadcastEnabled?: boolean } = {},
   ) {
     this.apiUrl = (options.apiUrl || process.env.PDAO_HYPERCORE_API_URL || DEFAULT_TESTNET_API).trim();
     if (!/^https:\/\//i.test(this.apiUrl) || !/hyperliquid-testnet/i.test(this.apiUrl)) {
       throw new Error("HyperCore adapter accepts only an HTTPS Hyperliquid Testnet API endpoint.");
     }
+    this.exchangeUrl = (options.exchangeUrl || this.apiUrl.replace(/\/info$/i, "/exchange")).trim();
+    if (!/^https:\/\//i.test(this.exchangeUrl) || !/hyperliquid-testnet/i.test(this.exchangeUrl)) {
+      throw new Error("HyperCore adapter accepts only an HTTPS Hyperliquid Testnet exchange endpoint.");
+    }
     this.fetchImpl = options.fetchImpl || fetch;
     this.timeoutMs = options.timeoutMs || 15_000;
+    this.broadcastEnabled = options.broadcastEnabled === true && process.env.PDAO_HYPERCORE_BROADCAST_ENABLED === "1";
   }
 
   private readonly fetchImpl: FetchLike;
   private readonly timeoutMs: number;
+  readonly exchangeUrl: string;
+  readonly broadcastEnabled: boolean;
 
   async readMeta(): Promise<HyperCoreMetaSnapshot> {
     const controller = new AbortController();
@@ -155,7 +169,7 @@ export class HyperCoreNetworkAdapter {
     };
     return {
       network: this.network,
-      endpoint: this.apiUrl.replace(/\/info$/i, "/exchange"),
+      endpoint: this.exchangeUrl,
       action,
       nonce,
       requiresSignature: true,
@@ -185,6 +199,25 @@ export class HyperCoreNetworkAdapter {
       signature,
       signatureChainId,
     };
+  }
+
+  async submitNativeAction(signed: HyperCoreSignedAction): Promise<HyperCoreExchangeResult> {
+    if (!this.broadcastEnabled) throw new Error("HyperCore native broadcast is disabled; no exchange request was sent.");
+    if (signed.network !== this.network || signed.endpoint !== this.exchangeUrl) {
+      throw new Error("HyperCore signed action endpoint or network mismatch.");
+    }
+    const signature = splitSignature(signed.signature);
+    const response = await this.fetchImpl(this.exchangeUrl, {
+      method: "POST",
+      headers: { Accept: "application/json", "Content-Type": "application/json" },
+      body: JSON.stringify({ action: signed.action, nonce: signed.nonce, signature }),
+    });
+    const payload = await response.json().catch(() => undefined) as { status?: unknown; response?: unknown; error?: unknown } | undefined;
+    if (!response.ok) {
+      return { ok: false, status: `http_${response.status}`, error: typeof payload?.error === "string" ? payload.error : "HyperCore exchange request failed." };
+    }
+    if (payload?.status !== "ok") return { ok: false, status: "rejected", response: payload };
+    return { ok: true, status: "ok", response: payload.response };
   }
 }
 
@@ -255,6 +288,15 @@ function typedDataForAction(
     primaryType,
     message,
   };
+}
+
+function splitSignature(signature: `0x${string}`): { r: `0x${string}`; s: `0x${string}`; v: number } {
+  if (!/^0x[0-9a-f]{130}$/i.test(signature)) throw new Error("HyperCore signer returned an invalid EIP-712 signature.");
+  const r = `0x${signature.slice(2, 66)}` as `0x${string}`;
+  const s = `0x${signature.slice(66, 130)}` as `0x${string}`;
+  const rawV = Number.parseInt(signature.slice(130, 132), 16);
+  if (rawV !== 0 && rawV !== 1 && rawV !== 27 && rawV !== 28) throw new Error("HyperCore signer returned an unsupported recovery id.");
+  return { r, s, v: rawV < 2 ? rawV + 27 : rawV };
 }
 
 function validateNativeActionPayload(type: HyperCoreNativeActionType, payload: Record<string, unknown>): void {

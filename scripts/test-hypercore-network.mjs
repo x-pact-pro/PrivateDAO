@@ -45,7 +45,7 @@ let signedTypedData;
 const signer = {
   signTypedData: async (args) => {
     signedTypedData = args;
-    return `0x${"11".repeat(65)}`;
+    return `0x${"11".repeat(64)}1b`;
   },
 };
 const signedPrepared = adapter.prepareNativeAction("usdSend", {
@@ -77,6 +77,35 @@ assert.rejects(
   () => adapter.signNativeAction(signedPrepared, signer, "not-a-chain-id"),
   /signatureChainId must be a hexadecimal chain ID/,
 );
+let exchangeCalls = 0;
+const disabledExchange = await adapter.signNativeAction(signedPrepared, signer, "0x66eee");
+await assert.rejects(() => adapter.submitNativeAction(disabledExchange), /broadcast is disabled/);
+assert.equal(exchangeCalls, 0);
+
+const originalBroadcast = process.env.PDAO_HYPERCORE_BROADCAST_ENABLED;
+process.env.PDAO_HYPERCORE_BROADCAST_ENABLED = "1";
+try {
+  const exchangeAdapter = new HyperCoreNetworkAdapter({
+    apiUrl: "https://api.hyperliquid-testnet.xyz/info",
+    fetchImpl: async (url, init) => {
+      exchangeCalls += 1;
+      assert.equal(url, "https://api.hyperliquid-testnet.xyz/exchange");
+      assert.equal(init.method, "POST");
+      const body = JSON.parse(init.body);
+      assert.equal(body.action.signatureChainId, "0x66eee");
+      assert.equal(body.signature.v, 27);
+      return new Response(JSON.stringify({ status: "ok", response: { type: "default" } }), { status: 200 });
+    },
+    broadcastEnabled: true,
+  });
+  const exchangeSigned = await exchangeAdapter.signNativeAction(signedPrepared, signer, "0x66eee");
+  const exchangeResult = await exchangeAdapter.submitNativeAction(exchangeSigned);
+  assert.deepEqual(exchangeResult, { ok: true, status: "ok", response: { type: "default" } });
+  assert.equal(exchangeCalls, 1);
+} finally {
+  if (originalBroadcast === undefined) delete process.env.PDAO_HYPERCORE_BROADCAST_ENABLED;
+  else process.env.PDAO_HYPERCORE_BROADCAST_ENABLED = originalBroadcast;
+}
 
 const malformed = new HyperCoreNetworkAdapter({
   apiUrl: "https://api.hyperliquid-testnet.xyz/info",
