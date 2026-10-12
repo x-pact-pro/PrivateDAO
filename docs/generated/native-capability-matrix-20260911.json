@@ -1,6 +1,6 @@
 {
   "schema": "privatedao.native-capability-matrix.v1",
-  "generatedAt": "2026-10-12T10:05:17.862Z",
+  "generatedAt": "2026-10-12T10:10:23.248Z",
   "bridgeFree": true,
   "entries": [
     {
@@ -545,19 +545,19 @@
       ],
       "contracts": [],
       "verifier": null,
-      "provider": "privatedao-kernel-policy",
-      "walletModel": "none",
+      "provider": "privatedao-record-anchor-service",
+      "walletModel": "external-wallet",
       "supportsExecution": true,
       "supportsPrivateExecution": false,
       "supportsPrivateSettlement": false,
-      "supportsProof": true,
+      "supportsProof": false,
       "supportsReceipt": true,
       "supportsReconciliation": true,
       "supportsMainnet": false,
-      "status": "testnet_ready",
-      "lastVerifiedCommit": null,
-      "lastVerifiedTimestamp": null,
-      "evidence": "kernel-policy-testnet"
+      "status": "devnet_verified",
+      "lastVerifiedCommit": "c796259a4",
+      "lastVerifiedTimestamp": "2026-10-12",
+      "evidence": "devnet-e2e"
     },
     {
       "product": "record-verification",
@@ -1073,19 +1073,19 @@
       ],
       "contracts": [],
       "verifier": null,
-      "provider": "privatedao-kernel-policy",
-      "walletModel": "none",
+      "provider": "privatedao-record-anchor-service",
+      "walletModel": "external-wallet",
       "supportsExecution": true,
       "supportsPrivateExecution": false,
       "supportsPrivateSettlement": false,
-      "supportsProof": true,
+      "supportsProof": false,
       "supportsReceipt": true,
       "supportsReconciliation": true,
       "supportsMainnet": false,
-      "status": "testnet_ready",
-      "lastVerifiedCommit": null,
-      "lastVerifiedTimestamp": null,
-      "evidence": "kernel-policy-testnet"
+      "status": "devnet_verified",
+      "lastVerifiedCommit": "c796259a4",
+      "lastVerifiedTimestamp": "2026-10-12",
+      "evidence": "devnet-e2e"
     },
     {
       "product": "record-verification",

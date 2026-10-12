@@ -30,7 +30,12 @@ if (missing.length > 0) {
     assert.match(serviceOutput, /record-anchor-service listening/);
     const result = await new Promise((resolve) => {
       const test = spawn(process.execPath, ["scripts/test-record-verification-solana-e2e.mjs"], {
-        env: { ...env, RECORD_TEST_PORT: String(port), PRIVATEDAO_RECORD_ANCHOR_URL: `http://127.0.0.1:${port}` },
+        env: {
+          ...env,
+          RECORD_TEST_PORT: String(port),
+          RECORD_TEST_CLUSTER: env.RECORD_TEST_CLUSTER || "devnet",
+          PRIVATEDAO_RECORD_ANCHOR_URL: `http://127.0.0.1:${port}`,
+        },
         stdio: "inherit",
       });
       test.once("exit", (code, signal) => resolve({ code: code ?? 1, signal }));

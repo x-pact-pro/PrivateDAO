@@ -1,0 +1,14 @@
+{
+  "schema": "privatedao.solana-devnet-record-verification-e2e.v1",
+  "network": "solana-devnet",
+  "environment": "devnet",
+  "provider": "privatedao-record-anchor-service",
+  "executionPath": "record-verification->kernel->solana-anchor-provider->solana-devnet",
+  "receiptId": "record-ea5d30c5-abb1-4ec1-aedb-d718de77ebe2",
+  "anchorSignature": "NZkkgh16Sd9omEpA8GLaLKaNCzy8uapWoTBRCva8mZZpJLFEoL9T5N9gPjheFeN7vpbNu97nFcTVuB7zxenctn9",
+  "slot": 510228884,
+  "anchorStatus": "confirmed",
+  "broadcastExecuted": true,
+  "privatePayloadExposed": false,
+  "verifiedAt": "2026-10-12"
+}

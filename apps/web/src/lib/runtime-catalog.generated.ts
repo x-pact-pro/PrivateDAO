@@ -576,16 +576,16 @@ export const runtimeCatalog = {
               "entrypoint": "kernel://verification.record.create",
               "method": null,
               "note": "Solana Devnet record creation runs through the Kernel policy provider; the source record remains off-chain.",
-              "evidenceStatus": "testnet_ready",
-              "evidence": "kernel-policy-testnet",
+              "evidenceStatus": "devnet_verified",
+              "evidence": "devnet-e2e",
               "supportsExecution": true,
-              "supportsProof": true,
+              "supportsProof": false,
               "supportsReceipt": true,
               "supportsReconciliation": true,
               "supportedAssets": [
                 "SOL"
               ],
-              "provider": "privatedao-kernel-policy"
+              "provider": "privatedao-record-anchor-service"
             },
             {
               "network": "ethereum-sepolia",
@@ -766,16 +766,16 @@ export const runtimeCatalog = {
               "chainId": null,
               "declared": true,
               "mode": "kernel-gateway",
-              "evidenceStatus": "testnet_ready",
-              "evidence": "kernel-policy-testnet",
-              "executable": false,
-              "supportsProof": true,
+              "evidenceStatus": "devnet_verified",
+              "evidence": "devnet-e2e",
+              "executable": true,
+              "supportsProof": false,
               "supportsReceipt": true,
               "supportsReconciliation": true,
               "supportedAssets": [
                 "SOL"
               ],
-              "provider": "privatedao-kernel-policy"
+              "provider": "privatedao-record-anchor-service"
             },
             {
               "network": "solana-mainnet-beta",
@@ -1098,16 +1098,16 @@ export const runtimeCatalog = {
               "entrypoint": "kernel://verification.record.verify",
               "method": null,
               "note": "Solana Devnet record verification runs through the Kernel policy provider without returning source data.",
-              "evidenceStatus": "testnet_ready",
-              "evidence": "kernel-policy-testnet",
+              "evidenceStatus": "devnet_verified",
+              "evidence": "devnet-e2e",
               "supportsExecution": true,
-              "supportsProof": true,
+              "supportsProof": false,
               "supportsReceipt": true,
               "supportsReconciliation": true,
               "supportedAssets": [
                 "SOL"
               ],
-              "provider": "privatedao-kernel-policy"
+              "provider": "privatedao-record-anchor-service"
             },
             {
               "network": "ethereum-sepolia",
@@ -1288,16 +1288,16 @@ export const runtimeCatalog = {
               "chainId": null,
               "declared": true,
               "mode": "kernel-gateway",
-              "evidenceStatus": "testnet_ready",
-              "evidence": "kernel-policy-testnet",
-              "executable": false,
-              "supportsProof": true,
+              "evidenceStatus": "devnet_verified",
+              "evidence": "devnet-e2e",
+              "executable": true,
+              "supportsProof": false,
               "supportsReceipt": true,
               "supportsReconciliation": true,
               "supportedAssets": [
                 "SOL"
               ],
-              "provider": "privatedao-kernel-policy"
+              "provider": "privatedao-record-anchor-service"
             },
             {
               "network": "solana-mainnet-beta",

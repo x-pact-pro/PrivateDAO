@@ -159,6 +159,12 @@ const SOLANA_DEVNET_ORGANIZATIONAL_EVIDENCE = {
   timestamp: "2026-09-25T01:38:47.952Z",
 } as const;
 
+const SOLANA_DEVNET_RECORD_EVIDENCE = {
+  provider: "privatedao-record-anchor-service",
+  commit: "c796259a4",
+  timestamp: "2026-10-12",
+} as const;
+
 const TEMPO_TESTNET_EVIDENCE = {
   provider: "evm-tempo-testnet",
   verifier: "0xbf495e8147ab23bfa2024eae7c0d2f54af40279c",
@@ -498,6 +504,23 @@ function applyZcashTestnetEvidence(entry: NativeCapabilityEntry): NativeCapabili
 
 function applySolanaKernelPolicyReadiness(entry: NativeCapabilityEntry): NativeCapabilityEntry {
   if (entry.network !== "solana-devnet" || !["verification.blind.prove", "verification.record.create", "verification.record.verify"].includes(entry.capability)) return entry;
+  if (entry.product === "record-verification") {
+    return {
+      ...entry,
+      provider: SOLANA_DEVNET_RECORD_EVIDENCE.provider,
+      walletModel: "external-wallet",
+      supportsExecution: true,
+      supportsPrivateExecution: false,
+      supportsPrivateSettlement: false,
+      supportsProof: false,
+      supportsReceipt: true,
+      supportsReconciliation: true,
+      status: "devnet_verified",
+      lastVerifiedCommit: SOLANA_DEVNET_RECORD_EVIDENCE.commit,
+      lastVerifiedTimestamp: SOLANA_DEVNET_RECORD_EVIDENCE.timestamp,
+      evidence: "devnet-e2e",
+    };
+  }
   return {
     ...entry,
     provider: "privatedao-kernel-policy",
