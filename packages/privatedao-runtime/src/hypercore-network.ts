@@ -124,6 +124,7 @@ export class HyperCoreNetworkAdapter {
     if (typeof payload.hyperliquidChain !== "undefined" && payload.hyperliquidChain !== "Testnet") {
       throw new Error("HyperCore Testnet actions cannot target Mainnet.");
     }
+    validateNativeActionPayload(type, payload);
     return {
       network: this.network,
       endpoint: this.apiUrl.replace(/\/info$/i, "/exchange"),
@@ -133,4 +134,44 @@ export class HyperCoreNetworkAdapter {
       broadcastEnabled: false,
     };
   }
+}
+
+function validateNativeActionPayload(type: HyperCoreNativeActionType, payload: Record<string, unknown>): void {
+  if (["usdSend", "spotSend", "withdraw3"].includes(type)) {
+    assertAddress(payload.destination, `${type} destination`);
+    assertDecimal(payload.amount, `${type} amount`);
+    assertPositiveInteger(payload.time ?? Date.now(), `${type} time`);
+  }
+  if (type === "spotSend") assertNonEmptyString(payload.token, "spotSend token");
+  if (type === "usdClassTransfer") {
+    assertDecimal(payload.amount, "usdClassTransfer amount");
+    if (typeof payload.toPerp !== "boolean") throw new Error("usdClassTransfer toPerp must be boolean.");
+    assertPositiveInteger(payload.nonce, "usdClassTransfer nonce");
+  }
+  if (type === "tokenDelegate") {
+    assertAddress(payload.validator, "tokenDelegate validator");
+    assertPositiveInteger(payload.wei, "tokenDelegate wei");
+    if (typeof payload.isUndelegate !== "boolean") throw new Error("tokenDelegate isUndelegate must be boolean.");
+    assertPositiveInteger(payload.nonce, "tokenDelegate nonce");
+  }
+}
+
+function assertNonEmptyString(value: unknown, label: string): asserts value is string {
+  if (typeof value !== "string" || value.trim().length === 0) throw new Error(`${label} must be a non-empty string.`);
+}
+
+function assertAddress(value: unknown, label: string): asserts value is string {
+  assertNonEmptyString(value, label);
+  if (!/^0x[0-9a-f]{40}$/i.test(value)) throw new Error(`${label} must be a valid EVM address.`);
+}
+
+function assertDecimal(value: unknown, label: string): asserts value is string {
+  assertNonEmptyString(value, label);
+  if (!/^(?:0|[1-9]\d*)(?:\.\d+)?$/.test(value) || Number(value) <= 0) {
+    throw new Error(`${label} must be a positive decimal amount.`);
+  }
+}
+
+function assertPositiveInteger(value: unknown, label: string): asserts value is number {
+  if (typeof value !== "number" || !Number.isSafeInteger(value) || value <= 0) throw new Error(`${label} must be a positive safe integer.`);
 }

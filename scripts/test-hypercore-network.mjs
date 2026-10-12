@@ -31,6 +31,10 @@ assert.equal(prepared.broadcastEnabled, false);
 assert.throws(() => adapter.prepareNativeAction("usdSend", { type: "spotSend" }), /does not match/);
 assert.throws(() => adapter.prepareNativeAction("usdSend", { hyperliquidChain: "Mainnet" }), /cannot target Mainnet/);
 assert.throws(() => adapter.prepareNativeAction("usdSend", {}, 0), /positive safe integer/);
+assert.throws(() => adapter.prepareNativeAction("usdSend", { destination: "0x0000000000000000000000000000000000000001" }), /amount must be a non-empty string/);
+assert.throws(() => adapter.prepareNativeAction("spotSend", { destination: "0x0000000000000000000000000000000000000001", amount: "1", token: "" }), /token must be a non-empty string/);
+assert.throws(() => adapter.prepareNativeAction("usdClassTransfer", { amount: "1", toPerp: "true", nonce: 1 }), /toPerp must be boolean/);
+assert.throws(() => adapter.prepareNativeAction("tokenDelegate", { validator: "not-an-address", wei: 1, isUndelegate: false, nonce: 1 }), /validator must be a valid EVM address/);
 
 assert.throws(
   () => new HyperCoreNetworkAdapter({ apiUrl: "https://api.hyperliquid.xyz/info", fetchImpl }),
