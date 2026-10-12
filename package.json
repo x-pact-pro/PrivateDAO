@@ -136,6 +136,7 @@
     "status:zcash:testnet": "node scripts/check-zcash-testnet-sync.mjs",
     "wait:zcash:testnet-ready": "node scripts/wait-zcash-testnet-ready.mjs",
     "test:zcash:testnet:e2e": "node --import tsx scripts/run-zcash-testnet-e2e.mjs",
+    "test:zcash:products:e2e": "node --import tsx scripts/run-zcash-products-testnet-e2e.mjs",
     "compile:evm-verification": "bash scripts/compile-evm-verification.sh",
     "test:evm:phase2": "node --import tsx packages/evm-verification/scripts/run-e2e.mjs",
     "test:base:builder-code": "node scripts/test-base-builder-code.mjs",
