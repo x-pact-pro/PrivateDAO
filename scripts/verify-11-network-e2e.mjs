@@ -1,0 +1,53 @@
+import { buildNativeCapabilityRegistry } from "../packages/privatedao-runtime/src/native-capability-registry.ts";
+
+const networks = [
+  "solana-devnet",
+  "ethereum-sepolia",
+  "arbitrum-sepolia",
+  "bnb-testnet",
+  "base-sepolia",
+  "robinhood-testnet",
+  "tempo-testnet",
+  "zcash-testnet",
+  "stellar-testnet",
+  "hyperliquid-testnet",
+  "hypercore-testnet",
+];
+
+const productCapabilities = new Map();
+for (const entry of buildNativeCapabilityRegistry()) {
+  if (!entry.declared || entry.product === "agent") continue;
+  const key = `${entry.network}:${entry.product}`;
+  const current = productCapabilities.get(key) ?? { verified: true, entries: 0, evidence: new Set() };
+  current.entries += 1;
+  current.verified &&= (entry.status === "testnet_verified" || entry.status === "devnet_verified")
+    && (entry.evidence === "testnet-e2e" || entry.evidence === "devnet-e2e");
+  current.evidence.add(entry.evidence);
+  productCapabilities.set(key, current);
+}
+
+const rows = networks.map((network) => {
+  const products = [...new Set(
+    [...productCapabilities.keys()]
+      .filter((key) => key.startsWith(`${network}:`))
+      .map((key) => key.slice(network.length + 1)),
+  )];
+  const incomplete = products.filter((product) => !productCapabilities.get(`${network}:${product}`)?.verified);
+  return {
+    network,
+    declaredProducts: products.length,
+    completeProducts: products.length - incomplete.length,
+    incompleteProducts: incomplete,
+    status: incomplete.length === 0 ? "COMPLETE" : "INCOMPLETE",
+  };
+});
+
+const complete = rows.every((row) => row.status === "COMPLETE");
+console.log(JSON.stringify({
+  schema: "privatedao.11-network-e2e-gate.v1",
+  networks: rows,
+  complete,
+  rule: "Every declared product on every listed network requires a testnet/devnet E2E evidence status.",
+}, null, 2));
+
+if (!complete) process.exitCode = 1;

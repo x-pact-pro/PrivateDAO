@@ -72,6 +72,7 @@
     "test:kernel-gateway": "node scripts/test-kernel-gateway.mjs",
     "test:kernel-gateway:browser-readiness": "node --import tsx scripts/test-kernel-gateway-browser-readiness.mjs",
     "test:commercial-network-matrix": "node --import tsx scripts/test-commercial-network-matrix.mjs",
+    "verify:11-network-e2e": "node --import tsx scripts/verify-11-network-e2e.mjs",
     "test:runtime:hypercore": "node --import tsx scripts/test-hypercore-network.mjs",
     "test:kernel:solana-payroll": "node --import tsx scripts/test-solana-payroll-kernel.mjs",
     "test:zcash:foundation": "node --import tsx scripts/test-zcash-foundation.mjs",
