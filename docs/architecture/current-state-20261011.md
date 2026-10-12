@@ -8,9 +8,9 @@ and testnet evidence, not a production deployment or a Mainnet launch.
 ## Executive Summary
 
 PrivateDAO presents a commercial, workflow-first website for organizations
-inside and outside Web3. The live commercial surface and PDAO Worlds game are
-separate from this engineering work and were not changed or deployed by the
-current branch.
+inside and outside Web3. The former PDAO Worlds game surface is separate from
+the commercial product and was removed from the public web build and archived;
+it is not part of the active production website.
 
 The repository separates:
 
