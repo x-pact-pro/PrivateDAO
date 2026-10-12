@@ -563,6 +563,21 @@ function applySolanaKernelPolicyReadiness(entry: NativeCapabilityEntry): NativeC
 function applyFutureKernelPolicyReadiness(entry: NativeCapabilityEntry): NativeCapabilityEntry {
   if (!["bnb-testnet", "robinhood-testnet", "hyperliquid-testnet", "hypercore-testnet"].includes(entry.network)) return entry;
   if (!["verification.blind.prove", "verification.record.create", "verification.record.verify", "payroll.calculate", "payroll.approve", "treasury.policy.check", "governance.proposal.execute", "auction.bid.commit", "auction.settle"].includes(entry.capability)) return entry;
+  if (entry.network === "hypercore-testnet") {
+    return {
+      ...entry,
+      provider: "privatedao-hypercore-native",
+      walletModel: "external-wallet",
+      supportsExecution: false,
+      supportsPrivateExecution: false,
+      supportsPrivateSettlement: false,
+      supportsProof: false,
+      supportsReceipt: false,
+      supportsReconciliation: false,
+      status: "testnet_ready",
+      evidence: "runtime-only",
+    };
+  }
   return {
     ...entry,
     provider: "privatedao-kernel-policy",

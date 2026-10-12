@@ -75,6 +75,9 @@ assert.equal(entries.find((entry) => entry.network === "hyperliquid-testnet" && 
 assert.equal(entries.find((entry) => entry.network === "hyperliquid-testnet" && entry.product === "record-verification")?.status, "testnet_verified", "HyperEVM Record Verification must reflect its verified E2E artifact");
 assert.equal(entries.find((entry) => entry.network === "hypercore-testnet" && entry.product === "record-verification")?.networkFamily, "exchange", "HyperCore must use the native exchange family");
 assert.equal(entries.find((entry) => entry.network === "hypercore-testnet" && entry.product === "record-verification")?.status, "testnet_ready", "HyperCore policy paths must be ready without claiming native execution");
+const hypercoreRows = entries.filter((entry) => entry.network === "hypercore-testnet" && entry.declared && entry.product !== "agent");
+assert.equal(hypercoreRows.every((entry) => entry.provider === "privatedao-hypercore-native"), true, "HyperCore rows must use the native provider boundary");
+assert.equal(hypercoreRows.every((entry) => entry.supportsExecution === false && entry.supportsReceipt === false && entry.supportsReconciliation === false), true, "HyperCore readiness must not imply native product execution or receipts");
 for (const network of ["bnb-testnet", "robinhood-testnet", "hyperliquid-testnet", "hypercore-testnet", "stellar-testnet"]) {
   const policyRows = entries.filter((entry) => entry.network === network && entry.declared && entry.product !== "agent");
   const expectedRows = ["bnb-testnet", "robinhood-testnet", "stellar-testnet"].includes(network) ? 10 : 9;
