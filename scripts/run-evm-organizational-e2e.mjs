@@ -105,6 +105,8 @@ const treasuryAbi = JSON.parse(await readFile(path.join(PACKAGE, `artifacts/${te
 const treasuryBytecode = `0x${(await readFile(path.join(PACKAGE, `artifacts/${tempoTokenMode ? "PrivateDaoTokenTreasury" : "PrivateDaoTreasury"}.bin`), "utf8")).trim()}`;
 const payrollAbi = JSON.parse(await readFile(path.join(PACKAGE, "artifacts/PrivateDaoPayroll.abi"), "utf8"));
 const payrollBytecode = `0x${(await readFile(path.join(PACKAGE, "artifacts/PrivateDaoPayroll.bin"), "utf8")).trim()}`;
+const tokenPayrollAbi = JSON.parse(await readFile(path.join(PACKAGE, "artifacts/PrivateDaoTokenPayroll.abi"), "utf8"));
+const tokenPayrollBytecode = `0x${(await readFile(path.join(PACKAGE, "artifacts/PrivateDaoTokenPayroll.bin"), "utf8")).trim()}`;
 const governanceAbi = JSON.parse(await readFile(path.join(PACKAGE, "artifacts/PrivateDaoGovernance.abi"), "utf8"));
 const governanceBytecode = `0x${(await readFile(path.join(PACKAGE, "artifacts/PrivateDaoGovernance.bin"), "utf8")).trim()}`;
 const auctionAbi = JSON.parse(await readFile(path.join(PACKAGE, `artifacts/${tempoTokenMode ? "PrivateDaoTokenSealedAuction" : "PrivateDaoSealedAuction"}.abi`), "utf8"));
@@ -225,24 +227,26 @@ for (let attempt = 0; attempt < 90; attempt += 1) {
 assert.equal(Number(payment[3]), 3, "treasury payment was not executed after receipt confirmation");
 deployments.evidence.treasury = { checkerFundingHash, treasuryApprovalHash, treasuryFundingHash, requestedHash, approvedHash, executedHash, paymentId, status: "executed" };
 
-// Payroll keeps employee and policy details off-chain. The chain binds only a
-// batch commitment to the approved payout and its final settlement receipt.
-// Tempo uses a tokenized fee/payment model and therefore keeps this native
-// value payroll lane disabled until a token-payroll contract is evidenced.
-if (!tempoTokenMode) {
-  const payroll = await deploy(deployerWallet, payrollAbi, payrollBytecode, [checker.address]);
+// Payroll keeps employee and policy details off-chain. Tempo uses the
+// token-settled implementation; other EVM networks use native value.
+{
+  const payroll = tempoTokenMode
+    ? await deploy(deployerWallet, tokenPayrollAbi, tokenPayrollBytecode, [checker.address, TEMPO_FEE_TOKEN])
+    : await deploy(deployerWallet, payrollAbi, payrollBytecode, [checker.address]);
   deployments.contracts.payroll = payroll;
   const payrollBatchId = keccak256(`0x${Buffer.from(`payroll-batch:${runId}`).toString("hex")}`);
   const payrollBatchCommitment = keccak256(`0x${Buffer.from(`payroll-commitment:${runId}`).toString("hex")}`);
-  const payrollAmount = parseEther("0.0001");
-  const payrollFundingHash = await deployerTransferWallet.sendTransaction({ to: payroll.address, value: payrollAmount, gas: 100_000n, nonce: await takeNonce(deployerTransferWallet.account), ...(await feeOverrides()) });
-  await tx(payrollFundingHash);
-  const payrollCreateHash = await write(deployerWallet, payroll.address, payrollAbi, "createPayroll", [payrollBatchId, payrollBatchCommitment, recipient, payrollAmount]);
-  const payrollApproveHash = await write(checkerWallet, payroll.address, payrollAbi, "approvePayroll", [payrollBatchId]);
-  const payrollSettleHash = await write(deployerWallet, payroll.address, payrollAbi, "settlePayroll", [payrollBatchId]);
+  const payrollAmount = tempoTokenMode ? parseUnits("0.1", TEMPO_TOKEN_DECIMALS) : parseEther("0.0001");
+  const payrollFundingHash = tempoTokenMode
+    ? await write(deployerWallet, TEMPO_FEE_TOKEN, erc20Abi, "transfer", [payroll.address, payrollAmount])
+    : await deployerTransferWallet.sendTransaction({ to: payroll.address, value: payrollAmount, gas: 100_000n, nonce: await takeNonce(deployerTransferWallet.account), ...(await feeOverrides()) });
+  if (!tempoTokenMode) await tx(payrollFundingHash);
+  const payrollCreateHash = await write(deployerWallet, payroll.address, tempoTokenMode ? tokenPayrollAbi : payrollAbi, "createPayroll", [payrollBatchId, payrollBatchCommitment, recipient, payrollAmount]);
+  const payrollApproveHash = await write(checkerWallet, payroll.address, tempoTokenMode ? tokenPayrollAbi : payrollAbi, "approvePayroll", [payrollBatchId]);
+  const payrollSettleHash = await write(deployerWallet, payroll.address, tempoTokenMode ? tokenPayrollAbi : payrollAbi, "settlePayroll", [payrollBatchId]);
   let payrollBatch;
   for (let attempt = 0; attempt < 20; attempt += 1) {
-    payrollBatch = await publicClient.readContract({ address: payroll.address, abi: payrollAbi, functionName: "batches", args: [payrollBatchId] });
+    payrollBatch = await publicClient.readContract({ address: payroll.address, abi: tempoTokenMode ? tokenPayrollAbi : payrollAbi, functionName: "batches", args: [payrollBatchId] });
     if (Number(payrollBatch[3]) === 3) break;
     await sleep(1_000);
   }

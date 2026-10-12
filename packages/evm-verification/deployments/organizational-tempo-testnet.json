@@ -3,52 +3,69 @@
   "chainId": 42431,
   "environment": "testnet",
   "deployer": "0x1c3D6757651B617D7e5c08aE6F7a7F65eEafD75F",
-  "checker": "0x3e4F3B9DECd70C2F56335c585cdD9a762daDFFBd",
-  "createdAt": "2026-09-18T16:38:24.416Z",
+  "checker": "0xc7E88caD06Ef8Ec5cBB38184E4825562105ae45c",
+  "attribution": {
+    "dataSuffixConfigured": false
+  },
+  "createdAt": "2026-10-12T10:26:18.617Z",
   "contracts": {
     "treasury": {
-      "address": "0x8d47d35b2a9345265e66695a3cc50dd8decac897",
-      "hash": "0xd5bfdb8330ce147b40b5cbdc791f6a36e64830abd0aa9c0a5a663fb7a3c34520",
-      "blockNumber": "35862531"
+      "address": "0x31ac2c4bb70fd0186d119ad8ec41e43ee2498747",
+      "hash": "0x32f5c6e319130f71e6b9c965bc0a8c9aeaf800d99e65f71ff456ddd78c9822f7",
+      "blockNumber": "39258946"
+    },
+    "payroll": {
+      "address": "0xa3496dc74db0e5b99f42161a31b700ab4320592d",
+      "hash": "0x1662aaae8a287335514ee86feec629f24c826498e178e3c8edfc114d131a23d6",
+      "blockNumber": "39258963"
     },
     "governance": {
-      "address": "0x985b0e7435749a7773dc731742e438eaa042f1a9",
-      "hash": "0xac97cc8aabaa06c480bb4c0b7fdf7b717a686947736b277324fab17ac31ee62c",
-      "blockNumber": "35862561"
+      "address": "0x199b059a66a5e81866ba029accf1312e88500cd8",
+      "hash": "0x38a04caba125472c816806c5e25d302909b176a2da236d59894e73e6b5c8a6e0",
+      "blockNumber": "39258974"
     },
     "auction": {
-      "address": "0x3f3bf70a036e115531239e5c9a010fa0da86432d",
-      "hash": "0x04f186744cf5eff2b445165ff1a400c1788cd09650368f5d8fbfe9ec0730bd58",
-      "blockNumber": "35863125"
+      "address": "0xcd0a9c8d713fc0e75bdfc17e6ad415eb3dc40207",
+      "hash": "0x52071e654e9d0d277094c0af5acad02e502bddd14bcf6f59c50bb334da64387e",
+      "blockNumber": "39259006"
     }
   },
   "evidence": {
     "treasury": {
-      "checkerFundingHash": "0x6af72bffb55415d53ca30e86bbc802dd9520859cd30c304da4abfd7a7384151c",
-      "treasuryApprovalHash": "0x00bca462503f9155cc752bc46e4b52928e089ce53d497b0537d458ba1704b11b",
-      "treasuryFundingHash": "0xd5ed5a49df11fe890f7a874d6cd2b06c0b77cdaeadcfd1f4249d9d1c843eaa40",
-      "requestedHash": "0x10b4a1112687eed52bb32c6778824dd394c7f238b33815108156b53d736c171c",
-      "approvedHash": "0x29ffeb7c414eb6a72a5d1fcb5bab007114368a8f2c2745198eee65e9427a4eb0",
-      "executedHash": "0x9d9b8aff3d360e1811a79c397c3c47c23c19a5c0d78f71d2b2d2afe3374e957b",
-      "paymentId": "0xc641e4a09d8bf1081adeb74101bfbd34345978015b2754009a925b6f03b84706",
+      "checkerFundingHash": "0x087f73602932a3e6df45351aa134931b898903d7861c2e08c61bee3755eebde6",
+      "treasuryApprovalHash": "0xc0a81e99b5a4b7956491842bc634239b33d78ee2e42f70bc2b5c53f0b89de330",
+      "treasuryFundingHash": "0x75853fdd4e962907b8f888e645d21102b425f779cd801b9b73159b4635310e7c",
+      "requestedHash": "0xfb14aa515322e6e8f15963704f2193fee9eb5d576019d6ef4ab90c69db07c4a6",
+      "approvedHash": "0xef88f422bff7d31b51538569930a7c0366de6a785173fd94b070b568b3fea3cd",
+      "executedHash": "0xacf375084781e9eaba11e713195d1fcdaef2dbd3461bc79a0552911732730a6a",
+      "paymentId": "0x6c6ac07a525ed5b6e3b9861858797f6265696209726bf8ec5a0d9f5e1fbefde9",
       "status": "executed"
     },
+    "payroll": {
+      "payrollFundingHash": "0x6233de9d9a99da7d393a0610335b855095c5bde1792fdb88c22bd2ef9c13655d",
+      "payrollCreateHash": "0xde8b84c64479da6b47dc5b351cd53ba1b6f7ff1fc4752bd2c457c47acf573343",
+      "payrollApproveHash": "0xee06519248baaab99f9e84950effc280f2a051de3336a98383f42e17233908c9",
+      "payrollSettleHash": "0x227d1a4437dfbee4c832e0e45d6b0a4ab81160077df112fb556190ad70cc1373",
+      "payrollBatchId": "0xd84a8c5df791d07e964f9ac7f5ce876b044c577b8381bbc73fa04d4f9bbffe8c",
+      "payrollBatchCommitment": "0x8c0276cdf02893961ea53b22618b4b4bba97bd8c4b13db349e35a8e8fce86203",
+      "status": "settled"
+    },
     "governance": {
-      "proposalHash": "0xd9654a2f6a665e82b799bd5f5aeadc5f9bbb1754daef911f93c501225fbecf30",
-      "voteCommitHash": "0xcd0491a08a60d9bff63cf286e1dc7383bd1277a4a6b64b7ed0e8478c0bc5a012",
-      "voteRevealHash": "0x55db0b4939003ef21f8b6da7d2f051bf0c28741f5ac0dfcfb7d9b88427d49ae9",
-      "proposalFinalizeHash": "0xfc40e667419030c67894628ed60f8c07be33c30068f971aa4b9a8f1b1654cdd4",
-      "proposalId": "0x21803fcfa218e9a71e5f565e40885e85618c69c8c1283b6746e15553138c09d4",
+      "proposalHash": "0x2595723373930f2b4cf1bc59ed5e62eb6ba192abcb1f595829a3392393365c7d",
+      "voteCommitHash": "0xce61afdf3e67ea3eafcb95ac0b1d1b2509adb817a6e446267381f975c120a927",
+      "voteRevealHash": "0xeca490132aba6a51fb3966657e83b9acdb5e9c2928d32a333b327a999a7b6b09",
+      "proposalFinalizeHash": "0x7ea3b1910e2b142bcad68fb3f13be749f7ccc676572aa68d9ab3a25167eb462f",
+      "proposalId": "0x22e35975ed7150364555ff5bdd516475b926563eebbf2196d885db64d773a604",
       "status": "passed"
     },
     "auction": {
-      "bidApprovalHash": "0x6943398141700f7d3b36bfbaa9688fc78c7e8b5bfe92d477eba811d582c94f4a",
-      "auctionCreateHash": "0xb4be901491d17306fcc1c26c6c1c440c56ad7a7afe5009d6405cfaf505c7a506",
-      "bidCommitHash": "0x37979a25a13ff475027e5f735d9d4e906dd576a97c63cc6be2018e78f9794f59",
-      "bidRevealHash": "0xb353b5a50ec58227e9d921a5bd9bbda2b59307242f6ab97f8768c27a3670f8fd",
-      "auctionFinalizeHash": "0x260a45dc495039e0e33e280ffbafe03bb7550c1c8e3f88415f35006b3798869c",
-      "auctionSettleHash": "0x811e0ed7d8dfa3aca2b57951f3aea9feef96a6c748061eb38441535fb0e41067",
-      "auctionId": "0x981ee5df0603c46a065abbe80f66342f786aacc6966d78b77dace06924231125",
+      "bidApprovalHash": "0xbd14684d3a5f9169a6c93c1f78bfb6a2c39bbd49a074ded1ac16235f6be9ff2c",
+      "auctionCreateHash": "0x331b0e3b895893e23e7ddbce510d2ce308025a0efd610b391e77823cbb54671a",
+      "bidCommitHash": "0x7fd3d7ee8404002f851a8d3d086b1182290fbef2e984d3b77d04facb8e4b06c4",
+      "bidRevealHash": "0x4f769c373f0d5a9dd7c412dab4152a7e38d21c46b29d551a0fee360cf7e7c22e",
+      "auctionFinalizeHash": "0xbf49ae922c48d8640f077f8130c9f127d961ffca3a2b46968ea8262164681634",
+      "auctionSettleHash": "0x557584ef4594ba5f67bff5103f9210316eeec7e8b8d58ae511075bf490141f14",
+      "auctionId": "0x80a81ef588a4e6e11103058b048daa793f6a3ea2cacac05ce59e6e612904af71",
       "status": "settled"
     }
   }
