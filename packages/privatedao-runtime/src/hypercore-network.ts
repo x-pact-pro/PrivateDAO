@@ -121,10 +121,13 @@ export class HyperCoreNetworkAdapter {
     if (!Number.isSafeInteger(nonce) || nonce <= 0) throw new Error("HyperCore action nonce must be a positive safe integer.");
     if (!payload || typeof payload !== "object" || Array.isArray(payload)) throw new Error("HyperCore action payload must be an object.");
     if (typeof payload.type !== "undefined" && payload.type !== type) throw new Error("HyperCore action type does not match the prepared action.");
+    if (typeof payload.hyperliquidChain !== "undefined" && payload.hyperliquidChain !== "Testnet") {
+      throw new Error("HyperCore Testnet actions cannot target Mainnet.");
+    }
     return {
       network: this.network,
       endpoint: this.apiUrl.replace(/\/info$/i, "/exchange"),
-      action: { ...payload, type },
+      action: { ...payload, type, hyperliquidChain: payload.hyperliquidChain ?? "Testnet" },
       nonce,
       requiresSignature: true,
       broadcastEnabled: false,

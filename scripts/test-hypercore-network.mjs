@@ -25,9 +25,11 @@ const prepared = adapter.prepareNativeAction("usdSend", {
 assert.equal(prepared.network, "hypercore-testnet");
 assert.equal(prepared.endpoint, "https://api.hyperliquid-testnet.xyz/exchange");
 assert.equal(prepared.action.type, "usdSend");
+assert.equal(prepared.action.hyperliquidChain, "Testnet");
 assert.equal(prepared.requiresSignature, true);
 assert.equal(prepared.broadcastEnabled, false);
 assert.throws(() => adapter.prepareNativeAction("usdSend", { type: "spotSend" }), /does not match/);
+assert.throws(() => adapter.prepareNativeAction("usdSend", { hyperliquidChain: "Mainnet" }), /cannot target Mainnet/);
 assert.throws(() => adapter.prepareNativeAction("usdSend", {}, 0), /positive safe integer/);
 
 assert.throws(
