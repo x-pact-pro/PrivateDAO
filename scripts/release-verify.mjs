@@ -19,6 +19,7 @@ const suites = [
   ["bnb-evidence", ["npm", "run", "verify:bnb:evidence"]],
   ["bnb-organizational-evidence", ["npm", "run", "verify:bnb:organizational-evidence"]],
   ["tracked-secrets", ["npm", "run", "verify:tracked-secrets"]],
+  ["security-remediation", ["npm", "run", "verify:security-remediation"]],
   ["agent-mcp", ["npm", "run", "test:agent-mcp"]],
   ["social-previews", ["npm", "run", "verify:social-previews"]],
   ["commercial-claims", ["node", "scripts/test-commercial-claims.mjs"]],
