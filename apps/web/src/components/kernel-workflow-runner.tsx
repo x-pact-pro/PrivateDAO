@@ -7,6 +7,7 @@ import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { PublicKey } from "@solana/web3.js";
 import { auctionWriteAbi, getEvmProductContracts, governanceWriteAbi } from "@/lib/evm-contract-config";
 import { buildExecuteProposalTransaction, PRIVATE_DAO_PROGRAM_ID } from "@/lib/dao-bootstrap";
+import { sendBrowserTransaction } from "@/lib/network-adapters/solana-browser";
 
 type KernelWorkflowRunnerProps = {
   product: string;
@@ -252,7 +253,7 @@ export function KernelWorkflowRunner({ product, capability, network, networkLabe
             proposalAddress: new PublicKey(payload.proposalAddress),
             treasuryRecipient: new PublicKey(typeof payload.treasuryRecipient === "string" ? payload.treasuryRecipient : payload.account),
           });
-          const signature = await sendTransaction(built.transaction, connection, { skipPreflight: false, preflightCommitment: "confirmed" });
+          const signature = await sendBrowserTransaction(connection, built.transaction, sendTransaction, { skipPreflight: false, preflightCommitment: "confirmed" });
           signedPayload = { kind: "browser-solana-transaction", signature };
         } else {
           if (!provider || !payload || typeof payload.address !== "string" || typeof payload.account !== "string" || typeof payload.functionName !== "string" || !Array.isArray(payload.abi) || !Array.isArray(payload.args)) {
