@@ -2,6 +2,16 @@ name: Grant evidence index
 
 on:
   workflow_dispatch:
+  pull_request:
+    paths:
+      - "docs/evidence/**"
+      - "docs/generated/native-capability-matrix-20260911.json"
+      - "packages/evm-verification/deployments/**"
+      - "scripts/build-grant-evidence-index.mjs"
+      - "scripts/verify-grant-evidence-index.mjs"
+      - "package.json"
+      - "package-lock.json"
+      - ".github/workflows/grant-evidence-index.yml"
   push:
     branches: [main, canonical-live]
     paths:
@@ -16,6 +26,10 @@ on:
 
 permissions:
   contents: read
+
+concurrency:
+  group: grant-evidence-index-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   evidence-index:
