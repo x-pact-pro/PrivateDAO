@@ -190,6 +190,9 @@ or mainnet readiness unless the referenced document says so explicitly.
 - [Strategy operations](docs/strategy-operations.md)
 - [Reviewer fast path](docs/reviewer-fast-path.md)
 - [Reviewer surface map](docs/reviewer-surface-map.md)
+- [Grant evidence index](docs/generated/grant-evidence-index.md)
+- [Current architecture review](docs/operations/current-architecture-review-2026-10-13.md)
+- [Production drift review](docs/operations/production-drift-2026-10-13.md)
 - [Cryptographic integrity](docs/cryptographic-integrity.md)
 - [Cryptographic manifest](docs/cryptographic-manifest.generated.json)
 
@@ -221,6 +224,14 @@ execution belongs to the Kernel and its family/network adapters. Ethereum,
 Base, Arbitrum, Robinhood, Zcash, Hyperliquid, and other
 network entries must be read through the capability matrix and their linked
 evidence rather than treated as one universal support claim.
+
+For a grant or technical review, start with the [Grant evidence index](docs/generated/grant-evidence-index.md).
+It covers the six commercial products across the configured network lanes and
+labels each row `verified`, `ready`, or `missing`. Only `verified` rows contain
+an independently checkable transaction hash or proof identifier; `ready` and
+`missing` rows must not be interpreted as completed E2E execution. Agent
+Exchange is intentionally excluded because it is a separate marketplace and
+MCP/A2A deployment boundary.
 
 ### Base Builder Codes
 
