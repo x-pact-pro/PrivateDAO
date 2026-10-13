@@ -9,6 +9,18 @@ fetch_json() {
   curl -fsS --max-time "${PRIVATE_DAO_REMOTE_VERIFY_TIMEOUT_SECONDS:-20}" "${BASE_URL}${path}"
 }
 
+# Check the highest-risk boundary before probing optional upstream services.
+# This keeps deployment failures attributable when an unrelated provider is down.
+gateway_auth_status="$(curl -sS --max-time "${PRIVATE_DAO_REMOTE_VERIFY_TIMEOUT_SECONDS:-20}" \
+  -o /dev/null -w '%{http_code}' \
+  -X POST "${BASE_URL}/api/v1/executions/prepare" \
+  -H 'content-type: application/json' \
+  --data '{}')"
+if [[ "$gateway_auth_status" != "401" ]]; then
+  echo "Remote execution boundary is not fail-closed without a gateway token: HTTP $gateway_auth_status" >&2
+  exit 1
+fi
+
 health_json="$(fetch_json /healthz)"
 config_json="$(fetch_json /api/v1/config)"
 metrics_json="$(fetch_json /api/v1/metrics)"
@@ -21,14 +33,6 @@ quicknode_json="$(fetch_json /api/v1/quicknode/stream/stats)"
 readiness_json="$(fetch_json /api/v1/readiness)"
 cryptographic_json="$(fetch_json /api/v1/cryptographic-readiness)"
 privacy_matrix_json="$(fetch_json /api/v1/privacy-execution-matrix)"
-
-# The public edge may expose read-only health and catalog routes, but execution
-# must never be reachable through the edge without the host-injected gateway token.
-gateway_auth_status="$(curl -sS --max-time "${PRIVATE_DAO_REMOTE_VERIFY_TIMEOUT_SECONDS:-20}" \
-  -o /dev/null -w '%{http_code}' \
-  -X POST "${BASE_URL}/api/v1/executions/prepare" \
-  -H 'content-type: application/json' \
-  --data '{}')"
 
 python3 - <<'PY' "$EXPECTED_PROGRAM_ID" "$health_json" "$config_json" "$metrics_json" "$qvac_json" "$umbra_json" "$freshness_json" "$visitors_json" "$chain_json" "$quicknode_json" "$readiness_json" "$cryptographic_json" "$privacy_matrix_json" "$gateway_auth_status"
 import json, sys
