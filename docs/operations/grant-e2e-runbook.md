@@ -24,6 +24,11 @@ Inject secrets through the approved CI/AWS secret store only. Never put them in
 The commands below must be run in an isolated testnet job with broadcast
 approval and a funded testnet signer. They are not local dry-run commands.
 
+For the local secure-vault layout, run a command through
+`scripts/run-with-secure-testnet-env.sh`. It requires both secret files to be
+owned by the current user with mode `0600`, loads them only into the child
+process, and rejects unsupported networks. It never prints the environment.
+
 ## Missing execution lanes
 
 ### Solana Devnet
@@ -38,6 +43,14 @@ Set:
 
 ```bash
 PDAO_EVM_NETWORK=hyperliquid-testnet
+```
+
+The secure wrapper can set the network in the shell before invocation:
+
+```bash
+PDAO_EVM_NETWORK=hyperliquid-testnet \
+  scripts/run-with-secure-testnet-env.sh \
+  node scripts/run-evm-organizational-e2e.mjs
 ```
 
 Run the organizational E2E runner. It must produce a fresh
