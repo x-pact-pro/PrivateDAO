@@ -59,6 +59,20 @@ for (const network of ["ethereum-sepolia", "arbitrum-sepolia", "bnb-testnet", "b
   }
 }
 
+// Phase-2 artifacts carry the real record/blind receipts for EVM lanes that
+// are separate from the organizational workflow artifact.
+for (const file of fs.readdirSync(path.join(root, "packages/evm-verification/deployments"))) {
+  if (!file.startsWith("phase-2-e2e-") || !file.endsWith(".json")) continue;
+  const artifact = readJson(`packages/evm-verification/deployments/${file}`);
+  for (const lane of artifact?.networks ?? []) {
+    if (!networks.includes(lane.network)) continue;
+    for (const [product, key] of [["record-verification", "record"], ["blind-verification", "blind"]]) {
+      const receipt = lane[key];
+      addEvidence(product, lane.network, `packages/evm-verification/deployments/${file}`, [receipt?.txHash], artifact.generatedAt);
+    }
+  }
+}
+
 const stellar = readJson("docs/evidence/stellar-testnet-product-e2e.json");
 for (const product of products) {
   const rows = (stellar?.results ?? []).filter((row) => row.product === product && row.state === "confirmed");

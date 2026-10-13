@@ -1,6 +1,6 @@
 {
   "schema": "privatedao.grant-evidence-index.v1",
-  "generatedAt": "2026-10-13T15:30:40.225Z",
+  "generatedAt": "2026-10-13T15:31:01.386Z",
   "purpose": "Evidence-first reviewer index for six commercial products across the eleven configured testnet lanes.",
   "products": [
     "blind-verification",
@@ -133,32 +133,42 @@
     {
       "product": "blind-verification",
       "network": "ethereum-sepolia",
-      "verification": "missing",
+      "verification": "verified",
       "registryStatus": "testnet_verified",
       "testRunAt": "2026-09-16T21:53:12.853Z",
-      "transactionHashes": [],
+      "transactionHashes": [
+        "0xb70dd8367864a028539c410b9c67f9137c1cf736734f0dec09efd2017a030780"
+      ],
       "proofs": [],
-      "evidencePaths": [],
+      "evidencePaths": [
+        "packages/evm-verification/deployments/phase-2-e2e-ethereum-sepolia-tempo-testnet.json",
+        "packages/evm-verification/deployments/phase-2-e2e-ethereum-sepolia.json"
+      ],
       "gitHubActionsRun": {
         "status": "not_recorded",
         "url": null
       },
-      "note": "No product-specific evidence artifact found."
+      "note": "Evidence artifact contains a transaction or proof identifier."
     },
     {
       "product": "record-verification",
       "network": "ethereum-sepolia",
-      "verification": "missing",
+      "verification": "verified",
       "registryStatus": "testnet_verified",
       "testRunAt": "2026-09-16T21:53:12.853Z",
-      "transactionHashes": [],
+      "transactionHashes": [
+        "0xb990c64d3206e0fe6d6ab19683e683130c516b1d7c1456ffa289c85bd6d6a9ad"
+      ],
       "proofs": [],
-      "evidencePaths": [],
+      "evidencePaths": [
+        "packages/evm-verification/deployments/phase-2-e2e-ethereum-sepolia-tempo-testnet.json",
+        "packages/evm-verification/deployments/phase-2-e2e-ethereum-sepolia.json"
+      ],
       "gitHubActionsRun": {
         "status": "not_recorded",
         "url": null
       },
-      "note": "No product-specific evidence artifact found."
+      "note": "Evidence artifact contains a transaction or proof identifier."
     },
     {
       "product": "payroll",
@@ -253,32 +263,40 @@
     {
       "product": "blind-verification",
       "network": "arbitrum-sepolia",
-      "verification": "missing",
+      "verification": "verified",
       "registryStatus": "testnet_verified",
-      "testRunAt": "2026-09-17T07:28:40.938Z",
-      "transactionHashes": [],
+      "testRunAt": "2026-10-11T12:08:28.987Z",
+      "transactionHashes": [
+        "0xabd4dc1f631d6de64e7e7d9167219743ab348859517a91fc58f4e866de66c799"
+      ],
       "proofs": [],
-      "evidencePaths": [],
+      "evidencePaths": [
+        "packages/evm-verification/deployments/phase-2-e2e-arbitrum-sepolia.json"
+      ],
       "gitHubActionsRun": {
         "status": "not_recorded",
         "url": null
       },
-      "note": "No product-specific evidence artifact found."
+      "note": "Evidence artifact contains a transaction or proof identifier."
     },
     {
       "product": "record-verification",
       "network": "arbitrum-sepolia",
-      "verification": "missing",
+      "verification": "verified",
       "registryStatus": "testnet_verified",
-      "testRunAt": "2026-09-17T07:28:40.938Z",
-      "transactionHashes": [],
+      "testRunAt": "2026-10-11T12:08:28.987Z",
+      "transactionHashes": [
+        "0x44fe71b688b29d554c95613590264df1b2c2f6f1af4cab8c9f20737bd7a396fe"
+      ],
       "proofs": [],
-      "evidencePaths": [],
+      "evidencePaths": [
+        "packages/evm-verification/deployments/phase-2-e2e-arbitrum-sepolia.json"
+      ],
       "gitHubActionsRun": {
         "status": "not_recorded",
         "url": null
       },
-      "note": "No product-specific evidence artifact found."
+      "note": "Evidence artifact contains a transaction or proof identifier."
     },
     {
       "product": "payroll",
@@ -373,32 +391,40 @@
     {
       "product": "blind-verification",
       "network": "bnb-testnet",
-      "verification": "missing",
+      "verification": "verified",
       "registryStatus": "testnet_verified",
       "testRunAt": "2026-10-11T15:16:22.645Z",
-      "transactionHashes": [],
+      "transactionHashes": [
+        "0x1c93bf12e64c6721972ddfcbe282fbad753e7213e04114a4d2786e43c859914b"
+      ],
       "proofs": [],
-      "evidencePaths": [],
+      "evidencePaths": [
+        "packages/evm-verification/deployments/phase-2-e2e-bnb-testnet.json"
+      ],
       "gitHubActionsRun": {
         "status": "not_recorded",
         "url": null
       },
-      "note": "No product-specific evidence artifact found."
+      "note": "Evidence artifact contains a transaction or proof identifier."
     },
     {
       "product": "record-verification",
       "network": "bnb-testnet",
-      "verification": "missing",
+      "verification": "verified",
       "registryStatus": "testnet_verified",
       "testRunAt": "2026-10-11T15:16:22.645Z",
-      "transactionHashes": [],
+      "transactionHashes": [
+        "0x14d077e2ac39c593e044b1ec274a0e56ea429fd07781463a1a7d04db1205c7c1"
+      ],
       "proofs": [],
-      "evidencePaths": [],
+      "evidencePaths": [
+        "packages/evm-verification/deployments/phase-2-e2e-bnb-testnet.json"
+      ],
       "gitHubActionsRun": {
         "status": "not_recorded",
         "url": null
       },
-      "note": "No product-specific evidence artifact found."
+      "note": "Evidence artifact contains a transaction or proof identifier."
     },
     {
       "product": "payroll",
@@ -493,32 +519,40 @@
     {
       "product": "blind-verification",
       "network": "base-sepolia",
-      "verification": "missing",
+      "verification": "verified",
       "registryStatus": "testnet_verified",
-      "testRunAt": "2026-09-17T00:39:48.896Z",
-      "transactionHashes": [],
+      "testRunAt": "2026-10-11T12:18:57.009Z",
+      "transactionHashes": [
+        "0x5cfa3c8a90b5c6d48561191e26aaf54fc1fd8451909a6c565e79ba0b3dae2ef5"
+      ],
       "proofs": [],
-      "evidencePaths": [],
+      "evidencePaths": [
+        "packages/evm-verification/deployments/phase-2-e2e-base-sepolia.json"
+      ],
       "gitHubActionsRun": {
         "status": "not_recorded",
         "url": null
       },
-      "note": "No product-specific evidence artifact found."
+      "note": "Evidence artifact contains a transaction or proof identifier."
     },
     {
       "product": "record-verification",
       "network": "base-sepolia",
-      "verification": "missing",
+      "verification": "verified",
       "registryStatus": "testnet_verified",
-      "testRunAt": "2026-09-17T00:39:48.896Z",
-      "transactionHashes": [],
+      "testRunAt": "2026-10-11T12:18:57.009Z",
+      "transactionHashes": [
+        "0xbf20fd421d7394409cf9cae9a117298a9f1ae0dcc61c2295f20799f9f39e475a"
+      ],
       "proofs": [],
-      "evidencePaths": [],
+      "evidencePaths": [
+        "packages/evm-verification/deployments/phase-2-e2e-base-sepolia.json"
+      ],
       "gitHubActionsRun": {
         "status": "not_recorded",
         "url": null
       },
-      "note": "No product-specific evidence artifact found."
+      "note": "Evidence artifact contains a transaction or proof identifier."
     },
     {
       "product": "payroll",
@@ -613,32 +647,40 @@
     {
       "product": "blind-verification",
       "network": "robinhood-testnet",
-      "verification": "missing",
+      "verification": "verified",
       "registryStatus": "testnet_verified",
       "testRunAt": "2026-10-11T12:13:57.179Z",
-      "transactionHashes": [],
+      "transactionHashes": [
+        "0x9a295e841804c72c47d56a3da54bd3d3ff425c1249626d24f60d59cf1ab5479a"
+      ],
       "proofs": [],
-      "evidencePaths": [],
+      "evidencePaths": [
+        "packages/evm-verification/deployments/phase-2-e2e-robinhood-testnet.json"
+      ],
       "gitHubActionsRun": {
         "status": "not_recorded",
         "url": null
       },
-      "note": "No product-specific evidence artifact found."
+      "note": "Evidence artifact contains a transaction or proof identifier."
     },
     {
       "product": "record-verification",
       "network": "robinhood-testnet",
-      "verification": "missing",
+      "verification": "verified",
       "registryStatus": "testnet_verified",
       "testRunAt": "2026-10-11T12:13:57.179Z",
-      "transactionHashes": [],
+      "transactionHashes": [
+        "0x41ce996b3f105d91cc84438e58dfc5c73bc5dd405abcc0603392a9e8a079aaeb"
+      ],
       "proofs": [],
-      "evidencePaths": [],
+      "evidencePaths": [
+        "packages/evm-verification/deployments/phase-2-e2e-robinhood-testnet.json"
+      ],
       "gitHubActionsRun": {
         "status": "not_recorded",
         "url": null
       },
-      "note": "No product-specific evidence artifact found."
+      "note": "Evidence artifact contains a transaction or proof identifier."
     },
     {
       "product": "payroll",
@@ -733,32 +775,42 @@
     {
       "product": "blind-verification",
       "network": "tempo-testnet",
-      "verification": "missing",
+      "verification": "verified",
       "registryStatus": "testnet_verified",
       "testRunAt": "2026-09-16T21:53:12.853Z",
-      "transactionHashes": [],
+      "transactionHashes": [
+        "0x67f38987a5814fb3d45b26dfa95b29a7d729800dfe537aeee49f16be7ef8a1f0"
+      ],
       "proofs": [],
-      "evidencePaths": [],
+      "evidencePaths": [
+        "packages/evm-verification/deployments/phase-2-e2e-ethereum-sepolia-tempo-testnet.json",
+        "packages/evm-verification/deployments/phase-2-e2e-tempo-testnet.json"
+      ],
       "gitHubActionsRun": {
         "status": "not_recorded",
         "url": null
       },
-      "note": "No product-specific evidence artifact found."
+      "note": "Evidence artifact contains a transaction or proof identifier."
     },
     {
       "product": "record-verification",
       "network": "tempo-testnet",
-      "verification": "missing",
+      "verification": "verified",
       "registryStatus": "testnet_verified",
       "testRunAt": "2026-09-16T21:53:12.853Z",
-      "transactionHashes": [],
+      "transactionHashes": [
+        "0x68a796d768c4a114a035ab5ecfa588d1e82e1fe594f840302adebb587e24da53"
+      ],
       "proofs": [],
-      "evidencePaths": [],
+      "evidencePaths": [
+        "packages/evm-verification/deployments/phase-2-e2e-ethereum-sepolia-tempo-testnet.json",
+        "packages/evm-verification/deployments/phase-2-e2e-tempo-testnet.json"
+      ],
       "gitHubActionsRun": {
         "status": "not_recorded",
         "url": null
       },
-      "note": "No product-specific evidence artifact found."
+      "note": "Evidence artifact contains a transaction or proof identifier."
     },
     {
       "product": "payroll",
