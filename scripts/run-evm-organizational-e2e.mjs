@@ -187,9 +187,14 @@ assert.equal(observedChainId, CHAIN_ID, "RPC chain mismatch");
 const deployerBalance = tempoTokenMode
   ? await publicClient.readContract({ address: TEMPO_FEE_TOKEN, abi: erc20Abi, functionName: "balanceOf", args: [deployer.address] })
   : await publicClient.getBalance({ address: deployer.address });
+const configuredMinimumFunding = process.env.PDAO_EVM_MINIMUM_FUNDING?.trim();
 const minimumFunding = tempoTokenMode
-  ? parseUnits(process.env.PDAO_EVM_MINIMUM_FUNDING || "2", TEMPO_TOKEN_DECIMALS)
-  : parseEther(process.env.PDAO_EVM_MINIMUM_FUNDING || "0.01");
+  ? parseUnits(configuredMinimumFunding || "2", TEMPO_TOKEN_DECIMALS)
+  : (() => {
+      const operationalFloor = NETWORK === "hyperliquid-testnet" ? parseEther("0.05") : parseEther("0.01");
+      const configured = parseEther(configuredMinimumFunding || "0");
+      return configured > operationalFloor ? configured : operationalFloor;
+    })();
 assert.ok(deployerBalance > minimumFunding, `deployer lacks enough ${tempoTokenMode ? "Tempo pathUSD" : "native testnet asset"} for ${NETWORK} E2E`);
 
 const deployments = {
