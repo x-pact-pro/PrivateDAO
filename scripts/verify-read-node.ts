@@ -59,8 +59,17 @@ async function main() {
 
   console.log(
     `Read node verification: PASS${degraded ? " (degraded RPC fallback)" : ""} ` +
-      `(proposals=${proposals.length}, endpoint=${runtime.rpcEndpoint}, refhe=${overview.refheConfigured}, magicblock=${magicblock.health})`,
+      `(proposals=${proposals.length}, endpoint=${redactEndpoint(runtime.rpcEndpoint)}, refhe=${overview.refheConfigured}, magicblock=${magicblock.health})`,
   );
+}
+
+function redactEndpoint(value: unknown): string {
+  try {
+    const parsed = new URL(String(value));
+    return `${parsed.protocol}//${parsed.host}${parsed.pathname}`;
+  } catch {
+    return "<invalid-endpoint>";
+  }
 }
 
 function readGeneratedSnapshot() {

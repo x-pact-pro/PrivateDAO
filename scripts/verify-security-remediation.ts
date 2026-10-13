@@ -22,6 +22,8 @@ const kernelGateway = read("scripts/kernel-gateway-service.ts");
 const readNode = read("scripts/run-read-node.ts");
 const auctionE2e = read("scripts/run-auction-devnet-e2e.mjs");
 const readNodeJs = read("scripts/run-read-node.js");
+const readNodeVerification = read("scripts/verify-read-node.ts");
+const readNodeVerificationJs = read("scripts/verify-read-node.js");
 const caddy = read("deploy/primary-host/Caddyfile");
 const primaryEnv = read("deploy/primary-host/.env.example");
 const primaryPrepare = read("scripts/prepare-primary-host-stack.sh");
@@ -94,7 +96,9 @@ assert(
 assert(
   auctionE2e.includes("redactEndpoint(connection.http)") &&
     auctionE2e.includes("redactEndpoint(TEE_RPC)") &&
-    readNodeJs.includes("readNode.rpcEndpoints.map(redactEndpoint)"),
+    readNodeJs.includes("readNode.rpcEndpoints.map(redactEndpoint)") &&
+    readNodeVerification.includes("redactEndpoint(runtime.rpcEndpoint)") &&
+    readNodeVerificationJs.includes("redactEndpoint(runtime.rpcEndpoint)"),
   "operational RPC logs must redact credentials and query parameters",
 );
 assert(

@@ -30,7 +30,16 @@ async function main() {
     if (!profile350 || profile350.waveCount !== 7 || profile350.waveSize !== 50) {
         throw new Error("Read node load profiles missing expected 350-wave plan");
     }
-    console.log(`Read node verification: PASS (proposals=${proposals.length}, endpoint=${runtime.rpcEndpoint}, refhe=${overview.refheConfigured}, magicblock=${magicblock.health})`);
+    console.log(`Read node verification: PASS (proposals=${proposals.length}, endpoint=${redactEndpoint(runtime.rpcEndpoint)}, refhe=${overview.refheConfigured}, magicblock=${magicblock.health})`);
+}
+function redactEndpoint(value) {
+    try {
+        const parsed = new URL(String(value));
+        return `${parsed.protocol}//${parsed.host}${parsed.pathname}`;
+    }
+    catch {
+        return "<invalid-endpoint>";
+    }
 }
 main().catch((error) => {
     console.error(error instanceof Error ? error.message : error);
