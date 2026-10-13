@@ -18,6 +18,8 @@ const treasury = read("programs/private-dao/src/treasury.rs");
 const demo = read("tests/demo.ts");
 const privateDaoTest = read("tests/private-dao.ts");
 const remediation = read("docs/security-audit-remediation-2026-04-08.md");
+const kernelGateway = read("scripts/kernel-gateway-service.ts");
+const readNode = read("scripts/run-read-node.ts");
 
 assert(
   demo.includes("function makeCommitment(vote: boolean, salt: Buffer, voter: PublicKey, proposal: PublicKey): Buffer"),
@@ -58,6 +60,18 @@ assert(
   treasury.includes("*ctx.accounts.refhe_envelope.owner == crate::ID") &&
     treasury.includes("*ctx.accounts.magicblock_private_payment_corridor.owner == crate::ID"),
   "optional REFHE/MagicBlock companion accounts must be program-owned before deserialization",
+);
+
+assert(
+  kernelGateway.includes("this.requiredToken.length > 0 && req.headers[\"x-pdao-gateway-token\"] === this.requiredToken") &&
+    kernelGateway.includes("const explicitlyNonProduction = runtimeMode === \"development\" || runtimeMode === \"test\""),
+  "Kernel Gateway execution must fail closed unless a token is configured or explicit non-production mode is active",
+);
+assert(
+  !readNode.includes('process.env.PD_LICENSE_SIGNING_SECRET || "privatedao-public-review-license-boundary"') &&
+    readNode.includes("License issuance requires a configured control-plane issuer credential.") &&
+    readNode.includes("License issuance requires the control-plane issuer credential."),
+  "license signing and issuance must not use a repository-known fallback or optional issuer authorization",
 );
 
 assert(
