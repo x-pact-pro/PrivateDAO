@@ -9,7 +9,12 @@ const service = createKernelGatewayService();
 http.createServer(async (req, res) => {
   if (req.method === "OPTIONS") {
     res.statusCode = 204;
-    res.setHeader("Access-Control-Allow-Origin", process.env.PDAO_KERNEL_GATEWAY_ALLOWED_ORIGIN || "*");
+    const runtimeMode = process.env.NODE_ENV?.trim().toLowerCase();
+    const explicitlyNonProduction = runtimeMode === "development" || runtimeMode === "test";
+    res.setHeader(
+      "Access-Control-Allow-Origin",
+      process.env.PDAO_KERNEL_GATEWAY_ALLOWED_ORIGIN?.trim() || (explicitlyNonProduction ? "*" : "https://privatedao.org"),
+    );
     res.setHeader("Access-Control-Allow-Headers", "content-type, x-pdao-gateway-token");
     res.setHeader("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
     res.end();

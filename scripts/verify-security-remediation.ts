@@ -66,7 +66,8 @@ assert(
 
 assert(
   kernelGateway.includes("this.requiredToken.length > 0 && req.headers[\"x-pdao-gateway-token\"] === this.requiredToken") &&
-    kernelGateway.includes("const explicitlyNonProduction = runtimeMode === \"development\" || runtimeMode === \"test\""),
+    kernelGateway.includes("const explicitlyNonProduction = runtimeMode === \"development\" || runtimeMode === \"test\"") &&
+    kernelGateway.includes("https://privatedao.org"),
   "Kernel Gateway execution must fail closed unless a token is configured or explicit non-production mode is active",
 );
 assert(

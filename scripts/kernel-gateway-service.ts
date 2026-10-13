@@ -131,12 +131,14 @@ export class KernelGatewayService {
   private readonly runtime;
 
   constructor(options: KernelGatewayServiceOptions = {}) {
-    this.allowedOrigin = options.allowedOrigin || process.env.PDAO_KERNEL_GATEWAY_ALLOWED_ORIGIN || "*";
+    const runtimeMode = process.env.NODE_ENV?.trim().toLowerCase();
+    const explicitlyNonProduction = runtimeMode === "development" || runtimeMode === "test";
+    this.allowedOrigin = options.allowedOrigin?.trim()
+      || process.env.PDAO_KERNEL_GATEWAY_ALLOWED_ORIGIN?.trim()
+      || (explicitlyNonProduction ? "*" : "https://privatedao.org");
     this.requiredToken = options.requiredToken ?? process.env.PDAO_KERNEL_GATEWAY_TOKEN?.trim() ?? "";
     this.maxBodyBytes = options.maxBodyBytes || Number(process.env.PDAO_KERNEL_GATEWAY_MAX_BODY_BYTES || 1_000_000);
     this.role = parseGatewayRole(options.role ?? process.env.PDAO_KERNEL_GATEWAY_ROLE);
-    const runtimeMode = process.env.NODE_ENV?.trim().toLowerCase();
-    const explicitlyNonProduction = runtimeMode === "development" || runtimeMode === "test";
     this.allowUnauthenticated = explicitlyNonProduction && (
       options.allowUnauthenticated === true
       || process.env.PDAO_KERNEL_GATEWAY_ALLOW_UNAUTHENTICATED === "1"
