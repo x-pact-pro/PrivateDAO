@@ -56,6 +56,8 @@ try {
   assert.equal(unauthorized.status, 401, "execution routes must require the gateway token");
   const crossOrigin = await request("POST", "/v1/executions/prepare", { intent: {} }, "gateway-test-token", "https://evil.example");
   assert.equal(crossOrigin.status, 401, "execution routes must reject a cross-origin request even with an edge token");
+  const sameOrigin = await request("POST", "/v1/executions/prepare", { intent: {} }, "gateway-test-token", "https://privatedao.org");
+  assert.notEqual(sameOrigin.status, 401, "the configured PrivateDAO browser origin must reach normal request validation");
   const prefixedHealth = await request("GET", "/api/healthz");
   assert.equal(prefixedHealth.status, 200);
   const zcashConfigured = Boolean(process.env.PDAO_ZCASH_ZALLET_BINARY && process.env.PDAO_ZCASH_ZALLET_DATA_DIR && process.env.PDAO_ZCASH_ZALLET_CONFIG);
