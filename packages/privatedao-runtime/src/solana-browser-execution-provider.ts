@@ -103,7 +103,7 @@ export class SolanaBrowserExecutionProvider implements KernelProvider {
     const record = this.records.get(executionId);
     if (!record?.signature) throw new Error("Solana browser execution has not been submitted.");
     if (record.receipt) return record.receipt as ExecutionReceipt<TResult>;
-    const transaction = await this.rpc("getTransaction", [record.signature, { commitment: "confirmed", maxSupportedTransactionVersion: 0 }]);
+    const transaction = await this.rpc("getTransaction", [record.signature, { commitment: "confirmed", encoding: "jsonParsed", maxSupportedTransactionVersion: 0 }]);
     if (!transaction) throw new Error("Solana transaction is not confirmed yet.");
     if (transaction.meta?.err) {
       record.state = "failed";
@@ -112,7 +112,10 @@ export class SolanaBrowserExecutionProvider implements KernelProvider {
     const accountKeys = Array.isArray(transaction.transaction?.message?.accountKeys) ? transaction.transaction.message.accountKeys : [];
     const keyValues = accountKeys.map((entry: unknown) => typeof entry === "string" ? entry : (entry && typeof entry === "object" && "pubkey" in entry && typeof entry.pubkey === "string" ? entry.pubkey : ""));
     if (!keyValues.includes(GOVERNANCE_PROGRAM_ID)) throw new Error("Solana receipt does not reference the PrivateDAO governance program.");
-    if (!keyValues.includes(record.prepared.unsignedPayload.account)) throw new Error("Solana receipt does not reference the prepared wallet account.");
+    const signerAccounts = accountKeys
+      .filter((entry: unknown): entry is { pubkey: string; signer: boolean } => Boolean(entry && typeof entry === "object" && "pubkey" in entry && typeof entry.pubkey === "string" && "signer" in entry && entry.signer === true))
+      .map((entry: { pubkey: string; signer: boolean }) => entry.pubkey);
+    if (!signerAccounts.includes(record.prepared.unsignedPayload.account)) throw new Error("Solana receipt does not reference the prepared wallet account as a signer.");
     record.state = "confirmed";
     record.receipt = {
       executionId,

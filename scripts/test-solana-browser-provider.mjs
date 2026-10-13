@@ -12,7 +12,7 @@ const fetchImpl = async (_input, init) => {
     jsonrpc: "2.0",
     id: request.id,
     result: request.method === "getTransaction"
-      ? { slot: 123, meta: { err: null }, transaction: { message: { accountKeys: [programId, account] } } }
+      ? { slot: 123, meta: { err: null }, transaction: { message: { accountKeys: [{ pubkey: programId, signer: false }, { pubkey: account, signer: true }] } } }
       : null,
   }), { status: 200, headers: { "content-type": "application/json" } });
 };
@@ -54,7 +54,7 @@ const mismatchProvider = new SolanaBrowserExecutionProvider(async (_input, init)
     jsonrpc: "2.0",
     id: request.id,
     result: request.method === "getTransaction"
-      ? { slot: 124, meta: { err: null }, transaction: { message: { accountKeys: [programId] } } }
+      ? { slot: 124, meta: { err: null }, transaction: { message: { accountKeys: [{ pubkey: programId, signer: false }] } } }
       : null,
   }), { status: 200, headers: { "content-type": "application/json" } });
 }, "https://devnet.example.test");

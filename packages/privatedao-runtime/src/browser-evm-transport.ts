@@ -16,10 +16,11 @@ export type BrowserEvmSignedPayload = {
 type BrowserEvmPublicClient = {
   getChainId(): Promise<number>;
   getTransaction(input: { hash: `0x${string}` }): Promise<{
-    chainId?: number | bigint;
+    chainId: number | bigint;
     from: `0x${string}`;
     to: `0x${string}` | null;
     input: `0x${string}`;
+    value: bigint;
   } | null>;
   waitForTransactionReceipt(input: { hash: `0x${string}`; timeout?: number }): Promise<{ status: "success" | "reverted"; blockNumber: bigint }>;
   estimateContractGas(input: Record<string, unknown>): Promise<bigint>;
@@ -175,7 +176,7 @@ function assertPreparedTransaction(
   expectedChainId: string,
 ): void {
   if (!transaction) throw new Error("Browser wallet transaction was not found on the selected network.");
-  if (transaction.chainId !== undefined && String(transaction.chainId) !== expectedChainId) {
+  if (String(transaction.chainId) !== expectedChainId) {
     throw new Error("Browser wallet transaction was sent to the wrong network.");
   }
   if (transaction.from.toLowerCase() !== payload.account.toLowerCase()) {
@@ -187,5 +188,8 @@ function assertPreparedTransaction(
   const expectedInput = encodeFunctionData({ abi: payload.abi as Abi, functionName: payload.functionName, args: payload.args as readonly unknown[] });
   if (transaction.input.toLowerCase() !== expectedInput.toLowerCase()) {
     throw new Error("Browser wallet transaction data does not match the prepared operation.");
+  }
+  if (transaction.value !== (payload.value ?? 0n)) {
+    throw new Error("Browser wallet transaction value does not match the prepared operation.");
   }
 }

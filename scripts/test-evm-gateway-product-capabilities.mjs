@@ -16,6 +16,7 @@ const clients = {
         from: browserAccount,
         to: "0x9887bcfe7daad364202d5d3102de180c389ecb20",
         input: encodeFunctionData({ abi: browserAbi, functionName: "createProposal", args: browserArgs }),
+        value: 0n,
       };
     },
     async waitForTransactionReceipt() { return { status: "success", blockNumber: 42n }; },
