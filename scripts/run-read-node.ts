@@ -3934,7 +3934,7 @@ function issueEnterpriseLicense(body: Record<string, unknown>, req: http.Incomin
   };
   let signature: string;
   try { signature = signEnterpriseLicensePayload(payload); }
-  catch (error) { return { ok: false, status: "license-issuer-not-configured", error: error instanceof Error ? error.message : "License signing failed." }; }
+  catch { return { ok: false, status: "license-issuer-not-configured", error: "License signing failed." }; }
   return { ok: true, status: "license-issued", license: { schema: "privatedao.enterprise-license.v1", algorithm: "ed25519", keyId: payload.keyId, payload, signature } };
 }
 
@@ -4869,10 +4869,10 @@ async function readIkaSolanaPreAlphaStatus() {
         funded: lamports > 0,
         keypairPathConfigured: true,
       };
-    } catch (error) {
+    } catch {
       operator = {
         ...operator,
-        error: error instanceof Error ? error.message : "Failed to read configured Solana operator keypair",
+        error: "Configured Solana operator readiness is unavailable.",
       };
     }
   }
@@ -4899,9 +4899,7 @@ async function readIkaSolanaPreAlphaStatus() {
           : null,
       error:
         programAccount && "error" in programAccount
-          ? programAccount.error instanceof Error
-            ? programAccount.error.message
-            : "Unable to read Ika pre-alpha program account"
+          ? "Unable to read Ika pre-alpha program account"
           : null,
     },
     operator,

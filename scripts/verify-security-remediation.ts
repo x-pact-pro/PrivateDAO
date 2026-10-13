@@ -88,6 +88,12 @@ assert(
   "public settlement intent must not expose raw Umbra upstream errors",
 );
 assert(
+  readNode.includes('catch { return { ok: false, status: "license-issuer-not-configured", error: "License signing failed." }; }') &&
+    readNode.includes('error: "Configured Solana operator readiness is unavailable."') &&
+    readNode.includes('? "Unable to read Ika pre-alpha program account"'),
+  "public readiness routes must not expose signer, path, or upstream error details",
+);
+assert(
   (caddy.match(/header_up X-PDAO-Gateway-Token \{env\.PDAO_KERNEL_GATEWAY_TOKEN\}/g) || []).length === 4,
   "every primary read-node proxy route must inject the host-local Kernel Gateway token",
 );
