@@ -193,6 +193,7 @@ or mainnet readiness unless the referenced document says so explicitly.
 - [Grant evidence index](docs/generated/grant-evidence-index.md)
 - [Current architecture review](docs/operations/current-architecture-review-2026-10-13.md)
 - [Production drift review](docs/operations/production-drift-2026-10-13.md)
+- [Grant E2E runbook](docs/operations/grant-e2e-runbook.md)
 - [Cryptographic integrity](docs/cryptographic-integrity.md)
 - [Cryptographic manifest](docs/cryptographic-manifest.generated.json)
 
