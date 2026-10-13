@@ -32,6 +32,10 @@ const bound = new Set(
     .filter((binding) => binding.product !== "agent")
     .map((binding) => `${binding.product}/${binding.capability}/${binding.network}`),
 );
+const agentBindings = APPLICATION_CAPABILITY_BINDINGS.filter((binding) => binding.product === "agent");
+assert(agentBindings.length > 0, "Agent Exchange boundary must be declared explicitly");
+assert(agentBindings.filter((binding) => binding.network === "solana-mainnet-beta").every((binding) => binding.mode === "unbound"), "Agent Exchange mainnet bindings must remain external to the Kernel application path");
+assert(PRODUCT_CATALOG.find((product) => product.id === "agent") !== undefined, "Agent Exchange boundary must remain visible in the catalog");
 for (const key of declared) assert.equal(bound.has(key), true, `missing Kernel binding: ${key}`);
 for (const binding of APPLICATION_CAPABILITY_BINDINGS.filter((entry) => entry.product !== "agent")) {
   assert.equal(binding.mode, "kernel-gateway", `non-Kernel product binding: ${binding.product}/${binding.capability}/${binding.network}`);
