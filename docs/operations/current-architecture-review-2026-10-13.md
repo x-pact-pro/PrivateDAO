@@ -102,6 +102,8 @@ The current repository checks include:
 - same-origin validation for browser execution
 - explicit production CORS configuration
 - explicit EVM contract/function allowlists for server signing
+- browser receipts are matched to the prepared chain, signer, target, and calldata before confirmation
+- Solana browser receipts must reference both the approved governance program and the prepared wallet account
 - Testnet-only guards for the funded E2E runners
 - broadcast disabled by default for sensitive network paths
 - sanitized external-provider and signer errors
@@ -117,6 +119,7 @@ Verified local gates at this review:
 - `npm run verify:product-gateway-boundary`: PASS
 - `npm run test:commercial-network-matrix`: PASS
 - production dependency audit: 0 findings with `npm audit --omit=dev`
+- Rust audit: six documented upstream maintenance/yanked-dependency warnings; no unapproved advisory is present
 
 ## Production drift
 
