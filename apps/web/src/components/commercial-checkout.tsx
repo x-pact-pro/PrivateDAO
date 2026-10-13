@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { ArrowRight, CheckCircle2, Copy, ShieldCheck, Wallet } from "lucide-react";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { Buffer } from "buffer";
@@ -9,7 +9,8 @@ import { createTransferCheckedInstruction, getAssociatedTokenAddress, TOKEN_PROG
 
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { createSolanaBrowserConnection, sendBrowserTransaction } from "@/lib/network-adapters/solana-browser";
+import { createSolanaBrowserConnection, sendBrowserPayment, waitForPaymentOutcome } from "@/lib/network-adapters/solana-browser";
+import { isTransactionSignature, type PaymentOutcome, type SentPayment } from "@/lib/network-adapters/solana-payment-recovery";
 import { getSolanaRpcEndpoint } from "@/lib/solana-network";
 
 type LicenseType = "COMMUNITY" | "PROFESSIONAL" | "ORGANIZATION" | "ENTERPRISE";
@@ -86,6 +87,15 @@ const checkoutStorageKey = "privatedao:commercial-checkout:v2";
 
 type PaymentState = "idle" | "submitted" | "confirming" | "pending" | "verified" | "failed";
 
+type SavedCheckoutState = {
+  order?: OrderResponse["order"];
+  payment?: OrderResponse["payment"];
+  paymentHash?: string;
+  paymentState?: PaymentState;
+  // Block height after which the submitted payment can no longer land.
+  lastValidBlockHeight?: number;
+};
+
 const contactLinks = [
   { label: "Telegram", href: "https://t.me/privateDAOOS" },
   { label: "Founder Telegram", href: "https://t.me/Fahdkotb" },
@@ -106,13 +116,10 @@ export function CommercialCheckout() {
   const [error, setError] = useState("");
   const [paymentState, setPaymentState] = useState<PaymentState>("idle");
   const [loading, setLoading] = useState<"prepare" | "pay" | "verify" | null>(null);
+  const [lastValidBlockHeight, setLastValidBlockHeight] = useState<number>();
+  const lifetime = useRef<AbortController | null>(null);
 
-  function persistCheckoutState(next: {
-    order?: OrderResponse["order"];
-    payment?: OrderResponse["payment"];
-    paymentHash?: string;
-    paymentState?: PaymentState;
-  }) {
+  function persistCheckoutState(next: SavedCheckoutState) {
     try {
       window.localStorage.setItem(checkoutStorageKey, JSON.stringify(next));
     } catch {
@@ -121,34 +128,42 @@ export function CommercialCheckout() {
   }
 
   useEffect(() => {
+    const controller = new AbortController();
+    lifetime.current = controller;
     try {
-      const saved = JSON.parse(window.localStorage.getItem(checkoutStorageKey) || "null") as {
-        order?: OrderResponse["order"];
-        payment?: OrderResponse["payment"];
-        paymentHash?: string;
-        paymentState?: PaymentState;
-      } | null;
-      if (!saved?.order) return;
+      const saved = JSON.parse(window.localStorage.getItem(checkoutStorageKey) || "null") as SavedCheckoutState | null;
+      if (!saved?.order) return () => controller.abort();
       setOrder(saved.order);
       setPayment(saved.payment);
       setPaymentHash(saved.paymentHash || "");
       setPaymentState(saved.paymentState || (saved.paymentHash ? "pending" : "idle"));
       setCheckout({ checkoutId: saved.order.orderId, organizationId: saved.order.organizationId, organizationName: saved.order.organizationName, licenseType: saved.order.plan, priceUsd: null, cadence: "monthly", trialDays: 14, paymentAsset: saved.order.asset, paymentAssetLabel: saved.order.asset, network: saved.order.network, treasuryAddress: saved.order.treasuryAddress, memo: saved.order.memo });
+      // A payment that was still on its way when the page closed: keep tracking it instead of asking for a manual retry.
+      const inFlight = saved.paymentState === "submitted" || saved.paymentState === "confirming" || saved.paymentState === "pending";
+      if (inFlight && isTransactionSignature(saved.paymentHash) && typeof saved.lastValidBlockHeight === "number") {
+        setLastValidBlockHeight(saved.lastValidBlockHeight);
+        void trackPayment(saved.order.orderId, { signature: saved.paymentHash, lastValidBlockHeight: saved.lastValidBlockHeight }, controller.signal);
+      }
     } catch {
       window.localStorage.removeItem(checkoutStorageKey);
     }
+    return () => controller.abort();
+    // Runs once per mount: restores the checkout saved before a reload.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
     if (!order) return;
     try {
-      window.localStorage.setItem(checkoutStorageKey, JSON.stringify({ order, payment, paymentHash, paymentState }));
+      window.localStorage.setItem(checkoutStorageKey, JSON.stringify({ order, payment, paymentHash, paymentState, lastValidBlockHeight }));
     } catch {
       // Checkout can still be verified from the current page when storage is unavailable.
     }
-  }, [order, payment, paymentHash, paymentState]);
+  }, [order, payment, paymentHash, paymentState, lastValidBlockHeight]);
 
   const canVerify = useMemo(() => Boolean(order?.orderId && paymentHash.trim()), [order, paymentHash]);
+  // The order has a payment on its way or already on-chain: paying again could charge the customer twice.
+  const paymentInProgress = Boolean(paymentHash.trim()) && paymentState !== "idle";
 
   async function prepareCheckout() {
     setLoading("prepare");
@@ -166,6 +181,7 @@ export function CommercialCheckout() {
       setPayment(payload.payment);
       setPaymentHash("");
       setPaymentState("idle");
+      setLastValidBlockHeight(undefined);
       setCheckout({ checkoutId: payload.order.orderId, organizationId: payload.order.organizationId, organizationName: payload.order.organizationName, licenseType: payload.order.plan, priceUsd: null, cadence: "monthly", trialDays: 14, paymentAsset: payload.order.asset, paymentAssetLabel: payload.order.asset, network: payload.order.network, treasuryAddress: payload.order.treasuryAddress, memo: payload.order.memo });
     } catch (prepareError) {
       setError(prepareError instanceof Error ? prepareError.message : "Checkout preparation failed.");
@@ -174,8 +190,8 @@ export function CommercialCheckout() {
     }
   }
 
-  async function verifyPayment(signatureOverride = paymentHash) {
-    if (!order) return;
+  async function verifyPayment(signatureOverride = paymentHash, orderId = order?.orderId) {
+    if (!orderId) return;
     setLoading("verify");
     setError("");
     setPaymentState("confirming");
@@ -184,7 +200,7 @@ export function CommercialCheckout() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          orderId: order.orderId,
+          orderId,
           signature: signatureOverride,
         }),
       });
@@ -203,20 +219,50 @@ export function CommercialCheckout() {
     }
   }
 
-  async function waitForConfirmation(signature: string, timeoutMs = 120_000) {
-    const deadline = Date.now() + timeoutMs;
-    while (Date.now() < deadline) {
-      const status = (await solanaConnection.getSignatureStatuses([signature], { searchTransactionHistory: true })).value[0];
-      if (status?.err) throw new Error(`Solana transaction failed: ${JSON.stringify(status.err)}`);
-      if (status?.confirmationStatus === "confirmed" || status?.confirmationStatus === "finalized") return status;
-      await new Promise((resolve) => setTimeout(resolve, 1_500));
+  // Waits until the payment is finalized (the order API requires finality), failed on-chain or can no longer land,
+  // then verifies a finalized payment. Only a failed or expired payment lets the customer pay again.
+  async function trackPayment(orderId: string, sent: SentPayment, signal?: AbortSignal) {
+    setLoading("pay");
+    setError("");
+    setPaymentState("confirming");
+    let outcome: PaymentOutcome;
+    try {
+      outcome = await waitForPaymentOutcome(solanaConnection, sent, { signal });
+    } catch {
+      return; // The page was closed: the saved state resumes the wait on the next visit.
     }
-    throw new Error("Transaction submitted, but confirmation is still pending. The hash has been saved; retry verification later and do not pay again.");
+    if (outcome === "landed") {
+      await verifyPayment(sent.signature, orderId);
+      return;
+    }
+    setLoading(null);
+    if (outcome === "pending") {
+      setPaymentState("pending");
+      setError("Transaction submitted, but not finalized yet. The hash has been saved; retry in a moment and do not pay again.");
+      return;
+    }
+    setPaymentHash("");
+    setLastValidBlockHeight(undefined);
+    setPaymentState(outcome === "failed" ? "failed" : "idle");
+    setError(
+      outcome === "failed"
+        ? "The payment transaction failed on Solana, so the transfer did not go through (only the network fee was charged). You can pay again."
+        : "The payment transaction expired before it reached Solana, so nothing was transferred. You can pay again.",
+    );
+  }
+
+  function retryVerification() {
+    if (paymentState === "pending" && order && isTransactionSignature(paymentHash) && lastValidBlockHeight !== undefined) {
+      void trackPayment(order.orderId, { signature: paymentHash, lastValidBlockHeight }, lifetime.current?.signal);
+      return;
+    }
+    void verifyPayment();
   }
 
   async function payFromWallet() {
     if (!publicKey || !order || !payment) { setError("Connect a Solana wallet and prepare an order first."); return; }
     setLoading("pay"); setError(""); setReceipt(undefined); setPaymentState("submitted");
+    let sent: SentPayment;
     try {
       const transaction = new Transaction();
       if (order.asset === "SOL") {
@@ -229,20 +275,21 @@ export function CommercialCheckout() {
         transaction.add(createTransferCheckedInstruction(source, mint, destination, publicKey, BigInt(order.amountAtomic), payment.decimals, [], TOKEN_PROGRAM_ID));
       }
       transaction.add(new TransactionInstruction({ keys: [], programId: new PublicKey("MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr"), data: Buffer.from(order.memo, "utf8") }));
-      const signature = await sendBrowserTransaction(solanaConnection, transaction, sendTransaction);
-      setPaymentHash(signature);
+      sent = await sendBrowserPayment(solanaConnection, transaction, publicKey, sendTransaction);
+      setPaymentHash(sent.signature);
+      setLastValidBlockHeight(sent.lastValidBlockHeight);
       setPaymentState("confirming");
       // Persist the signature synchronously before any confirmation wait. A reload
       // must never turn an already-submitted payment back into an empty form.
-      persistCheckoutState({ order, payment, paymentHash: signature, paymentState: "confirming" });
-      await waitForConfirmation(signature);
-      await verifyPayment(signature);
+      persistCheckoutState({ order, payment, paymentHash: sent.signature, paymentState: "confirming", lastValidBlockHeight: sent.lastValidBlockHeight });
     } catch (paymentError) {
-      const message = paymentError instanceof Error ? paymentError.message : "Wallet payment failed.";
-      setPaymentState(message.includes("submitted") ? "pending" : "failed");
-      setError(message);
+      // Nothing was sent: the wallet rejected the request or the transaction could not be built.
+      setPaymentState("failed");
+      setError(paymentError instanceof Error ? paymentError.message : "Wallet payment failed.");
       setLoading(null);
+      return;
     }
+    await trackPayment(order.orderId, sent, lifetime.current?.signal);
   }
 
   async function copyTreasuryAddress() {
@@ -351,8 +398,8 @@ export function CommercialCheckout() {
             />
           </label>
           <div className="flex flex-wrap gap-3">
-            <button type="button" onClick={payFromWallet} className={cn(buttonVariants({ size: "sm" }))} disabled={!connected || !order || loading !== null}><Wallet className="h-4 w-4" />Pay from wallet</button>
-            <button type="button" onClick={() => verifyPayment()} className={cn(buttonVariants({ size: "sm" }), "w-fit")} disabled={!canVerify || loading !== null}>
+            <button type="button" onClick={payFromWallet} className={cn(buttonVariants({ size: "sm" }))} disabled={!connected || !order || loading !== null || paymentInProgress}><Wallet className="h-4 w-4" />Pay from wallet</button>
+            <button type="button" onClick={retryVerification} className={cn(buttonVariants({ size: "sm" }), "w-fit")} disabled={!canVerify || loading !== null}>
               {loading === "verify" ? "Verifying..." : paymentState === "pending" ? "Retry verification" : "Verify and issue license"}
               <CheckCircle2 className="h-4 w-4" />
             </button>
@@ -403,7 +450,7 @@ export function CommercialCheckout() {
         </div>
       </div>
 
-      {error ? <div className="mt-4 rounded-2xl border border-red-300/20 bg-red-400/10 p-3 text-sm text-red-100">{error}</div> : null}
+      {error ? <div role="alert" className="mt-4 rounded-2xl border border-red-300/40 bg-red-400/10 p-3 text-sm text-red-700">{error}</div> : null}
     </section>
   );
 }
