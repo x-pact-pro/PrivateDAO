@@ -20,6 +20,7 @@ const suites = [
   ["social-previews", ["npm", "run", "verify:social-previews"]],
   ["commercial-claims", ["node", "scripts/test-commercial-claims.mjs"]],
   ["commercial", ["node", "scripts/test-commercial-lifecycle.mjs"]],
+  ["grant-evidence-index", ["npm", "run", "verify:grant-evidence-index"]],
 ];
 
 function runSuite(name, command) {
