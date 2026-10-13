@@ -57,10 +57,10 @@
       "verification": "verified",
       "registryStatus": "devnet_verified",
       "testRunAt": "2026-10-12",
-      "transactionHashes": [],
-      "proofs": [
+      "transactionHashes": [
         "NZkkgh16Sd9omEpA8GLaLKaNCzy8uapWoTBRCva8mZZpJLFEoL9T5N9gPjheFeN7vpbNu97nFcTVuB7zxenctn9"
       ],
+      "proofs": [],
       "evidencePaths": [
         "docs/evidence/solana-devnet-record-verification-e2e.json"
       ],
@@ -73,17 +73,23 @@
     {
       "product": "payroll",
       "network": "solana-devnet",
-      "verification": "missing",
+      "verification": "verified",
       "registryStatus": "planned",
-      "testRunAt": null,
-      "transactionHashes": [],
+      "testRunAt": "2026-09-19T09:54:18.920Z",
+      "transactionHashes": [
+        "2eWqNGVuvv7vdibtZ1x3s4NGZjPG1cbAx29TWeoNQZDrt268Rt2z1mhNeqqMijoRaJ8YXB4EFqUvzY1YLC5YnWre",
+        "2K2og7sfrJ6miUDg8bTKtGXCGgBWAnaNXLdXKQuQkqZ6jc5tDVSzQPJPYxggEXvrYeiYA5Da35cPufAt38P14SRN",
+        "2mi2SazG4XNM2dTEwRZQ5LW98UfrmrXhUkiSEjx7RhATpGNMVAnMgk4GJoNX1MpTXDMrdsUSqj4N4swD2W9JLBfy"
+      ],
       "proofs": [],
-      "evidencePaths": [],
+      "evidencePaths": [
+        "docs/generated/payroll-devnet-e2e.generated.json"
+      ],
       "gitHubActionsRun": {
         "status": "not_recorded",
         "url": null
       },
-      "note": "No product-specific evidence artifact found."
+      "note": "Evidence artifact contains a transaction or proof identifier."
     },
     {
       "product": "treasury",

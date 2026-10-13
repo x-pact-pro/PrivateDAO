@@ -34,7 +34,10 @@ const readJson = (relative) => {
     return null;
   }
 };
-const hash = (value) => typeof value === "string" && /^(0x)?[a-f0-9]{32,}$/i.test(value);
+const hash = (value) => typeof value === "string" && (
+  /^(0x)?[a-f0-9]{32,}$/i.test(value)
+  || /^[1-9A-HJ-NP-Za-km-z]{32,128}$/.test(value)
+);
 const nonEmpty = (value) => typeof value === "string" && value.length > 0;
 const evidence = [];
 
@@ -82,13 +85,25 @@ for (const product of products) {
 const solanaProofs = [
   ["blind-verification", "docs/evidence/solana-devnet-blind-verification-e2e.json", "proofHash"],
   ["record-verification", "docs/evidence/solana-devnet-record-verification-e2e.json", "anchorSignature"],
-  ["payroll", "docs/generated/payroll-devnet-e2e.generated.json", "proof.proofHash"],
 ];
 for (const [product, source, key] of solanaProofs) {
   const artifact = readJson(source);
   const value = key.includes(".") ? key.split(".").reduce((current, part) => current?.[part], artifact) : artifact?.[key];
   addEvidence(product, "solana-devnet", source, [value], artifact?.verifiedAt ?? artifact?.generatedAt, "proof");
 }
+const solanaPayroll = readJson("docs/generated/payroll-devnet-e2e.generated.json");
+const confirmedPayrollSignatures = (solanaPayroll?.settlements ?? [])
+  .filter((settlement) => settlement?.state === "CONFIRMED")
+  .map((settlement) => settlement.signature)
+  .filter(hash);
+addEvidence(
+  "payroll",
+  "solana-devnet",
+  "docs/generated/payroll-devnet-e2e.generated.json",
+  confirmedPayrollSignatures,
+  solanaPayroll?.verifiedAt ?? solanaPayroll?.generatedAt,
+  "transaction",
+);
 
 const zcash = readJson("docs/evidence/zcash-testnet-products-e2e.json");
 const zcashPayroll = readJson("packages/privatedao-runtime/evidence/zcash-testnet-payroll-settlement.json");

@@ -19,7 +19,7 @@ This index covers the six commercial products only. Agent Exchange is intentiona
 | --- | --- | --- | --- | --- | --- | --- |
 | solana-devnet | blind-verification | **verified** | 2026-10-12 | 51aeca834527f8b26e93648fa051fb0ca29f670c86cd92cd58bfa4d4a9fbda05 | `docs/evidence/solana-devnet-blind-verification-e2e.json` | not recorded |
 | solana-devnet | record-verification | **verified** | 2026-10-12 | NZkkgh16Sd9omEpA8GLaLKaNCzy8uapWoTBRCva8mZZpJLFEoL9T5N9gPjheFeN7vpbNu97nFcTVuB7zxenctn9 | `docs/evidence/solana-devnet-record-verification-e2e.json` | not recorded |
-| solana-devnet | payroll | **missing** | - | - | - | not recorded |
+| solana-devnet | payroll | **verified** | 2026-09-19T09:54:18.920Z | 2eWqNGVuvv7vdibtZ1x3s4NGZjPG1cbAx29TWeoNQZDrt268Rt2z1mhNeqqMijoRaJ8YXB4EFqUvzY1YLC5YnWre, 2K2og7sfrJ6miUDg8bTKtGXCGgBWAnaNXLdXKQuQkqZ6jc5tDVSzQPJPYxggEXvrYeiYA5Da35cPufAt38P14SRN, 2mi2SazG4XNM2dTEwRZQ5LW98UfrmrXhUkiSEjx7RhATpGNMVAnMgk4GJoNX1MpTXDMrdsUSqj4N4swD2W9JLBfy | `docs/generated/payroll-devnet-e2e.generated.json` | not recorded |
 | solana-devnet | treasury | **missing** | 2026-09-25T01:38:47.952Z | - | - | not recorded |
 | solana-devnet | governance | **missing** | 2026-09-25T01:38:47.952Z | - | - | not recorded |
 | solana-devnet | auction | **missing** | 2026-09-25T01:38:47.952Z | - | - | not recorded |
