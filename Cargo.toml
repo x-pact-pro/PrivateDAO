@@ -15,6 +15,7 @@ anchor-spl  = "1.0.3"
 ephemeral-rollups-sdk = { version = "0.17.3", features = ["anchor", "access-control"] }
 [patch.crates-io]
 blake3 = { git = "https://github.com/BLAKE3-team/BLAKE3.git", tag = "1.5.5" }
+magicblock-delegation-program-api = { path = "vendor/magicblock-delegation-program-api" }
 
 [profile.release]
 overflow-checks = true
