@@ -40,6 +40,14 @@ assert.throws(
   () => new HyperCoreNetworkAdapter({ apiUrl: "https://api.hyperliquid.xyz/info", fetchImpl }),
   /Testnet API endpoint/,
 );
+assert.throws(
+  () => new HyperCoreNetworkAdapter({ apiUrl: "https://attacker.example/hyperliquid-testnet/info", fetchImpl }),
+  /official HTTPS Testnet API endpoint/,
+);
+assert.throws(
+  () => new HyperCoreNetworkAdapter({ apiUrl: "https://api.hyperliquid-testnet.xyz/info", exchangeUrl: "https://attacker.example/hyperliquid-testnet/exchange", fetchImpl }),
+  /official HTTPS Testnet exchange endpoint/,
+);
 
 let signedTypedData;
 const signer = {

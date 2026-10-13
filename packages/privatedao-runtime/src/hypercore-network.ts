@@ -69,6 +69,7 @@ export interface HyperCoreExchangeResult {
 type FetchLike = (input: string, init?: RequestInit) => Promise<Response>;
 
 const DEFAULT_TESTNET_API = "https://api.hyperliquid-testnet.xyz/info";
+const OFFICIAL_TESTNET_HOST = "api.hyperliquid-testnet.xyz";
 
 /**
  * Read-only native HyperCore boundary. HyperCore is not HyperEVM: it has no
@@ -85,13 +86,9 @@ export class HyperCoreNetworkAdapter {
     options: { apiUrl?: string; exchangeUrl?: string; fetchImpl?: FetchLike; timeoutMs?: number; broadcastEnabled?: boolean } = {},
   ) {
     this.apiUrl = (options.apiUrl || process.env.PDAO_HYPERCORE_API_URL || DEFAULT_TESTNET_API).trim();
-    if (!/^https:\/\//i.test(this.apiUrl) || !/hyperliquid-testnet/i.test(this.apiUrl)) {
-      throw new Error("HyperCore adapter accepts only an HTTPS Hyperliquid Testnet API endpoint.");
-    }
+    assertOfficialTestnetEndpoint(this.apiUrl, "/info", "API");
     this.exchangeUrl = (options.exchangeUrl || this.apiUrl.replace(/\/info$/i, "/exchange")).trim();
-    if (!/^https:\/\//i.test(this.exchangeUrl) || !/hyperliquid-testnet/i.test(this.exchangeUrl)) {
-      throw new Error("HyperCore adapter accepts only an HTTPS Hyperliquid Testnet exchange endpoint.");
-    }
+    assertOfficialTestnetEndpoint(this.exchangeUrl, "/exchange", "exchange");
     this.fetchImpl = options.fetchImpl || fetch;
     this.timeoutMs = options.timeoutMs || 15_000;
     this.broadcastEnabled = options.broadcastEnabled === true && process.env.PDAO_HYPERCORE_BROADCAST_ENABLED === "1";
@@ -337,4 +334,16 @@ function assertDecimal(value: unknown, label: string): asserts value is string {
 
 function assertPositiveInteger(value: unknown, label: string): asserts value is number {
   if (typeof value !== "number" || !Number.isSafeInteger(value) || value <= 0) throw new Error(`${label} must be a positive safe integer.`);
+}
+
+function assertOfficialTestnetEndpoint(value: string, pathname: "/info" | "/exchange", label: string): void {
+  let url: URL;
+  try {
+    url = new URL(value);
+  } catch {
+    throw new Error(`HyperCore adapter accepts only the official HTTPS Testnet ${label} endpoint.`);
+  }
+  if (url.protocol !== "https:" || url.hostname !== OFFICIAL_TESTNET_HOST || url.pathname !== pathname || url.search || url.hash) {
+    throw new Error(`HyperCore adapter accepts only the official HTTPS Testnet ${label} endpoint.`);
+  }
 }
