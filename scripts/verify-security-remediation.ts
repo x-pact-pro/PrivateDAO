@@ -83,6 +83,11 @@ assert(
   "read-node CORS must be explicit in production and wildcard only in non-production modes",
 );
 assert(
+  readNode.includes('fetchUmbraRelayerInfo().catch(() => ({ status: "unavailable", retryable: true }))') &&
+    !readNode.includes('fetchUmbraRelayerInfo().catch((error) => ({ error: String'),
+  "public settlement intent must not expose raw Umbra upstream errors",
+);
+assert(
   (caddy.match(/header_up X-PDAO-Gateway-Token \{env\.PDAO_KERNEL_GATEWAY_TOKEN\}/g) || []).length === 4,
   "every primary read-node proxy route must inject the host-local Kernel Gateway token",
 );

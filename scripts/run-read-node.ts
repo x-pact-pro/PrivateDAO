@@ -4349,7 +4349,9 @@ async function handlePrivateSettlementIntent(body: Record<string, unknown>) {
     createdAt,
   };
 
-  const umbraRelayerInfo = rail === "umbra" ? await fetchUmbraRelayerInfo().catch((error) => ({ error: String((error as Error)?.message || error) })) : null;
+  const umbraRelayerInfo = rail === "umbra"
+    ? await fetchUmbraRelayerInfo().catch(() => ({ status: "unavailable", retryable: true }))
+    : null;
   const relay = privateRailRelayConfig(rail);
   if (relay.url) {
     const response = await fetch(relay.url, {
