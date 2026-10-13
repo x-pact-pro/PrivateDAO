@@ -1,0 +1,29 @@
+{
+  "schema": "privatedao.solana-devnet-auction-e2e.v1",
+  "network": "solana-devnet",
+  "environment": "devnet",
+  "product": "auction",
+  "provider": "privatedao-auction-magicblock-tee",
+  "executionPath": "auction->kernel-provider->solana-devnet-program->magicblock-tee->receipt",
+  "programId": "4Z7AeFRZHBCok68hhbUgVLC3uFaEP2aDWozsYVksPuQd",
+  "auctionAccount": "DzHkACfcq3SJo5vWBv2ewhqzZGTgypxotpSrmqja8zRE",
+  "receiptAccount": "9VVMpYhZskwrWW2YigMgW7J8zjEFT279jH4wi9pH9ze6",
+  "initializeSignature": "3WxJbsNKLuejL48c4boP8QsBAJ7TNoLuUTqjVpna6BLm59nYrHX51hghD7jDoKux6FnqhrqGHSvJNGyJPApEWZoZ",
+  "activateSignature": "iKyuaXUe4icQC5g1X83m8AznPAQtU6VTDRmcnESER3a8zKn7gCgFN3SAzYwZg1pUGz1cQ6D7XpAoWf3Xx82mBsy",
+  "delegateSignature": "23prHZFvuQK1ePjHQsF1Xi6Bc9dwNTGhPQ5NMek6zYTWRDGcVp3ZjMb9TgdfkrXrNvdRpKtarnYMEJLetQzwYzDv",
+  "privacySignature": "Uao7nKM4FT9B2sxsegMCZjKtKAgDzSTokTVh3W4oX44g1NDV6wPJCXdv3U7Jpq1czfrYZErcR9av8dN5pG8FiCA",
+  "bidSignatures": [
+    "F1AC9JW9LczbHxgJCoPHdp1cmhP4Yjgi51gFD6MiV8qtTwR8eVBJRk5vWoQb43Q3nLZ14zYHhkAczU8YEM4FyRR",
+    "2REo8asvwZWwQx3X1WgA6JCy4GbnJiQwFAoLFGvn5DiufC3pUg2FknaEZprxEEDmDoWzXMaLcZ7gcrrLKSEdJQGc"
+  ],
+  "closeSignature": "2Dtq5XN68uiFZUbhfZbcr7aHZswUpTbHuyStHyYgiecK2ZsZ2VSpdKagh7FJSxQCzAoLJRkQHWym1Rkcz7GS1XkW",
+  "finalizeSignature": "5nu3JgmJozSynPnUjEQA2v7P3DMgLcekmawEtj9V29MEL8f4JXnZoYyV5TPyzt2etW2Kr5J3PaY1SLasaVM2rRbv",
+  "commitSignature": "4bx369ABKALaoxopq2peG8NZxGtvHkGaj47dAa928AZe1dY449e9eTgLKJrwqPsB9i6LBx9ASJaZbAokBEQ1W37u",
+  "receiptSignature": "4L3MwPtkyFDAXjMApoF4Q2Mt67MKSjGjPtsPaGXtMf4WCqUCz57WnBCfaoV1L9QpmgAjYaZNTKaWGAk37z2voEkN",
+  "slot": 516131304,
+  "commitment": "finalized",
+  "publicReceiptPresent": true,
+  "tamperCheck": "INVALID",
+  "broadcastExecuted": true,
+  "verifiedAt": "2026-10-13"
+}

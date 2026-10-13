@@ -91,6 +91,17 @@ for (const [product, source, key] of solanaProofs) {
   const value = key.includes(".") ? key.split(".").reduce((current, part) => current?.[part], artifact) : artifact?.[key];
   addEvidence(product, "solana-devnet", source, [value], artifact?.verifiedAt ?? artifact?.generatedAt, "proof");
 }
+const solanaAuction = readJson("docs/evidence/solana-devnet-auction-e2e.json");
+if (solanaAuction?.product === "auction" && solanaAuction.network === "solana-devnet" && solanaAuction.commitment === "finalized") {
+  addEvidence(
+    "auction",
+    "solana-devnet",
+    "docs/evidence/solana-devnet-auction-e2e.json",
+    [solanaAuction.receiptSignature, solanaAuction.commitSignature],
+    solanaAuction.verifiedAt,
+    "transaction",
+  );
+}
 const solanaPayroll = readJson("docs/generated/payroll-devnet-e2e.generated.json");
 const confirmedPayrollSignatures = (solanaPayroll?.settlements ?? [])
   .filter((settlement) => settlement?.state === "CONFIRMED")

@@ -3,8 +3,8 @@ import path from "node:path";
 import crypto from "node:crypto";
 import { createRequire } from "node:module";
 import { Connection, Keypair, PublicKey, SystemProgram, Transaction } from "@solana/web3.js";
-import nacl from "tweetnacl";
 const require = createRequire(import.meta.url);
+const nacl = require("../apps/web/node_modules/tweetnacl/nacl-fast.js");
 const { AnchorProvider, BN, Program, Wallet } = require("@coral-xyz/anchor");
 const {
   DELEGATION_PROGRAM_ID,
@@ -26,7 +26,12 @@ const AUTH = Buffer.from("authorization");
 const RECEIPT = Buffer.from("receipt");
 const AUCTION = Buffer.from("auction");
 const SESSION = Buffer.from("session");
-const idl = JSON.parse(fs.readFileSync(new URL("../target/idl/privatedao_auction.json", import.meta.url)));
+const idlPath = [
+  new URL("../target/idl/privatedao_auction.json", import.meta.url),
+  new URL("../idl/privatedao_auction.json", import.meta.url),
+].find((candidate) => fs.existsSync(candidate));
+if (!idlPath) throw new Error("Auction IDL not found; build target/idl or provide the repository idl artifact.");
+const idl = JSON.parse(fs.readFileSync(idlPath));
 
 function keypair(path) {
   return Keypair.fromSecretKey(Uint8Array.from(JSON.parse(fs.readFileSync(path, "utf8"))));

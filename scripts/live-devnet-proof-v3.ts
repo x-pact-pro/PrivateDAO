@@ -145,6 +145,35 @@ function shortDaoSuffix(prefix: string, tag: string): string {
   return compact.slice(0, 24);
 }
 
+async function getOrCreateVoterAtaWithRetry(
+  connection: anchor.web3.Connection,
+  payer: anchor.web3.Keypair,
+  mint: PublicKey,
+  owner: PublicKey,
+  tokenProgram: PublicKey,
+) {
+  let lastError: unknown;
+  for (let attempt = 1; attempt <= 3; attempt += 1) {
+    try {
+      return await getOrCreateAssociatedTokenAccount(
+        connection,
+        payer,
+        mint,
+        owner,
+        false,
+        "finalized",
+        undefined,
+        tokenProgram,
+      );
+    } catch (error) {
+      lastError = error;
+      if (attempt === 3) break;
+      await new Promise((resolve) => setTimeout(resolve, attempt * 1500));
+    }
+  }
+  throw lastError;
+}
+
 async function fundEphemeralWallet(
   provider: anchor.AnchorProvider,
   payer: anchor.web3.Keypair,
@@ -971,16 +1000,7 @@ async function main() {
     ? new PublicKey(String(governanceMintArg))
     : await createMint(provider.connection, payer, walletPk, null, 6);
   const tokenProgram = await resolveTokenProgramForMint(provider.connection, mint);
-  const voterAta = await getOrCreateAssociatedTokenAccount(
-    provider.connection,
-    payer,
-    mint,
-    walletPk,
-    false,
-    "confirmed",
-    undefined,
-    tokenProgram,
-  );
+  const voterAta = await getOrCreateVoterAtaWithRetry(provider.connection, payer, mint, walletPk, tokenProgram);
   if (!governanceMintArg) {
     await mintTo(
       provider.connection,

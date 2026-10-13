@@ -124,17 +124,22 @@
     {
       "product": "auction",
       "network": "solana-devnet",
-      "verification": "missing",
+      "verification": "verified",
       "registryStatus": "devnet_verified",
-      "testRunAt": "2026-09-25T01:38:47.952Z",
-      "transactionHashes": [],
+      "testRunAt": "2026-10-13",
+      "transactionHashes": [
+        "4L3MwPtkyFDAXjMApoF4Q2Mt67MKSjGjPtsPaGXtMf4WCqUCz57WnBCfaoV1L9QpmgAjYaZNTKaWGAk37z2voEkN",
+        "4bx369ABKALaoxopq2peG8NZxGtvHkGaj47dAa928AZe1dY449e9eTgLKJrwqPsB9i6LBx9ASJaZbAokBEQ1W37u"
+      ],
       "proofs": [],
-      "evidencePaths": [],
+      "evidencePaths": [
+        "docs/evidence/solana-devnet-auction-e2e.json"
+      ],
       "gitHubActionsRun": {
         "status": "not_recorded",
         "url": null
       },
-      "note": "No product-specific evidence artifact found."
+      "note": "Evidence artifact contains a transaction or proof identifier."
     },
     {
       "product": "blind-verification",
