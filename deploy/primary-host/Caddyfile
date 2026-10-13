@@ -96,17 +96,23 @@
 
 	@health path /healthz /api/health
 	handle @health {
-		reverse_proxy read-node:8787
+		reverse_proxy read-node:8787 {
+			header_up X-PDAO-Gateway-Token {env.PDAO_KERNEL_GATEWAY_TOKEN}
+		}
 	}
 
 	@record_api path /api/v1/records/* /api/v1/receipts/* /api/v1/record-schemas
 	handle @record_api {
-		reverse_proxy read-node:8787
+		reverse_proxy read-node:8787 {
+			header_up X-PDAO-Gateway-Token {env.PDAO_KERNEL_GATEWAY_TOKEN}
+		}
 	}
 
 	@api path /api/v1 /api/v1/*
 	handle @api {
-		reverse_proxy read-node:8787
+		reverse_proxy read-node:8787 {
+			header_up X-PDAO-Gateway-Token {env.PDAO_KERNEL_GATEWAY_TOKEN}
+		}
 	}
 
 	@quicknode_root {
@@ -115,7 +121,9 @@
 	}
 	handle @quicknode_root {
 		rewrite * /api/v1/quicknode/stream
-		reverse_proxy read-node:8787
+		reverse_proxy read-node:8787 {
+			header_up X-PDAO-Gateway-Token {env.PDAO_KERNEL_GATEWAY_TOKEN}
+		}
 	}
 
 	# Never mask a missing machine-readable artifact with the HTML app shell.

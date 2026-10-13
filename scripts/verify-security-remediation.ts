@@ -20,6 +20,8 @@ const privateDaoTest = read("tests/private-dao.ts");
 const remediation = read("docs/security-audit-remediation-2026-04-08.md");
 const kernelGateway = read("scripts/kernel-gateway-service.ts");
 const readNode = read("scripts/run-read-node.ts");
+const caddy = read("deploy/primary-host/Caddyfile");
+const primaryEnv = read("deploy/primary-host/.env.example");
 
 assert(
   demo.includes("function makeCommitment(vote: boolean, salt: Buffer, voter: PublicKey, proposal: PublicKey): Buffer"),
@@ -72,6 +74,18 @@ assert(
     readNode.includes("License issuance requires a configured control-plane issuer credential.") &&
     readNode.includes("License issuance requires the control-plane issuer credential."),
   "license signing and issuance must not use a repository-known fallback or optional issuer authorization",
+);
+assert(
+  (caddy.match(/header_up X-PDAO-Gateway-Token \{env\.PDAO_KERNEL_GATEWAY_TOKEN\}/g) || []).length === 4,
+  "every primary read-node proxy route must inject the host-local Kernel Gateway token",
+);
+assert(
+  primaryEnv.includes("NODE_ENV=production") &&
+    primaryEnv.includes("PDAO_KERNEL_GATEWAY_TOKEN=") &&
+    primaryEnv.includes("PDAO_KERNEL_GATEWAY_ALLOW_UNAUTHENTICATED=0") &&
+    primaryEnv.includes("PDAO_KERNEL_EVM_BROADCAST_ENABLED=0") &&
+    primaryEnv.includes("PDAO_ZCASH_BROADCAST_ENABLED=0"),
+  "primary production env example must keep gateway auth and broadcast fail-closed",
 );
 
 assert(
