@@ -7,7 +7,7 @@ process.env.PDAO_HYPERCORE_API_ENABLED = "1";
 process.env.PDAO_HYPERCORE_API_URL = "https://api.hyperliquid-testnet.xyz/info";
 
 const { KernelGatewayService } = await import("./kernel-gateway-service.ts");
-const service = new KernelGatewayService();
+const service = new KernelGatewayService({ requiredToken: "gateway-test-token" });
 const server = http.createServer((request, response) => void service.handle(request, response));
 
 function request(port, method, path, payload) {
@@ -18,7 +18,9 @@ function request(port, method, path, payload) {
       port,
       path,
       method,
-      headers: body ? { "content-type": "application/json", "content-length": Buffer.byteLength(body) } : {},
+      headers: body
+        ? { "content-type": "application/json", "content-length": Buffer.byteLength(body), "x-pdao-gateway-token": "gateway-test-token" }
+        : { "x-pdao-gateway-token": "gateway-test-token" },
     }, (response) => {
       let body = "";
       response.on("data", (chunk) => { body += chunk; });

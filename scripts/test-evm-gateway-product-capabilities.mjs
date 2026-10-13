@@ -43,6 +43,40 @@ assert.equal(proposal.signingMode, "server");
 assert.deepEqual(proposal.requiredSigners, []);
 assert.equal(proposal.unsignedPayload.account, signer);
 
+const securedTransport = new ViemEvmTransport(
+  clients.publicClient,
+  clients.walletClient,
+  "base-sepolia",
+  "84532",
+  "testnet",
+  "https://sepolia.basescan.org",
+  "ETH",
+  signer,
+  {
+    requireAllowlist: true,
+    allowedContracts: ["0x9887bcfe7daad364202d5d3102de180c389ecb20"],
+    allowedFunctions: ["createProposal"],
+  },
+);
+await assert.rejects(
+  () => securedTransport.prepare(baseIntent("governance.proposal.execute", {
+    kind: "contract-write",
+    address: "0x1234567890123456789012345678901234567890",
+    abi: [],
+    functionName: "drain",
+    args: [],
+  })),
+  /not allowlisted/,
+);
+const securedProposal = await securedTransport.prepare(baseIntent("governance.proposal.execute", {
+  kind: "contract-write",
+  address: "0x9887bcfe7daad364202d5d3102de180c389ecb20",
+  abi: [],
+  functionName: "createProposal",
+  args: [],
+}));
+await securedTransport.submit(securedProposal, securedProposal.unsignedPayload);
+
 const bid = await transport.prepare(baseIntent("auction.bid.commit", {
   kind: "contract-write",
   address: "0xcfb3e7af09f206614cf7a3cf8a93f92379c1c374",

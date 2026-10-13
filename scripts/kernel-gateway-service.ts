@@ -42,6 +42,8 @@ export type KernelGatewayServiceOptions = {
   allowedOrigin?: string;
   requiredToken?: string;
   maxBodyBytes?: number;
+  role?: ProtocolRole;
+  allowUnauthenticated?: boolean;
 };
 
 const EVM_KERNEL_CAPABILITIES = [
@@ -118,6 +120,8 @@ export class KernelGatewayService {
   private readonly allowedOrigin: string;
   private readonly requiredToken: string;
   private readonly maxBodyBytes: number;
+  private readonly role: ProtocolRole;
+  private readonly allowUnauthenticated: boolean;
   private readonly prepared = new Map<string, PreparedExecution<unknown>>();
   private readonly evmProviders = new Map<NetworkId, EvmProviderEntry>();
   private readonly evmAdapters = new Map<NetworkId, EvmNetworkAdapter>();
@@ -130,6 +134,9 @@ export class KernelGatewayService {
     this.allowedOrigin = options.allowedOrigin || process.env.PDAO_KERNEL_GATEWAY_ALLOWED_ORIGIN || "*";
     this.requiredToken = options.requiredToken ?? process.env.PDAO_KERNEL_GATEWAY_TOKEN?.trim() ?? "";
     this.maxBodyBytes = options.maxBodyBytes || Number(process.env.PDAO_KERNEL_GATEWAY_MAX_BODY_BYTES || 1_000_000);
+    this.role = parseGatewayRole(options.role ?? process.env.PDAO_KERNEL_GATEWAY_ROLE);
+    this.allowUnauthenticated = options.allowUnauthenticated === true
+      || (process.env.PDAO_KERNEL_GATEWAY_ALLOW_UNAUTHENTICATED === "1" && process.env.NODE_ENV !== "production");
 
     const evmNetworks: readonly NetworkId[] = [
       "solana-devnet",
@@ -218,6 +225,10 @@ export class KernelGatewayService {
     if (!serverEnabled && !browserEnabled) return;
 
     const account = serverEnabled ? this.serverEvmAccount() : undefined;
+    const allowedContracts = (process.env.PDAO_KERNEL_EVM_ALLOWED_CONTRACTS || "")
+      .split(",").map((value) => value.trim()).filter(Boolean);
+    const allowedFunctions = (process.env.PDAO_KERNEL_EVM_ALLOWED_FUNCTIONS || "")
+      .split(",").map((value) => value.trim()).filter(Boolean);
     const configuredSelection = (process.env.PDAO_KERNEL_EVM_NETWORKS || "").trim();
     const selectionIsExplicit = configuredSelection.length > 0;
     const selected = new Set(
@@ -263,7 +274,7 @@ export class KernelGatewayService {
         });
       const publicClient = createPublicClient({ chain, transport });
       const inner = serverEnabled
-        ? new ViemEvmTransport(
+          ? new ViemEvmTransport(
           publicClient as unknown as KernelViemPublicClient,
           (network === "tempo-testnet"
             ? createTempoClient({ account: account!, chain: tempoModerato, transport })
@@ -274,6 +285,7 @@ export class KernelGatewayService {
           config.explorerBaseUrl,
           config.nativeAsset,
           account!.address,
+          { requireAllowlist: true, allowedContracts, allowedFunctions },
         )
         : new BrowserEvmTransport(
           publicClient as unknown as ConstructorParameters<typeof BrowserEvmTransport>[0],
@@ -477,12 +489,13 @@ export class KernelGatewayService {
   }
 
   private authorized(req: http.IncomingMessage): boolean {
-    return !this.requiredToken || req.headers["x-pdao-gateway-token"] === this.requiredToken;
+    if (this.allowUnauthenticated) return true;
+    return this.requiredToken.length > 0 && req.headers["x-pdao-gateway-token"] === this.requiredToken;
   }
 
-  private roleFrom(req: http.IncomingMessage, body: JsonRecord): ProtocolRole {
-    const role = req.headers["x-pdao-role"] || body.role;
-    return role === "checker" || role === "auditor" || role === "admin" || role === "agent" ? role : "maker";
+  private roleFrom(_req: http.IncomingMessage, _body: JsonRecord): ProtocolRole {
+    // The caller cannot elevate itself by supplying a role in a request.
+    return this.role;
   }
 
   private async readJson(req: http.IncomingMessage): Promise<unknown> {
@@ -502,7 +515,7 @@ export class KernelGatewayService {
     res.statusCode = status;
     res.setHeader("Content-Type", "application/json; charset=utf-8");
     res.setHeader("Access-Control-Allow-Origin", this.allowedOrigin);
-    res.setHeader("Access-Control-Allow-Headers", "content-type, x-pdao-gateway-token, x-pdao-role");
+    res.setHeader("Access-Control-Allow-Headers", "content-type, x-pdao-gateway-token");
     res.setHeader("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
     res.end(JSON.stringify(body));
   }
@@ -526,4 +539,11 @@ export class KernelGatewayService {
 
 export function createKernelGatewayService(options?: KernelGatewayServiceOptions): KernelGatewayService {
   return new KernelGatewayService(options);
+}
+
+function parseGatewayRole(value: string | undefined): ProtocolRole {
+  const role = value?.trim();
+  if (!role) return "maker";
+  if (role === "maker" || role === "checker" || role === "auditor" || role === "admin" || role === "agent") return role;
+  throw new Error("PDAO_KERNEL_GATEWAY_ROLE must be maker, checker, auditor, admin, or agent.");
 }

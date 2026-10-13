@@ -58,6 +58,24 @@ The following checks passed at review time:
 - application bindings and product-to-Kernel boundary verification.
 - Rust auction crate check and test with `--locked`.
 
+The execution-boundary review also closed two high-risk configuration paths:
+
+- Kernel Gateway execution routes now fail closed when no gateway token is
+  configured. Unauthenticated mode is explicit and rejected in production.
+  Caller-supplied role headers/body fields are ignored; the gateway role is
+  operator-configured through `PDAO_KERNEL_GATEWAY_ROLE`.
+- Server-side EVM signing now requires explicit contract and function
+  allowlists through `PDAO_KERNEL_EVM_ALLOWED_CONTRACTS` and
+  `PDAO_KERNEL_EVM_ALLOWED_FUNCTIONS`. Browser signing remains a separate
+  wallet path. This prevents a generic gateway request from selecting an
+  arbitrary contract/function when server signing is enabled.
+
+The corresponding regression coverage passes for unauthorized execution,
+browser readiness, EVM allowlist rejection/acceptance, and the complete
+runtime typecheck. Production must provide a non-empty
+`PDAO_KERNEL_GATEWAY_TOKEN` and the EVM allowlists before enabling server-side
+EVM execution.
+
 The previously vulnerable `rkyv 0.7.46` dependency was replaced by the
 patched 0.8 series through the vendored MagicBlock API package. Cargo now
 resolves `rkyv 0.8.18`.

@@ -179,7 +179,7 @@ export type { HttpExecutionTransportOptions, HttpExecutionTransportPaths, HttpFe
 export { EvmNetworkAdapter, EvmAdapterError, EVM_NETWORK_CONFIGS } from "./evm-network.js";
 export type { EvmEnvironment, EvmNetworkConfig, EvmTransport, EvmWalletAdapter } from "./evm-network.js";
 export { ViemEvmTransport } from "./evm-viem-transport.js";
-export type { ViemContractWritePayload } from "./evm-viem-transport.js";
+export type { ViemContractWritePayload, ViemEvmTransportSecurity } from "./evm-viem-transport.js";
 export { BrowserEvmTransport } from "./browser-evm-transport.js";
 export type { BrowserEvmContractWritePayload, BrowserEvmSignedPayload } from "./browser-evm-transport.js";
 export { ZcashNetworkAdapter, ZcashAdapterError, ZCASH_NETWORK_CONFIGS } from "./zcash-network.js";

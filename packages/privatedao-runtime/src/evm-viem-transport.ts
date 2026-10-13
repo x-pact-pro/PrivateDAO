@@ -17,6 +17,12 @@ export type ViemContractWritePayload = {
   value?: bigint;
 };
 
+export type ViemEvmTransportSecurity = {
+  requireAllowlist?: boolean;
+  allowedContracts?: readonly string[];
+  allowedFunctions?: readonly string[];
+};
+
 type ViemPublicClient = {
   getChainId(): Promise<number>;
   waitForTransactionReceipt(input: { hash: `0x${string}`; timeout?: number }): Promise<{ status: "success" | "reverted"; blockNumber: bigint }>;
@@ -52,6 +58,7 @@ export class ViemEvmTransport implements EvmTransport {
     private readonly explorerBaseUrl: string,
     private readonly nativeAsset: string,
     private readonly signerAddress?: `0x${string}`,
+    private readonly security: ViemEvmTransportSecurity = {},
   ) {}
 
   async health(): Promise<{ ok: boolean; chainId: string; latencyMs?: number }> {
@@ -62,6 +69,7 @@ export class ViemEvmTransport implements EvmTransport {
 
   async prepare<TPayload, TUnsigned>(intent: ExecutionIntent<TPayload>): Promise<PreparedExecution<TUnsigned>> {
     const payload = parsePayload(intent.payload);
+    this.assertWriteAllowed(payload);
     const account = payload.account || this.signerAddress;
     if (!account) throw new Error("EVM contract write requires a configured signer account.");
     const previous = this.idempotency.get(intent.context.idempotencyKey);
@@ -91,6 +99,7 @@ export class ViemEvmTransport implements EvmTransport {
     if (record.signature) return { executionId: execution.executionId, signatures: [record.signature] };
     if (record.state !== "awaiting_signature" && record.state !== "prepared") throw new Error(`Cannot submit EVM execution from ${record.state}.`);
     const payload = record.prepared.unsignedPayload;
+    this.assertWriteAllowed(payload);
     const signature = await this.walletClient.writeContract({
       address: payload.address,
       abi: payload.abi,
@@ -141,9 +150,25 @@ export class ViemEvmTransport implements EvmTransport {
 
   async estimateFee<TPayload>(intent: ExecutionIntent<TPayload>): Promise<FeeEstimate> {
     const payload = parsePayload(intent.payload);
+    this.assertWriteAllowed(payload);
     const gas = await this.publicClient.estimateContractGas({ address: payload.address, abi: payload.abi, functionName: payload.functionName, args: payload.args, account: payload.account });
     const price = await this.publicClient.getGasPrice();
     return { network: this.network, atomicAmount: (gas * price).toString(), asset: this.nativeAsset };
+  }
+
+  private assertWriteAllowed(payload: ViemContractWritePayload): void {
+    if (!this.security.requireAllowlist) return;
+    const contracts = new Set((this.security.allowedContracts || []).map((value) => value.toLowerCase()));
+    const functions = new Set(this.security.allowedFunctions || []);
+    if (contracts.size === 0 || functions.size === 0) {
+      throw new Error("EVM server signing requires non-empty contract and function allowlists.");
+    }
+    if (!contracts.has(payload.address.toLowerCase())) {
+      throw new Error("EVM contract address is not allowlisted for server signing.");
+    }
+    if (!functions.has(payload.functionName)) {
+      throw new Error("EVM contract function is not allowlisted for server signing.");
+    }
   }
 }
 

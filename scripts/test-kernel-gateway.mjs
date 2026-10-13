@@ -6,18 +6,26 @@ import http from "node:http";
 const port = 8791;
 const child = spawn(process.execPath, ["--import", "tsx", "scripts/kernel-gateway.ts"], {
   cwd: process.cwd(),
-    env: { ...process.env, PDAO_KERNEL_GATEWAY_PORT: String(port), PDAO_KERNEL_EVM_BROWSER_ENABLED: "0" },
+    env: {
+      ...process.env,
+      PDAO_KERNEL_GATEWAY_PORT: String(port),
+      PDAO_KERNEL_GATEWAY_TOKEN: "gateway-test-token",
+      PDAO_KERNEL_EVM_BROWSER_ENABLED: "0",
+    },
   stdio: ["ignore", "pipe", "pipe"],
   detached: true,
 });
 
-const request = (method, path, body) => new Promise((resolve, reject) => {
+const request = (method, path, body, token = "gateway-test-token") => new Promise((resolve, reject) => {
   const req = http.request({
     host: "127.0.0.1",
     port,
     path,
     method,
-    headers: { "content-type": "application/json" },
+    headers: {
+      "content-type": "application/json",
+      ...(token ? { "x-pdao-gateway-token": token } : {}),
+    },
   }, (res) => {
     let data = "";
     res.on("data", (chunk) => { data += chunk; });
@@ -41,6 +49,8 @@ const waitForHealth = async () => {
 
 try {
   const health = await waitForHealth();
+  const unauthorized = await request("POST", "/v1/executions/prepare", { intent: {} }, null);
+  assert.equal(unauthorized.status, 401, "execution routes must require the gateway token");
   const prefixedHealth = await request("GET", "/api/healthz");
   assert.equal(prefixedHealth.status, 200);
   const zcashConfigured = Boolean(process.env.PDAO_ZCASH_ZALLET_BINARY && process.env.PDAO_ZCASH_ZALLET_DATA_DIR && process.env.PDAO_ZCASH_ZALLET_CONFIG);
