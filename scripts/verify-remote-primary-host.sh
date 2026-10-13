@@ -22,10 +22,18 @@ readiness_json="$(fetch_json /api/v1/readiness)"
 cryptographic_json="$(fetch_json /api/v1/cryptographic-readiness)"
 privacy_matrix_json="$(fetch_json /api/v1/privacy-execution-matrix)"
 
-python3 - <<'PY' "$EXPECTED_PROGRAM_ID" "$health_json" "$config_json" "$metrics_json" "$qvac_json" "$umbra_json" "$freshness_json" "$visitors_json" "$chain_json" "$quicknode_json" "$readiness_json" "$cryptographic_json" "$privacy_matrix_json"
+# The public edge may expose read-only health and catalog routes, but execution
+# must never be reachable through the edge without the host-injected gateway token.
+gateway_auth_status="$(curl -sS --max-time "${PRIVATE_DAO_REMOTE_VERIFY_TIMEOUT_SECONDS:-20}" \
+  -o /dev/null -w '%{http_code}' \
+  -X POST "${BASE_URL}/api/v1/executions/prepare" \
+  -H 'content-type: application/json' \
+  --data '{}')"
+
+python3 - <<'PY' "$EXPECTED_PROGRAM_ID" "$health_json" "$config_json" "$metrics_json" "$qvac_json" "$umbra_json" "$freshness_json" "$visitors_json" "$chain_json" "$quicknode_json" "$readiness_json" "$cryptographic_json" "$privacy_matrix_json" "$gateway_auth_status"
 import json, sys
 
-expected_program_id, health_json, config_json, metrics_json, qvac_json, umbra_json, freshness_json, visitors_json, chain_json, quicknode_json, readiness_json, cryptographic_json, privacy_matrix_json = sys.argv[1:]
+expected_program_id, health_json, config_json, metrics_json, qvac_json, umbra_json, freshness_json, visitors_json, chain_json, quicknode_json, readiness_json, cryptographic_json, privacy_matrix_json, gateway_auth_status = sys.argv[1:]
 health = json.loads(health_json)
 config = json.loads(config_json)
 metrics = json.loads(metrics_json)
@@ -39,6 +47,7 @@ readiness = json.loads(readiness_json)
 cryptographic = json.loads(cryptographic_json)
 privacy_matrix = json.loads(privacy_matrix_json)
 
+assert gateway_auth_status == "401", f"remote execution boundary is not fail-closed without a gateway token: HTTP {gateway_auth_status}"
 assert health["ok"] is True and health["health"] == "healthy", "remote /healthz failed"
 assert health["runtime"]["programId"] == expected_program_id, f"remote /healthz program drift: {health['runtime']['programId']} != {expected_program_id}"
 rpc_endpoint = health["runtime"]["rpcEndpoint"]
