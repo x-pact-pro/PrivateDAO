@@ -10,6 +10,8 @@ const child = spawn(process.execPath, ["--import", "tsx", "scripts/kernel-gatewa
       ...process.env,
       PDAO_KERNEL_GATEWAY_PORT: String(port),
       PDAO_KERNEL_GATEWAY_TOKEN: "gateway-test-token",
+      PDAO_KERNEL_GATEWAY_ALLOW_UNAUTHENTICATED: "1",
+      NODE_ENV: "production",
       PDAO_KERNEL_EVM_BROWSER_ENABLED: "0",
     },
   stdio: ["ignore", "pipe", "pipe"],

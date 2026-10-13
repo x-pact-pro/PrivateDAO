@@ -135,8 +135,12 @@ export class KernelGatewayService {
     this.requiredToken = options.requiredToken ?? process.env.PDAO_KERNEL_GATEWAY_TOKEN?.trim() ?? "";
     this.maxBodyBytes = options.maxBodyBytes || Number(process.env.PDAO_KERNEL_GATEWAY_MAX_BODY_BYTES || 1_000_000);
     this.role = parseGatewayRole(options.role ?? process.env.PDAO_KERNEL_GATEWAY_ROLE);
-    this.allowUnauthenticated = options.allowUnauthenticated === true
-      || (process.env.PDAO_KERNEL_GATEWAY_ALLOW_UNAUTHENTICATED === "1" && process.env.NODE_ENV !== "production");
+    const runtimeMode = process.env.NODE_ENV?.trim().toLowerCase();
+    const explicitlyNonProduction = runtimeMode === "development" || runtimeMode === "test";
+    this.allowUnauthenticated = explicitlyNonProduction && (
+      options.allowUnauthenticated === true
+      || process.env.PDAO_KERNEL_GATEWAY_ALLOW_UNAUTHENTICATED === "1"
+    );
 
     const evmNetworks: readonly NetworkId[] = [
       "solana-devnet",
