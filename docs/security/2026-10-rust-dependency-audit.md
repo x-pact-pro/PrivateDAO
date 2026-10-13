@@ -11,9 +11,10 @@ were checked with `cargo check --locked` and `cargo audit`.
 
 `magicblock-delegation-program-api` 3.1.0 previously pulled `rkyv` 0.7.46,
 which is affected by RustSec advisory RUSTSEC-2026-0235. The package is now
-vendored under `vendor/magicblock-delegation-program-api` with the dependency
-constraint raised to the patched `rkyv` 0.8 series. Cargo resolves 0.8.18 in
-the lockfile.
+vendored under `vendor/magicblock-delegation-program-api`; `rkyv` is optional,
+enabled only by the package's `diff` feature, and constrained to the patched
+0.8 series when that feature is explicitly enabled. The selected PrivateDAO
+features do not compile `rkyv` at all.
 
 The patched dependency was compiled successfully for
 `programs/privatedao-auction`.

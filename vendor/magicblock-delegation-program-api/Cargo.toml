@@ -43,7 +43,7 @@ default = [
     "cpi",
     "instruction",
 ]
-diff = []
+diff = ["dep:rkyv"]
 encryption = [
     "dep:libsodium-rs",
     "dep:solana-sdk",
@@ -94,6 +94,7 @@ version = "0.5.0"
 
 [dependencies.rkyv]
 version = "0.8.17"
+optional = true
 
 [dependencies.serde]
 version = "1.0.228"
