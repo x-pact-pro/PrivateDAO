@@ -20,6 +20,8 @@ const privateDaoTest = read("tests/private-dao.ts");
 const remediation = read("docs/security-audit-remediation-2026-04-08.md");
 const kernelGateway = read("scripts/kernel-gateway-service.ts");
 const readNode = read("scripts/run-read-node.ts");
+const auctionE2e = read("scripts/run-auction-devnet-e2e.mjs");
+const readNodeJs = read("scripts/run-read-node.js");
 const caddy = read("deploy/primary-host/Caddyfile");
 const primaryEnv = read("deploy/primary-host/.env.example");
 const primaryPrepare = read("scripts/prepare-primary-host-stack.sh");
@@ -88,6 +90,12 @@ assert(
   readNode.includes('fetchUmbraRelayerInfo().catch(() => ({ status: "unavailable", retryable: true }))') &&
     !readNode.includes('fetchUmbraRelayerInfo().catch((error) => ({ error: String'),
   "public settlement intent must not expose raw Umbra upstream errors",
+);
+assert(
+  auctionE2e.includes("redactEndpoint(connection.http)") &&
+    auctionE2e.includes("redactEndpoint(TEE_RPC)") &&
+    readNodeJs.includes("readNode.rpcEndpoints.map(redactEndpoint)"),
+  "operational RPC logs must redact credentials and query parameters",
 );
 assert(
   readNode.includes('catch { return { ok: false, status: "license-issuer-not-configured", error: "License signing failed." }; }') &&

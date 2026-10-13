@@ -61,7 +61,16 @@ async function waitUntil(epochSeconds) {
 }
 
 function logConnection(step, connection) {
-  console.error(`[auction-e2e] ${step} connection http=${connection.http} ws=${connection.ws ?? "none"}`);
+  console.error(`[auction-e2e] ${step} connection http=${redactEndpoint(connection.http)} ws=${connection.ws ? redactEndpoint(connection.ws) : "none"}`);
+}
+
+function redactEndpoint(value) {
+  try {
+    const url = new URL(value);
+    return `${url.protocol}//${url.host}${url.pathname}`;
+  } catch {
+    return "<invalid-endpoint>";
+  }
 }
 
 async function waitForPermissionState({ permission, session, teeConnection, baseConnection, expectedDataLength = 68 }) {
@@ -173,8 +182,8 @@ async function main() {
   const bidderB = keypair(bidderBPath);
   const baseConnection = new Connection(BASE_RPC, "confirmed");
   logConnection("base", { http: BASE_RPC, ws: BASE_RPC.replace(/^https:/, "wss:") });
-  console.error(`[auction-e2e] er connection http=${process.env.AUCTION_ER_RPC ?? "not-used"} ws=${process.env.AUCTION_ER_WS_RPC ?? "not-used"}`);
-  console.error(`[auction-e2e] tee origin http=${TEE_RPC} ws=${TEE_WS_RPC}`);
+  console.error(`[auction-e2e] er connection http=${redactEndpoint(process.env.AUCTION_ER_RPC ?? "not-used")} ws=${redactEndpoint(process.env.AUCTION_ER_WS_RPC ?? "not-used")}`);
+  console.error(`[auction-e2e] tee origin http=${redactEndpoint(TEE_RPC)} ws=${redactEndpoint(TEE_WS_RPC)}`);
   const base = new Program(idl, new AnchorProvider(baseConnection, new Wallet(creator), { commitment: "confirmed" }));
   let teeAttestation = "verified";
   try {

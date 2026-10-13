@@ -78,6 +78,15 @@ function publicJsonPayload(value, seen = new WeakSet()) {
 function publicReadNodeError() {
     return "Request could not be completed.";
 }
+function redactEndpoint(value) {
+    try {
+        const parsed = new URL(value);
+        return `${parsed.protocol}//${parsed.host}${parsed.pathname}`;
+    }
+    catch {
+        return "<invalid-endpoint>";
+    }
+}
 function normalizeIp(req) {
     const forwarded = String(req.headers["x-forwarded-for"] || "").split(",")[0].trim();
     return forwarded || req.socket.remoteAddress || "unknown";
@@ -277,5 +286,5 @@ const server = http.createServer((req, res) => {
 server.listen(port, host, () => {
     console.log(`PrivateDAO read node listening on http://${host}:${port}`);
     console.log(`Program ID: ${readNode.programId.toBase58()}`);
-    console.log(`RPC pool: ${readNode.rpcEndpoints.join(", ")}`);
+    console.log(`RPC pool: ${readNode.rpcEndpoints.map(redactEndpoint).join(", ")}`);
 });
