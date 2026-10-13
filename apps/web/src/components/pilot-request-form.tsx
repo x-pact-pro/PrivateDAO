@@ -123,7 +123,7 @@ export function PilotRequestForm({ defaultProduct = "Proof Workflows" as PilotPr
           {loading ? "Sending..." : "Request Pilot"}
           <ArrowRight className="h-4 w-4" />
         </button>
-        <a href="mailto:business@privatedao.org?subject=PrivateDAO%20Pilot" className={cn(buttonVariants({ size: "sm", variant: "outline" }))}>
+        <a href="mailto:fahd@privatedao.org?subject=PrivateDAO%20Pilot" className={cn(buttonVariants({ size: "sm", variant: "outline" }))}>
           Email instead
         </a>
       </div>

@@ -123,7 +123,7 @@ export function CreditDecisionVerificationPilot() {
             <Link href="/proof-workflows" className="hidden text-white/66 hover:text-white sm:inline">
               Proof Workflows
             </Link>
-            <a href="mailto:business@privatedao.org?subject=PrivateDAO%20Private%20Pilot" className={cn(buttonVariants({ size: "sm" }))}>
+            <a href="mailto:fahd@privatedao.org?subject=PrivateDAO%20Private%20Pilot" className={cn(buttonVariants({ size: "sm" }))}>
               Request Pilot
             </a>
           </nav>
@@ -282,10 +282,10 @@ export function CreditDecisionVerificationPilot() {
             verifiable proof trail without changing your production system.
           </p>
           <div className="mt-5 flex flex-wrap gap-3">
-            <a href="mailto:business@privatedao.org?subject=PrivateDAO%20Credit%20Decision%20Private%20Pilot" className={cn(buttonVariants({ size: "sm" }))}>
+            <a href="mailto:fahd@privatedao.org?subject=PrivateDAO%20Credit%20Decision%20Private%20Pilot" className={cn(buttonVariants({ size: "sm" }))}>
               Request Private Pilot
             </a>
-            <a href="mailto:business@privatedao.org?subject=PrivateDAO%20Discovery%20Call" className={cn(buttonVariants({ size: "sm", variant: "secondary" }))}>
+            <a href="mailto:fahd@privatedao.org?subject=PrivateDAO%20Discovery%20Call" className={cn(buttonVariants({ size: "sm", variant: "secondary" }))}>
               Book Discovery Call
             </a>
           </div>

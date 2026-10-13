@@ -288,7 +288,7 @@ export default function BlindPolicyVerificationPage() {
           ))}
         </div>
         <div className="mt-5 flex flex-wrap gap-3">
-          <a href="mailto:business@privatedao.org?subject=PrivateDAO%20Blind%20Verification%20Pilot" className={cn(buttonVariants({ size: "sm" }))}>
+          <a href="mailto:fahd@privatedao.org?subject=PrivateDAO%20Blind%20Verification%20Pilot" className={cn(buttonVariants({ size: "sm" }))}>
             Request Pilot
             <ArrowRight className="h-4 w-4" />
           </a>

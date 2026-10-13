@@ -44,7 +44,7 @@ const plans = [
     summary: "For dedicated deployments, custom integrations, compliance workflows, white-label, and higher capacity.",
     includes: ["Private deployment option", "Custom data connectors", "Custom proof packages", "SLA and support", "Security review support", "Organization-bound license"],
     cta: "Book Discovery Call",
-    href: "mailto:business@privatedao.org?subject=PrivateDAO%20Enterprise%20Discovery",
+    href: "mailto:fahd@privatedao.org?subject=PrivateDAO%20Enterprise%20Discovery",
   },
 ] as const;
 

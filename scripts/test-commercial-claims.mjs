@@ -9,6 +9,21 @@ const commercialSources = [
   "apps/web/src/lib/commercial-product-map.ts",
 ];
 const documentsIndexPath = "apps/web/src/app/documents/page.tsx";
+const publicContactSources = [
+  "apps/web/src/lib/site-brand.ts",
+  "apps/web/src/app/contact/page.tsx",
+  "apps/web/src/app/terms/page.tsx",
+  "apps/web/src/app/pricing/page.tsx",
+  "apps/web/src/app/investors/page.tsx",
+  "apps/web/src/app/pilots/page.tsx",
+  "apps/web/src/app/business-model/page.tsx",
+  "apps/web/src/app/auctions/page.tsx",
+  "apps/web/src/app/proof-workflows/blind-policy/page.tsx",
+  "apps/web/src/app/proof-workflows/verify/[proofId]/page.tsx",
+  "apps/web/src/components/commercial-checkout.tsx",
+  "apps/web/src/components/credit-decision-verification-pilot.tsx",
+  "apps/web/src/components/pilot-request-form.tsx",
+];
 
 const requiredClaims = [
   ["Web3-native entry path", "Already in Web3?"],
@@ -36,6 +51,7 @@ const sources = Object.fromEntries(
 );
 const allCommercialCopy = Object.values(sources).join("\n");
 const documentsIndex = await readFile(resolve(root, documentsIndexPath), "utf8");
+const publicContactCopy = await Promise.all(publicContactSources.map((relative) => readFile(resolve(root, relative), "utf8")));
 
 for (const [label, phrase] of requiredClaims) {
   assert(allCommercialCopy.includes(phrase), `Missing commercial claim: ${label}`);
@@ -48,5 +64,9 @@ for (const [relative, content] of Object.entries(sources)) {
 }
 
 assert(!/grant\s+material|reviewer\s+packet|historical\s+packet/i.test(documentsIndex), "Documents index contains retired packet copy");
+assert(
+  publicContactCopy.every((content) => !/(?:hello|support|sales|business|partners|developers|security|legal|careers|billing)@privatedao\.org/i.test(content)),
+  "Public contact surfaces must use the official fahd@privatedao.org address",
+);
 
-console.log(`Commercial claim audit: PASS (${commercialSources.length + 1} source surfaces checked)`);
+console.log(`Commercial claim audit: PASS (${commercialSources.length + publicContactSources.length + 1} source surfaces checked)`);

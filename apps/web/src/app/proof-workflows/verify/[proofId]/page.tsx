@@ -79,7 +79,7 @@ export default async function VerifyDemoProofPage({ params }: VerifyDemoPageProp
             <Link href="/proof-workflows" className="hidden text-white/66 hover:text-white sm:inline">
               Proof Workflows
             </Link>
-            <a href="mailto:business@privatedao.org?subject=PrivateDAO%20Private%20Pilot" className={cn(buttonVariants({ size: "sm" }))}>
+            <a href="mailto:fahd@privatedao.org?subject=PrivateDAO%20Private%20Pilot" className={cn(buttonVariants({ size: "sm" }))}>
               Request Pilot
             </a>
           </nav>
@@ -113,7 +113,7 @@ export default async function VerifyDemoProofPage({ params }: VerifyDemoPageProp
           <Link href="/pilots/credit-decision-verification" className={cn(buttonVariants({ size: "sm" }))}>
             Run sample verification
           </Link>
-          <a href="mailto:business@privatedao.org?subject=PrivateDAO%20Private%20Pilot" className={cn(buttonVariants({ size: "sm", variant: "secondary" }))}>
+            <a href="mailto:fahd@privatedao.org?subject=PrivateDAO%20Private%20Pilot" className={cn(buttonVariants({ size: "sm", variant: "secondary" }))}>
             Request Private Pilot
           </a>
         </div>

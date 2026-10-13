@@ -59,7 +59,7 @@ export default function BusinessModelPage() {
             Try the product
           </Link>
           <a
-            href="mailto:business@privatedao.org?subject=PrivateDAO%20Pilot"
+            href="mailto:fahd@privatedao.org?subject=PrivateDAO%20Pilot"
             className={cn(buttonVariants({ size: "sm", variant: "outline" }))}
           >
             Request a pilot

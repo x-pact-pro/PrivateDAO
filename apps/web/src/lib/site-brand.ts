@@ -10,16 +10,16 @@ export const companyLocation = "Warsaw, Poland";
 export const founderName = "Fahd Kotb";
 export const agentExchangeUrl = "https://agents.privatedao.org";
 export const contactEmails = {
-  general: "hello@privatedao.org",
-  support: "support@privatedao.org",
-  sales: "sales@privatedao.org",
-  business: "business@privatedao.org",
-  partners: "partners@privatedao.org",
-  developers: "developers@privatedao.org",
-  security: "security@privatedao.org",
-  legal: "legal@privatedao.org",
-  careers: "careers@privatedao.org",
-  billing: "billing@privatedao.org",
+  general: "fahd@privatedao.org",
+  support: "fahd@privatedao.org",
+  sales: "fahd@privatedao.org",
+  business: "fahd@privatedao.org",
+  partners: "fahd@privatedao.org",
+  developers: "fahd@privatedao.org",
+  security: "fahd@privatedao.org",
+  legal: "fahd@privatedao.org",
+  careers: "fahd@privatedao.org",
+  billing: "fahd@privatedao.org",
 } as const;
 
 export const siteKeywords = [
