@@ -1,6 +1,6 @@
 # PrivateDAO Grant Evidence Index
 
-Generated: 2026-10-13T15:36:52.849Z
+Generated: 2026-10-13T13:46:59.811Z
 
 This index covers the six commercial products only. Agent Exchange is intentionally excluded from this product matrix and is documented separately.
 

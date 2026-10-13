@@ -143,7 +143,8 @@ for (const network of networks) {
   }
 }
 
-const generatedAt = new Date().toISOString();
+// Keep the generated artifact reproducible; row-level evidence retains its own run dates.
+const generatedAt = matrix?.generatedAt ?? "unknown";
 const index = {
   schema: "privatedao.grant-evidence-index.v1",
   generatedAt,
