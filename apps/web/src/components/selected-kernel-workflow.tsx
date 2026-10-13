@@ -51,7 +51,7 @@ function SelectedKernelWorkflowInner({ product, children }: SelectedKernelWorkfl
         }
       });
     return () => { cancelled = true; };
-  }, [network]);
+  }, [capability, network]);
 
   if (!capability || !network) return <>{children}</>;
   if (network === "zcash-testnet" && checkedZcashNetwork !== network) return <div className="rounded-[14px] border border-white/10 bg-black/20 p-5 text-sm text-white/65">Checking Zcash Testnet availability...</div>;
