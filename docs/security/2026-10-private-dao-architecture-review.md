@@ -74,12 +74,27 @@ The execution-boundary review also closed two high-risk configuration paths:
 - Enterprise license issuance now requires the control-plane issuer secret;
   an unset `PRIVADAO_LICENSE_ISSUER_SECRET` cannot silently disable request
   authorization.
+- The primary-host Caddy edge injects the host-local gateway token on every
+  read-node API proxy route; the token is not exposed to browser code.
+- Production Gateway CORS now defaults to `https://privatedao.org`; wildcard
+  origin is limited to explicit development/test modes.
+- `verify-remote-primary-host.sh` now fails unless an unauthenticated
+  `/api/v1/executions/prepare` request returns HTTP 401.
+- Hyperliquid HyperEVM organizational E2E now enforces a `0.05 HYPE`
+  operational funding floor to avoid starting a multi-transaction run with
+  insufficient gas.
 
 The corresponding regression coverage passes for unauthorized execution,
 browser readiness, EVM allowlist rejection/acceptance, and the complete
 runtime typecheck. Production must provide a non-empty
 `PDAO_KERNEL_GATEWAY_TOKEN` and the EVM allowlists before enabling server-side
 EVM execution.
+
+The current live API was checked separately and still reflects the previous
+deployment: an unauthenticated prepare request returned HTTP 400 rather than
+the required 401, and the live CORS headers still advertised the old role
+header. The source fixes are committed but require the normal production
+deployment process before the remote verification can pass.
 
 The previously vulnerable `rkyv 0.7.46` dependency was replaced by the
 patched 0.8 series through the vendored MagicBlock API package. Cargo now
