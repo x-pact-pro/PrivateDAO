@@ -4309,6 +4309,16 @@ async function fetchUmbraClaimStatus(requestId: string) {
   };
 }
 
+function writeUmbraUnavailable(res: http.ServerResponse) {
+  writeJson(res, 503, {
+    ok: false,
+    source: "umbra-relayer",
+    status: "unavailable",
+    error: "Umbra relayer upstream is unavailable.",
+    retryable: true,
+  });
+}
+
 async function handlePrivateSettlementIntent(body: Record<string, unknown>) {
   const rail = stringField(body, "rail", "umbra");
   if (rail !== "umbra" && rail !== "cloak") throw new Error("rail must be umbra or cloak");
@@ -7597,23 +7607,31 @@ async function handle(req: http.IncomingMessage, res: http.ServerResponse) {
     }
 
     if (pathname === "/api/v1/umbra/relayer/info") {
-      const relayer = await fetchUmbraRelayerInfo();
-      writeJson(res, 200, {
-        ok: true,
-        source: "umbra-relayer",
-        relayer,
-        claimApi: {
-          submit: `${relayer.endpoint}/v1/claims`,
-          poll: `${relayer.endpoint}/v1/claims/{request_id}`,
-          terminalStatuses: ["completed", "failed", "timed_out"],
-        },
-      });
+      try {
+        const relayer = await fetchUmbraRelayerInfo();
+        writeJson(res, 200, {
+          ok: true,
+          source: "umbra-relayer",
+          relayer,
+          claimApi: {
+            submit: `${relayer.endpoint}/v1/claims`,
+            poll: `${relayer.endpoint}/v1/claims/{request_id}`,
+            terminalStatuses: ["completed", "failed", "timed_out"],
+          },
+        });
+      } catch {
+        writeUmbraUnavailable(res);
+      }
       return;
     }
 
     if (pathname === "/api/v1/umbra/relayer/health") {
-      const health = await fetchUmbraRelayerHealth();
-      writeJson(res, 200, { ok: true, source: "umbra-relayer", health });
+      try {
+        const health = await fetchUmbraRelayerHealth();
+        writeJson(res, 200, { ok: true, source: "umbra-relayer", health });
+      } catch {
+        writeUmbraUnavailable(res);
+      }
       return;
     }
 
