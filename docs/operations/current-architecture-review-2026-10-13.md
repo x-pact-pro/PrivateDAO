@@ -69,9 +69,13 @@ Hyperliquid EVM and HyperCore remain separate architectures. HyperEVM evidence c
 
 The committed grant evidence index currently reports:
 
-- `48 verified`: a transaction hash or appropriate proof is present in a committed evidence artifact.
+- `49 verified`: a transaction hash or appropriate proof is present in a committed evidence artifact.
 - `5 ready`: runtime/preparation evidence exists, but no product-specific broadcast proof exists.
-- `13 missing`: no independent product evidence artifact exists.
+- `12 missing`: no independent product evidence artifact exists.
+
+These are product/network rows. The separate native capability registry currently reports
+74 `testnet_verified` capability entries and 24 `testnet_ready` entries; those counts must
+not be substituted for independent product/network E2E evidence.
 
 The authoritative machine-readable index is:
 
@@ -108,7 +112,7 @@ The current repository checks include:
 
 Verified local gates at this review:
 
-- `npm run release:verify`: 19 suites PASS
+- `npm run release:verify`: 23 suites PASS in the latest completed release verification.
 - `npm run verify:security-remediation`: PASS
 - `npm run verify:product-gateway-boundary`: PASS
 - `npm run test:commercial-network-matrix`: PASS
