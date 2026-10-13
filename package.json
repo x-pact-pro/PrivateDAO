@@ -73,6 +73,8 @@
     "test:kernel-gateway:browser-readiness": "node --import tsx scripts/test-kernel-gateway-browser-readiness.mjs",
     "test:commercial-network-matrix": "node --import tsx scripts/test-commercial-network-matrix.mjs",
     "verify:11-network-e2e": "node --import tsx scripts/verify-11-network-e2e.mjs",
+    "build:grant-evidence-index": "node scripts/build-grant-evidence-index.mjs",
+    "verify:grant-evidence-index": "npm run build:grant-evidence-index && node scripts/verify-grant-evidence-index.mjs",
     "test:runtime:hypercore": "node --import tsx scripts/test-hypercore-network.mjs",
     "verify:hypercore:testnet": "node --import tsx scripts/verify-hypercore-testnet-health.mjs",
     "test:kernel:solana-payroll": "node --import tsx scripts/test-solana-payroll-kernel.mjs",
@@ -443,7 +445,7 @@
     "chai": "^4.3.6",
     "circomlib": "^2.0.5",
     "circomlibjs": "^0.1.7",
-    "mocha": "^10.2.0",
+    "mocha": "^11.7.1",
     "playwright-core": "^1.59.1",
     "snarkjs": "^0.7.6",
     "ts-mocha": "^10.0.0",
@@ -452,6 +454,7 @@
     "typescript": "^5.0.0"
   },
   "overrides": {
+    "brace-expansion": "2.1.6",
     "bigint-buffer": "file:vendor/bigint-buffer",
     "uuid": "^11.1.1",
     "ws": "^8.21.0",
