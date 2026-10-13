@@ -44,7 +44,10 @@ import { createKernelGatewayService } from "./kernel-gateway-service.ts";
 
 const host = process.env.PRIVATE_DAO_READ_NODE_HOST || "127.0.0.1";
 const port = Number(process.env.PRIVATE_DAO_READ_NODE_PORT || 8787);
-const allowedOrigin = process.env.PRIVATE_DAO_READ_ALLOWED_ORIGIN || "*";
+const runtimeMode = process.env.NODE_ENV?.trim().toLowerCase();
+const explicitlyNonProduction = runtimeMode === "development" || runtimeMode === "test";
+const allowedOrigin = process.env.PRIVATE_DAO_READ_ALLOWED_ORIGIN?.trim()
+  || (explicitlyNonProduction ? "*" : "https://privatedao.org");
 const rateWindowMs = Number(process.env.PRIVATE_DAO_READ_RATE_WINDOW_MS || 60_000);
 const rateLimit = Number(process.env.PRIVATE_DAO_READ_RATE_LIMIT || 180);
 const readNode = new PrivateDaoReadNode();

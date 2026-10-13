@@ -77,6 +77,12 @@ assert(
   "license signing and issuance must not use a repository-known fallback or optional issuer authorization",
 );
 assert(
+  readNode.includes("PRIVATE_DAO_READ_ALLOWED_ORIGIN?.trim()") &&
+    readNode.includes("https://privatedao.org") &&
+    readNode.includes("explicitlyNonProduction ? \"*\""),
+  "read-node CORS must be explicit in production and wildcard only in non-production modes",
+);
+assert(
   (caddy.match(/header_up X-PDAO-Gateway-Token \{env\.PDAO_KERNEL_GATEWAY_TOKEN\}/g) || []).length === 4,
   "every primary read-node proxy route must inject the host-local Kernel Gateway token",
 );
