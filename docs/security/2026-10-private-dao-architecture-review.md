@@ -93,8 +93,11 @@ EVM execution.
 The current live API was checked separately and still reflects the previous
 deployment: an unauthenticated prepare request returned HTTP 400 rather than
 the required 401, and the live CORS headers still advertised the old role
-header. The source fixes are committed but require the normal production
-deployment process before the remote verification can pass.
+header. The live Umbra health route also returned HTTP 500 because its devnet
+relayer hostname currently fails DNS resolution. The source now reports that
+condition as an honest retryable HTTP 503 instead of a generic 500. These
+source fixes are committed but require the normal production deployment
+process before the remote verification can pass.
 
 The previously vulnerable `rkyv 0.7.46` dependency was replaced by the
 patched 0.8 series through the vendored MagicBlock API package. Cargo now
