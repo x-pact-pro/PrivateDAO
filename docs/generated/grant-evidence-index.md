@@ -1,6 +1,6 @@
 # PrivateDAO Grant Evidence Index
 
-Generated: 2026-10-13T15:31:01.386Z
+Generated: 2026-10-13T15:32:17.745Z
 
 This index covers the six commercial products only. Agent Exchange is intentionally excluded from this product matrix and is documented separately.
 
@@ -61,7 +61,7 @@ This index covers the six commercial products only. Agent Exchange is intentiona
 | tempo-testnet | auction | **verified** | 2026-10-12T10:26:18.617Z | 0xbd14684d3a5f9169a6c93c1f78bfb6a2c39bbd49a074ded1ac16235f6be9ff2c, 0x331b0e3b895893e23e7ddbce510d2ce308025a0efd610b391e77823cbb54671a, 0x7fd3d7ee8404002f851a8d3d086b1182290fbef2e984d3b77d04facb8e4b06c4, 0x4f769c373f0d5a9dd7c412dab4152a7e38d21c46b29d551a0fee360cf7e7c22e, 0xbf49ae922c48d8640f077f8130c9f127d961ffca3a2b46968ea8262164681634, 0x557584ef4594ba5f67bff5103f9210316eeec7e8b8d58ae511075bf490141f14 | `packages/evm-verification/deployments/organizational-tempo-testnet.json` | not recorded |
 | zcash-testnet | blind-verification | **ready** | 2026-10-12T20:20:59.203Z | - | `docs/evidence/zcash-testnet-products-e2e.json` | not recorded |
 | zcash-testnet | record-verification | **ready** | 2026-10-12T20:20:59.203Z | - | `docs/evidence/zcash-testnet-products-e2e.json` | not recorded |
-| zcash-testnet | payroll | **ready** | 2026-10-12T20:20:59.203Z | - | `docs/evidence/zcash-testnet-products-e2e.json` | not recorded |
+| zcash-testnet | payroll | **verified** | 2026-10-10T12:42:21.000Z | c14158dad7761c5d3c497cf27b2a80ffa909156ba2306e18f3731e608d1521df | `packages/privatedao-runtime/evidence/zcash-testnet-payroll-settlement.json` `docs/evidence/zcash-testnet-products-e2e.json` | not recorded |
 | zcash-testnet | treasury | **ready** | 2026-10-12T20:20:59.203Z | - | `docs/evidence/zcash-testnet-products-e2e.json` | not recorded |
 | zcash-testnet | governance | **ready** | 2026-10-12T20:20:59.203Z | - | `docs/evidence/zcash-testnet-products-e2e.json` | not recorded |
 | zcash-testnet | auction | **ready** | 2026-10-12T20:20:59.203Z | - | `docs/evidence/zcash-testnet-products-e2e.json` | not recorded |

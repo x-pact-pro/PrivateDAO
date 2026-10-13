@@ -91,6 +91,10 @@ for (const [product, source, key] of solanaProofs) {
 }
 
 const zcash = readJson("docs/evidence/zcash-testnet-products-e2e.json");
+const zcashPayroll = readJson("packages/privatedao-runtime/evidence/zcash-testnet-payroll-settlement.json");
+if (zcashPayroll?.product === "payroll" && zcashPayroll.network === "zcash-testnet" && zcashPayroll.state === "reconciled") {
+  addEvidence("payroll", "zcash-testnet", "packages/privatedao-runtime/evidence/zcash-testnet-payroll-settlement.json", [zcashPayroll.transaction], zcashPayroll.verifiedAt);
+}
 for (const row of zcash?.products ?? []) {
   evidence.push({
     product: row.product,

@@ -1,6 +1,6 @@
 {
   "schema": "privatedao.grant-evidence-index.v1",
-  "generatedAt": "2026-10-13T15:31:01.386Z",
+  "generatedAt": "2026-10-13T15:32:17.745Z",
   "purpose": "Evidence-first reviewer index for six commercial products across the eleven configured testnet lanes.",
   "products": [
     "blind-verification",
@@ -941,19 +941,22 @@
     {
       "product": "payroll",
       "network": "zcash-testnet",
-      "verification": "ready",
+      "verification": "verified",
       "registryStatus": "testnet_verified",
-      "testRunAt": "2026-10-12T20:20:59.203Z",
-      "transactionHashes": [],
+      "testRunAt": "2026-10-10T12:42:21.000Z",
+      "transactionHashes": [
+        "c14158dad7761c5d3c497cf27b2a80ffa909156ba2306e18f3731e608d1521df"
+      ],
       "proofs": [],
       "evidencePaths": [
+        "packages/privatedao-runtime/evidence/zcash-testnet-payroll-settlement.json",
         "docs/evidence/zcash-testnet-products-e2e.json"
       ],
       "gitHubActionsRun": {
         "status": "not_recorded",
         "url": null
       },
-      "note": "Preparation/runtime evidence only; no broadcast proof."
+      "note": "Evidence artifact contains a transaction or proof identifier."
     },
     {
       "product": "treasury",
