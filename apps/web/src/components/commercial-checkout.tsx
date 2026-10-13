@@ -9,7 +9,7 @@ import { createTransferCheckedInstruction, getAssociatedTokenAddress, TOKEN_PROG
 
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { createSolanaBrowserConnection, sendBrowserTransaction } from "@/lib/network-adapters/solana-browser";
+import { createSolanaBrowserConnection, readSignatureStatuses, sendBrowserTransaction } from "@/lib/network-adapters/solana-browser";
 import { getSolanaRpcEndpoint } from "@/lib/solana-network";
 
 type LicenseType = "COMMUNITY" | "PROFESSIONAL" | "ORGANIZATION" | "ENTERPRISE";
@@ -206,7 +206,7 @@ export function CommercialCheckout() {
   async function waitForConfirmation(signature: string, timeoutMs = 120_000) {
     const deadline = Date.now() + timeoutMs;
     while (Date.now() < deadline) {
-      const status = (await solanaConnection.getSignatureStatuses([signature], { searchTransactionHistory: true })).value[0];
+      const status = (await readSignatureStatuses(solanaConnection, [signature], { searchTransactionHistory: true })).value[0];
       if (status?.err) throw new Error(`Solana transaction failed: ${JSON.stringify(status.err)}`);
       if (status?.confirmationStatus === "confirmed" || status?.confirmationStatus === "finalized") return status;
       await new Promise((resolve) => setTimeout(resolve, 1_500));
