@@ -22,6 +22,7 @@ const kernelGateway = read("scripts/kernel-gateway-service.ts");
 const readNode = read("scripts/run-read-node.ts");
 const caddy = read("deploy/primary-host/Caddyfile");
 const primaryEnv = read("deploy/primary-host/.env.example");
+const primaryPrepare = read("scripts/prepare-primary-host-stack.sh");
 
 assert(
   demo.includes("function makeCommitment(vote: boolean, salt: Buffer, voter: PublicKey, proposal: PublicKey): Buffer"),
@@ -105,6 +106,12 @@ assert(
     primaryEnv.includes("PDAO_KERNEL_EVM_BROADCAST_ENABLED=0") &&
     primaryEnv.includes("PDAO_ZCASH_BROADCAST_ENABLED=0"),
   "primary production env example must keep gateway auth and broadcast fail-closed",
+);
+assert(
+  primaryPrepare.includes("Production primary-host requires PDAO_KERNEL_GATEWAY_TOKEN") &&
+    primaryPrepare.includes("Production primary-host requires a specific PDAO_KERNEL_GATEWAY_ALLOWED_ORIGIN") &&
+    primaryPrepare.includes('"$ALLOW_UNAUTHENTICATED_VALUE" == "1"'),
+  "primary-host preparation must reject production stacks with missing gateway auth or wildcard origin",
 );
 
 assert(
