@@ -3902,7 +3902,8 @@ function issueEnterpriseLicense(body: Record<string, unknown>, req: http.Incomin
   const signingKey = process.env.PRIVATEDAO_ENTERPRISE_LICENSE_SIGNING_PRIVATE_KEY_PEM?.trim() || "";
   if (!signingKey && (process.env.PRIVADAO_LICENSE_SIGNER_PROVIDER || "env-ed25519").trim().toLowerCase() !== "aws-kms") return { ok: false, status: "license-issuer-not-configured", error: "Enterprise license signing is not configured on the control plane." };
   const issuerSecret = process.env.PRIVATEDAO_LICENSE_ISSUER_SECRET?.trim() || "";
-  if (issuerSecret && req.headers["x-privatedao-license-issuer"] !== issuerSecret) {
+  if (!issuerSecret) return { ok: false, status: "license-issuer-not-configured", error: "License issuance requires a configured control-plane issuer credential." };
+  if (req.headers["x-privatedao-license-issuer"] !== issuerSecret) {
     return { ok: false, status: "license-issuer-unauthorized", error: "License issuance requires the control-plane issuer credential." };
   }
   const issuedAt = new Date();

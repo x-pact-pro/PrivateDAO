@@ -71,6 +71,9 @@ The execution-boundary review also closed two high-risk configuration paths:
   arbitrary contract/function when server signing is enabled.
 - The legacy HMAC license helper no longer has a repository-known fallback
   secret; it fails closed unless `PD_LICENSE_SIGNING_SECRET` is injected.
+- Enterprise license issuance now requires the control-plane issuer secret;
+  an unset `PRIVADAO_LICENSE_ISSUER_SECRET` cannot silently disable request
+  authorization.
 
 The corresponding regression coverage passes for unauthorized execution,
 browser readiness, EVM allowlist rejection/acceptance, and the complete
