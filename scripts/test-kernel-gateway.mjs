@@ -18,7 +18,7 @@ const child = spawn(process.execPath, ["--import", "tsx", "scripts/kernel-gatewa
   detached: true,
 });
 
-const request = (method, path, body, token = "gateway-test-token") => new Promise((resolve, reject) => {
+const request = (method, path, body, token = "gateway-test-token", origin) => new Promise((resolve, reject) => {
   const req = http.request({
     host: "127.0.0.1",
     port,
@@ -27,6 +27,7 @@ const request = (method, path, body, token = "gateway-test-token") => new Promis
     headers: {
       "content-type": "application/json",
       ...(token ? { "x-pdao-gateway-token": token } : {}),
+      ...(origin ? { origin } : {}),
     },
   }, (res) => {
     let data = "";
@@ -53,6 +54,8 @@ try {
   const health = await waitForHealth();
   const unauthorized = await request("POST", "/v1/executions/prepare", { intent: {} }, null);
   assert.equal(unauthorized.status, 401, "execution routes must require the gateway token");
+  const crossOrigin = await request("POST", "/v1/executions/prepare", { intent: {} }, "gateway-test-token", "https://evil.example");
+  assert.equal(crossOrigin.status, 401, "execution routes must reject a cross-origin request even with an edge token");
   const prefixedHealth = await request("GET", "/api/healthz");
   assert.equal(prefixedHealth.status, 200);
   const zcashConfigured = Boolean(process.env.PDAO_ZCASH_ZALLET_BINARY && process.env.PDAO_ZCASH_ZALLET_DATA_DIR && process.env.PDAO_ZCASH_ZALLET_CONFIG);

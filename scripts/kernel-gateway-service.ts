@@ -495,7 +495,9 @@ export class KernelGatewayService {
 
   private authorized(req: http.IncomingMessage): boolean {
     if (this.allowUnauthenticated) return true;
-    return this.requiredToken.length > 0 && req.headers["x-pdao-gateway-token"] === this.requiredToken;
+    if (this.requiredToken.length === 0 || req.headers["x-pdao-gateway-token"] !== this.requiredToken) return false;
+    const requestOrigin = typeof req.headers.origin === "string" ? req.headers.origin.trim() : "";
+    return !requestOrigin || this.allowedOrigin === "*" || requestOrigin === this.allowedOrigin;
   }
 
   private roleFrom(_req: http.IncomingMessage, _body: JsonRecord): ProtocolRole {

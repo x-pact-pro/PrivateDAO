@@ -65,10 +65,11 @@ assert(
 );
 
 assert(
-  kernelGateway.includes("this.requiredToken.length > 0 && req.headers[\"x-pdao-gateway-token\"] === this.requiredToken") &&
+  kernelGateway.includes("this.requiredToken.length === 0 || req.headers[\"x-pdao-gateway-token\"] !== this.requiredToken") &&
     kernelGateway.includes("const explicitlyNonProduction = runtimeMode === \"development\" || runtimeMode === \"test\"") &&
-    kernelGateway.includes("https://privatedao.org"),
-  "Kernel Gateway execution must fail closed unless a token is configured or explicit non-production mode is active",
+    kernelGateway.includes("https://privatedao.org") &&
+    kernelGateway.includes("requestOrigin === this.allowedOrigin"),
+  "Kernel Gateway execution must fail closed unless token and browser origin authorization are valid",
 );
 assert(
   !readNode.includes('process.env.PD_LICENSE_SIGNING_SECRET || "privatedao-public-review-license-boundary"') &&
