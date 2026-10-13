@@ -143,7 +143,6 @@ export class KernelGatewayService {
     );
 
     const evmNetworks: readonly NetworkId[] = [
-      "solana-devnet",
       "ethereum-sepolia",
       "arbitrum-sepolia",
       "tempo-testnet",
@@ -152,7 +151,7 @@ export class KernelGatewayService {
       "robinhood-testnet",
       "hyperliquid-testnet",
     ];
-    const kernelNetworks: readonly NetworkId[] = [...evmNetworks, "zcash-testnet", "stellar-testnet", "hypercore-testnet"];
+    const kernelNetworks: readonly NetworkId[] = ["solana-devnet", ...evmNetworks, "zcash-testnet", "stellar-testnet", "hypercore-testnet"];
     const zcashConfigured = Boolean(
       process.env.PDAO_ZCASH_ZALLET_BINARY?.trim()
       && process.env.PDAO_ZCASH_ZALLET_DATA_DIR?.trim()
