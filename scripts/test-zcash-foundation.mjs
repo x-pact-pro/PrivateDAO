@@ -110,6 +110,8 @@ if (method === "getwalletinfo") {
   const guardedPrepared = await guarded.prepare(guardedIntent);
   await assert.rejects(() => guarded.submit(guardedPrepared, guardedPrepared.unsignedPayload), /Zcash broadcast is disabled/);
   assert.doesNotMatch(await readFile(callsPath, "utf8"), /z_sendmany/);
+  await assert.rejects(() => guarded.prepare({ ...guardedIntent, context: { ...guardedIntent.context, requestId: "zcash-invalid-address", idempotencyKey: "zcash-invalid-address" }, payload: { ...guardedIntent.payload, fromAddress: "  " } }), /source and at least one recipient/);
+  await assert.rejects(() => guarded.prepare({ ...guardedIntent, context: { ...guardedIntent.context, requestId: "zcash-invalid-confirmations", idempotencyKey: "zcash-invalid-confirmations" }, payload: { ...guardedIntent.payload, minConfirmations: 0 } }), /minConfirmations must be a positive safe integer/);
 
   const enabled = new ZalletCliTransport({
     binaryPath: fakeZallet,

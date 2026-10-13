@@ -244,13 +244,16 @@ function classifyHealthFailure(error: unknown): string {
 function parsePayload(value: unknown): ZcashSendPayload {
   if (!value || typeof value !== "object") throw new Error("Zcash payload must be an object.");
   const payload = value as Partial<ZcashSendPayload>;
-  if (payload.kind !== "zallet-send" || typeof payload.fromAddress !== "string" || !Array.isArray(payload.recipients) || payload.recipients.length === 0) {
+  if (payload.kind !== "zallet-send" || typeof payload.fromAddress !== "string" || payload.fromAddress.trim().length === 0 || /\s/.test(payload.fromAddress) || !Array.isArray(payload.recipients) || payload.recipients.length === 0) {
     throw new Error("Zcash payload must contain a source and at least one recipient.");
   }
   for (const recipient of payload.recipients) {
-    if (!recipient || typeof recipient.address !== "string" || !/^\d+$/.test(recipient.atomicAmount)) {
+    if (!recipient || typeof recipient.address !== "string" || recipient.address.trim().length === 0 || /\s/.test(recipient.address) || !/^\d+$/.test(recipient.atomicAmount)) {
       throw new Error("Zcash recipients must contain a valid address and atomic amount.");
     }
+  }
+  if (payload.minConfirmations !== undefined && (!Number.isSafeInteger(payload.minConfirmations) || payload.minConfirmations < 1)) {
+    throw new Error("Zcash minConfirmations must be a positive safe integer.");
   }
   return payload as ZcashSendPayload;
 }
