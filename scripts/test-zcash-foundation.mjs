@@ -128,6 +128,21 @@ if (method === "getwalletinfo") {
   const enabledReceipt = await enabled.receipt(enabledPrepared.executionId);
   assert.equal(enabledReceipt.state, "finalized");
   assert.equal(enabledReceipt.blockNumber, "101");
+
+  const oversized = new ZalletCliTransport({
+    binaryPath: fakeZallet,
+    dataDirectory: tmp,
+    configPath: fakeConfig,
+    network: "zcash-testnet",
+    explorerBaseUrl: "https://explorer.testnet.z.cash",
+    broadcastEnabled: true,
+  });
+  const oversizedPrepared = await oversized.prepare({
+    ...guardedIntent,
+    context: { ...guardedIntent.context, requestId: "zcash-oversized-send", idempotencyKey: "zcash-oversized-send" },
+    payload: { ...guardedIntent.payload, recipients: [{ address: "utest1recipient", atomicAmount: "9007199254740992" }] },
+  });
+  await assert.rejects(() => oversized.submit(oversizedPrepared, oversizedPrepared.unsignedPayload), /exact RPC numeric range/);
 } finally {
   await rm(tmp, { recursive: true, force: true });
 }

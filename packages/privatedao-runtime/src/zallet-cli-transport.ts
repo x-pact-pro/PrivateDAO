@@ -258,6 +258,7 @@ function parsePayload(value: unknown): ZcashSendPayload {
 function atomicToZec(value: string): number {
   const atomic = BigInt(value);
   if (atomic <= 0n) throw new Error("Zcash amount must be positive.");
+  if (atomic > BigInt(Number.MAX_SAFE_INTEGER)) throw new Error("Zcash amount exceeds the exact RPC numeric range.");
   const whole = atomic / 100_000_000n;
   const fraction = (atomic % 100_000_000n).toString().padStart(8, "0");
   return Number(`${whole}.${fraction}`);
