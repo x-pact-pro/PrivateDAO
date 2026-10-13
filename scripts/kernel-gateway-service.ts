@@ -137,7 +137,7 @@ export class KernelGatewayService {
       || process.env.PDAO_KERNEL_GATEWAY_ALLOWED_ORIGIN?.trim()
       || (explicitlyNonProduction ? "*" : "https://privatedao.org");
     this.requiredToken = options.requiredToken ?? process.env.PDAO_KERNEL_GATEWAY_TOKEN?.trim() ?? "";
-    this.maxBodyBytes = options.maxBodyBytes || Number(process.env.PDAO_KERNEL_GATEWAY_MAX_BODY_BYTES || 1_000_000);
+    this.maxBodyBytes = parseMaxBodyBytes(options.maxBodyBytes ?? process.env.PDAO_KERNEL_GATEWAY_MAX_BODY_BYTES);
     this.role = parseGatewayRole(options.role ?? process.env.PDAO_KERNEL_GATEWAY_ROLE);
     this.allowUnauthenticated = explicitlyNonProduction && (
       options.allowUnauthenticated === true
@@ -465,8 +465,7 @@ export class KernelGatewayService {
       this.writeJson(res, 404, { ok: false, error: "Unknown execution route." });
       return true;
     } catch (error) {
-      const message = error instanceof Error ? error.message : "Kernel gateway request failed.";
-      this.writeJson(res, 400, { ok: false, error: message });
+      this.writeJson(res, 400, publicGatewayError(error));
       return true;
     }
   }
@@ -553,4 +552,26 @@ function parseGatewayRole(value: string | undefined): ProtocolRole {
   if (!role) return "maker";
   if (role === "maker" || role === "checker" || role === "auditor" || role === "admin" || role === "agent") return role;
   throw new Error("PDAO_KERNEL_GATEWAY_ROLE must be maker, checker, auditor, admin, or agent.");
+}
+
+function parseMaxBodyBytes(value: number | string | undefined): number {
+  const parsed = typeof value === "number" ? value : Number(value ?? 1_000_000);
+  if (!Number.isFinite(parsed) || parsed < 1) return 1_000_000;
+  return Math.min(Math.floor(parsed), 10_000_000);
+}
+
+function publicGatewayError(error: unknown): JsonRecord {
+  const code = isRecord(error) && typeof error.code === "string" ? error.code : undefined;
+  const messages: Record<string, string> = {
+    INVALID_INTENT: "Invalid execution request.",
+    INTENT_EXPIRED: "Execution request has expired.",
+    DUPLICATE_IDEMPOTENCY_KEY: "Execution request was already used.",
+    PROVIDER_NOT_FOUND: "No provider is available for this request.",
+    CAPABILITY_UNSUPPORTED: "The requested capability is not supported.",
+    UNSUPPORTED_NETWORK: "The selected network is not available for this request.",
+    EXECUTION_NOT_FOUND: "Execution was not found.",
+    INVALID_STATE: "Execution is not in a valid state for this request.",
+    PROVIDER_FAILURE: "Execution provider failed.",
+  };
+  return { ok: false, error: code && messages[code] ? messages[code] : "Kernel gateway request failed.", ...(code ? { code } : {}) };
 }
