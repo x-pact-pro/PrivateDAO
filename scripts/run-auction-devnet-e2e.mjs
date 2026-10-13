@@ -3,8 +3,8 @@ import path from "node:path";
 import crypto from "node:crypto";
 import { createRequire } from "node:module";
 import { Connection, Keypair, PublicKey, SystemProgram, Transaction } from "@solana/web3.js";
+import nacl from "tweetnacl";
 const require = createRequire(import.meta.url);
-const nacl = require("../apps/web/node_modules/tweetnacl/nacl-fast.js");
 const { AnchorProvider, BN, Program, Wallet } = require("@coral-xyz/anchor");
 const {
   DELEGATION_PROGRAM_ID,

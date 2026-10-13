@@ -434,6 +434,7 @@
     "bigint-buffer": "file:vendor/bigint-buffer",
     "dotenv": "^16.4.5",
     "jose": "^6.2.12",
+    "tweetnacl": "1.0.3",
     "viem": "2.56.6"
   },
   "devDependencies": {
