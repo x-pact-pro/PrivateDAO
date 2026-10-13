@@ -23,7 +23,7 @@ The live site is therefore reachable but behind the current source branch for th
 ## Current source evidence
 
 - Branch: `codex/pdao-holder-access`
-- Latest source commit at this record: `8c43d0829`
+- Latest source commit at this record: `af170ad38`
 - Release verification: 19 suites passing, including the grant evidence index.
 - Production dependency audit: no high or critical findings; remaining low/moderate findings are development/upstream dependency findings documented by `npm audit`.
 

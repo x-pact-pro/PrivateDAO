@@ -69,9 +69,9 @@ Hyperliquid EVM and HyperCore remain separate architectures. HyperEVM evidence c
 
 The committed grant evidence index currently reports:
 
-- `47 verified`: a transaction hash or appropriate proof is present in a committed evidence artifact.
+- `48 verified`: a transaction hash or appropriate proof is present in a committed evidence artifact.
 - `5 ready`: runtime/preparation evidence exists, but no product-specific broadcast proof exists.
-- `14 missing`: no independent product evidence artifact exists.
+- `13 missing`: no independent product evidence artifact exists.
 
 The authoritative machine-readable index is:
 
