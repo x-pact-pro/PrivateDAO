@@ -1,6 +1,6 @@
 {
   "schema": "privatedao.grant-evidence-index.v1",
-  "generatedAt": "2026-10-13T15:26:59.744Z",
+  "generatedAt": "2026-10-13T15:30:40.225Z",
   "purpose": "Evidence-first reviewer index for six commercial products across the eleven configured testnet lanes.",
   "products": [
     "blind-verification",

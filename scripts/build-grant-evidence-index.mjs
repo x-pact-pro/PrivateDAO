@@ -98,6 +98,10 @@ for (const product of ["record-verification", "blind-verification"]) {
 }
 
 const evidenceFor = (product, network) => evidence.filter((item) => item.product === product && item.network === network);
+const actionRunUrl = process.env.GITHUB_RUN_URL
+  || (process.env.GITHUB_SERVER_URL && process.env.GITHUB_REPOSITORY && process.env.GITHUB_RUN_ID
+    ? `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`
+    : null);
 const rows = [];
 for (const network of networks) {
   for (const product of products) {
@@ -115,7 +119,7 @@ for (const network of networks) {
       transactionHashes: actual?.hashes ?? [],
       proofs: actual?.proofs ?? [],
       evidencePaths: [...new Set(found.map((item) => item.source))],
-      gitHubActionsRun: { status: "not_recorded", url: null },
+      gitHubActionsRun: actionRunUrl ? { status: "recorded", url: actionRunUrl } : { status: "not_recorded", url: null },
       note: actual ? "Evidence artifact contains a transaction or proof identifier." : prepared ? "Preparation/runtime evidence only; no broadcast proof." : "No product-specific evidence artifact found.",
     });
   }

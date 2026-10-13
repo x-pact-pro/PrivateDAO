@@ -15,6 +15,7 @@ for (const row of index.rows) {
     assert(row.evidencePaths.length > 0, `${row.product}/${row.network} verified without evidence path`);
   }
   if (row.verification === "missing") assert(row.note.includes("No product-specific"), `${row.product}/${row.network} missing row is unclear`);
-  assert(row.gitHubActionsRun.status === "not_recorded" || typeof row.gitHubActionsRun.url === "string", `${row.product}/${row.network} invalid CI evidence`);
+  assert(["not_recorded", "recorded"].includes(row.gitHubActionsRun.status), `${row.product}/${row.network} invalid CI evidence status`);
+  if (row.gitHubActionsRun.status === "recorded") assert(/^https:\/\/github\.com\/[^/]+\/[^/]+\/actions\/runs\/\d+$/.test(row.gitHubActionsRun.url), `${row.product}/${row.network} invalid CI run URL`);
 }
 console.log(`[grant-evidence-index] PASS rows=${index.rows.length} verified=${index.rows.filter((row) => row.verification === "verified").length} ready=${index.rows.filter((row) => row.verification === "ready").length} missing=${index.rows.filter((row) => row.verification === "missing").length}`);

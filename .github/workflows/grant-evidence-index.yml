@@ -1,0 +1,36 @@
+name: Grant evidence index
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, canonical-live]
+    paths:
+      - "docs/evidence/**"
+      - "docs/generated/native-capability-matrix-20260911.json"
+      - "packages/evm-verification/deployments/**"
+      - "scripts/build-grant-evidence-index.mjs"
+      - "scripts/verify-grant-evidence-index.mjs"
+      - "package.json"
+      - "package-lock.json"
+      - ".github/workflows/grant-evidence-index.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  evidence-index:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - run: npm run verify:grant-evidence-index
+      - uses: actions/upload-artifact@v4
+        with:
+          name: privatedao-grant-evidence-index
+          path: |
+            docs/generated/grant-evidence-index.json
+            docs/generated/grant-evidence-index.md
