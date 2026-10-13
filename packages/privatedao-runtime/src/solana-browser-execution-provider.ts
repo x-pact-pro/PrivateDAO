@@ -110,7 +110,9 @@ export class SolanaBrowserExecutionProvider implements KernelProvider {
       throw new Error(`Solana transaction failed: ${record.signature}`);
     }
     const accountKeys = Array.isArray(transaction.transaction?.message?.accountKeys) ? transaction.transaction.message.accountKeys : [];
-    if (!accountKeys.includes(GOVERNANCE_PROGRAM_ID)) throw new Error("Solana receipt does not reference the PrivateDAO governance program.");
+    const keyValues = accountKeys.map((entry: unknown) => typeof entry === "string" ? entry : (entry && typeof entry === "object" && "pubkey" in entry && typeof entry.pubkey === "string" ? entry.pubkey : ""));
+    if (!keyValues.includes(GOVERNANCE_PROGRAM_ID)) throw new Error("Solana receipt does not reference the PrivateDAO governance program.");
+    if (!keyValues.includes(record.prepared.unsignedPayload.account)) throw new Error("Solana receipt does not reference the prepared wallet account.");
     record.state = "confirmed";
     record.receipt = {
       executionId,

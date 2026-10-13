@@ -85,6 +85,12 @@ type EvmProviderEntry = {
 
 type KernelViemPublicClient = {
   getChainId(): Promise<number>;
+  getTransaction(input: { hash: `0x${string}` }): Promise<{
+    chainId?: number | bigint;
+    from: `0x${string}`;
+    to: `0x${string}` | null;
+    input: `0x${string}`;
+  } | null>;
   waitForTransactionReceipt(input: { hash: `0x${string}`; timeout?: number }): Promise<{ status: "success" | "reverted"; blockNumber: bigint }>;
   estimateContractGas(input: Record<string, unknown>): Promise<bigint>;
   getGasPrice(): Promise<bigint>;

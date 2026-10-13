@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 const { SolanaBrowserExecutionProvider } = await import("../packages/privatedao-runtime/src/solana-browser-execution-provider.ts");
 
 const programId = "EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva";
+const account = "11111111111111111111111111111111";
 const calls = [];
 const fetchImpl = async (_input, init) => {
   const request = JSON.parse(init.body);
@@ -11,7 +12,7 @@ const fetchImpl = async (_input, init) => {
     jsonrpc: "2.0",
     id: request.id,
     result: request.method === "getTransaction"
-      ? { slot: 123, meta: { err: null }, transaction: { message: { accountKeys: [programId] } } }
+      ? { slot: 123, meta: { err: null }, transaction: { message: { accountKeys: [programId, account] } } }
       : null,
   }), { status: 200, headers: { "content-type": "application/json" } });
 };
@@ -25,7 +26,7 @@ const intent = {
     capability: "governance.proposal.execute",
     network: "solana-devnet",
   },
-  payload: { kind: "solana-browser-transaction", operation: "governance.proposal.execute", account: "11111111111111111111111111111111", programId },
+  payload: { kind: "solana-browser-transaction", operation: "governance.proposal.execute", account, programId },
   accounts: [],
 };
 
@@ -46,5 +47,20 @@ await assert.rejects(
   provider.prepare({ ...intent, payload: { ...intent.payload, programId: "11111111111111111111111111111111" } }),
   /unapproved program/,
 );
+
+const mismatchProvider = new SolanaBrowserExecutionProvider(async (_input, init) => {
+  const request = JSON.parse(init.body);
+  return new Response(JSON.stringify({
+    jsonrpc: "2.0",
+    id: request.id,
+    result: request.method === "getTransaction"
+      ? { slot: 124, meta: { err: null }, transaction: { message: { accountKeys: [programId] } } }
+      : null,
+  }), { status: 200, headers: { "content-type": "application/json" } });
+}, "https://devnet.example.test");
+const mismatchIntent = { ...intent, context: { ...intent.context, requestId: "solana-browser-mismatch", idempotencyKey: "solana-browser-mismatch-key" } };
+const mismatchPrepared = await mismatchProvider.prepare(mismatchIntent);
+await mismatchProvider.submit(mismatchPrepared, { kind: "browser-solana-transaction", signature: "5Vf4n9qK2q8m6p7x8s9t2u3v4w5y6z7A8B9C" });
+await assert.rejects(() => mismatchProvider.receipt(mismatchPrepared.executionId), /prepared wallet account/);
 
 console.log("SOLANA_BROWSER_PROVIDER: PASS");

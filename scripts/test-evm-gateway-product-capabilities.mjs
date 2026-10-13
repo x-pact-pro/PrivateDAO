@@ -1,11 +1,23 @@
 import assert from "node:assert/strict";
+import { encodeFunctionData, parseAbi } from "viem";
 import { ViemEvmTransport } from "../packages/privatedao-runtime/src/evm-viem-transport.ts";
 import { BrowserEvmTransport } from "../packages/privatedao-runtime/src/browser-evm-transport.ts";
 
 const signer = "0x1111111111111111111111111111111111111111";
+const browserAccount = "0x2222222222222222222222222222222222222222";
+const browserAbi = parseAbi(["function createProposal(bytes32,bytes32,uint64,uint64,uint256)"]);
+const browserArgs = ["0x" + "05".repeat(32), "0x" + "06".repeat(32), 100, 200, 1];
 const clients = {
   publicClient: {
     async getChainId() { return 84532; },
+    async getTransaction() {
+      return {
+        chainId: 84532,
+        from: browserAccount,
+        to: "0x9887bcfe7daad364202d5d3102de180c389ecb20",
+        input: encodeFunctionData({ abi: browserAbi, functionName: "createProposal", args: browserArgs }),
+      };
+    },
     async waitForTransactionReceipt() { return { status: "success", blockNumber: 42n }; },
     async estimateContractGas() { return 100000n; },
     async getGasPrice() { return 1n; },
@@ -35,7 +47,7 @@ const baseIntent = (capability, payload) => ({
 const proposal = await transport.prepare(baseIntent("governance.proposal.execute", {
   kind: "contract-write",
   address: "0x9887bcfe7daad364202d5d3102de180c389ecb20",
-  abi: ["function createProposal(bytes32,bytes32,uint64,uint64,uint256)"],
+    abi: browserAbi,
   functionName: "createProposal",
   args: ["0x" + "01".repeat(32), "0x" + "02".repeat(32), 100, 200, 1],
 }));
@@ -95,10 +107,10 @@ const browserTransport = new BrowserEvmTransport(clients.publicClient, "base-sep
 const browserPreparation = await browserTransport.prepare(baseIntent("governance.proposal.execute", {
   kind: "contract-write",
   address: "0x9887bcfe7daad364202d5d3102de180c389ecb20",
-  abi: ["function createProposal(bytes32,bytes32,uint64,uint64,uint256)"],
+  abi: browserAbi,
   functionName: "createProposal",
-  args: ["0x" + "05".repeat(32), "0x" + "06".repeat(32), 100, 200, 1],
-  account: "0x2222222222222222222222222222222222222222",
+  args: browserArgs,
+  account: browserAccount,
 }));
 assert.equal(browserPreparation.signingMode, "browser");
 assert.equal(browserPreparation.requiredSigners[0].address, "0x2222222222222222222222222222222222222222");
@@ -110,5 +122,24 @@ assert.deepEqual(browserSubmission.signatures, ["0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
 const browserReceipt = await browserTransport.receipt(browserPreparation.executionId);
 assert.equal(browserReceipt.network, "base-sepolia");
 assert.equal(browserReceipt.provider, "privatedao-browser-evm");
+
+const mismatchedClient = {
+  ...clients.publicClient,
+  async getTransaction() {
+    const transaction = await clients.publicClient.getTransaction();
+    return { ...transaction, from: signer };
+  },
+};
+const mismatchedTransport = new BrowserEvmTransport(mismatchedClient, "base-sepolia", "84532", "https://sepolia.basescan.org", "ETH");
+const mismatchedPreparation = await mismatchedTransport.prepare(baseIntent("governance.proposal.execute", {
+  kind: "contract-write",
+  address: "0x9887bcfe7daad364202d5d3102de180c389ecb20",
+  abi: browserAbi,
+  functionName: "createProposal",
+  args: browserArgs,
+  account: browserAccount,
+}));
+await mismatchedTransport.submit(mismatchedPreparation, { kind: "browser-evm-transaction", hash: "0xcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc" });
+await assert.rejects(() => mismatchedTransport.receipt(mismatchedPreparation.executionId), /signer does not match/);
 
 console.log("EVM_GATEWAY_PRODUCT_CAPABILITIES: PASS");

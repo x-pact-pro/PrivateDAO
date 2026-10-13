@@ -6,6 +6,7 @@ import type {
 } from "./index.js";
 import type { FeeEstimate } from "./protocol.js";
 import type { EvmTransport } from "./evm-network.js";
+import { encodeFunctionData, type Abi } from "viem";
 
 export type BrowserEvmSignedPayload = {
   kind: "browser-evm-transaction";
@@ -14,6 +15,12 @@ export type BrowserEvmSignedPayload = {
 
 type BrowserEvmPublicClient = {
   getChainId(): Promise<number>;
+  getTransaction(input: { hash: `0x${string}` }): Promise<{
+    chainId?: number | bigint;
+    from: `0x${string}`;
+    to: `0x${string}` | null;
+    input: `0x${string}`;
+  } | null>;
   waitForTransactionReceipt(input: { hash: `0x${string}`; timeout?: number }): Promise<{ status: "success" | "reverted"; blockNumber: bigint }>;
   estimateContractGas(input: Record<string, unknown>): Promise<bigint>;
   getGasPrice(): Promise<bigint>;
@@ -109,6 +116,8 @@ export class BrowserEvmTransport implements EvmTransport {
     const record = this.executions.get(executionId);
     if (!record?.signature) throw new Error("Browser EVM execution has not been submitted.");
     if (record.receipt) return record.receipt as ExecutionReceipt<TResult>;
+    const transaction = await this.publicClient.getTransaction({ hash: record.signature });
+    assertPreparedTransaction(record.prepared.unsignedPayload, transaction, this.chainId);
     const chainReceipt = await this.publicClient.waitForTransactionReceipt({ hash: record.signature, timeout: RECEIPT_TIMEOUT_MS });
     if (chainReceipt.status !== "success") {
       record.state = "failed";
@@ -158,4 +167,25 @@ function parseSignedPayload(value: unknown): BrowserEvmSignedPayload {
     throw new Error("Browser wallet submission must contain a valid transaction hash.");
   }
   return payload as BrowserEvmSignedPayload;
+}
+
+function assertPreparedTransaction(
+  payload: BrowserEvmContractWritePayload,
+  transaction: Awaited<ReturnType<BrowserEvmPublicClient["getTransaction"]>>,
+  expectedChainId: string,
+): void {
+  if (!transaction) throw new Error("Browser wallet transaction was not found on the selected network.");
+  if (transaction.chainId !== undefined && String(transaction.chainId) !== expectedChainId) {
+    throw new Error("Browser wallet transaction was sent to the wrong network.");
+  }
+  if (transaction.from.toLowerCase() !== payload.account.toLowerCase()) {
+    throw new Error("Browser wallet transaction signer does not match the prepared account.");
+  }
+  if (transaction.to?.toLowerCase() !== payload.address.toLowerCase()) {
+    throw new Error("Browser wallet transaction target does not match the prepared contract.");
+  }
+  const expectedInput = encodeFunctionData({ abi: payload.abi as Abi, functionName: payload.functionName, args: payload.args as readonly unknown[] });
+  if (transaction.input.toLowerCase() !== expectedInput.toLowerCase()) {
+    throw new Error("Browser wallet transaction data does not match the prepared operation.");
+  }
 }
