@@ -1,0 +1,115 @@
+{
+  "schema": "privatedao.zcash-testnet-products-e2e.v1",
+  "network": "zcash-testnet",
+  "environment": "testnet",
+  "generatedAt": "2026-10-14T08:42:58.600Z",
+  "broadcastEnabled": true,
+  "wallet": {
+    "implementation": "Zallet 0.1.0-beta.3",
+    "backend": "Zebra",
+    "walletSync": "finalized",
+    "spendableBalanceZatAfterRun": "12415000"
+  },
+  "products": [
+    {
+      "product": "blind-verification",
+      "capability": "verification.blind.prove",
+      "status": "pass",
+      "executionId": "zcash-zcash-testnet-e2e-1791966459953",
+      "signature": "64152d5449fbe46dfc7c9e165ad964b2efb1ff101096904a9bff9c7ba74dcb78",
+      "blockNumber": "4500734",
+      "explorerUrl": "https://explorer.testnet.z.cash/tx/64152d5449fbe46dfc7c9e165ad964b2efb1ff101096904a9bff9c7ba74dcb78",
+      "reconciliation": { "expectedRecipients": 1, "settledRecipients": 1, "failedRecipients": 0, "duplicateRecipients": 0, "atomicAmount": "10000" }
+    },
+    {
+      "product": "record-verification",
+      "capability": "verification.record.create",
+      "status": "pass",
+      "executionId": "zcash-zcash-testnet-e2e-1791966292737",
+      "signature": "29951bb30a33b5841fae89663e739bf009806f79264eaf2c74f63b9a50fc2176",
+      "blockNumber": "4500731",
+      "explorerUrl": "https://explorer.testnet.z.cash/tx/29951bb30a33b5841fae89663e739bf009806f79264eaf2c74f63b9a50fc2176",
+      "reconciliation": { "expectedRecipients": 1, "settledRecipients": 1, "failedRecipients": 0, "duplicateRecipients": 0, "atomicAmount": "10000" }
+    },
+    {
+      "product": "record-verification",
+      "capability": "verification.record.verify",
+      "status": "pass",
+      "executionId": "zcash-zcash-testnet-e2e-1791966952763",
+      "signature": "748d3a159deb91443629ce9a1ece67cffe8081b46113991ec3463f5f571ad3c2",
+      "blockNumber": "4500747",
+      "explorerUrl": "https://explorer.testnet.z.cash/tx/748d3a159deb91443629ce9a1ece67cffe8081b46113991ec3463f5f571ad3c2",
+      "reconciliation": { "expectedRecipients": 1, "settledRecipients": 1, "failedRecipients": 0, "duplicateRecipients": 0, "atomicAmount": "10000" }
+    },
+    {
+      "product": "payroll",
+      "capability": "payroll.calculate",
+      "status": "pass",
+      "executionId": "zcash-zcash-testnet-e2e-1791967000618",
+      "signature": "0255cd53117ea2889c4caf4c2425136c5012ddfe63aac0421f98e391b1272ac1",
+      "blockNumber": "4500754",
+      "explorerUrl": "https://explorer.testnet.z.cash/tx/0255cd53117ea2889c4caf4c2425136c5012ddfe63aac0421f98e391b1272ac1",
+      "reconciliation": { "expectedRecipients": 1, "settledRecipients": 1, "failedRecipients": 0, "duplicateRecipients": 0, "atomicAmount": "10000" }
+    },
+    {
+      "product": "payroll",
+      "capability": "payroll.approve",
+      "status": "pass",
+      "executionId": "zcash-zcash-testnet-e2e-1791967140102",
+      "signature": "a1d259e476c5b08fdaf034cfa58e34100794efa6e03bc0a1e309619e94fb569b",
+      "blockNumber": "4500761",
+      "explorerUrl": "https://explorer.testnet.z.cash/tx/a1d259e476c5b08fdaf034cfa58e34100794efa6e03bc0a1e309619e94fb569b",
+      "reconciliation": { "expectedRecipients": 1, "settledRecipients": 1, "failedRecipients": 0, "duplicateRecipients": 0, "atomicAmount": "10000" }
+    },
+    {
+      "product": "payroll",
+      "capability": "payroll.settle",
+      "status": "pass",
+      "executionId": "zcash-zcash-testnet-e2e-1791966186711",
+      "signature": "9e4249ad91f13df6c02551bcd1b6769ee7396ed1f65f6762ca54af28794fdf64",
+      "blockNumber": "4500720",
+      "explorerUrl": "https://explorer.testnet.z.cash/tx/9e4249ad91f13df6c02551bcd1b6769ee7396ed1f65f6762ca54af28794fdf64",
+      "reconciliation": { "expectedRecipients": 1, "settledRecipients": 1, "failedRecipients": 0, "duplicateRecipients": 0, "atomicAmount": "10000" }
+    },
+    {
+      "product": "treasury",
+      "capability": "treasury.policy.check",
+      "status": "pass",
+      "executionId": "zcash-zcash-testnet-e2e-1791966617425",
+      "signature": "6ccba217555d7884c39edd84337c243a8c7f24619ea0d0f9ada353a8737c3e95",
+      "blockNumber": "4500736",
+      "explorerUrl": "https://explorer.testnet.z.cash/tx/6ccba217555d7884c39edd84337c243a8c7f24619ea0d0f9ada353a8737c3e95",
+      "reconciliation": { "expectedRecipients": 1, "settledRecipients": 1, "failedRecipients": 0, "duplicateRecipients": 0, "atomicAmount": "10000" }
+    },
+    {
+      "product": "governance",
+      "capability": "governance.proposal.execute",
+      "status": "pass",
+      "executionId": "zcash-zcash-testnet-e2e-1791966668464",
+      "signature": "df7909385be069e68e4fa291b67557a736c3c2f4c2f7f9a0baba0ad0425445f8",
+      "blockNumber": "4500738",
+      "explorerUrl": "https://explorer.testnet.z.cash/tx/df7909385be069e68e4fa291b67557a736c3c2f4c2f7f9a0baba0ad0425445f8",
+      "reconciliation": { "expectedRecipients": 1, "settledRecipients": 1, "failedRecipients": 0, "duplicateRecipients": 0, "atomicAmount": "10000" }
+    },
+    {
+      "product": "auction",
+      "capability": "auction.bid.commit",
+      "status": "pass",
+      "executionId": "zcash-zcash-testnet-e2e-1791967231254",
+      "signature": "cd79a56a9383e26d064152f0c5266b75c1d6f8752dedf76092f0f456f7bab78d",
+      "blockNumber": "4500769",
+      "explorerUrl": "https://explorer.testnet.z.cash/tx/cd79a56a9383e26d064152f0c5266b75c1d6f8752dedf76092f0f456f7bab78d",
+      "reconciliation": { "expectedRecipients": 1, "settledRecipients": 1, "failedRecipients": 0, "duplicateRecipients": 0, "atomicAmount": "10000" }
+    },
+    {
+      "product": "auction",
+      "capability": "auction.settle",
+      "status": "pass",
+      "executionId": "zcash-zcash-testnet-e2e-1791966762612",
+      "signature": "caca3109170e5e128e73fb33caacd43c601f0e96b005ada7efcaa30af61a59a7",
+      "blockNumber": "4500745",
+      "explorerUrl": "https://explorer.testnet.z.cash/tx/caca3109170e5e128e73fb33caacd43c601f0e96b005ada7efcaa30af61a59a7",
+      "reconciliation": { "expectedRecipients": 1, "settledRecipients": 1, "failedRecipients": 0, "duplicateRecipients": 0, "atomicAmount": "10000" }
+    }
+  ]
+}

@@ -123,12 +123,10 @@ const PAYROLL_SOLANA_DEVNET_EVIDENCE = {
   timestamp: "2026-09-11T21:36:18.740Z",
 } as const;
 
-const ZCASH_TESTNET_PAYROLL_EVIDENCE = {
+const ZCASH_TESTNET_E2E_EVIDENCE = {
   provider: "zcash-testnet-zallet",
-  transaction: "c14158dad7761c5d3c497cf27b2a80ffa909156ba2306e18f3731e608d1521df",
-  blockNumber: "4485265",
-  commit: "d41bec9addcd6580afce1fa11554d5ec03b94c86",
-  timestamp: "2026-10-10T12:42:21.000Z",
+  commit: "289cdd63f",
+  timestamp: "2026-10-14T08:42:58.600Z",
 } as const;
 
 const STELLAR_TESTNET_EVIDENCE = {
@@ -471,6 +469,7 @@ function applyZcashTestnetEvidence(entry: NativeCapabilityEntry): NativeCapabili
     "verification.record.verify",
     "payroll.calculate",
     "payroll.approve",
+    "payroll.settle",
     "governance.proposal.execute",
     "treasury.policy.check",
     "auction.bid.commit",
@@ -478,35 +477,22 @@ function applyZcashTestnetEvidence(entry: NativeCapabilityEntry): NativeCapabili
   ].includes(entry.capability)) {
     return {
       ...entry,
-      provider: "privatedao-kernel-policy",
-      walletModel: "none",
+      provider: ZCASH_TESTNET_E2E_EVIDENCE.provider,
+      supportedAssets: ["TAZ"],
+      walletModel: "provider-wallet",
       supportsExecution: true,
-      supportsPrivateExecution: false,
-      supportsPrivateSettlement: false,
+      supportsPrivateExecution: true,
+      supportsPrivateSettlement: true,
       supportsProof: !["treasury.policy.check", "payroll.calculate", "payroll.approve"].includes(entry.capability),
       supportsReceipt: true,
       supportsReconciliation: true,
-      status: "testnet_ready",
-      evidence: "runtime-only",
+      status: "testnet_verified",
+      lastVerifiedCommit: ZCASH_TESTNET_E2E_EVIDENCE.commit,
+      lastVerifiedTimestamp: ZCASH_TESTNET_E2E_EVIDENCE.timestamp,
+      evidence: "testnet-e2e",
     };
   }
-  if (entry.product !== "payroll" || entry.network !== "zcash-testnet") return entry;
-  if (entry.capability !== "payroll.settle") return entry;
-  return {
-    ...entry,
-    provider: ZCASH_TESTNET_PAYROLL_EVIDENCE.provider,
-    supportedAssets: ["TAZ"],
-    walletModel: "provider-wallet",
-    supportsExecution: true,
-    supportsPrivateExecution: true,
-    supportsPrivateSettlement: true,
-    supportsReceipt: true,
-    supportsReconciliation: true,
-    status: "testnet_verified",
-    lastVerifiedCommit: ZCASH_TESTNET_PAYROLL_EVIDENCE.commit,
-    lastVerifiedTimestamp: ZCASH_TESTNET_PAYROLL_EVIDENCE.timestamp,
-    evidence: "testnet-e2e",
-  };
+  return entry;
 }
 
 function applySolanaKernelPolicyReadiness(entry: NativeCapabilityEntry): NativeCapabilityEntry {
