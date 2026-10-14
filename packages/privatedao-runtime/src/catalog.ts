@@ -2,10 +2,12 @@ import type { CapabilityId, NetworkId, ProductId, ProtocolCapability } from "./i
 import { getNetwork, isNetworkAvailable } from "./networks.js";
 
 export type ProductAvailability = "available" | "planned";
+export type ProductDomain = "enterprise" | "agent-exchange";
 
 export interface ProductDescriptor {
   id: ProductId;
   name: string;
+  domain: ProductDomain;
   availability: ProductAvailability;
   networks: readonly NetworkId[];
   capabilities: readonly ProtocolCapability[];
@@ -40,6 +42,7 @@ export const PRODUCT_CATALOG: readonly ProductDescriptor[] = [
   {
     id: "blind-verification",
     name: "Blind Verification",
+    domain: "enterprise",
     availability: "available",
     networks: [solanaDevnet, ethereumSepolia, arbitrumSepolia, tempoTestnet, baseSepolia],
     capabilities: [
@@ -49,6 +52,7 @@ export const PRODUCT_CATALOG: readonly ProductDescriptor[] = [
   {
     id: "record-verification",
     name: "Record Verification",
+    domain: "enterprise",
     availability: "available",
     networks: [solanaDevnet, ethereumSepolia, arbitrumSepolia, tempoTestnet, baseSepolia],
     capabilities: [
@@ -59,6 +63,7 @@ export const PRODUCT_CATALOG: readonly ProductDescriptor[] = [
   {
     id: "payroll",
     name: "Confidential Payroll",
+    domain: "enterprise",
     availability: "available",
     networks: [solanaDevnet],
     capabilities: [
@@ -70,6 +75,7 @@ export const PRODUCT_CATALOG: readonly ProductDescriptor[] = [
   {
     id: "treasury",
     name: "Private Treasury",
+    domain: "enterprise",
     availability: "available",
     networks: [solanaDevnet, ethereumSepolia, arbitrumSepolia, tempoTestnet],
     capabilities: [capability("treasury.policy.check", "treasury", false, true, [solanaDevnet, ethereumSepolia, arbitrumSepolia, tempoTestnet])],
@@ -77,6 +83,7 @@ export const PRODUCT_CATALOG: readonly ProductDescriptor[] = [
   {
     id: "governance",
     name: "Private Governance",
+    domain: "enterprise",
     availability: "available",
     networks: [solanaDevnet, ethereumSepolia, arbitrumSepolia, tempoTestnet],
     capabilities: [capability("governance.proposal.execute", "governance", true, true, [solanaDevnet, ethereumSepolia, arbitrumSepolia, tempoTestnet])],
@@ -84,6 +91,7 @@ export const PRODUCT_CATALOG: readonly ProductDescriptor[] = [
   {
     id: "auction",
     name: "Private Auctions",
+    domain: "enterprise",
     availability: "available",
     networks: [solanaDevnet, ethereumSepolia, arbitrumSepolia, tempoTestnet],
     capabilities: [
@@ -98,6 +106,7 @@ export const PRODUCT_CATALOG: readonly ProductDescriptor[] = [
   {
     id: "agent",
     name: "Agent Marketplace",
+    domain: "agent-exchange",
     availability: "available",
     networks: [solanaDevnet, solanaMainnet],
     capabilities: [
@@ -107,6 +116,21 @@ export const PRODUCT_CATALOG: readonly ProductDescriptor[] = [
   },
 ];
 
+export const ENTERPRISE_PRODUCT_IDS = [
+  "blind-verification",
+  "record-verification",
+  "payroll",
+  "treasury",
+  "governance",
+  "auction",
+] as const satisfies readonly ProductId[];
+
+export const AGENT_EXCHANGE_PRODUCT_IDS = ["agent"] as const satisfies readonly ProductId[];
+
+export function isEnterpriseProduct(productId: ProductId): boolean {
+  return (ENTERPRISE_PRODUCT_IDS as readonly ProductId[]).includes(productId);
+}
+
 export function validateProductCatalog(catalog: readonly ProductDescriptor[] = PRODUCT_CATALOG): string[] {
   const errors: string[] = [];
   const productIds = new Set<ProductId>();
@@ -114,6 +138,8 @@ export function validateProductCatalog(catalog: readonly ProductDescriptor[] = P
   for (const product of catalog) {
     if (productIds.has(product.id)) errors.push(`duplicate product ${product.id}`);
     productIds.add(product.id);
+    const expectedDomain = product.id === "agent" ? "agent-exchange" : "enterprise";
+    if (product.domain !== expectedDomain) errors.push(`${product.id}: domain must be ${expectedDomain}`);
     for (const network of product.networks) {
       try {
         getNetwork(network);

@@ -8,6 +8,10 @@ import {
   validateApplicationBindings,
   PrivateDaoKernel,
   listProducts,
+  AGENT_EXCHANGE_PRODUCT_IDS,
+  ENTERPRISE_PRODUCT_IDS,
+  PRODUCT_CATALOG,
+  isEnterpriseProduct,
 } from "../packages/privatedao-runtime/src/index.ts";
 import runtimeCatalogModule from "../apps/web/src/lib/runtime-catalog.ts";
 
@@ -316,6 +320,19 @@ const verifiedMatrix = buildCapabilityMatrix(registry);
 assert.equal(verifiedMatrix.find((entry) => entry.capability === capability && entry.network === network)?.status, "verified");
 
 assert.equal(validateApplicationBindings().length, 0);
+assert.deepEqual(ENTERPRISE_PRODUCT_IDS, [
+  "blind-verification",
+  "record-verification",
+  "payroll",
+  "treasury",
+  "governance",
+  "auction",
+]);
+assert.deepEqual(AGENT_EXCHANGE_PRODUCT_IDS, ["agent"]);
+assert.equal(PRODUCT_CATALOG.filter((product) => product.domain === "enterprise").length, 6);
+assert.equal(PRODUCT_CATALOG.find((product) => product.id === "agent")?.domain, "agent-exchange");
+assert.equal(isEnterpriseProduct("agent"), false);
+assert.equal(isEnterpriseProduct("treasury"), true);
 assert.equal(
   listApplicationBindings().length,
   products.reduce((count, product) => count + product.capabilities.reduce((total, capability) => total + capability.networks.length, 0), 0),

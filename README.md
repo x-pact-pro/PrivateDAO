@@ -212,6 +212,10 @@ network has the same execution or payment capability.
 
 ## Kernel and runtime architecture
 
+The current separation between the six enterprise products and the external
+Agent Exchange is documented in
+[`docs/architecture/enterprise-kernel-boundary-20261014.md`](docs/architecture/enterprise-kernel-boundary-20261014.md).
+
 The repository contains provider-neutral runtime contracts in
 `packages/privatedao-runtime`. The Kernel and Protocol layers provide common
 boundaries for:
