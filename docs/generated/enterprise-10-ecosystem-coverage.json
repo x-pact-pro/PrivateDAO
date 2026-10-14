@@ -2353,9 +2353,9 @@
     {
       "product": "treasury",
       "ecosystem": "robinhood",
-      "declaredLaneCount": 0,
-      "executableLaneCount": 0,
-      "status": "planned",
+      "declaredLaneCount": 1,
+      "executableLaneCount": 1,
+      "status": "verified",
       "capabilities": [
         {
           "capability": "treasury.policy.check",
@@ -2363,17 +2363,17 @@
             {
               "network": "robinhood-testnet",
               "environment": "testnet",
-              "declared": false,
-              "mode": "unbound",
-              "status": "planned",
-              "evidence": "none",
-              "provider": "evm-robinhood-testnet",
-              "supportsExecution": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
-              "executable": false,
-              "entrypoint": null,
-              "note": "Missing application binding."
+              "declared": true,
+              "mode": "kernel-gateway",
+              "status": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "provider": "evm-robinhood-testnet-organizational",
+              "supportsExecution": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "executable": true,
+              "entrypoint": "kernel://treasury.policy.check",
+              "note": "Robinhood Testnet organizational Treasury passed real funding, Maker/Checker approval, execution, receipt, and state checks in the committed E2E artifact."
             },
             {
               "network": "robinhood-mainnet",
@@ -2748,9 +2748,9 @@
     {
       "product": "governance",
       "ecosystem": "robinhood",
-      "declaredLaneCount": 0,
-      "executableLaneCount": 0,
-      "status": "planned",
+      "declaredLaneCount": 1,
+      "executableLaneCount": 1,
+      "status": "verified",
       "capabilities": [
         {
           "capability": "governance.proposal.execute",
@@ -2758,17 +2758,17 @@
             {
               "network": "robinhood-testnet",
               "environment": "testnet",
-              "declared": false,
-              "mode": "unbound",
-              "status": "planned",
-              "evidence": "none",
-              "provider": "evm-robinhood-testnet",
-              "supportsExecution": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
-              "executable": false,
-              "entrypoint": null,
-              "note": "Missing application binding."
+              "declared": true,
+              "mode": "kernel-gateway",
+              "status": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "provider": "evm-robinhood-testnet-organizational",
+              "supportsExecution": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "executable": true,
+              "entrypoint": "kernel://governance.proposal.execute",
+              "note": "Robinhood Testnet commit/reveal governance passed real proposal creation, vote reveal, finalization, receipt, and state checks in the committed E2E artifact."
             },
             {
               "network": "robinhood-mainnet",
@@ -3318,9 +3318,9 @@
     {
       "product": "auction",
       "ecosystem": "robinhood",
-      "declaredLaneCount": 0,
-      "executableLaneCount": 0,
-      "status": "planned",
+      "declaredLaneCount": 2,
+      "executableLaneCount": 2,
+      "status": "verified",
       "capabilities": [
         {
           "capability": "auction.bid.commit",
@@ -3328,17 +3328,17 @@
             {
               "network": "robinhood-testnet",
               "environment": "testnet",
-              "declared": false,
-              "mode": "unbound",
-              "status": "planned",
-              "evidence": "none",
-              "provider": "evm-robinhood-testnet",
-              "supportsExecution": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
-              "executable": false,
-              "entrypoint": null,
-              "note": "Missing application binding."
+              "declared": true,
+              "mode": "kernel-gateway",
+              "status": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "provider": "evm-robinhood-testnet-organizational",
+              "supportsExecution": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "executable": true,
+              "entrypoint": "kernel://auction.bid.commit",
+              "note": "Robinhood Testnet sealed auction passed real commit, reveal, finalization, settlement, receipt, and state checks in the committed organizational E2E artifact."
             },
             {
               "network": "robinhood-mainnet",
@@ -3363,17 +3363,17 @@
             {
               "network": "robinhood-testnet",
               "environment": "testnet",
-              "declared": false,
-              "mode": "unbound",
-              "status": "planned",
-              "evidence": "none",
-              "provider": "evm-robinhood-testnet",
-              "supportsExecution": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
-              "executable": false,
-              "entrypoint": null,
-              "note": "Missing application binding."
+              "declared": true,
+              "mode": "kernel-gateway",
+              "status": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "provider": "evm-robinhood-testnet-organizational",
+              "supportsExecution": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "executable": true,
+              "entrypoint": "kernel://auction.settle",
+              "note": "Robinhood Testnet sealed auction settlement is backed by the committed organizational E2E evidence artifact."
             },
             {
               "network": "robinhood-mainnet",

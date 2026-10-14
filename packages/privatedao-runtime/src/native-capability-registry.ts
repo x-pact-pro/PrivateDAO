@@ -135,6 +135,17 @@ const ORGANIZATIONAL_EVIDENCE = {
     commit: "bf23f95",
     timestamp: "2026-09-17T07:23:24.600Z",
   },
+  "robinhood-testnet": {
+    provider: "evm-robinhood-testnet-organizational",
+    contracts: [
+      "0xdd01da1b53ba46bf1ce8c71bc1c5e86e8784694b",
+      "0x5b3a18eda78e7ce2086271585c3c23c8269c7ca4",
+      "0xffe6e9a78dafd35f230ad51c7bd96ba469d53405",
+    ],
+    assets: ["ETH"],
+    commit: "65fe6957e",
+    timestamp: "2026-09-19T14:01:22.656Z",
+  },
 } as const;
 
 function nativeAsset(network: NetworkDescriptor): string | null {

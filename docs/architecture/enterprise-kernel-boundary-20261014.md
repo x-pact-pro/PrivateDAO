@@ -41,7 +41,10 @@ claim; the inventory entry is a scope marker, not support evidence.
 The repository may contain configuration for multiple ecosystems, but a
 configured adapter is not proof of product execution. A product/network row is
 advertised as verified only when the registry contains independent execution
-evidence and a receipt path for that capability.
+evidence and a receipt path for that capability. The current organizational E2E
+evidence includes Ethereum Sepolia, Arbitrum Sepolia, Robinhood Testnet, and
+Tempo Testnet for the specific Treasury, Governance, and Auction lanes listed in
+the coverage report.
 
 Zcash Testnet currently has a foundation adapter and isolated Testnet wallet
 path; it must not be described as six independently verified enterprise

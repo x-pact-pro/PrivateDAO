@@ -198,6 +198,14 @@ export const APPLICATION_CAPABILITY_BINDINGS: readonly ApplicationCapabilityBind
     note: "Arbitrum Sepolia organizational Treasury passed real funding, budget, Maker/Checker approval, execution, receipt, and state reconciliation checks in the committed E2E artifact.",
   },
   {
+    product: "treasury",
+    capability: "treasury.policy.check",
+    network: "robinhood-testnet",
+    mode: "kernel-gateway",
+    entrypoint: "kernel://treasury.policy.check",
+    note: "Robinhood Testnet organizational Treasury passed real funding, Maker/Checker approval, execution, receipt, and state checks in the committed E2E artifact.",
+  },
+  {
     product: "governance",
     capability: "governance.proposal.execute",
     network: "solana-devnet",
@@ -227,6 +235,14 @@ export const APPLICATION_CAPABILITY_BINDINGS: readonly ApplicationCapabilityBind
     mode: "kernel-gateway",
     entrypoint: "kernel://governance.proposal.execute",
     note: "Arbitrum Sepolia commit/reveal governance passed real proposal creation, early-reveal rejection, vote reveal, finalization, receipt, and state checks in the committed E2E artifact.",
+  },
+  {
+    product: "governance",
+    capability: "governance.proposal.execute",
+    network: "robinhood-testnet",
+    mode: "kernel-gateway",
+    entrypoint: "kernel://governance.proposal.execute",
+    note: "Robinhood Testnet commit/reveal governance passed real proposal creation, vote reveal, finalization, receipt, and state checks in the committed E2E artifact.",
   },
   {
     product: "auction",
@@ -291,6 +307,22 @@ export const APPLICATION_CAPABILITY_BINDINGS: readonly ApplicationCapabilityBind
     mode: "kernel-gateway",
     entrypoint: "kernel://auction.settle",
     note: "Arbitrum Sepolia sealed auction settlement is backed by the committed organizational E2E evidence artifact.",
+  },
+  {
+    product: "auction",
+    capability: "auction.bid.commit",
+    network: "robinhood-testnet",
+    mode: "kernel-gateway",
+    entrypoint: "kernel://auction.bid.commit",
+    note: "Robinhood Testnet sealed auction passed real commit, reveal, finalization, settlement, receipt, and state checks in the committed organizational E2E artifact.",
+  },
+  {
+    product: "auction",
+    capability: "auction.settle",
+    network: "robinhood-testnet",
+    mode: "kernel-gateway",
+    entrypoint: "kernel://auction.settle",
+    note: "Robinhood Testnet sealed auction settlement is backed by the committed organizational E2E evidence artifact.",
   },
   {
     product: "agent",

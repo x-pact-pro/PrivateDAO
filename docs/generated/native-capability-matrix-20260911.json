@@ -1,6 +1,6 @@
 {
   "schema": "privatedao.native-capability-matrix.v1",
-  "generatedAt": "2026-10-14T19:28:26.927Z",
+  "generatedAt": "2026-10-14T21:06:53.424Z",
   "bridgeFree": true,
   "entries": [
     {
@@ -3200,28 +3200,32 @@
       "capability": "treasury.policy.check",
       "network": "robinhood-testnet",
       "networkFamily": "evm",
-      "declared": false,
+      "declared": true,
       "environment": "testnet",
       "chainId": "46630",
       "nativeAsset": "ETH",
       "supportedAssets": [
         "ETH"
       ],
-      "contracts": [],
+      "contracts": [
+        "0xdd01da1b53ba46bf1ce8c71bc1c5e86e8784694b",
+        "0x5b3a18eda78e7ce2086271585c3c23c8269c7ca4",
+        "0xffe6e9a78dafd35f230ad51c7bd96ba469d53405"
+      ],
       "verifier": null,
-      "provider": "evm-robinhood-testnet",
+      "provider": "evm-robinhood-testnet-organizational",
       "walletModel": "external-wallet",
-      "supportsExecution": false,
+      "supportsExecution": true,
       "supportsPrivateExecution": false,
       "supportsPrivateSettlement": false,
       "supportsProof": false,
-      "supportsReceipt": false,
-      "supportsReconciliation": false,
+      "supportsReceipt": true,
+      "supportsReconciliation": true,
       "supportsMainnet": false,
-      "status": "planned",
-      "lastVerifiedCommit": null,
-      "lastVerifiedTimestamp": null,
-      "evidence": "none"
+      "status": "testnet_verified",
+      "lastVerifiedCommit": "65fe6957e",
+      "lastVerifiedTimestamp": "2026-09-19T14:01:22.656Z",
+      "evidence": "testnet-e2e"
     },
     {
       "product": "treasury",
@@ -3688,28 +3692,32 @@
       "capability": "governance.proposal.execute",
       "network": "robinhood-testnet",
       "networkFamily": "evm",
-      "declared": false,
+      "declared": true,
       "environment": "testnet",
       "chainId": "46630",
       "nativeAsset": "ETH",
       "supportedAssets": [
         "ETH"
       ],
-      "contracts": [],
+      "contracts": [
+        "0xdd01da1b53ba46bf1ce8c71bc1c5e86e8784694b",
+        "0x5b3a18eda78e7ce2086271585c3c23c8269c7ca4",
+        "0xffe6e9a78dafd35f230ad51c7bd96ba469d53405"
+      ],
       "verifier": null,
-      "provider": "evm-robinhood-testnet",
+      "provider": "evm-robinhood-testnet-organizational",
       "walletModel": "external-wallet",
-      "supportsExecution": false,
+      "supportsExecution": true,
       "supportsPrivateExecution": false,
       "supportsPrivateSettlement": false,
       "supportsProof": false,
-      "supportsReceipt": false,
-      "supportsReconciliation": false,
+      "supportsReceipt": true,
+      "supportsReconciliation": true,
       "supportsMainnet": false,
-      "status": "planned",
-      "lastVerifiedCommit": null,
-      "lastVerifiedTimestamp": null,
-      "evidence": "none"
+      "status": "testnet_verified",
+      "lastVerifiedCommit": "65fe6957e",
+      "lastVerifiedTimestamp": "2026-09-19T14:01:22.656Z",
+      "evidence": "testnet-e2e"
     },
     {
       "product": "governance",
@@ -4176,28 +4184,32 @@
       "capability": "auction.bid.commit",
       "network": "robinhood-testnet",
       "networkFamily": "evm",
-      "declared": false,
+      "declared": true,
       "environment": "testnet",
       "chainId": "46630",
       "nativeAsset": "ETH",
       "supportedAssets": [
         "ETH"
       ],
-      "contracts": [],
+      "contracts": [
+        "0xdd01da1b53ba46bf1ce8c71bc1c5e86e8784694b",
+        "0x5b3a18eda78e7ce2086271585c3c23c8269c7ca4",
+        "0xffe6e9a78dafd35f230ad51c7bd96ba469d53405"
+      ],
       "verifier": null,
-      "provider": "evm-robinhood-testnet",
+      "provider": "evm-robinhood-testnet-organizational",
       "walletModel": "external-wallet",
-      "supportsExecution": false,
+      "supportsExecution": true,
       "supportsPrivateExecution": false,
       "supportsPrivateSettlement": false,
       "supportsProof": false,
-      "supportsReceipt": false,
-      "supportsReconciliation": false,
+      "supportsReceipt": true,
+      "supportsReconciliation": true,
       "supportsMainnet": false,
-      "status": "planned",
-      "lastVerifiedCommit": null,
-      "lastVerifiedTimestamp": null,
-      "evidence": "none"
+      "status": "testnet_verified",
+      "lastVerifiedCommit": "65fe6957e",
+      "lastVerifiedTimestamp": "2026-09-19T14:01:22.656Z",
+      "evidence": "testnet-e2e"
     },
     {
       "product": "auction",
@@ -4664,28 +4676,32 @@
       "capability": "auction.settle",
       "network": "robinhood-testnet",
       "networkFamily": "evm",
-      "declared": false,
+      "declared": true,
       "environment": "testnet",
       "chainId": "46630",
       "nativeAsset": "ETH",
       "supportedAssets": [
         "ETH"
       ],
-      "contracts": [],
+      "contracts": [
+        "0xdd01da1b53ba46bf1ce8c71bc1c5e86e8784694b",
+        "0x5b3a18eda78e7ce2086271585c3c23c8269c7ca4",
+        "0xffe6e9a78dafd35f230ad51c7bd96ba469d53405"
+      ],
       "verifier": null,
-      "provider": "evm-robinhood-testnet",
+      "provider": "evm-robinhood-testnet-organizational",
       "walletModel": "external-wallet",
-      "supportsExecution": false,
+      "supportsExecution": true,
       "supportsPrivateExecution": false,
       "supportsPrivateSettlement": false,
       "supportsProof": false,
-      "supportsReceipt": false,
-      "supportsReconciliation": false,
+      "supportsReceipt": true,
+      "supportsReconciliation": true,
       "supportsMainnet": false,
-      "status": "planned",
-      "lastVerifiedCommit": null,
-      "lastVerifiedTimestamp": null,
-      "evidence": "none"
+      "status": "testnet_verified",
+      "lastVerifiedCommit": "65fe6957e",
+      "lastVerifiedTimestamp": "2026-09-19T14:01:22.656Z",
+      "evidence": "testnet-e2e"
     },
     {
       "product": "auction",
