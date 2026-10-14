@@ -13,6 +13,7 @@ import { isNetworkAvailable } from "./networks.js";
 
 export type KernelErrorCode =
   | "INVALID_INTENT"
+  | "APPLICATION_BOUNDARY_VIOLATION"
   | "INTENT_EXPIRED"
   | "DUPLICATE_IDEMPOTENCY_KEY"
   | "PROVIDER_NOT_FOUND"

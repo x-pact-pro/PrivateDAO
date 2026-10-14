@@ -305,6 +305,18 @@ const gateway = runtime.gateway;
 const gatewayPrepared = await gateway.prepare(intent, "maker");
 assert.equal(gatewayPrepared.executionId, first.executionId);
 assert.throws(
+  () => policyRuntime.gateway.prepare({ ...intent, context: { ...intent.context, product: "payroll", capability: "payroll.settle", requestId: "payroll-legacy-settle", idempotencyKey: "payroll-legacy-settle-key" } }, "maker"),
+  (error) => error?.code === "APPLICATION_BOUNDARY_VIOLATION",
+);
+assert.throws(
+  () => discoveryRuntime.gateway.prepare({ ...discoveryIntent, context: { ...discoveryIntent.context, capability: "agent.invoke", requestId: "agent-invoke-unbound", idempotencyKey: "agent-invoke-unbound-key" } }, "agent"),
+  (error) => error?.code === "APPLICATION_BOUNDARY_VIOLATION",
+);
+assert.throws(
+  () => discoveryRuntime.gateway.prepare({ ...discoveryIntent, context: { ...discoveryIntent.context, network: "solana-mainnet-beta", requestId: "agent-mainnet-unbound", idempotencyKey: "agent-mainnet-unbound-key" } }, "agent"),
+  (error) => error?.code === "APPLICATION_BOUNDARY_VIOLATION",
+);
+assert.throws(
   () => gateway.prepare({ ...intent, context: { ...intent.context, product: "payroll", capability: "payroll.approve" } }, "auditor"),
   (error) => error?.code === "INVALID_INTENT",
 );
