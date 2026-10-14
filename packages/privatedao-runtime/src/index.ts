@@ -142,8 +142,18 @@ export type {
   ReconciliationLine,
   ReconciliationResult,
 } from "./kernel.js";
-export { PRODUCT_CATALOG, assertProductCatalogValid, findProduct, listProducts, supportsProductCapability, validateProductCatalog } from "./catalog.js";
-export type { ProductAvailability, ProductDescriptor } from "./catalog.js";
+export {
+  AGENT_EXCHANGE_PRODUCT_IDS,
+  ENTERPRISE_PRODUCT_IDS,
+  PRODUCT_CATALOG,
+  assertProductCatalogValid,
+  findProduct,
+  isEnterpriseProduct,
+  listProducts,
+  supportsProductCapability,
+  validateProductCatalog,
+} from "./catalog.js";
+export type { ProductAvailability, ProductDescriptor, ProductDomain } from "./catalog.js";
 export { NETWORK_MATRIX, getNetwork, isNetworkAvailable } from "./networks.js";
 export type { NetworkDescriptor, NetworkFamily, NetworkStage } from "./networks.js";
 export {
