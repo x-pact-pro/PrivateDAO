@@ -165,9 +165,9 @@
     {
       "product": "blind-verification",
       "ecosystem": "bnb",
-      "declaredLaneCount": 0,
-      "executableLaneCount": 0,
-      "status": "planned",
+      "declaredLaneCount": 1,
+      "executableLaneCount": 1,
+      "status": "verified",
       "capabilities": [
         {
           "capability": "verification.blind.prove",
@@ -175,17 +175,17 @@
             {
               "network": "bnb-testnet",
               "environment": "testnet",
-              "declared": false,
-              "mode": "unbound",
-              "status": "planned",
-              "evidence": "none",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "status": "testnet_verified",
+              "evidence": "testnet-e2e",
               "provider": "evm-bnb-testnet",
-              "supportsExecution": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
-              "executable": false,
-              "entrypoint": null,
-              "note": "Missing application binding."
+              "supportsExecution": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "executable": true,
+              "entrypoint": "kernel://verification.blind.prove",
+              "note": "BNB Testnet blind verification is backed by the committed verifier and receipt evidence."
             },
             {
               "network": "bnb-mainnet",
@@ -665,9 +665,9 @@
     {
       "product": "record-verification",
       "ecosystem": "bnb",
-      "declaredLaneCount": 0,
-      "executableLaneCount": 0,
-      "status": "planned",
+      "declaredLaneCount": 2,
+      "executableLaneCount": 2,
+      "status": "verified",
       "capabilities": [
         {
           "capability": "verification.record.create",
@@ -675,17 +675,17 @@
             {
               "network": "bnb-testnet",
               "environment": "testnet",
-              "declared": false,
-              "mode": "unbound",
-              "status": "planned",
-              "evidence": "none",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "status": "testnet_verified",
+              "evidence": "testnet-e2e",
               "provider": "evm-bnb-testnet",
-              "supportsExecution": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
-              "executable": false,
-              "entrypoint": null,
-              "note": "Missing application binding."
+              "supportsExecution": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "executable": true,
+              "entrypoint": "kernel://verification.record.create",
+              "note": "BNB Testnet record creation is backed by the committed registry receipt evidence."
             },
             {
               "network": "bnb-mainnet",
@@ -710,17 +710,17 @@
             {
               "network": "bnb-testnet",
               "environment": "testnet",
-              "declared": false,
-              "mode": "unbound",
-              "status": "planned",
-              "evidence": "none",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "status": "testnet_verified",
+              "evidence": "testnet-e2e",
               "provider": "evm-bnb-testnet",
-              "supportsExecution": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
-              "executable": false,
-              "entrypoint": null,
-              "note": "Missing application binding."
+              "supportsExecution": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "executable": true,
+              "entrypoint": "kernel://verification.record.verify",
+              "note": "BNB Testnet record verification is bound to chain ID 97 and the verified registry domain."
             },
             {
               "network": "bnb-mainnet",
@@ -1470,9 +1470,9 @@
     {
       "product": "payroll",
       "ecosystem": "bnb",
-      "declaredLaneCount": 0,
-      "executableLaneCount": 0,
-      "status": "planned",
+      "declaredLaneCount": 3,
+      "executableLaneCount": 1,
+      "status": "partial",
       "capabilities": [
         {
           "capability": "payroll.calculate",
@@ -1480,17 +1480,17 @@
             {
               "network": "bnb-testnet",
               "environment": "testnet",
-              "declared": false,
-              "mode": "unbound",
-              "status": "planned",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "status": "implementation",
               "evidence": "none",
               "provider": "evm-bnb-testnet",
               "supportsExecution": false,
               "supportsReceipt": false,
               "supportsReconciliation": false,
               "executable": false,
-              "entrypoint": null,
-              "note": "Missing application binding."
+              "entrypoint": "kernel://payroll.calculate",
+              "note": "BNB Testnet payroll calculation is a Kernel policy step; no settlement is implied by calculation."
             },
             {
               "network": "bnb-mainnet",
@@ -1515,17 +1515,17 @@
             {
               "network": "bnb-testnet",
               "environment": "testnet",
-              "declared": false,
-              "mode": "unbound",
-              "status": "planned",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "status": "implementation",
               "evidence": "none",
               "provider": "evm-bnb-testnet",
               "supportsExecution": false,
               "supportsReceipt": false,
               "supportsReconciliation": false,
               "executable": false,
-              "entrypoint": null,
-              "note": "Missing application binding."
+              "entrypoint": "kernel://payroll.approve",
+              "note": "BNB Testnet payroll approval is a Kernel Maker/Checker policy step."
             },
             {
               "network": "bnb-mainnet",
@@ -1550,17 +1550,17 @@
             {
               "network": "bnb-testnet",
               "environment": "testnet",
-              "declared": false,
-              "mode": "unbound",
-              "status": "planned",
-              "evidence": "none",
-              "provider": "evm-bnb-testnet",
-              "supportsExecution": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
-              "executable": false,
-              "entrypoint": null,
-              "note": "Missing application binding."
+              "declared": true,
+              "mode": "kernel-gateway",
+              "status": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "provider": "evm-bnb-testnet-organizational",
+              "supportsExecution": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "executable": true,
+              "entrypoint": "kernel://payroll.settle",
+              "note": "BNB Testnet payroll settlement is backed by a real payout receipt; it is not advertised as shielded settlement."
             },
             {
               "network": "bnb-mainnet",
@@ -2265,9 +2265,9 @@
     {
       "product": "treasury",
       "ecosystem": "bnb",
-      "declaredLaneCount": 0,
-      "executableLaneCount": 0,
-      "status": "planned",
+      "declaredLaneCount": 1,
+      "executableLaneCount": 1,
+      "status": "verified",
       "capabilities": [
         {
           "capability": "treasury.policy.check",
@@ -2275,17 +2275,17 @@
             {
               "network": "bnb-testnet",
               "environment": "testnet",
-              "declared": false,
-              "mode": "unbound",
-              "status": "planned",
-              "evidence": "none",
-              "provider": "evm-bnb-testnet",
-              "supportsExecution": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
-              "executable": false,
-              "entrypoint": null,
-              "note": "Missing application binding."
+              "declared": true,
+              "mode": "kernel-gateway",
+              "status": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "provider": "evm-bnb-testnet-organizational",
+              "supportsExecution": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "executable": true,
+              "entrypoint": "kernel://treasury.policy.check",
+              "note": "BNB Testnet organizational Treasury passed the committed funding, approval, execution, receipt, and state checks."
             },
             {
               "network": "bnb-mainnet",
@@ -2660,9 +2660,9 @@
     {
       "product": "governance",
       "ecosystem": "bnb",
-      "declaredLaneCount": 0,
-      "executableLaneCount": 0,
-      "status": "planned",
+      "declaredLaneCount": 1,
+      "executableLaneCount": 1,
+      "status": "verified",
       "capabilities": [
         {
           "capability": "governance.proposal.execute",
@@ -2670,17 +2670,17 @@
             {
               "network": "bnb-testnet",
               "environment": "testnet",
-              "declared": false,
-              "mode": "unbound",
-              "status": "planned",
-              "evidence": "none",
-              "provider": "evm-bnb-testnet",
-              "supportsExecution": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
-              "executable": false,
-              "entrypoint": null,
-              "note": "Missing application binding."
+              "declared": true,
+              "mode": "kernel-gateway",
+              "status": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "provider": "evm-bnb-testnet-organizational",
+              "supportsExecution": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "executable": true,
+              "entrypoint": "kernel://governance.proposal.execute",
+              "note": "BNB Testnet organizational Governance passed the committed proposal, commit/reveal, finalization, receipt, and replay checks."
             },
             {
               "network": "bnb-mainnet",
@@ -3160,9 +3160,9 @@
     {
       "product": "auction",
       "ecosystem": "bnb",
-      "declaredLaneCount": 0,
-      "executableLaneCount": 0,
-      "status": "planned",
+      "declaredLaneCount": 2,
+      "executableLaneCount": 2,
+      "status": "verified",
       "capabilities": [
         {
           "capability": "auction.bid.commit",
@@ -3170,17 +3170,17 @@
             {
               "network": "bnb-testnet",
               "environment": "testnet",
-              "declared": false,
-              "mode": "unbound",
-              "status": "planned",
-              "evidence": "none",
-              "provider": "evm-bnb-testnet",
-              "supportsExecution": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
-              "executable": false,
-              "entrypoint": null,
-              "note": "Missing application binding."
+              "declared": true,
+              "mode": "kernel-gateway",
+              "status": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "provider": "evm-bnb-testnet-organizational",
+              "supportsExecution": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "executable": true,
+              "entrypoint": "kernel://auction.bid.commit",
+              "note": "BNB Testnet sealed auction bid commit is backed by the committed organizational E2E artifact."
             },
             {
               "network": "bnb-mainnet",
@@ -3205,17 +3205,17 @@
             {
               "network": "bnb-testnet",
               "environment": "testnet",
-              "declared": false,
-              "mode": "unbound",
-              "status": "planned",
-              "evidence": "none",
-              "provider": "evm-bnb-testnet",
-              "supportsExecution": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
-              "executable": false,
-              "entrypoint": null,
-              "note": "Missing application binding."
+              "declared": true,
+              "mode": "kernel-gateway",
+              "status": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "provider": "evm-bnb-testnet-organizational",
+              "supportsExecution": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "executable": true,
+              "entrypoint": "kernel://auction.settle",
+              "note": "BNB Testnet sealed auction settlement is backed by the committed organizational E2E artifact."
             },
             {
               "network": "bnb-mainnet",

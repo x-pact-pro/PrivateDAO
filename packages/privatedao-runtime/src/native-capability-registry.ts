@@ -101,6 +101,17 @@ const TEMPO_TESTNET_EVIDENCE = {
   timestamp: "2026-09-16T21:53:12.853Z",
 } as const;
 
+const BNB_TESTNET_EVIDENCE = {
+  provider: "evm-bnb-testnet",
+  verifier: "0x26e3515d02bb3d8122fad109d159f43e81e8beeb",
+  contracts: [
+    "0xdd01da1b53ba46bf1ce8c71bc1c5e86e8784694b",
+    "0x6f813e1221cb5f760bb5c467983c014bbe4b3b5c",
+  ],
+  commit: "9755727ba",
+  timestamp: "2026-10-11T15:16:22.645Z",
+} as const;
+
 const ORGANIZATIONAL_EVIDENCE = {
   "ethereum-sepolia": {
     provider: "evm-ethereum-sepolia-organizational",
@@ -145,6 +156,18 @@ const ORGANIZATIONAL_EVIDENCE = {
     assets: ["ETH"],
     commit: "65fe6957e",
     timestamp: "2026-09-19T14:01:22.656Z",
+  },
+  "bnb-testnet": {
+    provider: "evm-bnb-testnet-organizational",
+    contracts: [
+      "0x5011c9c68006c2857eaea0f67401e9d58ff39770",
+      "0x62f8f7ffc4235a1dde58ba811fa9c448c56f7620",
+      "0x57d5d75f81db5459d541891f4c1a20f51abe32fc",
+      "0x4dbe25b21607cf04bbf06b9b88927af3e381d373",
+    ],
+    assets: ["BNB"],
+    commit: "ef862608a",
+    timestamp: "2026-10-11T17:04:22.062Z",
   },
 } as const;
 
@@ -294,6 +317,31 @@ function applyTempoTestnetEvidence(entry: NativeCapabilityEntry): NativeCapabili
   };
 }
 
+function applyBnbTestnetEvidence(entry: NativeCapabilityEntry): NativeCapabilityEntry {
+  const isBlind = entry.product === "blind-verification" && entry.capability === "verification.blind.prove";
+  const isRecord = entry.product === "record-verification" && ["verification.record.create", "verification.record.verify"].includes(entry.capability);
+  const isPayroll = entry.product === "payroll" && entry.capability === "payroll.settle";
+  if (entry.network !== "bnb-testnet" || (!isBlind && !isRecord && !isPayroll)) return entry;
+  return {
+    ...entry,
+    provider: isPayroll ? "evm-bnb-testnet-organizational" : BNB_TESTNET_EVIDENCE.provider,
+    supportedAssets: ["BNB"],
+    contracts: isPayroll ? ["0x62f8f7ffc4235a1dde58ba811fa9c448c56f7620"] : BNB_TESTNET_EVIDENCE.contracts,
+    verifier: BNB_TESTNET_EVIDENCE.verifier,
+    walletModel: "provider-wallet",
+    supportsExecution: true,
+    supportsPrivateExecution: false,
+    supportsPrivateSettlement: false,
+    supportsProof: isBlind,
+    supportsReceipt: true,
+    supportsReconciliation: true,
+    status: "testnet_verified",
+    lastVerifiedCommit: BNB_TESTNET_EVIDENCE.commit,
+    lastVerifiedTimestamp: BNB_TESTNET_EVIDENCE.timestamp,
+    evidence: "testnet-e2e",
+  };
+}
+
 function applyOrganizationalEvidence(entry: NativeCapabilityEntry): NativeCapabilityEntry {
   const evidence = ORGANIZATIONAL_EVIDENCE[entry.network as keyof typeof ORGANIZATIONAL_EVIDENCE];
   const supportedCapability =
@@ -328,7 +376,7 @@ function applyOrganizationalEvidence(entry: NativeCapabilityEntry): NativeCapabi
 export function buildNativeCapabilityRegistry(): readonly NativeCapabilityEntry[] {
   return PRODUCT_CATALOG.flatMap((product) =>
     product.capabilities.flatMap((capability) =>
-      NETWORK_MATRIX.map((network) => applyOrganizationalEvidence(applyTempoTestnetEvidence(applyPayrollDevnetEvidence(applyAgentMainnetEvidence(applyArbitrumSepoliaEvidence(applyBaseSepoliaEvidence(applyEthereumSepoliaEvidence({
+      NETWORK_MATRIX.map((network) => applyOrganizationalEvidence(applyBnbTestnetEvidence(applyTempoTestnetEvidence(applyPayrollDevnetEvidence(applyAgentMainnetEvidence(applyArbitrumSepoliaEvidence(applyBaseSepoliaEvidence(applyEthereumSepoliaEvidence({
         product: product.id,
         capability: capability.id,
         network: network.id,
@@ -353,7 +401,7 @@ export function buildNativeCapabilityRegistry(): readonly NativeCapabilityEntry[
         lastVerifiedCommit: null,
         lastVerifiedTimestamp: null,
         evidence: "none",
-      })))))))) ,
+      }))))))))) ,
     ),
   );
 }

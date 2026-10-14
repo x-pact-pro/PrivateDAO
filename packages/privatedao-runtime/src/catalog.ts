@@ -18,6 +18,7 @@ const solanaMainnet = "solana-mainnet-beta" as NetworkId;
 const ethereumSepolia = "ethereum-sepolia" as NetworkId;
 const arbitrumSepolia = "arbitrum-sepolia" as NetworkId;
 const baseSepolia = "base-sepolia" as NetworkId;
+const bnbTestnet = "bnb-testnet" as NetworkId;
 const robinhoodTestnet = "robinhood-testnet" as NetworkId;
 const tempoTestnet = "tempo-testnet" as NetworkId;
 
@@ -45,9 +46,9 @@ export const PRODUCT_CATALOG: readonly ProductDescriptor[] = [
     name: "Blind Verification",
     domain: "enterprise",
     availability: "available",
-    networks: [solanaDevnet, ethereumSepolia, arbitrumSepolia, tempoTestnet, baseSepolia],
+    networks: [solanaDevnet, ethereumSepolia, arbitrumSepolia, tempoTestnet, baseSepolia, bnbTestnet],
     capabilities: [
-      capability("verification.blind.prove", "blind-verification", false, true, [solanaDevnet, ethereumSepolia, arbitrumSepolia, tempoTestnet, baseSepolia]),
+      capability("verification.blind.prove", "blind-verification", false, true, [solanaDevnet, ethereumSepolia, arbitrumSepolia, tempoTestnet, baseSepolia, bnbTestnet]),
     ],
   },
   {
@@ -55,10 +56,10 @@ export const PRODUCT_CATALOG: readonly ProductDescriptor[] = [
     name: "Record Verification",
     domain: "enterprise",
     availability: "available",
-    networks: [solanaDevnet, ethereumSepolia, arbitrumSepolia, tempoTestnet, baseSepolia],
+    networks: [solanaDevnet, ethereumSepolia, arbitrumSepolia, tempoTestnet, baseSepolia, bnbTestnet],
     capabilities: [
-      capability("verification.record.create", "record-verification", false, true, [solanaDevnet, ethereumSepolia, arbitrumSepolia, tempoTestnet, baseSepolia]),
-      capability("verification.record.verify", "record-verification", false, true, [solanaDevnet, ethereumSepolia, arbitrumSepolia, tempoTestnet, baseSepolia]),
+      capability("verification.record.create", "record-verification", false, true, [solanaDevnet, ethereumSepolia, arbitrumSepolia, tempoTestnet, baseSepolia, bnbTestnet]),
+      capability("verification.record.verify", "record-verification", false, true, [solanaDevnet, ethereumSepolia, arbitrumSepolia, tempoTestnet, baseSepolia, bnbTestnet]),
     ],
   },
   {
@@ -66,11 +67,11 @@ export const PRODUCT_CATALOG: readonly ProductDescriptor[] = [
     name: "Confidential Payroll",
     domain: "enterprise",
     availability: "available",
-    networks: [solanaDevnet],
+    networks: [solanaDevnet, bnbTestnet],
     capabilities: [
-      capability("payroll.calculate", "payroll", false),
-      capability("payroll.approve", "payroll", true),
-      capability("payroll.settle", "payroll", true),
+      capability("payroll.calculate", "payroll", false, true, [solanaDevnet, bnbTestnet]),
+      capability("payroll.approve", "payroll", true, true, [solanaDevnet, bnbTestnet]),
+      capability("payroll.settle", "payroll", true, true, [solanaDevnet, bnbTestnet]),
     ],
   },
   {
@@ -78,30 +79,30 @@ export const PRODUCT_CATALOG: readonly ProductDescriptor[] = [
     name: "Private Treasury",
     domain: "enterprise",
     availability: "available",
-    networks: [solanaDevnet, ethereumSepolia, arbitrumSepolia, robinhoodTestnet, tempoTestnet],
-    capabilities: [capability("treasury.policy.check", "treasury", false, true, [solanaDevnet, ethereumSepolia, arbitrumSepolia, robinhoodTestnet, tempoTestnet])],
+    networks: [solanaDevnet, ethereumSepolia, arbitrumSepolia, robinhoodTestnet, tempoTestnet, bnbTestnet],
+    capabilities: [capability("treasury.policy.check", "treasury", false, true, [solanaDevnet, ethereumSepolia, arbitrumSepolia, robinhoodTestnet, tempoTestnet, bnbTestnet])],
   },
   {
     id: "governance",
     name: "Private Governance",
     domain: "enterprise",
     availability: "available",
-    networks: [solanaDevnet, ethereumSepolia, arbitrumSepolia, robinhoodTestnet, tempoTestnet],
-    capabilities: [capability("governance.proposal.execute", "governance", true, true, [solanaDevnet, ethereumSepolia, arbitrumSepolia, robinhoodTestnet, tempoTestnet])],
+    networks: [solanaDevnet, ethereumSepolia, arbitrumSepolia, robinhoodTestnet, tempoTestnet, bnbTestnet],
+    capabilities: [capability("governance.proposal.execute", "governance", true, true, [solanaDevnet, ethereumSepolia, arbitrumSepolia, robinhoodTestnet, tempoTestnet, bnbTestnet])],
   },
   {
     id: "auction",
     name: "Private Auctions",
     domain: "enterprise",
     availability: "available",
-    networks: [solanaDevnet, ethereumSepolia, arbitrumSepolia, robinhoodTestnet, tempoTestnet],
+    networks: [solanaDevnet, ethereumSepolia, arbitrumSepolia, robinhoodTestnet, tempoTestnet, bnbTestnet],
     capabilities: [
       // The current endpoint issues commitments/proof data off-chain; it does
       // not submit the financial bid transaction.
-      capability("auction.bid.commit", "auction", false, true, [solanaDevnet, ethereumSepolia, arbitrumSepolia, robinhoodTestnet, tempoTestnet]),
+      capability("auction.bid.commit", "auction", false, true, [solanaDevnet, ethereumSepolia, arbitrumSepolia, robinhoodTestnet, tempoTestnet, bnbTestnet]),
       // The current Kernel action proves an already-bound outcome. It does
       // not submit the financial settlement transaction.
-      capability("auction.settle", "auction", false, true, [solanaDevnet, ethereumSepolia, arbitrumSepolia, robinhoodTestnet, tempoTestnet]),
+      capability("auction.settle", "auction", false, true, [solanaDevnet, ethereumSepolia, arbitrumSepolia, robinhoodTestnet, tempoTestnet, bnbTestnet]),
     ],
   },
   {

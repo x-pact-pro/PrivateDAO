@@ -12,7 +12,8 @@ export const runtimeCatalog = {
         "ethereum-sepolia",
         "arbitrum-sepolia",
         "tempo-testnet",
-        "base-sepolia"
+        "base-sepolia",
+        "bnb-testnet"
       ],
       "capabilities": [
         {
@@ -106,6 +107,23 @@ export const runtimeCatalog = {
                 "ETH"
               ],
               "provider": "evm-base-sepolia"
+            },
+            {
+              "network": "bnb-testnet",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://verification.blind.prove",
+              "method": null,
+              "note": "BNB Testnet blind verification is backed by the committed verifier and receipt evidence.",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "supportsExecution": true,
+              "supportsProof": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "BNB"
+              ],
+              "provider": "evm-bnb-testnet"
             }
           ],
           "networkAvailability": [
@@ -222,14 +240,14 @@ export const runtimeCatalog = {
               "stage": "available",
               "environment": "testnet",
               "chainId": "97",
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
-              "executable": false,
-              "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "executable": true,
+              "supportsProof": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "BNB"
               ],
@@ -428,7 +446,8 @@ export const runtimeCatalog = {
         "ethereum-sepolia",
         "arbitrum-sepolia",
         "tempo-testnet",
-        "base-sepolia"
+        "base-sepolia",
+        "bnb-testnet"
       ],
       "capabilities": [
         {
@@ -522,6 +541,23 @@ export const runtimeCatalog = {
                 "ETH"
               ],
               "provider": "evm-base-sepolia"
+            },
+            {
+              "network": "bnb-testnet",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://verification.record.create",
+              "method": null,
+              "note": "BNB Testnet record creation is backed by the committed registry receipt evidence.",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "supportsExecution": true,
+              "supportsProof": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "BNB"
+              ],
+              "provider": "evm-bnb-testnet"
             }
           ],
           "networkAvailability": [
@@ -638,14 +674,14 @@ export const runtimeCatalog = {
               "stage": "available",
               "environment": "testnet",
               "chainId": "97",
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
-              "executable": false,
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "executable": true,
               "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "BNB"
               ],
@@ -924,6 +960,23 @@ export const runtimeCatalog = {
                 "ETH"
               ],
               "provider": "evm-base-sepolia"
+            },
+            {
+              "network": "bnb-testnet",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://verification.record.verify",
+              "method": null,
+              "note": "BNB Testnet record verification is bound to chain ID 97 and the verified registry domain.",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "supportsExecution": true,
+              "supportsProof": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "BNB"
+              ],
+              "provider": "evm-bnb-testnet"
             }
           ],
           "networkAvailability": [
@@ -1040,14 +1093,14 @@ export const runtimeCatalog = {
               "stage": "available",
               "environment": "testnet",
               "chainId": "97",
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
-              "executable": false,
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "executable": true,
               "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "BNB"
               ],
@@ -1242,7 +1295,8 @@ export const runtimeCatalog = {
       "name": "Confidential Payroll",
       "availability": "available",
       "networks": [
-        "solana-devnet"
+        "solana-devnet",
+        "bnb-testnet"
       ],
       "capabilities": [
         {
@@ -1268,6 +1322,23 @@ export const runtimeCatalog = {
                 "WSOL"
               ],
               "provider": "umbra-solana-devnet"
+            },
+            {
+              "network": "bnb-testnet",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://payroll.calculate",
+              "method": null,
+              "note": "BNB Testnet payroll calculation is a Kernel policy step; no settlement is implied by calculation.",
+              "evidenceStatus": "implementation",
+              "evidence": "none",
+              "supportsExecution": false,
+              "supportsProof": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "supportedAssets": [
+                "BNB"
+              ],
+              "provider": "evm-bnb-testnet"
             }
           ],
           "networkAvailability": [
@@ -1384,9 +1455,9 @@ export const runtimeCatalog = {
               "stage": "available",
               "environment": "testnet",
               "chainId": "97",
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "implementation",
               "evidence": "none",
               "executable": false,
               "supportsProof": false,
@@ -1602,6 +1673,23 @@ export const runtimeCatalog = {
                 "WSOL"
               ],
               "provider": "umbra-solana-devnet"
+            },
+            {
+              "network": "bnb-testnet",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://payroll.approve",
+              "method": null,
+              "note": "BNB Testnet payroll approval is a Kernel Maker/Checker policy step.",
+              "evidenceStatus": "implementation",
+              "evidence": "none",
+              "supportsExecution": false,
+              "supportsProof": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "supportedAssets": [
+                "BNB"
+              ],
+              "provider": "evm-bnb-testnet"
             }
           ],
           "networkAvailability": [
@@ -1718,9 +1806,9 @@ export const runtimeCatalog = {
               "stage": "available",
               "environment": "testnet",
               "chainId": "97",
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "implementation",
               "evidence": "none",
               "executable": false,
               "supportsProof": false,
@@ -1936,6 +2024,23 @@ export const runtimeCatalog = {
                 "WSOL"
               ],
               "provider": "umbra-solana-devnet"
+            },
+            {
+              "network": "bnb-testnet",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://payroll.settle",
+              "method": null,
+              "note": "BNB Testnet payroll settlement is backed by a real payout receipt; it is not advertised as shielded settlement.",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "supportsExecution": true,
+              "supportsProof": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "BNB"
+              ],
+              "provider": "evm-bnb-testnet-organizational"
             }
           ],
           "networkAvailability": [
@@ -2052,18 +2157,18 @@ export const runtimeCatalog = {
               "stage": "available",
               "environment": "testnet",
               "chainId": "97",
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
-              "executable": false,
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "executable": true,
               "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "BNB"
               ],
-              "provider": "evm-bnb-testnet"
+              "provider": "evm-bnb-testnet-organizational"
             },
             {
               "network": "bnb-mainnet",
@@ -2258,7 +2363,8 @@ export const runtimeCatalog = {
         "ethereum-sepolia",
         "arbitrum-sepolia",
         "robinhood-testnet",
-        "tempo-testnet"
+        "tempo-testnet",
+        "bnb-testnet"
       ],
       "capabilities": [
         {
@@ -2352,6 +2458,23 @@ export const runtimeCatalog = {
                 "AlphaUSD"
               ],
               "provider": "evm-tempo-testnet-organizational"
+            },
+            {
+              "network": "bnb-testnet",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://treasury.policy.check",
+              "method": null,
+              "note": "BNB Testnet organizational Treasury passed the committed funding, approval, execution, receipt, and state checks.",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "supportsExecution": true,
+              "supportsProof": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "BNB"
+              ],
+              "provider": "evm-bnb-testnet-organizational"
             }
           ],
           "networkAvailability": [
@@ -2468,18 +2591,18 @@ export const runtimeCatalog = {
               "stage": "available",
               "environment": "testnet",
               "chainId": "97",
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
-              "executable": false,
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "executable": true,
               "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "BNB"
               ],
-              "provider": "evm-bnb-testnet"
+              "provider": "evm-bnb-testnet-organizational"
             },
             {
               "network": "bnb-mainnet",
@@ -2674,7 +2797,8 @@ export const runtimeCatalog = {
         "ethereum-sepolia",
         "arbitrum-sepolia",
         "robinhood-testnet",
-        "tempo-testnet"
+        "tempo-testnet",
+        "bnb-testnet"
       ],
       "capabilities": [
         {
@@ -2768,6 +2892,23 @@ export const runtimeCatalog = {
                 "AlphaUSD"
               ],
               "provider": "evm-tempo-testnet-organizational"
+            },
+            {
+              "network": "bnb-testnet",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://governance.proposal.execute",
+              "method": null,
+              "note": "BNB Testnet organizational Governance passed the committed proposal, commit/reveal, finalization, receipt, and replay checks.",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "supportsExecution": true,
+              "supportsProof": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "BNB"
+              ],
+              "provider": "evm-bnb-testnet-organizational"
             }
           ],
           "networkAvailability": [
@@ -2884,18 +3025,18 @@ export const runtimeCatalog = {
               "stage": "available",
               "environment": "testnet",
               "chainId": "97",
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
-              "executable": false,
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "executable": true,
               "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "BNB"
               ],
-              "provider": "evm-bnb-testnet"
+              "provider": "evm-bnb-testnet-organizational"
             },
             {
               "network": "bnb-mainnet",
@@ -3090,7 +3231,8 @@ export const runtimeCatalog = {
         "ethereum-sepolia",
         "arbitrum-sepolia",
         "robinhood-testnet",
-        "tempo-testnet"
+        "tempo-testnet",
+        "bnb-testnet"
       ],
       "capabilities": [
         {
@@ -3184,6 +3326,23 @@ export const runtimeCatalog = {
                 "AlphaUSD"
               ],
               "provider": "evm-tempo-testnet-organizational"
+            },
+            {
+              "network": "bnb-testnet",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://auction.bid.commit",
+              "method": null,
+              "note": "BNB Testnet sealed auction bid commit is backed by the committed organizational E2E artifact.",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "supportsExecution": true,
+              "supportsProof": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "BNB"
+              ],
+              "provider": "evm-bnb-testnet-organizational"
             }
           ],
           "networkAvailability": [
@@ -3300,18 +3459,18 @@ export const runtimeCatalog = {
               "stage": "available",
               "environment": "testnet",
               "chainId": "97",
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
-              "executable": false,
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "executable": true,
               "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "BNB"
               ],
-              "provider": "evm-bnb-testnet"
+              "provider": "evm-bnb-testnet-organizational"
             },
             {
               "network": "bnb-mainnet",
@@ -3586,6 +3745,23 @@ export const runtimeCatalog = {
                 "AlphaUSD"
               ],
               "provider": "evm-tempo-testnet-organizational"
+            },
+            {
+              "network": "bnb-testnet",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://auction.settle",
+              "method": null,
+              "note": "BNB Testnet sealed auction settlement is backed by the committed organizational E2E artifact.",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "supportsExecution": true,
+              "supportsProof": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "BNB"
+              ],
+              "provider": "evm-bnb-testnet-organizational"
             }
           ],
           "networkAvailability": [
@@ -3702,18 +3878,18 @@ export const runtimeCatalog = {
               "stage": "available",
               "environment": "testnet",
               "chainId": "97",
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
-              "executable": false,
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "executable": true,
               "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "BNB"
               ],
-              "provider": "evm-bnb-testnet"
+              "provider": "evm-bnb-testnet-organizational"
             },
             {
               "network": "bnb-mainnet",
