@@ -2309,9 +2309,9 @@
     {
       "product": "treasury",
       "ecosystem": "base",
-      "declaredLaneCount": 0,
-      "executableLaneCount": 0,
-      "status": "planned",
+      "declaredLaneCount": 1,
+      "executableLaneCount": 1,
+      "status": "verified",
       "capabilities": [
         {
           "capability": "treasury.policy.check",
@@ -2319,17 +2319,17 @@
             {
               "network": "base-sepolia",
               "environment": "testnet",
-              "declared": false,
-              "mode": "unbound",
-              "status": "planned",
-              "evidence": "none",
-              "provider": "evm-base-sepolia",
-              "supportsExecution": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
-              "executable": false,
-              "entrypoint": null,
-              "note": "Missing application binding."
+              "declared": true,
+              "mode": "kernel-gateway",
+              "status": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "provider": "evm-base-sepolia-organizational",
+              "supportsExecution": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "executable": true,
+              "entrypoint": "kernel://treasury.policy.check",
+              "note": "Base Sepolia organizational Treasury passed real funding, budget, Maker/Checker approval, execution, receipt, and state reconciliation checks."
             },
             {
               "network": "base-mainnet",
@@ -2704,9 +2704,9 @@
     {
       "product": "governance",
       "ecosystem": "base",
-      "declaredLaneCount": 0,
-      "executableLaneCount": 0,
-      "status": "planned",
+      "declaredLaneCount": 1,
+      "executableLaneCount": 1,
+      "status": "verified",
       "capabilities": [
         {
           "capability": "governance.proposal.execute",
@@ -2714,17 +2714,17 @@
             {
               "network": "base-sepolia",
               "environment": "testnet",
-              "declared": false,
-              "mode": "unbound",
-              "status": "planned",
-              "evidence": "none",
-              "provider": "evm-base-sepolia",
-              "supportsExecution": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
-              "executable": false,
-              "entrypoint": null,
-              "note": "Missing application binding."
+              "declared": true,
+              "mode": "kernel-gateway",
+              "status": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "provider": "evm-base-sepolia-organizational",
+              "supportsExecution": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "executable": true,
+              "entrypoint": "kernel://governance.proposal.execute",
+              "note": "Base Sepolia commit/reveal governance passed real proposal creation, early-reveal rejection, vote reveal, finalization, receipt, and state checks."
             },
             {
               "network": "base-mainnet",
@@ -3239,9 +3239,9 @@
     {
       "product": "auction",
       "ecosystem": "base",
-      "declaredLaneCount": 0,
-      "executableLaneCount": 0,
-      "status": "planned",
+      "declaredLaneCount": 2,
+      "executableLaneCount": 2,
+      "status": "verified",
       "capabilities": [
         {
           "capability": "auction.bid.commit",
@@ -3249,17 +3249,17 @@
             {
               "network": "base-sepolia",
               "environment": "testnet",
-              "declared": false,
-              "mode": "unbound",
-              "status": "planned",
-              "evidence": "none",
-              "provider": "evm-base-sepolia",
-              "supportsExecution": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
-              "executable": false,
-              "entrypoint": null,
-              "note": "Missing application binding."
+              "declared": true,
+              "mode": "kernel-gateway",
+              "status": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "provider": "evm-base-sepolia-organizational",
+              "supportsExecution": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "executable": true,
+              "entrypoint": "kernel://auction.bid.commit",
+              "note": "Base Sepolia sealed auction passed real commit, altered-reveal rejection, reveal, finalization, settlement, receipt, and state checks."
             },
             {
               "network": "base-mainnet",
@@ -3284,17 +3284,17 @@
             {
               "network": "base-sepolia",
               "environment": "testnet",
-              "declared": false,
-              "mode": "unbound",
-              "status": "planned",
-              "evidence": "none",
-              "provider": "evm-base-sepolia",
-              "supportsExecution": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
-              "executable": false,
-              "entrypoint": null,
-              "note": "Missing application binding."
+              "declared": true,
+              "mode": "kernel-gateway",
+              "status": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "provider": "evm-base-sepolia-organizational",
+              "supportsExecution": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "executable": true,
+              "entrypoint": "kernel://auction.settle",
+              "note": "Base Sepolia sealed auction settlement is backed by the committed organizational E2E evidence artifact."
             },
             {
               "network": "base-mainnet",

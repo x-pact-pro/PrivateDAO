@@ -177,6 +177,17 @@ const ORGANIZATIONAL_EVIDENCE = {
     commit: "bf23f95",
     timestamp: "2026-09-17T07:23:24.600Z",
   },
+  "base-sepolia": {
+    provider: "evm-base-sepolia-organizational",
+    contracts: [
+      "0xf053303014cbf6233d8b9bf38679a30706069216",
+      "0x9887bcfe7daad364202d5d3102de180c389ecb20",
+      "0xcfb3e7af09f206614cf7a3cf8a93f92379c1c374",
+    ],
+    assets: ["ETH"],
+    commit: "7dcfce7",
+    timestamp: "2026-09-19T13:20:48.792Z",
+  },
   "robinhood-testnet": {
     provider: "evm-robinhood-testnet-organizational",
     contracts: [

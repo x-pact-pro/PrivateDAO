@@ -40,7 +40,7 @@ A lane is **verified** only when it is declared, bound through kernel://, has an
 | treasury | ethereum | verified | 1/1 | treasury.policy.check: ethereum-sepolia=kernel-gateway/testnet_verified, ethereum-mainnet=unbound/planned |
 | treasury | arbitrum | verified | 1/1 | treasury.policy.check: arbitrum-sepolia=kernel-gateway/testnet_verified, arbitrum-one=unbound/planned |
 | treasury | bnb | verified | 1/1 | treasury.policy.check: bnb-testnet=kernel-gateway/testnet_verified, bnb-mainnet=unbound/planned |
-| treasury | base | planned | 0/0 | treasury.policy.check: base-sepolia=unbound/planned, base-mainnet=unbound/planned |
+| treasury | base | verified | 1/1 | treasury.policy.check: base-sepolia=kernel-gateway/testnet_verified, base-mainnet=unbound/planned |
 | treasury | robinhood | verified | 1/1 | treasury.policy.check: robinhood-testnet=kernel-gateway/testnet_verified, robinhood-mainnet=unbound/planned |
 | treasury | tempo | verified | 1/1 | treasury.policy.check: tempo-testnet=kernel-gateway/testnet_verified, tempo-mainnet=unbound/planned |
 | treasury | zcash | planned | 0/0 | treasury.policy.check: zcash-testnet=unbound/planned |
@@ -50,7 +50,7 @@ A lane is **verified** only when it is declared, bound through kernel://, has an
 | governance | ethereum | verified | 1/1 | governance.proposal.execute: ethereum-sepolia=kernel-gateway/testnet_verified, ethereum-mainnet=unbound/planned |
 | governance | arbitrum | verified | 1/1 | governance.proposal.execute: arbitrum-sepolia=kernel-gateway/testnet_verified, arbitrum-one=unbound/planned |
 | governance | bnb | verified | 1/1 | governance.proposal.execute: bnb-testnet=kernel-gateway/testnet_verified, bnb-mainnet=unbound/planned |
-| governance | base | planned | 0/0 | governance.proposal.execute: base-sepolia=unbound/planned, base-mainnet=unbound/planned |
+| governance | base | verified | 1/1 | governance.proposal.execute: base-sepolia=kernel-gateway/testnet_verified, base-mainnet=unbound/planned |
 | governance | robinhood | verified | 1/1 | governance.proposal.execute: robinhood-testnet=kernel-gateway/testnet_verified, robinhood-mainnet=unbound/planned |
 | governance | tempo | verified | 1/1 | governance.proposal.execute: tempo-testnet=kernel-gateway/testnet_verified, tempo-mainnet=unbound/planned |
 | governance | zcash | planned | 0/0 | governance.proposal.execute: zcash-testnet=unbound/planned |
@@ -60,7 +60,7 @@ A lane is **verified** only when it is declared, bound through kernel://, has an
 | auction | ethereum | verified | 2/2 | auction.bid.commit: ethereum-sepolia=kernel-gateway/testnet_verified, ethereum-mainnet=unbound/planned; auction.settle: ethereum-sepolia=kernel-gateway/testnet_verified, ethereum-mainnet=unbound/planned |
 | auction | arbitrum | verified | 2/2 | auction.bid.commit: arbitrum-sepolia=kernel-gateway/testnet_verified, arbitrum-one=unbound/planned; auction.settle: arbitrum-sepolia=kernel-gateway/testnet_verified, arbitrum-one=unbound/planned |
 | auction | bnb | verified | 2/2 | auction.bid.commit: bnb-testnet=kernel-gateway/testnet_verified, bnb-mainnet=unbound/planned; auction.settle: bnb-testnet=kernel-gateway/testnet_verified, bnb-mainnet=unbound/planned |
-| auction | base | planned | 0/0 | auction.bid.commit: base-sepolia=unbound/planned, base-mainnet=unbound/planned; auction.settle: base-sepolia=unbound/planned, base-mainnet=unbound/planned |
+| auction | base | verified | 2/2 | auction.bid.commit: base-sepolia=kernel-gateway/testnet_verified, base-mainnet=unbound/planned; auction.settle: base-sepolia=kernel-gateway/testnet_verified, base-mainnet=unbound/planned |
 | auction | robinhood | verified | 2/2 | auction.bid.commit: robinhood-testnet=kernel-gateway/testnet_verified, robinhood-mainnet=unbound/planned; auction.settle: robinhood-testnet=kernel-gateway/testnet_verified, robinhood-mainnet=unbound/planned |
 | auction | tempo | verified | 2/2 | auction.bid.commit: tempo-testnet=kernel-gateway/testnet_verified, tempo-mainnet=unbound/planned; auction.settle: tempo-testnet=kernel-gateway/testnet_verified, tempo-mainnet=unbound/planned |
 | auction | zcash | planned | 0/0 | auction.bid.commit: zcash-testnet=unbound/planned; auction.settle: zcash-testnet=unbound/planned |

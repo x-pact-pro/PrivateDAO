@@ -176,6 +176,14 @@ export const APPLICATION_CAPABILITY_BINDINGS: readonly ApplicationCapabilityBind
   {
     product: "treasury",
     capability: "treasury.policy.check",
+    network: "base-sepolia",
+    mode: "kernel-gateway",
+    entrypoint: "kernel://treasury.policy.check",
+    note: "Base Sepolia organizational Treasury passed real funding, budget, Maker/Checker approval, execution, receipt, and state reconciliation checks.",
+  },
+  {
+    product: "treasury",
+    capability: "treasury.policy.check",
     network: "ethereum-sepolia",
     mode: "kernel-gateway",
     entrypoint: "kernel://treasury.policy.check",
@@ -204,6 +212,14 @@ export const APPLICATION_CAPABILITY_BINDINGS: readonly ApplicationCapabilityBind
     mode: "kernel-gateway",
     entrypoint: "kernel://treasury.policy.check",
     note: "Robinhood Testnet organizational Treasury passed real funding, Maker/Checker approval, execution, receipt, and state checks in the committed E2E artifact.",
+  },
+  {
+    product: "governance",
+    capability: "governance.proposal.execute",
+    network: "base-sepolia",
+    mode: "kernel-gateway",
+    entrypoint: "kernel://governance.proposal.execute",
+    note: "Base Sepolia commit/reveal governance passed real proposal creation, early-reveal rejection, vote reveal, finalization, receipt, and state checks.",
   },
   {
     product: "governance",
@@ -243,6 +259,22 @@ export const APPLICATION_CAPABILITY_BINDINGS: readonly ApplicationCapabilityBind
     mode: "kernel-gateway",
     entrypoint: "kernel://governance.proposal.execute",
     note: "Robinhood Testnet commit/reveal governance passed real proposal creation, vote reveal, finalization, receipt, and state checks in the committed E2E artifact.",
+  },
+  {
+    product: "auction",
+    capability: "auction.bid.commit",
+    network: "base-sepolia",
+    mode: "kernel-gateway",
+    entrypoint: "kernel://auction.bid.commit",
+    note: "Base Sepolia sealed auction passed real commit, altered-reveal rejection, reveal, finalization, settlement, receipt, and state checks.",
+  },
+  {
+    product: "auction",
+    capability: "auction.settle",
+    network: "base-sepolia",
+    mode: "kernel-gateway",
+    entrypoint: "kernel://auction.settle",
+    note: "Base Sepolia sealed auction settlement is backed by the committed organizational E2E evidence artifact.",
   },
   {
     product: "auction",

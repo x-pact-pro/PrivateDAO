@@ -2520,6 +2520,7 @@ export const runtimeCatalog = {
         "solana-devnet",
         "ethereum-sepolia",
         "arbitrum-sepolia",
+        "base-sepolia",
         "robinhood-testnet",
         "tempo-testnet",
         "bnb-testnet",
@@ -2583,6 +2584,23 @@ export const runtimeCatalog = {
                 "ETH"
               ],
               "provider": "evm-arbitrum-sepolia-organizational"
+            },
+            {
+              "network": "base-sepolia",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://treasury.policy.check",
+              "method": null,
+              "note": "Base Sepolia organizational Treasury passed real funding, budget, Maker/Checker approval, execution, receipt, and state reconciliation checks.",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "supportsExecution": true,
+              "supportsProof": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "ETH"
+              ],
+              "provider": "evm-base-sepolia-organizational"
             },
             {
               "network": "robinhood-testnet",
@@ -2803,18 +2821,18 @@ export const runtimeCatalog = {
               "stage": "available",
               "environment": "testnet",
               "chainId": "84532",
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
-              "executable": false,
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "executable": true,
               "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "ETH"
               ],
-              "provider": "evm-base-sepolia"
+              "provider": "evm-base-sepolia-organizational"
             },
             {
               "network": "base-mainnet",
@@ -2972,6 +2990,7 @@ export const runtimeCatalog = {
         "solana-devnet",
         "ethereum-sepolia",
         "arbitrum-sepolia",
+        "base-sepolia",
         "robinhood-testnet",
         "tempo-testnet",
         "bnb-testnet",
@@ -3035,6 +3054,23 @@ export const runtimeCatalog = {
                 "ETH"
               ],
               "provider": "evm-arbitrum-sepolia-organizational"
+            },
+            {
+              "network": "base-sepolia",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://governance.proposal.execute",
+              "method": null,
+              "note": "Base Sepolia commit/reveal governance passed real proposal creation, early-reveal rejection, vote reveal, finalization, receipt, and state checks.",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "supportsExecution": true,
+              "supportsProof": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "ETH"
+              ],
+              "provider": "evm-base-sepolia-organizational"
             },
             {
               "network": "robinhood-testnet",
@@ -3255,18 +3291,18 @@ export const runtimeCatalog = {
               "stage": "available",
               "environment": "testnet",
               "chainId": "84532",
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
-              "executable": false,
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "executable": true,
               "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "ETH"
               ],
-              "provider": "evm-base-sepolia"
+              "provider": "evm-base-sepolia-organizational"
             },
             {
               "network": "base-mainnet",
@@ -3424,6 +3460,7 @@ export const runtimeCatalog = {
         "solana-devnet",
         "ethereum-sepolia",
         "arbitrum-sepolia",
+        "base-sepolia",
         "robinhood-testnet",
         "tempo-testnet",
         "bnb-testnet",
@@ -3487,6 +3524,23 @@ export const runtimeCatalog = {
                 "ETH"
               ],
               "provider": "evm-arbitrum-sepolia-organizational"
+            },
+            {
+              "network": "base-sepolia",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://auction.bid.commit",
+              "method": null,
+              "note": "Base Sepolia sealed auction passed real commit, altered-reveal rejection, reveal, finalization, settlement, receipt, and state checks.",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "supportsExecution": true,
+              "supportsProof": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "ETH"
+              ],
+              "provider": "evm-base-sepolia-organizational"
             },
             {
               "network": "robinhood-testnet",
@@ -3707,18 +3761,18 @@ export const runtimeCatalog = {
               "stage": "available",
               "environment": "testnet",
               "chainId": "84532",
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
-              "executable": false,
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "executable": true,
               "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "ETH"
               ],
-              "provider": "evm-base-sepolia"
+              "provider": "evm-base-sepolia-organizational"
             },
             {
               "network": "base-mainnet",
@@ -3923,6 +3977,23 @@ export const runtimeCatalog = {
                 "ETH"
               ],
               "provider": "evm-arbitrum-sepolia-organizational"
+            },
+            {
+              "network": "base-sepolia",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://auction.settle",
+              "method": null,
+              "note": "Base Sepolia sealed auction settlement is backed by the committed organizational E2E evidence artifact.",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "supportsExecution": true,
+              "supportsProof": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "ETH"
+              ],
+              "provider": "evm-base-sepolia-organizational"
             },
             {
               "network": "robinhood-testnet",
@@ -4143,18 +4214,18 @@ export const runtimeCatalog = {
               "stage": "available",
               "environment": "testnet",
               "chainId": "84532",
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
-              "executable": false,
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "executable": true,
               "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "ETH"
               ],
-              "provider": "evm-base-sepolia"
+              "provider": "evm-base-sepolia-organizational"
             },
             {
               "network": "base-mainnet",

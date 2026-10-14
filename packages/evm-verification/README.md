@@ -89,8 +89,10 @@ expected to be the application shell because the verification check runs in
 the browser. No source record or private inputs are returned.
 
 Ethereum Sepolia and Base Sepolia are application-bound for the two verified
-verification products. Hyperliquid HyperEVM and Robinhood remain unverified
-until funded real deployments and independent E2E evidence are available. No
+verification products. Base Sepolia also has committed organizational E2E
+evidence for Treasury, Governance, and Sealed Auction execution. Hyperliquid
+HyperEVM and Robinhood remain unverified for verification products until
+funded real deployments and independent E2E evidence are available. No
 capability is upgraded from documentation alone.
 
 Tempo Testnet has a committed `testnet_verified` artifact at

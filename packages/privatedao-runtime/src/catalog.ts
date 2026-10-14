@@ -81,30 +81,30 @@ export const PRODUCT_CATALOG: readonly ProductDescriptor[] = [
     name: "Private Treasury",
     domain: "enterprise",
     availability: "available",
-    networks: [solanaDevnet, ethereumSepolia, arbitrumSepolia, robinhoodTestnet, tempoTestnet, bnbTestnet, stellarTestnet],
-    capabilities: [capability("treasury.policy.check", "treasury", false, true, [solanaDevnet, ethereumSepolia, arbitrumSepolia, robinhoodTestnet, tempoTestnet, bnbTestnet, stellarTestnet])],
+    networks: [solanaDevnet, ethereumSepolia, arbitrumSepolia, baseSepolia, robinhoodTestnet, tempoTestnet, bnbTestnet, stellarTestnet],
+    capabilities: [capability("treasury.policy.check", "treasury", false, true, [solanaDevnet, ethereumSepolia, arbitrumSepolia, baseSepolia, robinhoodTestnet, tempoTestnet, bnbTestnet, stellarTestnet])],
   },
   {
     id: "governance",
     name: "Private Governance",
     domain: "enterprise",
     availability: "available",
-    networks: [solanaDevnet, ethereumSepolia, arbitrumSepolia, robinhoodTestnet, tempoTestnet, bnbTestnet, stellarTestnet],
-    capabilities: [capability("governance.proposal.execute", "governance", true, true, [solanaDevnet, ethereumSepolia, arbitrumSepolia, robinhoodTestnet, tempoTestnet, bnbTestnet, stellarTestnet])],
+    networks: [solanaDevnet, ethereumSepolia, arbitrumSepolia, baseSepolia, robinhoodTestnet, tempoTestnet, bnbTestnet, stellarTestnet],
+    capabilities: [capability("governance.proposal.execute", "governance", true, true, [solanaDevnet, ethereumSepolia, arbitrumSepolia, baseSepolia, robinhoodTestnet, tempoTestnet, bnbTestnet, stellarTestnet])],
   },
   {
     id: "auction",
     name: "Private Auctions",
     domain: "enterprise",
     availability: "available",
-    networks: [solanaDevnet, ethereumSepolia, arbitrumSepolia, robinhoodTestnet, tempoTestnet, bnbTestnet, stellarTestnet],
+    networks: [solanaDevnet, ethereumSepolia, arbitrumSepolia, baseSepolia, robinhoodTestnet, tempoTestnet, bnbTestnet, stellarTestnet],
     capabilities: [
       // The current endpoint issues commitments/proof data off-chain; it does
       // not submit the financial bid transaction.
-      capability("auction.bid.commit", "auction", false, true, [solanaDevnet, ethereumSepolia, arbitrumSepolia, robinhoodTestnet, tempoTestnet, bnbTestnet, stellarTestnet]),
+      capability("auction.bid.commit", "auction", false, true, [solanaDevnet, ethereumSepolia, arbitrumSepolia, baseSepolia, robinhoodTestnet, tempoTestnet, bnbTestnet, stellarTestnet]),
       // The current Kernel action proves an already-bound outcome. It does
       // not submit the financial settlement transaction.
-      capability("auction.settle", "auction", false, true, [solanaDevnet, ethereumSepolia, arbitrumSepolia, robinhoodTestnet, tempoTestnet, bnbTestnet, stellarTestnet]),
+      capability("auction.settle", "auction", false, true, [solanaDevnet, ethereumSepolia, arbitrumSepolia, baseSepolia, robinhoodTestnet, tempoTestnet, bnbTestnet, stellarTestnet]),
     ],
   },
   {
