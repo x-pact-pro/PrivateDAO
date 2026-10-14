@@ -304,6 +304,25 @@ assert.equal(bidReceipt.result.privateDataExcluded, true);
 const gateway = runtime.gateway;
 const gatewayPrepared = await gateway.prepare(intent, "maker");
 assert.equal(gatewayPrepared.executionId, first.executionId);
+const forgedExecutionContext = {
+  ...gatewayPrepared,
+  intent: {
+    ...gatewayPrepared.intent,
+    context: { ...gatewayPrepared.intent.context, product: "payroll", capability: "payroll.approve" },
+  },
+};
+assert.throws(
+  () => gateway.submit(forgedExecutionContext, gatewayPrepared.unsignedPayload, "maker"),
+  (error) => error?.code === "INVALID_INTENT",
+);
+assert.throws(
+  () => gateway.status(forgedExecutionContext, "maker"),
+  (error) => error?.code === "INVALID_INTENT",
+);
+assert.throws(
+  () => gateway.receipt(forgedExecutionContext, "maker"),
+  (error) => error?.code === "INVALID_INTENT",
+);
 assert.throws(
   () => policyRuntime.gateway.prepare({ ...intent, context: { ...intent.context, product: "payroll", capability: "payroll.settle", requestId: "payroll-legacy-settle", idempotencyKey: "payroll-legacy-settle-key" } }, "maker"),
   (error) => error?.code === "APPLICATION_BOUNDARY_VIOLATION",

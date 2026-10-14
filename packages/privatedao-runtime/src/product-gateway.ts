@@ -28,18 +28,41 @@ export class ProductExecutionGateway {
   }
 
   submit<TUnsigned>(prepared: PreparedExecution<TUnsigned>, signedPayload: TUnsigned, role: ProtocolRole): Promise<{ executionId: string; signatures: string[] }> {
+    this.assertExecutionContext(prepared.executionId, prepared.intent.context);
     this.authorize(prepared.intent.context, "execution.submit", role);
     return this.kernel.submit(prepared.executionId, signedPayload);
   }
 
   status(execution: Pick<PreparedExecution<unknown>, "intent"> & { executionId: string }, role: ProtocolRole) {
+    this.assertExecutionContext(execution.executionId, execution.intent.context);
     this.authorize(execution.intent.context, "execution.read", role);
     return this.kernel.status(execution.executionId);
   }
 
   receipt<TResult = unknown>(execution: Pick<PreparedExecution<unknown>, "intent"> & { executionId: string }, role: ProtocolRole): Promise<ExecutionReceipt<TResult>> {
+    this.assertExecutionContext(execution.executionId, execution.intent.context);
     this.authorize(execution.intent.context, "receipt.read", role);
     return this.kernel.receipt<TResult>(execution.executionId);
+  }
+
+  private assertExecutionContext(executionId: string, supplied: ExecutionContext): void {
+    const recorded = this.kernel.executionContext(executionId);
+    const fields: Array<keyof ExecutionContext> = [
+      "requestId",
+      "idempotencyKey",
+      "product",
+      "capability",
+      "organizationId",
+      "actorId",
+      "network",
+      "provider",
+      "policyHash",
+    ];
+    if (fields.some((field) => recorded[field] !== supplied[field])) {
+      throw new KernelError("INVALID_INTENT", "Execution context does not match the context recorded at preparation time.", {
+        executionId,
+      });
+    }
   }
 
   private authorize(context: ExecutionContext, permission: ProtocolPermission, role: ProtocolRole): void {
