@@ -104,12 +104,18 @@ Its `CodeUri` points to this canonical directory and declares the Telemetry and
 RateLimits tables. Do not use the historical `deployment/` template reference
 to `services/agent-exchange/`.
 
-MongoDB is a production evidence-history provider when its connection secret is
-configured; the runtime stores completed evidence with idempotent job indexing.
+MongoDB is an accepted PrivateDAO Partner Program and MongoDB for Startups
+relationship, and a production evidence-history provider when its connection
+secret is configured; the runtime stores completed evidence with idempotent job
+indexing. This technical integration is separate from any endorsement or
+certification claim.
 Production Lambda egress uses the private subnets in the canonical VPC template
 through NAT Gateway EIP `13.53.64.203`; Atlas Network Access allows that EIP only.
-Other integrations remain configuration-gated: IBM watsonx provides inference fallback, Intel
-OpenVINO remains supported through `PDAO_INTEL_INFERENCE_URL`, and GitHub
+Other integrations remain configuration-gated: IBM Partner Plus provides the
+ecosystem relationship for watsonx evaluation, Intel Partner Plus supports the
+OpenVINO evaluation path through `PDAO_INTEL_INFERENCE_URL`, AMD AI Developer
+Program resources are used for AI workload validation, and GitHub Developer
+Program resources support repository evidence and tooling. GitHub
 repository evidence uses the public GitHub API (with an optional secret-backed
 token for higher API limits). Provider identity and evidence persistence status
 are included in completed results without returning credentials.
