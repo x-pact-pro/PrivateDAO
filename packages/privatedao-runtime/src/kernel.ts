@@ -247,6 +247,15 @@ export class PrivateDaoKernel {
     }
   }
 
+  /**
+   * Return the immutable authorization context recorded at preparation time.
+   * Application gateways use this to prevent a caller from pairing an existing
+   * execution ID with a different product, capability, or network context.
+   */
+  executionContext(executionId: string): ExecutionIntent["context"] {
+    return { ...this.getRecord(executionId).prepared.intent.context };
+  }
+
   async receipt<TResult = unknown>(executionId: string): Promise<ExecutionReceipt<TResult>> {
     const record = this.getRecord(executionId);
     try {
