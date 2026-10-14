@@ -173,7 +173,7 @@ test("human root is HTML while machine surfaces remain available", async () => {
   assert.ok(JSON.parse(providers.body).providers.some((provider) => provider.provider === "github"));
   const integrations = await request("/api/integrations");
   assert.equal(integrations.statusCode, 200);
-  assert.equal(JSON.parse(integrations.body).integrations.length, 6);
+  assert.equal(JSON.parse(integrations.body).integrations.length, 7);
   const githubService = catalog.services.find((service) => service.id === "github.repository");
   assert.ok(githubService.input_schema.anyOf.some((branch) => branch.required.includes("repository")));
   assert.equal((await request("/api/revenue")).statusCode, 404);

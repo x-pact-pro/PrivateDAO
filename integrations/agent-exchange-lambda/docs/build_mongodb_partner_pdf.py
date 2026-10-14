@@ -171,8 +171,9 @@ def build():
     story.append(cover_table)
     story.append(Spacer(1, 18 * mm))
     story.append(P(
-        "Submission note: this document describes a live integration and a partnership opportunity. "
-        "It does not claim MongoDB endorsement, certification, or an existing partnership.", "SmallP",
+        "Status note: PrivateDAO records accepted participation in the MongoDB Partner Program and "
+        "MongoDB for Startups. This document describes the production integration without claiming "
+        "MongoDB endorsement, certification, or joint ownership of the PrivateDAO product.", "SmallP",
     ))
 
     # 1
@@ -318,7 +319,7 @@ def build():
 
     # 5
     story.append(PageBreak())
-    story.extend(section_title("05", "Business case and partnership opportunity"))
+    story.extend(section_title("05", "Business case and partner relationship"))
     story.append(P(
         "Organizations are adopting autonomous software to research, coordinate and act, but they still need "
         "a dependable record of what happened. PrivateDAO turns agent activity into evidence that teams can "
@@ -335,9 +336,9 @@ def build():
     story.append(P("Why MongoDB is relevant", "H2P"))
     story.append(P(
         "MongoDB Atlas gives this customer story a flexible evidence-history layer for varied agent outputs, "
-        "searchable operational history and future tenant-aware analytics. PrivateDAO is seeking a partner "
-        "conversation around market fit, enablement, production scaling and responsible go-to-market support. "
-        "Any credits, co-marketing or program benefits remain subject to MongoDB’s review and applicable terms.",
+        "searchable operational history and future tenant-aware analytics. PrivateDAO participates in the "
+        "MongoDB Partner Program and MongoDB for Startups, with program benefits and commercial terms governed "
+        "by the applicable MongoDB agreements.",
     ))
     story.append(Spacer(1, 4 * mm))
     story.append(Table([
@@ -363,9 +364,9 @@ def build():
         story.append(P(text, "SmallP"))
     story.append(Spacer(1, 5 * mm))
     story.append(P(
-        "Disclosure: PrivateDAO is not represented in this brief as an existing MongoDB partner, certified "
-        "DBaaS provider, customer reference, or MongoDB-endorsed product. The document is submitted for "
-        "program evaluation and technical partnership discussion.", "SmallP",
+        "Disclosure: PrivateDAO is represented in this brief as a MongoDB Partner Program and MongoDB for "
+        "Startups participant. This does not claim a MongoDB certification, customer reference, endorsement, "
+        "or joint commercial offering beyond the applicable program terms.", "SmallP",
     ))
 
     doc.build(story, onFirstPage=page_chrome, onLaterPages=page_chrome)
