@@ -1,12 +1,12 @@
 # Enterprise Kernel Operational Security Review
 
-Date: 2026-10-14
+Date: 2026-10-15
 
 ## Scope
 
 This review covers the provider-neutral runtime, product/application boundary,
-the Agent Exchange separation, the Zcash Testnet foundation path, and the Rust
-dependency graph used by the Zcash provider.
+the Agent Exchange separation, BNB and HyperEVM Testnet evidence, the Zcash
+Testnet runner, and the Rust dependency graph used by the Zcash provider.
 
 ## Results
 
@@ -18,7 +18,12 @@ dependency graph used by the Zcash provider.
   with the context recorded at preparation time, preventing execution-ID
   context substitution across products, capabilities, or networks.
 - Zcash remains Testnet-only in the adapter and Mainnet construction is
-  rejected. Foundation tests must not be presented as product-specific E2E.
+  rejected. The product runner now has explicit product/capability selection,
+  balance-readiness gating, dry-run output, stale-wallet-tip checks, and a
+  default broadcast-off path. Foundation tests must not be presented as
+  product-specific E2E.
+- BNB Testnet and HyperEVM Testnet receipts are independently rechecked against
+  chain IDs 97 and 998. HyperEVM evidence is not used for HyperCore claims.
 - The actionable Rustls advisories were remediated by updating `rustls` from
   `0.23.45` to `0.23.46` in the lockfile.
 - `npm audit --omit=dev` reports no production vulnerabilities when the Node
@@ -35,6 +40,10 @@ transitive Solana/MagicBlock dependencies:
   `solana-secp256k1-recover` and `solana-program` on the same path.
 - `atomic-polyfill`, `bincode`, `js-sys`, and `wasm-bindgen` have maintenance
   or yanked-release warnings in the transitive graph.
+
+The current audit result is one vulnerability and six allowed warnings. The
+repository has no direct `rkyv` dependency, so a safe fix requires an upstream
+MagicBlock/Solana compatibility upgrade rather than a direct override.
 
 These cannot be safely replaced with an arbitrary direct dependency without
 validating the Anchor and MagicBlock ABI compatibility. The next remediation
