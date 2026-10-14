@@ -6634,7 +6634,7 @@ name = "zk-groth16-verifier"
 version = "0.1.0"
 dependencies = [
  "anchor-lang",
- "solana-define-syscall 3.0.0",
+ "solana-define-syscall 5.1.0",
 ]
 
 [[package]]
