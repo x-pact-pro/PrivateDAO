@@ -41,7 +41,7 @@ A lane is **verified** only when it is declared, bound through kernel://, has an
 | treasury | arbitrum | verified | 1/1 | treasury.policy.check: arbitrum-sepolia=kernel-gateway/testnet_verified, arbitrum-one=unbound/planned |
 | treasury | bnb | planned | 0/0 | treasury.policy.check: bnb-testnet=unbound/planned, bnb-mainnet=unbound/planned |
 | treasury | base | planned | 0/0 | treasury.policy.check: base-sepolia=unbound/planned, base-mainnet=unbound/planned |
-| treasury | robinhood | planned | 0/0 | treasury.policy.check: robinhood-testnet=unbound/planned, robinhood-mainnet=unbound/planned |
+| treasury | robinhood | verified | 1/1 | treasury.policy.check: robinhood-testnet=kernel-gateway/testnet_verified, robinhood-mainnet=unbound/planned |
 | treasury | tempo | verified | 1/1 | treasury.policy.check: tempo-testnet=kernel-gateway/testnet_verified, tempo-mainnet=unbound/planned |
 | treasury | zcash | planned | 0/0 | treasury.policy.check: zcash-testnet=unbound/planned |
 | treasury | hyperliquid | planned | 0/0 | treasury.policy.check: hyperliquid-testnet=unbound/planned |
@@ -51,7 +51,7 @@ A lane is **verified** only when it is declared, bound through kernel://, has an
 | governance | arbitrum | verified | 1/1 | governance.proposal.execute: arbitrum-sepolia=kernel-gateway/testnet_verified, arbitrum-one=unbound/planned |
 | governance | bnb | planned | 0/0 | governance.proposal.execute: bnb-testnet=unbound/planned, bnb-mainnet=unbound/planned |
 | governance | base | planned | 0/0 | governance.proposal.execute: base-sepolia=unbound/planned, base-mainnet=unbound/planned |
-| governance | robinhood | planned | 0/0 | governance.proposal.execute: robinhood-testnet=unbound/planned, robinhood-mainnet=unbound/planned |
+| governance | robinhood | verified | 1/1 | governance.proposal.execute: robinhood-testnet=kernel-gateway/testnet_verified, robinhood-mainnet=unbound/planned |
 | governance | tempo | verified | 1/1 | governance.proposal.execute: tempo-testnet=kernel-gateway/testnet_verified, tempo-mainnet=unbound/planned |
 | governance | zcash | planned | 0/0 | governance.proposal.execute: zcash-testnet=unbound/planned |
 | governance | hyperliquid | planned | 0/0 | governance.proposal.execute: hyperliquid-testnet=unbound/planned |
@@ -61,7 +61,7 @@ A lane is **verified** only when it is declared, bound through kernel://, has an
 | auction | arbitrum | verified | 2/2 | auction.bid.commit: arbitrum-sepolia=kernel-gateway/testnet_verified, arbitrum-one=unbound/planned; auction.settle: arbitrum-sepolia=kernel-gateway/testnet_verified, arbitrum-one=unbound/planned |
 | auction | bnb | planned | 0/0 | auction.bid.commit: bnb-testnet=unbound/planned, bnb-mainnet=unbound/planned; auction.settle: bnb-testnet=unbound/planned, bnb-mainnet=unbound/planned |
 | auction | base | planned | 0/0 | auction.bid.commit: base-sepolia=unbound/planned, base-mainnet=unbound/planned; auction.settle: base-sepolia=unbound/planned, base-mainnet=unbound/planned |
-| auction | robinhood | planned | 0/0 | auction.bid.commit: robinhood-testnet=unbound/planned, robinhood-mainnet=unbound/planned; auction.settle: robinhood-testnet=unbound/planned, robinhood-mainnet=unbound/planned |
+| auction | robinhood | verified | 2/2 | auction.bid.commit: robinhood-testnet=kernel-gateway/testnet_verified, robinhood-mainnet=unbound/planned; auction.settle: robinhood-testnet=kernel-gateway/testnet_verified, robinhood-mainnet=unbound/planned |
 | auction | tempo | verified | 2/2 | auction.bid.commit: tempo-testnet=kernel-gateway/testnet_verified, tempo-mainnet=unbound/planned; auction.settle: tempo-testnet=kernel-gateway/testnet_verified, tempo-mainnet=unbound/planned |
 | auction | zcash | planned | 0/0 | auction.bid.commit: zcash-testnet=unbound/planned; auction.settle: zcash-testnet=unbound/planned |
 | auction | hyperliquid | planned | 0/0 | auction.bid.commit: hyperliquid-testnet=unbound/planned; auction.settle: hyperliquid-testnet=unbound/planned |
