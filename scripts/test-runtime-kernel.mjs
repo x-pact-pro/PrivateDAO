@@ -368,7 +368,7 @@ assert.equal(isEnterpriseProduct("agent"), false);
 assert.equal(isEnterpriseProduct("treasury"), true);
 assert.equal(PRIMARY_ECOSYSTEMS.length, 10);
 assert.equal(validatePrimaryEcosystems().length, 0);
-assert.equal(PRIMARY_ECOSYSTEMS.find((ecosystem) => ecosystem.id === "stellar")?.status, "planned");
+assert.equal(PRIMARY_ECOSYSTEMS.find((ecosystem) => ecosystem.id === "stellar")?.status, "configured");
 assert.equal(
   listApplicationBindings().length,
   products.reduce((count, product) => count + product.capabilities.reduce((total, capability) => total + capability.networks.length, 0), 0),
