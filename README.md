@@ -8,6 +8,84 @@ run sensitive work without making every detail public. It helps teams define
 rules, run workflows, approve actions, execute through the appropriate
 infrastructure, and share evidence of the outcome.
 
+PrivateDAO is built for organizations entering Web3 as well as organizations
+that never intend to become crypto companies. A business can keep its existing
+operating model and add verifiable Web3 capability only where it is useful:
+private payroll, controlled treasury actions, governance, procurement, and
+verification. Privacy is the product principle; blockchain, wallets, and
+cryptography are execution infrastructure behind that principle.
+
+## Product direction
+
+The project is organized around six core organizational workflows:
+
+1. **Confidential Payroll** - pay people without publishing salary records.
+2. **Treasury Coordination** - approve and reconcile sensitive spending.
+3. **Private Governance** - make and prove decisions without exposing every
+   discussion.
+4. **Confidential Auctions** - run sealed procurement and competitive bids.
+5. **Blind Verification** - prove that a condition was met without revealing
+   the underlying information.
+6. **Record Verification** - prove that a document, event, or result is valid
+   without publishing private fields.
+
+These workflows share the PrivateDAO Kernel, policy controls, execution
+adapters, receipts, and reconciliation boundaries. The public product surface
+is intentionally simple; technical network details remain available for
+builders, reviewers, and operators.
+
+## Next milestone: PDAO Wallet
+
+The next product milestone is **PDAO Wallet**, an account and policy layer for
+organizations rather than a single consumer wallet. The planned wallet suite
+will support:
+
+- corporate accounts for the six core workflows and institution management;
+- an autonomous AI wallet for bounded, policy-controlled agent operations;
+- a B2B wallet for organizations, counterparties, and service settlement;
+- role-based permissions, approval thresholds, spending policies, signing
+  boundaries, receipts, reconciliation, and audit-ready evidence.
+
+PDAO Wallet will be developed as a capability layer above the PrivateDAO
+Kernel. It will remain independent from any single chain or provider, while
+each network adapter is required to provide real implementation and evidence
+before it is described as supported.
+
+## Quantum-security roadmap
+
+PrivateDAO plans a quantum-resilience layer above the Kernel and PDAO Wallet.
+This work will evaluate current post-quantum and hybrid cryptographic
+libraries, key-agility patterns, signing policies, migration paths, and
+hardware-backed execution as the standards and production libraries mature.
+The implementation will use maintained, independently reviewed libraries and
+explicit compatibility gates. This roadmap is not a claim that PrivateDAO is
+currently quantum-safe, certified, or externally audited for post-quantum
+security.
+
+## Technology validation roadmap
+
+MongoDB and AMD are identified as planned technology evaluation targets for
+storage, testing, performance, and workload validation around PDAO Wallet and
+the Kernel. Any use of their products will be documented by the relevant test
+or deployment evidence. PrivateDAO does **not** claim a current formal
+partnership, endorsement, certification, or grant relationship with MongoDB or
+AMD unless independently confirmed and recorded in the repository.
+
+## Evidence language
+
+This repository distinguishes three states:
+
+- **Verified** - backed by current source, runtime, or independently checkable
+  execution evidence.
+- **Planned** - an approved product or engineering milestone that is not yet a
+  completed production capability.
+- **Historical** - retained material that explains prior work but is not a
+  current product claim.
+
+Network configuration, an address, a UI label, or a passing unit test alone is
+not evidence of a live product execution path. See the capability matrix and
+linked evidence for the status of each network and workflow.
+
 Live Testnet program: `EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva`
 
 Historical Devnet proof registry program: `5AhUsbQ4mJ8Xh7QJEomuS85qGgmK9iNvFqzF669Y7Psx`
@@ -69,6 +147,13 @@ value.
 - **PrivateDAO Agent Exchange** - an MCP-compatible service marketplace for
   verification, blockchain intelligence, market context, agent discovery, and
   verifiable receipts.
+
+### Community
+
+**PDAO Worlds** is the community layer for education, experimentation, and
+shared participation around PrivateDAO. It is separate from the organization
+workflow products and does not change the evidence or security requirements of
+the Kernel, PDAO Wallet, or settlement paths.
 
 ### PDAO token surface
 
