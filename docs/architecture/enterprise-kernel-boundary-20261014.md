@@ -32,6 +32,12 @@ receipts, and reconciliation remain Kernel concerns.
 
 ## Network evidence
 
+The target enterprise inventory contains ten ecosystems: Solana, Ethereum,
+Arbitrum, BNB Chain, Base, Robinhood Chain, Tempo, Zcash, Hyperliquid, and
+Stellar. The runtime now records all ten explicitly. Stellar is currently a
+planned ecosystem with no provider, product binding, receipt, or execution
+claim; the inventory entry is a scope marker, not support evidence.
+
 The repository may contain configuration for multiple ecosystems, but a
 configured adapter is not proof of product execution. A product/network row is
 advertised as verified only when the registry contains independent execution

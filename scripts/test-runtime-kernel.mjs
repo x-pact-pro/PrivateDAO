@@ -12,6 +12,8 @@ import {
   ENTERPRISE_PRODUCT_IDS,
   PRODUCT_CATALOG,
   isEnterpriseProduct,
+  PRIMARY_ECOSYSTEMS,
+  validatePrimaryEcosystems,
 } from "../packages/privatedao-runtime/src/index.ts";
 import runtimeCatalogModule from "../apps/web/src/lib/runtime-catalog.ts";
 
@@ -333,6 +335,9 @@ assert.equal(PRODUCT_CATALOG.filter((product) => product.domain === "enterprise"
 assert.equal(PRODUCT_CATALOG.find((product) => product.id === "agent")?.domain, "agent-exchange");
 assert.equal(isEnterpriseProduct("agent"), false);
 assert.equal(isEnterpriseProduct("treasury"), true);
+assert.equal(PRIMARY_ECOSYSTEMS.length, 10);
+assert.equal(validatePrimaryEcosystems().length, 0);
+assert.equal(PRIMARY_ECOSYSTEMS.find((ecosystem) => ecosystem.id === "stellar")?.status, "planned");
 assert.equal(
   listApplicationBindings().length,
   products.reduce((count, product) => count + product.capabilities.reduce((total, capability) => total + capability.networks.length, 0), 0),

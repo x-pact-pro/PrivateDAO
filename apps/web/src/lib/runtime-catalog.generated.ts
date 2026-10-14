@@ -396,6 +396,24 @@ export const runtimeCatalog = {
                 "HYPE"
               ],
               "provider": "evm-hyperliquid-testnet"
+            },
+            {
+              "network": "stellar-testnet",
+              "stage": "planned",
+              "environment": "testnet",
+              "chainId": null,
+              "declared": false,
+              "mode": "unbound",
+              "evidenceStatus": "planned",
+              "evidence": "none",
+              "executable": false,
+              "supportsProof": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "supportedAssets": [
+                "XLM"
+              ],
+              "provider": null
             }
           ]
         }
@@ -794,6 +812,24 @@ export const runtimeCatalog = {
                 "HYPE"
               ],
               "provider": "evm-hyperliquid-testnet"
+            },
+            {
+              "network": "stellar-testnet",
+              "stage": "planned",
+              "environment": "testnet",
+              "chainId": null,
+              "declared": false,
+              "mode": "unbound",
+              "evidenceStatus": "planned",
+              "evidence": "none",
+              "executable": false,
+              "supportsProof": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "supportedAssets": [
+                "XLM"
+              ],
+              "provider": null
             }
           ]
         },
@@ -1178,6 +1214,24 @@ export const runtimeCatalog = {
                 "HYPE"
               ],
               "provider": "evm-hyperliquid-testnet"
+            },
+            {
+              "network": "stellar-testnet",
+              "stage": "planned",
+              "environment": "testnet",
+              "chainId": null,
+              "declared": false,
+              "mode": "unbound",
+              "evidenceStatus": "planned",
+              "evidence": "none",
+              "executable": false,
+              "supportsProof": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "supportedAssets": [
+                "XLM"
+              ],
+              "provider": null
             }
           ]
         }
@@ -1504,6 +1558,24 @@ export const runtimeCatalog = {
                 "HYPE"
               ],
               "provider": "evm-hyperliquid-testnet"
+            },
+            {
+              "network": "stellar-testnet",
+              "stage": "planned",
+              "environment": "testnet",
+              "chainId": null,
+              "declared": false,
+              "mode": "unbound",
+              "evidenceStatus": "planned",
+              "evidence": "none",
+              "executable": false,
+              "supportsProof": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "supportedAssets": [
+                "XLM"
+              ],
+              "provider": null
             }
           ]
         },
@@ -1820,6 +1892,24 @@ export const runtimeCatalog = {
                 "HYPE"
               ],
               "provider": "evm-hyperliquid-testnet"
+            },
+            {
+              "network": "stellar-testnet",
+              "stage": "planned",
+              "environment": "testnet",
+              "chainId": null,
+              "declared": false,
+              "mode": "unbound",
+              "evidenceStatus": "planned",
+              "evidence": "none",
+              "executable": false,
+              "supportsProof": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "supportedAssets": [
+                "XLM"
+              ],
+              "provider": null
             }
           ]
         },
@@ -2136,6 +2226,24 @@ export const runtimeCatalog = {
                 "HYPE"
               ],
               "provider": "evm-hyperliquid-testnet"
+            },
+            {
+              "network": "stellar-testnet",
+              "stage": "planned",
+              "environment": "testnet",
+              "chainId": null,
+              "declared": false,
+              "mode": "unbound",
+              "evidenceStatus": "planned",
+              "evidence": "none",
+              "executable": false,
+              "supportsProof": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "supportedAssets": [
+                "XLM"
+              ],
+              "provider": null
             }
           ]
         }
@@ -2516,6 +2624,24 @@ export const runtimeCatalog = {
                 "HYPE"
               ],
               "provider": "evm-hyperliquid-testnet"
+            },
+            {
+              "network": "stellar-testnet",
+              "stage": "planned",
+              "environment": "testnet",
+              "chainId": null,
+              "declared": false,
+              "mode": "unbound",
+              "evidenceStatus": "planned",
+              "evidence": "none",
+              "executable": false,
+              "supportsProof": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "supportedAssets": [
+                "XLM"
+              ],
+              "provider": null
             }
           ]
         }
@@ -2896,6 +3022,24 @@ export const runtimeCatalog = {
                 "HYPE"
               ],
               "provider": "evm-hyperliquid-testnet"
+            },
+            {
+              "network": "stellar-testnet",
+              "stage": "planned",
+              "environment": "testnet",
+              "chainId": null,
+              "declared": false,
+              "mode": "unbound",
+              "evidenceStatus": "planned",
+              "evidence": "none",
+              "executable": false,
+              "supportsProof": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "supportedAssets": [
+                "XLM"
+              ],
+              "provider": null
             }
           ]
         }
@@ -3276,6 +3420,24 @@ export const runtimeCatalog = {
                 "HYPE"
               ],
               "provider": "evm-hyperliquid-testnet"
+            },
+            {
+              "network": "stellar-testnet",
+              "stage": "planned",
+              "environment": "testnet",
+              "chainId": null,
+              "declared": false,
+              "mode": "unbound",
+              "evidenceStatus": "planned",
+              "evidence": "none",
+              "executable": false,
+              "supportsProof": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "supportedAssets": [
+                "XLM"
+              ],
+              "provider": null
             }
           ]
         },
@@ -3643,6 +3805,24 @@ export const runtimeCatalog = {
                 "HYPE"
               ],
               "provider": "evm-hyperliquid-testnet"
+            },
+            {
+              "network": "stellar-testnet",
+              "stage": "planned",
+              "environment": "testnet",
+              "chainId": null,
+              "declared": false,
+              "mode": "unbound",
+              "evidenceStatus": "planned",
+              "evidence": "none",
+              "executable": false,
+              "supportsProof": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "supportedAssets": [
+                "XLM"
+              ],
+              "provider": null
             }
           ]
         }
@@ -3987,6 +4167,24 @@ export const runtimeCatalog = {
                 "HYPE"
               ],
               "provider": "evm-hyperliquid-testnet"
+            },
+            {
+              "network": "stellar-testnet",
+              "stage": "planned",
+              "environment": "testnet",
+              "chainId": null,
+              "declared": false,
+              "mode": "unbound",
+              "evidenceStatus": "planned",
+              "evidence": "none",
+              "executable": false,
+              "supportsProof": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "supportedAssets": [
+                "XLM"
+              ],
+              "provider": null
             }
           ]
         },
@@ -4320,6 +4518,24 @@ export const runtimeCatalog = {
                 "HYPE"
               ],
               "provider": "evm-hyperliquid-testnet"
+            },
+            {
+              "network": "stellar-testnet",
+              "stage": "planned",
+              "environment": "testnet",
+              "chainId": null,
+              "declared": false,
+              "mode": "unbound",
+              "evidenceStatus": "planned",
+              "evidence": "none",
+              "executable": false,
+              "supportsProof": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "supportedAssets": [
+                "XLM"
+              ],
+              "provider": null
             }
           ]
         }
@@ -4465,6 +4681,13 @@ export const runtimeCatalog = {
       "environment": "testnet",
       "chainId": "998",
       "adapterId": "evm-hyperliquid-testnet"
+    },
+    {
+      "id": "stellar-testnet",
+      "label": "Stellar Testnet",
+      "family": "stellar",
+      "stage": "planned",
+      "environment": "testnet"
     }
   ],
   "paymentRails": [
