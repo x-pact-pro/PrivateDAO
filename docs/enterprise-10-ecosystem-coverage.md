@@ -14,7 +14,7 @@ A lane is **verified** only when it is declared, bound through kernel://, has an
 | blind-verification | robinhood | planned | 0/0 | verification.blind.prove: robinhood-testnet=unbound/planned, robinhood-mainnet=unbound/planned |
 | blind-verification | tempo | verified | 1/1 | verification.blind.prove: tempo-testnet=kernel-gateway/testnet_verified, tempo-mainnet=unbound/planned |
 | blind-verification | zcash | planned | 0/0 | verification.blind.prove: zcash-testnet=unbound/planned |
-| blind-verification | hyperliquid | planned | 0/0 | verification.blind.prove: hyperliquid-testnet=unbound/planned |
+| blind-verification | hyperliquid | verified | 1/1 | verification.blind.prove: hyperliquid-testnet=kernel-gateway/testnet_verified |
 | blind-verification | stellar | planned | 0/0 | verification.blind.prove: stellar-testnet=unbound/planned |
 | record-verification | solana | planned | 0/2 | verification.record.create: solana-devnet=kernel-gateway/implementation, solana-mainnet-beta=unbound/planned; verification.record.verify: solana-devnet=kernel-gateway/implementation, solana-mainnet-beta=unbound/planned |
 | record-verification | ethereum | verified | 2/2 | verification.record.create: ethereum-sepolia=kernel-gateway/testnet_verified, ethereum-mainnet=unbound/planned; verification.record.verify: ethereum-sepolia=kernel-gateway/testnet_verified, ethereum-mainnet=unbound/planned |
@@ -24,7 +24,7 @@ A lane is **verified** only when it is declared, bound through kernel://, has an
 | record-verification | robinhood | planned | 0/0 | verification.record.create: robinhood-testnet=unbound/planned, robinhood-mainnet=unbound/planned; verification.record.verify: robinhood-testnet=unbound/planned, robinhood-mainnet=unbound/planned |
 | record-verification | tempo | verified | 2/2 | verification.record.create: tempo-testnet=kernel-gateway/testnet_verified, tempo-mainnet=unbound/planned; verification.record.verify: tempo-testnet=kernel-gateway/testnet_verified, tempo-mainnet=unbound/planned |
 | record-verification | zcash | planned | 0/0 | verification.record.create: zcash-testnet=unbound/planned; verification.record.verify: zcash-testnet=unbound/planned |
-| record-verification | hyperliquid | planned | 0/0 | verification.record.create: hyperliquid-testnet=unbound/planned; verification.record.verify: hyperliquid-testnet=unbound/planned |
+| record-verification | hyperliquid | verified | 2/2 | verification.record.create: hyperliquid-testnet=kernel-gateway/testnet_verified; verification.record.verify: hyperliquid-testnet=kernel-gateway/testnet_verified |
 | record-verification | stellar | planned | 0/0 | verification.record.create: stellar-testnet=unbound/planned; verification.record.verify: stellar-testnet=unbound/planned |
 | payroll | solana | partial | 2/3 | payroll.calculate: solana-devnet=kernel-gateway/devnet_verified, solana-mainnet-beta=unbound/planned; payroll.approve: solana-devnet=kernel-gateway/devnet_verified, solana-mainnet-beta=unbound/planned; payroll.settle: solana-devnet=legacy-provider/devnet_verified, solana-mainnet-beta=unbound/planned |
 | payroll | ethereum | planned | 0/0 | payroll.calculate: ethereum-sepolia=unbound/planned, ethereum-mainnet=unbound/planned; payroll.approve: ethereum-sepolia=unbound/planned, ethereum-mainnet=unbound/planned; payroll.settle: ethereum-sepolia=unbound/planned, ethereum-mainnet=unbound/planned |

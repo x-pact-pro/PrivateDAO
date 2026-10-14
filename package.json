@@ -105,6 +105,7 @@
     "verify:bnb:evidence": "node scripts/verify-bnb-evidence.mjs",
     "verify:bnb:organizational-evidence": "node scripts/verify-bnb-organizational-evidence.mjs",
     "verify:bnb:organizational-readiness": "node scripts/verify-bnb-organizational-readiness.mjs",
+    "verify:hyperliquid:evidence": "node scripts/verify-hyperliquid-evidence.mjs",
     "probe:evm-rpc": "node --import tsx scripts/probe-evm-rpc-readiness.mjs",
     "report:testnet-funding": "node scripts/report-testnet-funding.mjs",
     "verify:canonical-repository": "node scripts/verify-canonical-repository.mjs",

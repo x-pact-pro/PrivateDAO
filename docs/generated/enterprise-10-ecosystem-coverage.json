@@ -370,9 +370,9 @@
     {
       "product": "blind-verification",
       "ecosystem": "hyperliquid",
-      "declaredLaneCount": 0,
-      "executableLaneCount": 0,
-      "status": "planned",
+      "declaredLaneCount": 1,
+      "executableLaneCount": 1,
+      "status": "verified",
       "capabilities": [
         {
           "capability": "verification.blind.prove",
@@ -380,17 +380,17 @@
             {
               "network": "hyperliquid-testnet",
               "environment": "testnet",
-              "declared": false,
-              "mode": "unbound",
-              "status": "planned",
-              "evidence": "none",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "status": "testnet_verified",
+              "evidence": "testnet-e2e",
               "provider": "evm-hyperliquid-testnet",
-              "supportsExecution": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
-              "executable": false,
-              "entrypoint": null,
-              "note": "Missing application binding."
+              "supportsExecution": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "executable": true,
+              "entrypoint": "kernel://verification.blind.prove",
+              "note": "HyperEVM Testnet blind verification passed the committed proof, revocation, and receipt checks; this does not claim HyperCore execution."
             }
           ]
         }
@@ -1030,9 +1030,9 @@
     {
       "product": "record-verification",
       "ecosystem": "hyperliquid",
-      "declaredLaneCount": 0,
-      "executableLaneCount": 0,
-      "status": "planned",
+      "declaredLaneCount": 2,
+      "executableLaneCount": 2,
+      "status": "verified",
       "capabilities": [
         {
           "capability": "verification.record.create",
@@ -1040,17 +1040,17 @@
             {
               "network": "hyperliquid-testnet",
               "environment": "testnet",
-              "declared": false,
-              "mode": "unbound",
-              "status": "planned",
-              "evidence": "none",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "status": "testnet_verified",
+              "evidence": "testnet-e2e",
               "provider": "evm-hyperliquid-testnet",
-              "supportsExecution": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
-              "executable": false,
-              "entrypoint": null,
-              "note": "Missing application binding."
+              "supportsExecution": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "executable": true,
+              "entrypoint": "kernel://verification.record.create",
+              "note": "HyperEVM Testnet record creation is backed by the committed receipt and verifier evidence; this does not claim HyperCore execution."
             }
           ]
         },
@@ -1060,17 +1060,17 @@
             {
               "network": "hyperliquid-testnet",
               "environment": "testnet",
-              "declared": false,
-              "mode": "unbound",
-              "status": "planned",
-              "evidence": "none",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "status": "testnet_verified",
+              "evidence": "testnet-e2e",
               "provider": "evm-hyperliquid-testnet",
-              "supportsExecution": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
-              "executable": false,
-              "entrypoint": null,
-              "note": "Missing application binding."
+              "supportsExecution": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "executable": true,
+              "entrypoint": "kernel://verification.record.verify",
+              "note": "HyperEVM Testnet record verification passed the committed proof, revocation, and receipt checks; this does not claim HyperCore execution."
             }
           ]
         }

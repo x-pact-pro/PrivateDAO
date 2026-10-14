@@ -13,7 +13,8 @@ export const runtimeCatalog = {
         "arbitrum-sepolia",
         "tempo-testnet",
         "base-sepolia",
-        "bnb-testnet"
+        "bnb-testnet",
+        "hyperliquid-testnet"
       ],
       "capabilities": [
         {
@@ -124,6 +125,23 @@ export const runtimeCatalog = {
                 "BNB"
               ],
               "provider": "evm-bnb-testnet"
+            },
+            {
+              "network": "hyperliquid-testnet",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://verification.blind.prove",
+              "method": null,
+              "note": "HyperEVM Testnet blind verification passed the committed proof, revocation, and receipt checks; this does not claim HyperCore execution.",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "supportsExecution": true,
+              "supportsProof": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "HYPE"
+              ],
+              "provider": "evm-hyperliquid-testnet"
             }
           ],
           "networkAvailability": [
@@ -402,14 +420,14 @@ export const runtimeCatalog = {
               "stage": "available",
               "environment": "testnet",
               "chainId": "998",
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
-              "executable": false,
-              "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "executable": true,
+              "supportsProof": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "HYPE"
               ],
@@ -447,7 +465,8 @@ export const runtimeCatalog = {
         "arbitrum-sepolia",
         "tempo-testnet",
         "base-sepolia",
-        "bnb-testnet"
+        "bnb-testnet",
+        "hyperliquid-testnet"
       ],
       "capabilities": [
         {
@@ -558,6 +577,23 @@ export const runtimeCatalog = {
                 "BNB"
               ],
               "provider": "evm-bnb-testnet"
+            },
+            {
+              "network": "hyperliquid-testnet",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://verification.record.create",
+              "method": null,
+              "note": "HyperEVM Testnet record creation is backed by the committed receipt and verifier evidence; this does not claim HyperCore execution.",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "supportsExecution": true,
+              "supportsProof": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "HYPE"
+              ],
+              "provider": "evm-hyperliquid-testnet"
             }
           ],
           "networkAvailability": [
@@ -836,14 +872,14 @@ export const runtimeCatalog = {
               "stage": "available",
               "environment": "testnet",
               "chainId": "998",
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
-              "executable": false,
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "executable": true,
               "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "HYPE"
               ],
@@ -977,6 +1013,23 @@ export const runtimeCatalog = {
                 "BNB"
               ],
               "provider": "evm-bnb-testnet"
+            },
+            {
+              "network": "hyperliquid-testnet",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://verification.record.verify",
+              "method": null,
+              "note": "HyperEVM Testnet record verification passed the committed proof, revocation, and receipt checks; this does not claim HyperCore execution.",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "supportsExecution": true,
+              "supportsProof": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "HYPE"
+              ],
+              "provider": "evm-hyperliquid-testnet"
             }
           ],
           "networkAvailability": [
@@ -1255,14 +1308,14 @@ export const runtimeCatalog = {
               "stage": "available",
               "environment": "testnet",
               "chainId": "998",
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
-              "executable": false,
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "executable": true,
               "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "HYPE"
               ],

@@ -7,7 +7,7 @@ const liveAgents = entries.filter((entry) => entry.status === "mainnet_live" && 
 const verifiedPayroll = entries.filter((entry) => entry.status === "devnet_verified");
 
 assert.equal(entries.length, 204, "unexpected native capability matrix size");
-assert.equal(verified.length, 36, "only evidence-backed verification and organizational testnet rows should be verified");
+assert.equal(verified.length, 39, "only evidence-backed verification and organizational testnet rows should be verified");
 assert.equal(liveAgents.length, 2, "the two live Agent Exchange rows must be runtime-verified");
 assert.equal(verifiedPayroll.length, 3, "only the three Payroll Devnet evidence rows should be verified");
 for (const entry of verifiedPayroll) {
@@ -54,13 +54,15 @@ assert.equal(verified.filter((entry) => entry.provider === "evm-robinhood-testne
 assert.equal(verified.filter((entry) => entry.provider === "evm-bnb-testnet").length, 3, "BNB Testnet must have three verified verification rows");
 assert.equal(verified.filter((entry) => entry.provider === "evm-bnb-testnet-organizational").length, 5, "BNB organizational evidence must cover Payroll, Treasury, Governance, and Auction lanes");
 assert.equal(verified.filter((entry) => entry.network === "bnb-testnet").every((entry) => entry.chainId === "97"), true);
+assert.equal(verified.filter((entry) => entry.provider === "evm-hyperliquid-testnet").length, 3, "HyperEVM evidence must cover blind and record verification lanes");
+assert.equal(verified.filter((entry) => entry.network === "hyperliquid-testnet").every((entry) => entry.chainId === "998"), true);
 assert.equal(verified.filter((entry) => entry.network === "robinhood-testnet").every((entry) => entry.chainId === "46630"), true);
 assert.equal(verified.filter((entry) => entry.network === "arbitrum-sepolia").every((entry) => entry.chainId === "421614"), true);
 assert.equal(entries.find((entry) => entry.network === "tempo-testnet" && entry.product === "treasury")?.nativeAsset, "USD", "Tempo native asset must match the EVM adapter configuration");
 assert.equal(entries.find((entry) => entry.network === "hyperliquid-testnet" && entry.product === "record-verification")?.networkFamily, "evm", "HyperEVM must use the EVM adapter family");
 assert.equal(entries.find((entry) => entry.network === "hyperliquid-testnet" && entry.product === "record-verification")?.chainId, "998", "HyperEVM testnet chain ID must be 998");
 assert.equal(entries.find((entry) => entry.network === "hyperliquid-testnet" && entry.product === "record-verification")?.nativeAsset, "HYPE", "HyperEVM native asset must be HYPE");
-assert.equal(entries.find((entry) => entry.network === "hyperliquid-testnet" && entry.product === "record-verification")?.status, "planned", "HyperEVM must remain unverified until E2E evidence exists");
+assert.equal(entries.find((entry) => entry.network === "hyperliquid-testnet" && entry.product === "record-verification")?.status, "testnet_verified", "HyperEVM record verification must reflect its committed E2E evidence");
 
 assert.equal(entries.some((entry) => entry.network === "wormhole-integration"), false, "bridge network must not be present");
 console.log(`[native-capability-registry] rows=${entries.length} verified=${verified.length} bridge-free=true`);

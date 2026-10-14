@@ -112,6 +112,17 @@ const BNB_TESTNET_EVIDENCE = {
   timestamp: "2026-10-11T15:16:22.645Z",
 } as const;
 
+const HYPERLIQUID_TESTNET_EVIDENCE = {
+  provider: "evm-hyperliquid-testnet",
+  contracts: [
+    "0x26e3515d02bb3d8122fad109d159f43e81e8beeb",
+    "0xdd01da1b53ba46bf1ce8c71bc1c5e86e8784694b",
+    "0x6f813e1221cb5f760bb5c467983c014bbe4b3b5c",
+  ],
+  commit: "b4af3f3e4",
+  timestamp: "2026-10-11T14:08:00.682Z",
+} as const;
+
 const ORGANIZATIONAL_EVIDENCE = {
   "ethereum-sepolia": {
     provider: "evm-ethereum-sepolia-organizational",
@@ -342,6 +353,28 @@ function applyBnbTestnetEvidence(entry: NativeCapabilityEntry): NativeCapability
   };
 }
 
+function applyHyperliquidTestnetEvidence(entry: NativeCapabilityEntry): NativeCapabilityEntry {
+  const isBlind = entry.product === "blind-verification" && entry.capability === "verification.blind.prove";
+  const isRecord = entry.product === "record-verification" && ["verification.record.create", "verification.record.verify"].includes(entry.capability);
+  if (entry.network !== "hyperliquid-testnet" || (!isBlind && !isRecord)) return entry;
+  return {
+    ...entry,
+    provider: HYPERLIQUID_TESTNET_EVIDENCE.provider,
+    contracts: HYPERLIQUID_TESTNET_EVIDENCE.contracts,
+    walletModel: "provider-wallet",
+    supportsExecution: true,
+    supportsPrivateExecution: false,
+    supportsPrivateSettlement: false,
+    supportsProof: isBlind,
+    supportsReceipt: true,
+    supportsReconciliation: true,
+    status: "testnet_verified",
+    lastVerifiedCommit: HYPERLIQUID_TESTNET_EVIDENCE.commit,
+    lastVerifiedTimestamp: HYPERLIQUID_TESTNET_EVIDENCE.timestamp,
+    evidence: "testnet-e2e",
+  };
+}
+
 function applyOrganizationalEvidence(entry: NativeCapabilityEntry): NativeCapabilityEntry {
   const evidence = ORGANIZATIONAL_EVIDENCE[entry.network as keyof typeof ORGANIZATIONAL_EVIDENCE];
   const supportedCapability =
@@ -376,7 +409,7 @@ function applyOrganizationalEvidence(entry: NativeCapabilityEntry): NativeCapabi
 export function buildNativeCapabilityRegistry(): readonly NativeCapabilityEntry[] {
   return PRODUCT_CATALOG.flatMap((product) =>
     product.capabilities.flatMap((capability) =>
-      NETWORK_MATRIX.map((network) => applyOrganizationalEvidence(applyBnbTestnetEvidence(applyTempoTestnetEvidence(applyPayrollDevnetEvidence(applyAgentMainnetEvidence(applyArbitrumSepoliaEvidence(applyBaseSepoliaEvidence(applyEthereumSepoliaEvidence({
+      NETWORK_MATRIX.map((network) => applyOrganizationalEvidence(applyHyperliquidTestnetEvidence(applyBnbTestnetEvidence(applyTempoTestnetEvidence(applyPayrollDevnetEvidence(applyAgentMainnetEvidence(applyArbitrumSepoliaEvidence(applyBaseSepoliaEvidence(applyEthereumSepoliaEvidence({
         product: product.id,
         capability: capability.id,
         network: network.id,
@@ -401,7 +434,7 @@ export function buildNativeCapabilityRegistry(): readonly NativeCapabilityEntry[
         lastVerifiedCommit: null,
         lastVerifiedTimestamp: null,
         evidence: "none",
-      }))))))))) ,
+      })))))))))) ,
     ),
   );
 }
