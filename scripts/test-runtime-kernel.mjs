@@ -91,7 +91,7 @@ assert.equal(products.find((product) => product.id === "blind-verification")?.na
 assert.equal(products.find((product) => product.id === "record-verification")?.name, "Record Verification");
 assert.equal(isRuntimeProductAvailable("blind-verification"), true);
 assert.equal(isRuntimeProductAvailable("record-verification"), true);
-assert.equal(isRuntimeProductAvailable("payroll"), false);
+assert.equal(isRuntimeProductAvailable("payroll"), true);
 assert.equal(isRuntimeProductAvailable("governance"), true);
   assert.equal(isRuntimeProductAvailable("agent"), false);
 assert.equal(isRuntimeCapabilityExecutable("payroll", "payroll.calculate", "solana-devnet"), true);
