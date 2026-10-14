@@ -26,7 +26,7 @@ and disabled Mainnet records; configuration presence is not support evidence.
 
 `HttpExecutionTransport` is the production HTTP implementation of that boundary. It maps a configured backend's prepare, submit, status, receipt, and fee-estimate endpoints into the same transport contract, enforces request timeouts, validates lifecycle responses, and fails closed on non-JSON or incomplete responses. It never creates a local execution id, signature, receipt, or success fallback. API authentication is injected through headers by the owning service and is never logged by this package.
 
-`PRODUCT_CATALOG` is the single customer-executable capability surface for the current release. It lists only capabilities with a real provider, transaction lifecycle, receipt path, independent test evidence, and an application binding. Solana Devnet, Ethereum Sepolia, and Tempo Testnet currently expose the verified Blind/Record capability lanes; payroll, treasury, governance, auctions, and agent execution remain limited to the networks explicitly listed by their bindings. Other configured networks remain planned until the same evidence gate is passed.
+`PRODUCT_CATALOG` is the single capability inventory for the current release. The generated web catalog applies the stricter customer-executable gate: a lane must have a real provider, transaction lifecycle, receipt path, independent test evidence, and a Kernel application binding. The enterprise ten-ecosystem coverage report (`docs/enterprise-10-ecosystem-coverage.md`) separates verified lanes from partial, legacy, unbound, and planned lanes; Agent Exchange is intentionally reported separately.
 
 `NETWORK_MATRIX` records the requested network roadmap without making unsupported claims. Planned entries are metadata only and cannot be resolved by a provider registry until an adapter is implemented and tested.
 
@@ -56,6 +56,10 @@ provider route, or no application binding. A `legacy-provider` row is not
 Kernel evidence, and an `unbound` row must never be advertised as executable.
 The ledger is validated at module load and by the runtime test so a new
 catalog capability cannot be added without an explicit application boundary.
+
+Run `npm run verify:enterprise-coverage` to regenerate and verify the six-product,
+ten-ecosystem audit artifact. It is a reporting gate, not proof that every row is
+complete; only rows marked `verified` satisfy the Kernel and evidence gates.
 
 ## Testnet Payment Rails
 

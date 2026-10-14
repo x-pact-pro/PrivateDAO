@@ -1,0 +1,3624 @@
+{
+  "schema": "privatedao.enterprise-10-ecosystem-coverage.v1",
+  "generatedFrom": [
+    "packages/privatedao-runtime/src/catalog.ts",
+    "packages/privatedao-runtime/src/networks.ts",
+    "packages/privatedao-runtime/src/application-bindings.ts",
+    "packages/privatedao-runtime/src/native-capability-registry.ts"
+  ],
+  "scope": {
+    "products": [
+      "blind-verification",
+      "record-verification",
+      "payroll",
+      "treasury",
+      "governance",
+      "auction"
+    ],
+    "ecosystems": [
+      "solana",
+      "ethereum",
+      "arbitrum",
+      "bnb",
+      "base",
+      "robinhood",
+      "tempo",
+      "zcash",
+      "hyperliquid",
+      "stellar"
+    ],
+    "agentExchangeExcluded": true
+  },
+  "rows": [
+    {
+      "product": "blind-verification",
+      "ecosystem": "solana",
+      "declaredLaneCount": 1,
+      "executableLaneCount": 0,
+      "status": "planned",
+      "capabilities": [
+        {
+          "capability": "verification.blind.prove",
+          "lanes": [
+            {
+              "network": "solana-devnet",
+              "environment": "devnet",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "status": "implementation",
+              "evidence": "none",
+              "provider": "solana-devnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": "kernel://verification.blind.prove",
+              "note": "Kernel adapter delegates to the HTTPS proof service and accepts only an observed successful public proof package."
+            },
+            {
+              "network": "solana-mainnet-beta",
+              "environment": "mainnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "solana-mainnet-beta",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "product": "blind-verification",
+      "ecosystem": "ethereum",
+      "declaredLaneCount": 1,
+      "executableLaneCount": 1,
+      "status": "verified",
+      "capabilities": [
+        {
+          "capability": "verification.blind.prove",
+          "lanes": [
+            {
+              "network": "ethereum-sepolia",
+              "environment": "testnet",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "status": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "provider": "evm-ethereum-sepolia",
+              "supportsExecution": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": false,
+              "executable": true,
+              "entrypoint": "kernel://verification.blind.prove",
+              "note": "Ethereum Sepolia verifier deployment and negative-proof tests are recorded in the EVM testnet evidence packet."
+            },
+            {
+              "network": "ethereum-mainnet",
+              "environment": "mainnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-ethereum-mainnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "product": "blind-verification",
+      "ecosystem": "arbitrum",
+      "declaredLaneCount": 1,
+      "executableLaneCount": 1,
+      "status": "verified",
+      "capabilities": [
+        {
+          "capability": "verification.blind.prove",
+          "lanes": [
+            {
+              "network": "arbitrum-sepolia",
+              "environment": "testnet",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "status": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "provider": "evm-arbitrum-sepolia",
+              "supportsExecution": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": false,
+              "executable": true,
+              "entrypoint": "kernel://verification.blind.prove",
+              "note": "Arbitrum Sepolia Groth16 verifier and blind registry passed proof verification, wrong-chain, altered-proof, expiry, and revocation checks in the committed E2E artifact."
+            },
+            {
+              "network": "arbitrum-one",
+              "environment": "mainnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-arbitrum-one",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "product": "blind-verification",
+      "ecosystem": "bnb",
+      "declaredLaneCount": 0,
+      "executableLaneCount": 0,
+      "status": "planned",
+      "capabilities": [
+        {
+          "capability": "verification.blind.prove",
+          "lanes": [
+            {
+              "network": "bnb-testnet",
+              "environment": "testnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-bnb-testnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            },
+            {
+              "network": "bnb-mainnet",
+              "environment": "mainnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-bnb-mainnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "product": "blind-verification",
+      "ecosystem": "base",
+      "declaredLaneCount": 1,
+      "executableLaneCount": 1,
+      "status": "verified",
+      "capabilities": [
+        {
+          "capability": "verification.blind.prove",
+          "lanes": [
+            {
+              "network": "base-sepolia",
+              "environment": "testnet",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "status": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "provider": "evm-base-sepolia",
+              "supportsExecution": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": false,
+              "executable": true,
+              "entrypoint": "kernel://verification.blind.prove",
+              "note": "Base Sepolia Groth16 verifier and blind registry passed real proof, altered-proof, wrong-chain, expiry, revocation, and receipt checks."
+            },
+            {
+              "network": "base-mainnet",
+              "environment": "mainnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-base-mainnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "product": "blind-verification",
+      "ecosystem": "robinhood",
+      "declaredLaneCount": 0,
+      "executableLaneCount": 0,
+      "status": "planned",
+      "capabilities": [
+        {
+          "capability": "verification.blind.prove",
+          "lanes": [
+            {
+              "network": "robinhood-testnet",
+              "environment": "testnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-robinhood-testnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            },
+            {
+              "network": "robinhood-mainnet",
+              "environment": "mainnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-robinhood-mainnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "product": "blind-verification",
+      "ecosystem": "tempo",
+      "declaredLaneCount": 1,
+      "executableLaneCount": 1,
+      "status": "verified",
+      "capabilities": [
+        {
+          "capability": "verification.blind.prove",
+          "lanes": [
+            {
+              "network": "tempo-testnet",
+              "environment": "testnet",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "status": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "provider": "evm-tempo-testnet",
+              "supportsExecution": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "executable": true,
+              "entrypoint": "kernel://verification.blind.prove",
+              "note": "Tempo Testnet Groth16 verifier and blind registry passed real on-chain proof, altered-proof, wrong-chain, expiry, and revocation checks."
+            },
+            {
+              "network": "tempo-mainnet",
+              "environment": "mainnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-tempo-mainnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "product": "blind-verification",
+      "ecosystem": "zcash",
+      "declaredLaneCount": 0,
+      "executableLaneCount": 0,
+      "status": "planned",
+      "capabilities": [
+        {
+          "capability": "verification.blind.prove",
+          "lanes": [
+            {
+              "network": "zcash-testnet",
+              "environment": "testnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": null,
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "product": "blind-verification",
+      "ecosystem": "hyperliquid",
+      "declaredLaneCount": 0,
+      "executableLaneCount": 0,
+      "status": "planned",
+      "capabilities": [
+        {
+          "capability": "verification.blind.prove",
+          "lanes": [
+            {
+              "network": "hyperliquid-testnet",
+              "environment": "testnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-hyperliquid-testnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "product": "blind-verification",
+      "ecosystem": "stellar",
+      "declaredLaneCount": 0,
+      "executableLaneCount": 0,
+      "status": "planned",
+      "capabilities": [
+        {
+          "capability": "verification.blind.prove",
+          "lanes": [
+            {
+              "network": "stellar-testnet",
+              "environment": "testnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": null,
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "product": "record-verification",
+      "ecosystem": "solana",
+      "declaredLaneCount": 2,
+      "executableLaneCount": 0,
+      "status": "planned",
+      "capabilities": [
+        {
+          "capability": "verification.record.create",
+          "lanes": [
+            {
+              "network": "solana-devnet",
+              "environment": "devnet",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "status": "implementation",
+              "evidence": "none",
+              "provider": "solana-devnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": "kernel://verification.record.create",
+              "note": "Kernel-native digest and selective disclosure artifact; no public URL or on-chain anchor is created."
+            },
+            {
+              "network": "solana-mainnet-beta",
+              "environment": "mainnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "solana-mainnet-beta",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
+        },
+        {
+          "capability": "verification.record.verify",
+          "lanes": [
+            {
+              "network": "solana-devnet",
+              "environment": "devnet",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "status": "implementation",
+              "evidence": "none",
+              "provider": "solana-devnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": "kernel://verification.record.verify",
+              "note": "Kernel-native digest verification; no source payload is returned and no on-chain anchor is claimed."
+            },
+            {
+              "network": "solana-mainnet-beta",
+              "environment": "mainnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "solana-mainnet-beta",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "product": "record-verification",
+      "ecosystem": "ethereum",
+      "declaredLaneCount": 2,
+      "executableLaneCount": 2,
+      "status": "verified",
+      "capabilities": [
+        {
+          "capability": "verification.record.create",
+          "lanes": [
+            {
+              "network": "ethereum-sepolia",
+              "environment": "testnet",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "status": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "provider": "evm-ethereum-sepolia",
+              "supportsExecution": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": false,
+              "executable": true,
+              "entrypoint": "kernel://verification.record.create",
+              "note": "Ethereum Sepolia record registry deployment and transaction evidence are recorded; source payload remains off-chain."
+            },
+            {
+              "network": "ethereum-mainnet",
+              "environment": "mainnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-ethereum-mainnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
+        },
+        {
+          "capability": "verification.record.verify",
+          "lanes": [
+            {
+              "network": "ethereum-sepolia",
+              "environment": "testnet",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "status": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "provider": "evm-ethereum-sepolia",
+              "supportsExecution": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": false,
+              "executable": true,
+              "entrypoint": "kernel://verification.record.verify",
+              "note": "Ethereum Sepolia record verification and wrong-network/altered-proof tests are recorded in the EVM evidence packet."
+            },
+            {
+              "network": "ethereum-mainnet",
+              "environment": "mainnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-ethereum-mainnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "product": "record-verification",
+      "ecosystem": "arbitrum",
+      "declaredLaneCount": 2,
+      "executableLaneCount": 2,
+      "status": "verified",
+      "capabilities": [
+        {
+          "capability": "verification.record.create",
+          "lanes": [
+            {
+              "network": "arbitrum-sepolia",
+              "environment": "testnet",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "status": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "provider": "evm-arbitrum-sepolia",
+              "supportsExecution": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": false,
+              "executable": true,
+              "entrypoint": "kernel://verification.record.create",
+              "note": "Arbitrum Sepolia record registry passed real anchoring, verification, expiry, and revocation checks in the committed E2E artifact."
+            },
+            {
+              "network": "arbitrum-one",
+              "environment": "mainnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-arbitrum-one",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
+        },
+        {
+          "capability": "verification.record.verify",
+          "lanes": [
+            {
+              "network": "arbitrum-sepolia",
+              "environment": "testnet",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "status": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "provider": "evm-arbitrum-sepolia",
+              "supportsExecution": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": false,
+              "executable": true,
+              "entrypoint": "kernel://verification.record.verify",
+              "note": "Arbitrum Sepolia record verification is bound to chain ID 421614 and the deployed registry domain."
+            },
+            {
+              "network": "arbitrum-one",
+              "environment": "mainnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-arbitrum-one",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "product": "record-verification",
+      "ecosystem": "bnb",
+      "declaredLaneCount": 0,
+      "executableLaneCount": 0,
+      "status": "planned",
+      "capabilities": [
+        {
+          "capability": "verification.record.create",
+          "lanes": [
+            {
+              "network": "bnb-testnet",
+              "environment": "testnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-bnb-testnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            },
+            {
+              "network": "bnb-mainnet",
+              "environment": "mainnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-bnb-mainnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
+        },
+        {
+          "capability": "verification.record.verify",
+          "lanes": [
+            {
+              "network": "bnb-testnet",
+              "environment": "testnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-bnb-testnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            },
+            {
+              "network": "bnb-mainnet",
+              "environment": "mainnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-bnb-mainnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "product": "record-verification",
+      "ecosystem": "base",
+      "declaredLaneCount": 2,
+      "executableLaneCount": 2,
+      "status": "verified",
+      "capabilities": [
+        {
+          "capability": "verification.record.create",
+          "lanes": [
+            {
+              "network": "base-sepolia",
+              "environment": "testnet",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "status": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "provider": "evm-base-sepolia",
+              "supportsExecution": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": false,
+              "executable": true,
+              "entrypoint": "kernel://verification.record.create",
+              "note": "Base Sepolia record registry passed real on-chain anchoring, verification, expiry, and revocation checks."
+            },
+            {
+              "network": "base-mainnet",
+              "environment": "mainnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-base-mainnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
+        },
+        {
+          "capability": "verification.record.verify",
+          "lanes": [
+            {
+              "network": "base-sepolia",
+              "environment": "testnet",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "status": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "provider": "evm-base-sepolia",
+              "supportsExecution": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": false,
+              "executable": true,
+              "entrypoint": "kernel://verification.record.verify",
+              "note": "Base Sepolia record verification is bound to chain ID 84532 and the deployed registry domain."
+            },
+            {
+              "network": "base-mainnet",
+              "environment": "mainnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-base-mainnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "product": "record-verification",
+      "ecosystem": "robinhood",
+      "declaredLaneCount": 0,
+      "executableLaneCount": 0,
+      "status": "planned",
+      "capabilities": [
+        {
+          "capability": "verification.record.create",
+          "lanes": [
+            {
+              "network": "robinhood-testnet",
+              "environment": "testnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-robinhood-testnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            },
+            {
+              "network": "robinhood-mainnet",
+              "environment": "mainnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-robinhood-mainnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
+        },
+        {
+          "capability": "verification.record.verify",
+          "lanes": [
+            {
+              "network": "robinhood-testnet",
+              "environment": "testnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-robinhood-testnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            },
+            {
+              "network": "robinhood-mainnet",
+              "environment": "mainnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-robinhood-mainnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "product": "record-verification",
+      "ecosystem": "tempo",
+      "declaredLaneCount": 2,
+      "executableLaneCount": 2,
+      "status": "verified",
+      "capabilities": [
+        {
+          "capability": "verification.record.create",
+          "lanes": [
+            {
+              "network": "tempo-testnet",
+              "environment": "testnet",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "status": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "provider": "evm-tempo-testnet",
+              "supportsExecution": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "executable": true,
+              "entrypoint": "kernel://verification.record.create",
+              "note": "Tempo Testnet record registry passed real on-chain anchoring, verification, expiry, and revocation checks."
+            },
+            {
+              "network": "tempo-mainnet",
+              "environment": "mainnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-tempo-mainnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
+        },
+        {
+          "capability": "verification.record.verify",
+          "lanes": [
+            {
+              "network": "tempo-testnet",
+              "environment": "testnet",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "status": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "provider": "evm-tempo-testnet",
+              "supportsExecution": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "executable": true,
+              "entrypoint": "kernel://verification.record.verify",
+              "note": "Tempo Testnet record verification is bound to chain ID 42431 and the deployed registry domain."
+            },
+            {
+              "network": "tempo-mainnet",
+              "environment": "mainnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-tempo-mainnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "product": "record-verification",
+      "ecosystem": "zcash",
+      "declaredLaneCount": 0,
+      "executableLaneCount": 0,
+      "status": "planned",
+      "capabilities": [
+        {
+          "capability": "verification.record.create",
+          "lanes": [
+            {
+              "network": "zcash-testnet",
+              "environment": "testnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": null,
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
+        },
+        {
+          "capability": "verification.record.verify",
+          "lanes": [
+            {
+              "network": "zcash-testnet",
+              "environment": "testnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": null,
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "product": "record-verification",
+      "ecosystem": "hyperliquid",
+      "declaredLaneCount": 0,
+      "executableLaneCount": 0,
+      "status": "planned",
+      "capabilities": [
+        {
+          "capability": "verification.record.create",
+          "lanes": [
+            {
+              "network": "hyperliquid-testnet",
+              "environment": "testnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-hyperliquid-testnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
+        },
+        {
+          "capability": "verification.record.verify",
+          "lanes": [
+            {
+              "network": "hyperliquid-testnet",
+              "environment": "testnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-hyperliquid-testnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "product": "record-verification",
+      "ecosystem": "stellar",
+      "declaredLaneCount": 0,
+      "executableLaneCount": 0,
+      "status": "planned",
+      "capabilities": [
+        {
+          "capability": "verification.record.create",
+          "lanes": [
+            {
+              "network": "stellar-testnet",
+              "environment": "testnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": null,
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
+        },
+        {
+          "capability": "verification.record.verify",
+          "lanes": [
+            {
+              "network": "stellar-testnet",
+              "environment": "testnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": null,
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "product": "payroll",
+      "ecosystem": "solana",
+      "declaredLaneCount": 3,
+      "executableLaneCount": 2,
+      "status": "partial",
+      "capabilities": [
+        {
+          "capability": "payroll.calculate",
+          "lanes": [
+            {
+              "network": "solana-devnet",
+              "environment": "devnet",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "status": "devnet_verified",
+              "evidence": "devnet-e2e",
+              "provider": "umbra-solana-devnet",
+              "supportsExecution": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": false,
+              "executable": true,
+              "entrypoint": "kernel://payroll.calculate",
+              "note": "Kernel-native deterministic calculation; no wallet signature or settlement is performed."
+            },
+            {
+              "network": "solana-mainnet-beta",
+              "environment": "mainnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "solana-mainnet-beta",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
+        },
+        {
+          "capability": "payroll.approve",
+          "lanes": [
+            {
+              "network": "solana-devnet",
+              "environment": "devnet",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "status": "devnet_verified",
+              "evidence": "devnet-e2e",
+              "provider": "umbra-solana-devnet",
+              "supportsExecution": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": false,
+              "executable": true,
+              "entrypoint": "kernel://payroll.approve",
+              "note": "Kernel-backed Maker/Checker policy gate; wallet/network adapter must verify the supplied checker signature before production promotion."
+            },
+            {
+              "network": "solana-mainnet-beta",
+              "environment": "mainnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "solana-mainnet-beta",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
+        },
+        {
+          "capability": "payroll.settle",
+          "lanes": [
+            {
+              "network": "solana-devnet",
+              "environment": "devnet",
+              "declared": true,
+              "mode": "legacy-provider",
+              "status": "devnet_verified",
+              "evidence": "devnet-e2e",
+              "provider": "umbra-solana-devnet",
+              "supportsExecution": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "executable": false,
+              "entrypoint": "/api/private-payout/prepare",
+              "note": "Existing private-payout provider route; it is not evidence of an end-to-end payroll settlement."
+            },
+            {
+              "network": "solana-mainnet-beta",
+              "environment": "mainnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "solana-mainnet-beta",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "product": "payroll",
+      "ecosystem": "ethereum",
+      "declaredLaneCount": 0,
+      "executableLaneCount": 0,
+      "status": "planned",
+      "capabilities": [
+        {
+          "capability": "payroll.calculate",
+          "lanes": [
+            {
+              "network": "ethereum-sepolia",
+              "environment": "testnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-ethereum-sepolia",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            },
+            {
+              "network": "ethereum-mainnet",
+              "environment": "mainnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-ethereum-mainnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
+        },
+        {
+          "capability": "payroll.approve",
+          "lanes": [
+            {
+              "network": "ethereum-sepolia",
+              "environment": "testnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-ethereum-sepolia",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            },
+            {
+              "network": "ethereum-mainnet",
+              "environment": "mainnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-ethereum-mainnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
+        },
+        {
+          "capability": "payroll.settle",
+          "lanes": [
+            {
+              "network": "ethereum-sepolia",
+              "environment": "testnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-ethereum-sepolia",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            },
+            {
+              "network": "ethereum-mainnet",
+              "environment": "mainnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-ethereum-mainnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "product": "payroll",
+      "ecosystem": "arbitrum",
+      "declaredLaneCount": 0,
+      "executableLaneCount": 0,
+      "status": "planned",
+      "capabilities": [
+        {
+          "capability": "payroll.calculate",
+          "lanes": [
+            {
+              "network": "arbitrum-sepolia",
+              "environment": "testnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-arbitrum-sepolia",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            },
+            {
+              "network": "arbitrum-one",
+              "environment": "mainnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-arbitrum-one",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
+        },
+        {
+          "capability": "payroll.approve",
+          "lanes": [
+            {
+              "network": "arbitrum-sepolia",
+              "environment": "testnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-arbitrum-sepolia",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            },
+            {
+              "network": "arbitrum-one",
+              "environment": "mainnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-arbitrum-one",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
+        },
+        {
+          "capability": "payroll.settle",
+          "lanes": [
+            {
+              "network": "arbitrum-sepolia",
+              "environment": "testnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-arbitrum-sepolia",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            },
+            {
+              "network": "arbitrum-one",
+              "environment": "mainnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-arbitrum-one",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "product": "payroll",
+      "ecosystem": "bnb",
+      "declaredLaneCount": 0,
+      "executableLaneCount": 0,
+      "status": "planned",
+      "capabilities": [
+        {
+          "capability": "payroll.calculate",
+          "lanes": [
+            {
+              "network": "bnb-testnet",
+              "environment": "testnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-bnb-testnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            },
+            {
+              "network": "bnb-mainnet",
+              "environment": "mainnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-bnb-mainnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
+        },
+        {
+          "capability": "payroll.approve",
+          "lanes": [
+            {
+              "network": "bnb-testnet",
+              "environment": "testnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-bnb-testnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            },
+            {
+              "network": "bnb-mainnet",
+              "environment": "mainnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-bnb-mainnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
+        },
+        {
+          "capability": "payroll.settle",
+          "lanes": [
+            {
+              "network": "bnb-testnet",
+              "environment": "testnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-bnb-testnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            },
+            {
+              "network": "bnb-mainnet",
+              "environment": "mainnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-bnb-mainnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "product": "payroll",
+      "ecosystem": "base",
+      "declaredLaneCount": 0,
+      "executableLaneCount": 0,
+      "status": "planned",
+      "capabilities": [
+        {
+          "capability": "payroll.calculate",
+          "lanes": [
+            {
+              "network": "base-sepolia",
+              "environment": "testnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-base-sepolia",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            },
+            {
+              "network": "base-mainnet",
+              "environment": "mainnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-base-mainnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
+        },
+        {
+          "capability": "payroll.approve",
+          "lanes": [
+            {
+              "network": "base-sepolia",
+              "environment": "testnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-base-sepolia",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            },
+            {
+              "network": "base-mainnet",
+              "environment": "mainnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-base-mainnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
+        },
+        {
+          "capability": "payroll.settle",
+          "lanes": [
+            {
+              "network": "base-sepolia",
+              "environment": "testnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-base-sepolia",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            },
+            {
+              "network": "base-mainnet",
+              "environment": "mainnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-base-mainnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "product": "payroll",
+      "ecosystem": "robinhood",
+      "declaredLaneCount": 0,
+      "executableLaneCount": 0,
+      "status": "planned",
+      "capabilities": [
+        {
+          "capability": "payroll.calculate",
+          "lanes": [
+            {
+              "network": "robinhood-testnet",
+              "environment": "testnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-robinhood-testnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            },
+            {
+              "network": "robinhood-mainnet",
+              "environment": "mainnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-robinhood-mainnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
+        },
+        {
+          "capability": "payroll.approve",
+          "lanes": [
+            {
+              "network": "robinhood-testnet",
+              "environment": "testnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-robinhood-testnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            },
+            {
+              "network": "robinhood-mainnet",
+              "environment": "mainnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-robinhood-mainnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
+        },
+        {
+          "capability": "payroll.settle",
+          "lanes": [
+            {
+              "network": "robinhood-testnet",
+              "environment": "testnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-robinhood-testnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            },
+            {
+              "network": "robinhood-mainnet",
+              "environment": "mainnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-robinhood-mainnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "product": "payroll",
+      "ecosystem": "tempo",
+      "declaredLaneCount": 0,
+      "executableLaneCount": 0,
+      "status": "planned",
+      "capabilities": [
+        {
+          "capability": "payroll.calculate",
+          "lanes": [
+            {
+              "network": "tempo-testnet",
+              "environment": "testnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-tempo-testnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            },
+            {
+              "network": "tempo-mainnet",
+              "environment": "mainnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-tempo-mainnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
+        },
+        {
+          "capability": "payroll.approve",
+          "lanes": [
+            {
+              "network": "tempo-testnet",
+              "environment": "testnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-tempo-testnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            },
+            {
+              "network": "tempo-mainnet",
+              "environment": "mainnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-tempo-mainnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
+        },
+        {
+          "capability": "payroll.settle",
+          "lanes": [
+            {
+              "network": "tempo-testnet",
+              "environment": "testnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-tempo-testnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            },
+            {
+              "network": "tempo-mainnet",
+              "environment": "mainnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-tempo-mainnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "product": "payroll",
+      "ecosystem": "zcash",
+      "declaredLaneCount": 0,
+      "executableLaneCount": 0,
+      "status": "planned",
+      "capabilities": [
+        {
+          "capability": "payroll.calculate",
+          "lanes": [
+            {
+              "network": "zcash-testnet",
+              "environment": "testnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": null,
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
+        },
+        {
+          "capability": "payroll.approve",
+          "lanes": [
+            {
+              "network": "zcash-testnet",
+              "environment": "testnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": null,
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
+        },
+        {
+          "capability": "payroll.settle",
+          "lanes": [
+            {
+              "network": "zcash-testnet",
+              "environment": "testnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": null,
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "product": "payroll",
+      "ecosystem": "hyperliquid",
+      "declaredLaneCount": 0,
+      "executableLaneCount": 0,
+      "status": "planned",
+      "capabilities": [
+        {
+          "capability": "payroll.calculate",
+          "lanes": [
+            {
+              "network": "hyperliquid-testnet",
+              "environment": "testnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-hyperliquid-testnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
+        },
+        {
+          "capability": "payroll.approve",
+          "lanes": [
+            {
+              "network": "hyperliquid-testnet",
+              "environment": "testnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-hyperliquid-testnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
+        },
+        {
+          "capability": "payroll.settle",
+          "lanes": [
+            {
+              "network": "hyperliquid-testnet",
+              "environment": "testnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-hyperliquid-testnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "product": "payroll",
+      "ecosystem": "stellar",
+      "declaredLaneCount": 0,
+      "executableLaneCount": 0,
+      "status": "planned",
+      "capabilities": [
+        {
+          "capability": "payroll.calculate",
+          "lanes": [
+            {
+              "network": "stellar-testnet",
+              "environment": "testnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": null,
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
+        },
+        {
+          "capability": "payroll.approve",
+          "lanes": [
+            {
+              "network": "stellar-testnet",
+              "environment": "testnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": null,
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
+        },
+        {
+          "capability": "payroll.settle",
+          "lanes": [
+            {
+              "network": "stellar-testnet",
+              "environment": "testnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": null,
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "product": "treasury",
+      "ecosystem": "solana",
+      "declaredLaneCount": 1,
+      "executableLaneCount": 0,
+      "status": "planned",
+      "capabilities": [
+        {
+          "capability": "treasury.policy.check",
+          "lanes": [
+            {
+              "network": "solana-devnet",
+              "environment": "devnet",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "status": "implementation",
+              "evidence": "none",
+              "provider": "solana-devnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": "kernel://treasury.policy.check",
+              "note": "Kernel-native deterministic policy evaluation; no wallet signature or treasury movement is performed."
+            },
+            {
+              "network": "solana-mainnet-beta",
+              "environment": "mainnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "solana-mainnet-beta",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "product": "treasury",
+      "ecosystem": "ethereum",
+      "declaredLaneCount": 1,
+      "executableLaneCount": 1,
+      "status": "verified",
+      "capabilities": [
+        {
+          "capability": "treasury.policy.check",
+          "lanes": [
+            {
+              "network": "ethereum-sepolia",
+              "environment": "testnet",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "status": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "provider": "evm-ethereum-sepolia-organizational",
+              "supportsExecution": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "executable": true,
+              "entrypoint": "kernel://treasury.policy.check",
+              "note": "Ethereum Sepolia organizational Treasury contract passed real funding, budget, Maker/Checker approval, execution, receipt, and state reconciliation checks."
+            },
+            {
+              "network": "ethereum-mainnet",
+              "environment": "mainnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-ethereum-mainnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "product": "treasury",
+      "ecosystem": "arbitrum",
+      "declaredLaneCount": 1,
+      "executableLaneCount": 1,
+      "status": "verified",
+      "capabilities": [
+        {
+          "capability": "treasury.policy.check",
+          "lanes": [
+            {
+              "network": "arbitrum-sepolia",
+              "environment": "testnet",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "status": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "provider": "evm-arbitrum-sepolia-organizational",
+              "supportsExecution": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "executable": true,
+              "entrypoint": "kernel://treasury.policy.check",
+              "note": "Arbitrum Sepolia organizational Treasury passed real funding, budget, Maker/Checker approval, execution, receipt, and state reconciliation checks in the committed E2E artifact."
+            },
+            {
+              "network": "arbitrum-one",
+              "environment": "mainnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-arbitrum-one",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "product": "treasury",
+      "ecosystem": "bnb",
+      "declaredLaneCount": 0,
+      "executableLaneCount": 0,
+      "status": "planned",
+      "capabilities": [
+        {
+          "capability": "treasury.policy.check",
+          "lanes": [
+            {
+              "network": "bnb-testnet",
+              "environment": "testnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-bnb-testnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            },
+            {
+              "network": "bnb-mainnet",
+              "environment": "mainnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-bnb-mainnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "product": "treasury",
+      "ecosystem": "base",
+      "declaredLaneCount": 0,
+      "executableLaneCount": 0,
+      "status": "planned",
+      "capabilities": [
+        {
+          "capability": "treasury.policy.check",
+          "lanes": [
+            {
+              "network": "base-sepolia",
+              "environment": "testnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-base-sepolia",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            },
+            {
+              "network": "base-mainnet",
+              "environment": "mainnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-base-mainnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "product": "treasury",
+      "ecosystem": "robinhood",
+      "declaredLaneCount": 0,
+      "executableLaneCount": 0,
+      "status": "planned",
+      "capabilities": [
+        {
+          "capability": "treasury.policy.check",
+          "lanes": [
+            {
+              "network": "robinhood-testnet",
+              "environment": "testnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-robinhood-testnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            },
+            {
+              "network": "robinhood-mainnet",
+              "environment": "mainnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-robinhood-mainnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "product": "treasury",
+      "ecosystem": "tempo",
+      "declaredLaneCount": 1,
+      "executableLaneCount": 1,
+      "status": "verified",
+      "capabilities": [
+        {
+          "capability": "treasury.policy.check",
+          "lanes": [
+            {
+              "network": "tempo-testnet",
+              "environment": "testnet",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "status": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "provider": "evm-tempo-testnet-organizational",
+              "supportsExecution": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "executable": true,
+              "entrypoint": "kernel://treasury.policy.check",
+              "note": "Tempo Testnet token Treasury passed real AlphaUSD funding, budget, Maker/Checker approval, execution, receipt, and state reconciliation checks."
+            },
+            {
+              "network": "tempo-mainnet",
+              "environment": "mainnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-tempo-mainnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "product": "treasury",
+      "ecosystem": "zcash",
+      "declaredLaneCount": 0,
+      "executableLaneCount": 0,
+      "status": "planned",
+      "capabilities": [
+        {
+          "capability": "treasury.policy.check",
+          "lanes": [
+            {
+              "network": "zcash-testnet",
+              "environment": "testnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": null,
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "product": "treasury",
+      "ecosystem": "hyperliquid",
+      "declaredLaneCount": 0,
+      "executableLaneCount": 0,
+      "status": "planned",
+      "capabilities": [
+        {
+          "capability": "treasury.policy.check",
+          "lanes": [
+            {
+              "network": "hyperliquid-testnet",
+              "environment": "testnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-hyperliquid-testnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "product": "treasury",
+      "ecosystem": "stellar",
+      "declaredLaneCount": 0,
+      "executableLaneCount": 0,
+      "status": "planned",
+      "capabilities": [
+        {
+          "capability": "treasury.policy.check",
+          "lanes": [
+            {
+              "network": "stellar-testnet",
+              "environment": "testnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": null,
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "product": "governance",
+      "ecosystem": "solana",
+      "declaredLaneCount": 1,
+      "executableLaneCount": 0,
+      "status": "unbound",
+      "capabilities": [
+        {
+          "capability": "governance.proposal.execute",
+          "lanes": [
+            {
+              "network": "solana-devnet",
+              "environment": "devnet",
+              "declared": true,
+              "mode": "unbound",
+              "status": "implementation",
+              "evidence": "none",
+              "provider": "solana-devnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "No exact Kernel-backed governance execution action is exposed by the web app."
+            },
+            {
+              "network": "solana-mainnet-beta",
+              "environment": "mainnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "solana-mainnet-beta",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "product": "governance",
+      "ecosystem": "ethereum",
+      "declaredLaneCount": 1,
+      "executableLaneCount": 1,
+      "status": "verified",
+      "capabilities": [
+        {
+          "capability": "governance.proposal.execute",
+          "lanes": [
+            {
+              "network": "ethereum-sepolia",
+              "environment": "testnet",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "status": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "provider": "evm-ethereum-sepolia-organizational",
+              "supportsExecution": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "executable": true,
+              "entrypoint": "kernel://governance.proposal.execute",
+              "note": "Ethereum Sepolia commit/reveal governance passed real proposal creation, early-reveal rejection, vote reveal, finalization, receipt, and state checks."
+            },
+            {
+              "network": "ethereum-mainnet",
+              "environment": "mainnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-ethereum-mainnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "product": "governance",
+      "ecosystem": "arbitrum",
+      "declaredLaneCount": 1,
+      "executableLaneCount": 1,
+      "status": "verified",
+      "capabilities": [
+        {
+          "capability": "governance.proposal.execute",
+          "lanes": [
+            {
+              "network": "arbitrum-sepolia",
+              "environment": "testnet",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "status": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "provider": "evm-arbitrum-sepolia-organizational",
+              "supportsExecution": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "executable": true,
+              "entrypoint": "kernel://governance.proposal.execute",
+              "note": "Arbitrum Sepolia commit/reveal governance passed real proposal creation, early-reveal rejection, vote reveal, finalization, receipt, and state checks in the committed E2E artifact."
+            },
+            {
+              "network": "arbitrum-one",
+              "environment": "mainnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-arbitrum-one",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "product": "governance",
+      "ecosystem": "bnb",
+      "declaredLaneCount": 0,
+      "executableLaneCount": 0,
+      "status": "planned",
+      "capabilities": [
+        {
+          "capability": "governance.proposal.execute",
+          "lanes": [
+            {
+              "network": "bnb-testnet",
+              "environment": "testnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-bnb-testnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            },
+            {
+              "network": "bnb-mainnet",
+              "environment": "mainnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-bnb-mainnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "product": "governance",
+      "ecosystem": "base",
+      "declaredLaneCount": 0,
+      "executableLaneCount": 0,
+      "status": "planned",
+      "capabilities": [
+        {
+          "capability": "governance.proposal.execute",
+          "lanes": [
+            {
+              "network": "base-sepolia",
+              "environment": "testnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-base-sepolia",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            },
+            {
+              "network": "base-mainnet",
+              "environment": "mainnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-base-mainnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "product": "governance",
+      "ecosystem": "robinhood",
+      "declaredLaneCount": 0,
+      "executableLaneCount": 0,
+      "status": "planned",
+      "capabilities": [
+        {
+          "capability": "governance.proposal.execute",
+          "lanes": [
+            {
+              "network": "robinhood-testnet",
+              "environment": "testnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-robinhood-testnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            },
+            {
+              "network": "robinhood-mainnet",
+              "environment": "mainnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-robinhood-mainnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "product": "governance",
+      "ecosystem": "tempo",
+      "declaredLaneCount": 1,
+      "executableLaneCount": 1,
+      "status": "verified",
+      "capabilities": [
+        {
+          "capability": "governance.proposal.execute",
+          "lanes": [
+            {
+              "network": "tempo-testnet",
+              "environment": "testnet",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "status": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "provider": "evm-tempo-testnet-organizational",
+              "supportsExecution": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "executable": true,
+              "entrypoint": "kernel://governance.proposal.execute",
+              "note": "Tempo Testnet commit/reveal governance passed real proposal creation, early-reveal rejection, vote reveal, finalization, receipt, and state checks."
+            },
+            {
+              "network": "tempo-mainnet",
+              "environment": "mainnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-tempo-mainnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "product": "governance",
+      "ecosystem": "zcash",
+      "declaredLaneCount": 0,
+      "executableLaneCount": 0,
+      "status": "planned",
+      "capabilities": [
+        {
+          "capability": "governance.proposal.execute",
+          "lanes": [
+            {
+              "network": "zcash-testnet",
+              "environment": "testnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": null,
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "product": "governance",
+      "ecosystem": "hyperliquid",
+      "declaredLaneCount": 0,
+      "executableLaneCount": 0,
+      "status": "planned",
+      "capabilities": [
+        {
+          "capability": "governance.proposal.execute",
+          "lanes": [
+            {
+              "network": "hyperliquid-testnet",
+              "environment": "testnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-hyperliquid-testnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "product": "governance",
+      "ecosystem": "stellar",
+      "declaredLaneCount": 0,
+      "executableLaneCount": 0,
+      "status": "planned",
+      "capabilities": [
+        {
+          "capability": "governance.proposal.execute",
+          "lanes": [
+            {
+              "network": "stellar-testnet",
+              "environment": "testnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": null,
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "product": "auction",
+      "ecosystem": "solana",
+      "declaredLaneCount": 2,
+      "executableLaneCount": 0,
+      "status": "planned",
+      "capabilities": [
+        {
+          "capability": "auction.bid.commit",
+          "lanes": [
+            {
+              "network": "solana-devnet",
+              "environment": "devnet",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "status": "implementation",
+              "evidence": "none",
+              "provider": "solana-devnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": "kernel://auction.bid.commit",
+              "note": "Kernel adapter delegates to the HTTPS sealed-bid commitment service; it returns observed public commitments and does not claim a wallet signature or token movement."
+            },
+            {
+              "network": "solana-mainnet-beta",
+              "environment": "mainnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "solana-mainnet-beta",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
+        },
+        {
+          "capability": "auction.settle",
+          "lanes": [
+            {
+              "network": "solana-devnet",
+              "environment": "devnet",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "status": "implementation",
+              "evidence": "none",
+              "provider": "solana-devnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": "kernel://auction.settle",
+              "note": "Kernel adapter delegates to the HTTPS outcome-proof service; it proves an already-bound result and does not claim token movement or an on-chain signature."
+            },
+            {
+              "network": "solana-mainnet-beta",
+              "environment": "mainnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "solana-mainnet-beta",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "product": "auction",
+      "ecosystem": "ethereum",
+      "declaredLaneCount": 2,
+      "executableLaneCount": 2,
+      "status": "verified",
+      "capabilities": [
+        {
+          "capability": "auction.bid.commit",
+          "lanes": [
+            {
+              "network": "ethereum-sepolia",
+              "environment": "testnet",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "status": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "provider": "evm-ethereum-sepolia-organizational",
+              "supportsExecution": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "executable": true,
+              "entrypoint": "kernel://auction.bid.commit",
+              "note": "Ethereum Sepolia sealed auction passed real commit, altered-reveal rejection, reveal, finalization, settlement, receipt, and state checks."
+            },
+            {
+              "network": "ethereum-mainnet",
+              "environment": "mainnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-ethereum-mainnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
+        },
+        {
+          "capability": "auction.settle",
+          "lanes": [
+            {
+              "network": "ethereum-sepolia",
+              "environment": "testnet",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "status": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "provider": "evm-ethereum-sepolia-organizational",
+              "supportsExecution": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "executable": true,
+              "entrypoint": "kernel://auction.settle",
+              "note": "Ethereum Sepolia sealed auction settlement is backed by the committed organizational E2E evidence artifact."
+            },
+            {
+              "network": "ethereum-mainnet",
+              "environment": "mainnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-ethereum-mainnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "product": "auction",
+      "ecosystem": "arbitrum",
+      "declaredLaneCount": 2,
+      "executableLaneCount": 2,
+      "status": "verified",
+      "capabilities": [
+        {
+          "capability": "auction.bid.commit",
+          "lanes": [
+            {
+              "network": "arbitrum-sepolia",
+              "environment": "testnet",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "status": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "provider": "evm-arbitrum-sepolia-organizational",
+              "supportsExecution": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "executable": true,
+              "entrypoint": "kernel://auction.bid.commit",
+              "note": "Arbitrum Sepolia sealed auction passed real commit, altered-reveal rejection, reveal, finalization, settlement, receipt, and state checks in the committed E2E artifact."
+            },
+            {
+              "network": "arbitrum-one",
+              "environment": "mainnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-arbitrum-one",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
+        },
+        {
+          "capability": "auction.settle",
+          "lanes": [
+            {
+              "network": "arbitrum-sepolia",
+              "environment": "testnet",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "status": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "provider": "evm-arbitrum-sepolia-organizational",
+              "supportsExecution": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "executable": true,
+              "entrypoint": "kernel://auction.settle",
+              "note": "Arbitrum Sepolia sealed auction settlement is backed by the committed organizational E2E evidence artifact."
+            },
+            {
+              "network": "arbitrum-one",
+              "environment": "mainnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-arbitrum-one",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "product": "auction",
+      "ecosystem": "bnb",
+      "declaredLaneCount": 0,
+      "executableLaneCount": 0,
+      "status": "planned",
+      "capabilities": [
+        {
+          "capability": "auction.bid.commit",
+          "lanes": [
+            {
+              "network": "bnb-testnet",
+              "environment": "testnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-bnb-testnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            },
+            {
+              "network": "bnb-mainnet",
+              "environment": "mainnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-bnb-mainnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
+        },
+        {
+          "capability": "auction.settle",
+          "lanes": [
+            {
+              "network": "bnb-testnet",
+              "environment": "testnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-bnb-testnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            },
+            {
+              "network": "bnb-mainnet",
+              "environment": "mainnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-bnb-mainnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "product": "auction",
+      "ecosystem": "base",
+      "declaredLaneCount": 0,
+      "executableLaneCount": 0,
+      "status": "planned",
+      "capabilities": [
+        {
+          "capability": "auction.bid.commit",
+          "lanes": [
+            {
+              "network": "base-sepolia",
+              "environment": "testnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-base-sepolia",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            },
+            {
+              "network": "base-mainnet",
+              "environment": "mainnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-base-mainnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
+        },
+        {
+          "capability": "auction.settle",
+          "lanes": [
+            {
+              "network": "base-sepolia",
+              "environment": "testnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-base-sepolia",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            },
+            {
+              "network": "base-mainnet",
+              "environment": "mainnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-base-mainnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "product": "auction",
+      "ecosystem": "robinhood",
+      "declaredLaneCount": 0,
+      "executableLaneCount": 0,
+      "status": "planned",
+      "capabilities": [
+        {
+          "capability": "auction.bid.commit",
+          "lanes": [
+            {
+              "network": "robinhood-testnet",
+              "environment": "testnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-robinhood-testnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            },
+            {
+              "network": "robinhood-mainnet",
+              "environment": "mainnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-robinhood-mainnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
+        },
+        {
+          "capability": "auction.settle",
+          "lanes": [
+            {
+              "network": "robinhood-testnet",
+              "environment": "testnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-robinhood-testnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            },
+            {
+              "network": "robinhood-mainnet",
+              "environment": "mainnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-robinhood-mainnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "product": "auction",
+      "ecosystem": "tempo",
+      "declaredLaneCount": 2,
+      "executableLaneCount": 2,
+      "status": "verified",
+      "capabilities": [
+        {
+          "capability": "auction.bid.commit",
+          "lanes": [
+            {
+              "network": "tempo-testnet",
+              "environment": "testnet",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "status": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "provider": "evm-tempo-testnet-organizational",
+              "supportsExecution": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "executable": true,
+              "entrypoint": "kernel://auction.bid.commit",
+              "note": "Tempo Testnet AlphaUSD sealed auction passed real token approval, commit, altered-reveal rejection, reveal, finalization, settlement, receipt, and state checks."
+            },
+            {
+              "network": "tempo-mainnet",
+              "environment": "mainnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-tempo-mainnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
+        },
+        {
+          "capability": "auction.settle",
+          "lanes": [
+            {
+              "network": "tempo-testnet",
+              "environment": "testnet",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "status": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "provider": "evm-tempo-testnet-organizational",
+              "supportsExecution": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "executable": true,
+              "entrypoint": "kernel://auction.settle",
+              "note": "Tempo Testnet AlphaUSD sealed auction settlement is backed by the committed organizational E2E evidence artifact."
+            },
+            {
+              "network": "tempo-mainnet",
+              "environment": "mainnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-tempo-mainnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "product": "auction",
+      "ecosystem": "zcash",
+      "declaredLaneCount": 0,
+      "executableLaneCount": 0,
+      "status": "planned",
+      "capabilities": [
+        {
+          "capability": "auction.bid.commit",
+          "lanes": [
+            {
+              "network": "zcash-testnet",
+              "environment": "testnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": null,
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
+        },
+        {
+          "capability": "auction.settle",
+          "lanes": [
+            {
+              "network": "zcash-testnet",
+              "environment": "testnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": null,
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "product": "auction",
+      "ecosystem": "hyperliquid",
+      "declaredLaneCount": 0,
+      "executableLaneCount": 0,
+      "status": "planned",
+      "capabilities": [
+        {
+          "capability": "auction.bid.commit",
+          "lanes": [
+            {
+              "network": "hyperliquid-testnet",
+              "environment": "testnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-hyperliquid-testnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
+        },
+        {
+          "capability": "auction.settle",
+          "lanes": [
+            {
+              "network": "hyperliquid-testnet",
+              "environment": "testnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-hyperliquid-testnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "product": "auction",
+      "ecosystem": "stellar",
+      "declaredLaneCount": 0,
+      "executableLaneCount": 0,
+      "status": "planned",
+      "capabilities": [
+        {
+          "capability": "auction.bid.commit",
+          "lanes": [
+            {
+              "network": "stellar-testnet",
+              "environment": "testnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": null,
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
+        },
+        {
+          "capability": "auction.settle",
+          "lanes": [
+            {
+              "network": "stellar-testnet",
+              "environment": "testnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": null,
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

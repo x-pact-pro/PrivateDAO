@@ -107,6 +107,8 @@
     "verify:canonical-repository": "node scripts/verify-canonical-repository.mjs",
     "verify:tracked-secrets": "node scripts/verify-tracked-secrets.mjs",
     "verify:application-bindings": "node scripts/verify-application-bindings.mjs",
+    "build:enterprise-coverage": "node --import tsx scripts/build-enterprise-coverage-report.mjs",
+    "verify:enterprise-coverage": "node --import tsx scripts/verify-enterprise-coverage-report.mjs",
     "verify:legacy-route-archive": "node scripts/verify-legacy-route-archive.mjs",
     "benchmark:blind-policy": "TSX_TSCONFIG_PATH=apps/web/tsconfig.scripts.json node --import tsx scripts/benchmark-blind-policy.ts",
     "coverage:ts": "TSX_TSCONFIG_PATH=apps/web/tsconfig.scripts.json c8 --reporter=text-summary --reporter=lcov --include apps/web/src/lib/dao-bootstrap.ts --include apps/web/src/lib/privacy-proof-snapshot.ts node --import tsx ./node_modules/mocha/bin/mocha --timeout 10000 --exit test/unit/**/*.ts",
