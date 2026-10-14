@@ -151,6 +151,7 @@
     "verify:bnb:evidence": "node scripts/verify-bnb-evidence.mjs",
     "verify:bnb:organizational-evidence": "node scripts/verify-bnb-organizational-evidence.mjs",
     "verify:hyperliquid:evidence": "node scripts/verify-hyperliquid-evidence.mjs",
+    "verify:hyperliquid:organizational-evidence": "node scripts/verify-hyperliquid-organizational-evidence.mjs",
     "verify:bnb:organizational-readiness": "node scripts/verify-bnb-organizational-readiness.mjs",
     "probe:evm-rpc": "node --import tsx scripts/probe-evm-rpc-readiness.mjs",
     "report:testnet-funding": "node scripts/report-testnet-funding.mjs",
