@@ -9,7 +9,7 @@ const runtime = createHttpBackedPrivateDaoRuntime({
   baseUrl: "https://api.example.test",
   providerId: "http-test-provider",
   network: "solana-devnet",
-  capabilities: ["payroll.settle"],
+  capabilities: ["treasury.policy.check"],
   fetchImpl: async (input, init = {}) => {
     const url = String(input);
     if (url.endsWith("/prepare")) {
@@ -27,7 +27,7 @@ const runtime = createHttpBackedPrivateDaoRuntime({
     if (url.endsWith("/receipt")) return json({
       executionId: "exec-runtime-1",
       requestId: "request-runtime-1",
-      capability: "payroll.settle",
+      capability: "treasury.policy.check",
       network: "solana-devnet",
       state: "finalized",
       signatures: ["observed-signature"],
@@ -41,8 +41,8 @@ const intent = {
   context: {
     requestId: "request-runtime-1",
     idempotencyKey: "idempotency-runtime-1",
-    product: "payroll",
-    capability: "payroll.settle",
+    product: "treasury",
+    capability: "treasury.policy.check",
     network: "solana-devnet",
   },
   payload: { budget: "1000" },
@@ -69,7 +69,18 @@ assert.throws(
   /not declared for ethereum-sepolia/,
 );
 
-await assert.rejects(
+assert.throws(
+  () => createHttpBackedPrivateDaoRuntime({
+    baseUrl: "https://api.example.test",
+    providerId: "legacy-provider",
+    network: "solana-devnet",
+    capabilities: ["payroll.settle"],
+    fetchImpl: async () => json({}),
+  }),
+  /must use a Kernel gateway binding/,
+);
+
+assert.throws(
   () => runtime.gateway.prepare({
     ...intent,
     context: {
@@ -79,7 +90,7 @@ await assert.rejects(
       idempotencyKey: "idempotency-runtime-unsupported",
     },
   }, "maker"),
-  (error) => error instanceof KernelError && error.code === "PROVIDER_NOT_FOUND",
+  (error) => error instanceof KernelError && error.code === "APPLICATION_BOUNDARY_VIOLATION",
 );
 
 console.log("[runtime-http-runtime] HTTP-backed composition and fail-closed capability checks passed");

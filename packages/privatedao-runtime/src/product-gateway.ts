@@ -5,6 +5,7 @@ import type {
   ExecutionReceipt,
   PreparedExecution,
 } from "./index.js";
+import { findApplicationBinding } from "./application-bindings.js";
 import { KernelError, PrivateDaoKernel } from "./kernel.js";
 import type { ProtocolPermission, ProtocolRegistry, ProtocolRole } from "./protocol.js";
 
@@ -42,6 +43,7 @@ export class ProductExecutionGateway {
   }
 
   private authorize(context: ExecutionContext, permission: ProtocolPermission, role: ProtocolRole): void {
+    this.assertApplicationBinding(context);
     const registration = this.protocols.resolve(context.capability);
     if (registration.product !== context.product) {
       throw new KernelError("INVALID_INTENT", "The protocol capability does not belong to the requested product.");
@@ -50,6 +52,34 @@ export class ProductExecutionGateway {
       throw new KernelError("INVALID_INTENT", `Role ${role} is not authorized for ${permission}.`, {
         capability: context.capability,
         product: context.product,
+      });
+    }
+  }
+
+  /**
+   * The application ledger is a security boundary, not documentation. Only a
+   * declared Kernel gateway lane may reach the provider; legacy and unbound
+   * rows remain visible for migration but are fail-closed here.
+   */
+  private assertApplicationBinding(context: ExecutionContext): void {
+    let binding;
+    try {
+      binding = findApplicationBinding(context.product, context.capability, context.network);
+    } catch (error) {
+      throw new KernelError("APPLICATION_BOUNDARY_VIOLATION", "The product capability has no application binding for this network.", {
+        product: context.product,
+        capability: context.capability,
+        network: context.network,
+        cause: error instanceof Error ? error.message : String(error),
+      });
+    }
+    if (binding.mode !== "kernel-gateway") {
+      throw new KernelError("APPLICATION_BOUNDARY_VIOLATION", "This capability is not executable through the Kernel gateway.", {
+        product: context.product,
+        capability: context.capability,
+        network: context.network,
+        mode: binding.mode,
+        entrypoint: binding.entrypoint ?? null,
       });
     }
   }

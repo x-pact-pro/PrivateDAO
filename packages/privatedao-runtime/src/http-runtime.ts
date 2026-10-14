@@ -1,4 +1,5 @@
 import { PRODUCT_CATALOG } from "./catalog.js";
+import { findApplicationBinding } from "./application-bindings.js";
 import { TransportBackedNetworkAdapter } from "./adapters.js";
 import { HttpExecutionTransport, type HttpExecutionTransportOptions } from "./http-transport.js";
 import { InMemoryProviderRegistry } from "./kernel.js";
@@ -31,6 +32,13 @@ export function createHttpBackedPrivateDaoRuntime(options: HttpBackedRuntimeOpti
   );
   if (capabilities.length === 0) {
     throw new Error(`HTTP provider has no declared capabilities for ${options.network}.`);
+  }
+  const nonGateway = capabilities.filter((capability) => {
+    const product = PRODUCT_CATALOG.find((entry) => entry.capabilities.some((candidate) => candidate.id === capability.id));
+    return !product || findApplicationBinding(product.id, capability.id, options.network).mode !== "kernel-gateway";
+  });
+  if (nonGateway.length > 0) {
+    throw new Error(`HTTP provider capabilities must use a Kernel gateway binding: ${nonGateway.map((capability) => capability.id).join(", ")}`);
   }
 
   const transport = new HttpExecutionTransport(options);
