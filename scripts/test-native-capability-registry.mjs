@@ -7,7 +7,7 @@ const liveAgents = entries.filter((entry) => entry.status === "mainnet_live" && 
 const verifiedPayroll = entries.filter((entry) => entry.status === "devnet_verified");
 
 assert.equal(entries.length, 204, "unexpected native capability matrix size");
-assert.equal(verified.length, 39, "only evidence-backed verification and organizational testnet rows should be verified");
+assert.equal(verified.length, 49, "only evidence-backed verification and organizational testnet rows should be verified");
 assert.equal(liveAgents.length, 2, "the two live Agent Exchange rows must be runtime-verified");
 assert.equal(verifiedPayroll.length, 3, "only the three Payroll Devnet evidence rows should be verified");
 for (const entry of verifiedPayroll) {
@@ -56,6 +56,8 @@ assert.equal(verified.filter((entry) => entry.provider === "evm-bnb-testnet-orga
 assert.equal(verified.filter((entry) => entry.network === "bnb-testnet").every((entry) => entry.chainId === "97"), true);
 assert.equal(verified.filter((entry) => entry.provider === "evm-hyperliquid-testnet").length, 3, "HyperEVM evidence must cover blind and record verification lanes");
 assert.equal(verified.filter((entry) => entry.network === "hyperliquid-testnet").every((entry) => entry.chainId === "998"), true);
+assert.equal(verified.filter((entry) => entry.network === "stellar-testnet").length, 10, "Stellar Testnet must cover all ten enterprise capabilities");
+assert.equal(verified.filter((entry) => entry.network === "stellar-testnet").every((entry) => entry.provider === "stellar-testnet-horizon"), true);
 assert.equal(verified.filter((entry) => entry.network === "robinhood-testnet").every((entry) => entry.chainId === "46630"), true);
 assert.equal(verified.filter((entry) => entry.network === "arbitrum-sepolia").every((entry) => entry.chainId === "421614"), true);
 assert.equal(entries.find((entry) => entry.network === "tempo-testnet" && entry.product === "treasury")?.nativeAsset, "USD", "Tempo native asset must match the EVM adapter configuration");

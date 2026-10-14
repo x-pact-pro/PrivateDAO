@@ -14,7 +14,8 @@ export const runtimeCatalog = {
         "tempo-testnet",
         "base-sepolia",
         "bnb-testnet",
-        "hyperliquid-testnet"
+        "hyperliquid-testnet",
+        "stellar-testnet"
       ],
       "capabilities": [
         {
@@ -142,6 +143,23 @@ export const runtimeCatalog = {
                 "HYPE"
               ],
               "provider": "evm-hyperliquid-testnet"
+            },
+            {
+              "network": "stellar-testnet",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://verification.blind.prove",
+              "method": null,
+              "note": "Stellar Testnet product evidence binds the workflow commitment to a confirmed Horizon receipt.",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "supportsExecution": true,
+              "supportsProof": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "XLM"
+              ],
+              "provider": "stellar-testnet-horizon"
             }
           ],
           "networkAvailability": [
@@ -435,21 +453,21 @@ export const runtimeCatalog = {
             },
             {
               "network": "stellar-testnet",
-              "stage": "planned",
+              "stage": "available",
               "environment": "testnet",
-              "chainId": null,
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
-              "executable": false,
-              "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "chainId": "Test SDF Network ; September 2015",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "executable": true,
+              "supportsProof": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "XLM"
               ],
-              "provider": null
+              "provider": "stellar-testnet-horizon"
             }
           ]
         }
@@ -466,7 +484,8 @@ export const runtimeCatalog = {
         "tempo-testnet",
         "base-sepolia",
         "bnb-testnet",
-        "hyperliquid-testnet"
+        "hyperliquid-testnet",
+        "stellar-testnet"
       ],
       "capabilities": [
         {
@@ -594,6 +613,23 @@ export const runtimeCatalog = {
                 "HYPE"
               ],
               "provider": "evm-hyperliquid-testnet"
+            },
+            {
+              "network": "stellar-testnet",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://verification.record.create",
+              "method": null,
+              "note": "Stellar Testnet record creation is routed through the Kernel Stellar provider and confirmed by Horizon evidence.",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "supportsExecution": true,
+              "supportsProof": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "XLM"
+              ],
+              "provider": "stellar-testnet-horizon"
             }
           ],
           "networkAvailability": [
@@ -887,21 +923,21 @@ export const runtimeCatalog = {
             },
             {
               "network": "stellar-testnet",
-              "stage": "planned",
+              "stage": "available",
               "environment": "testnet",
-              "chainId": null,
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
-              "executable": false,
-              "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "chainId": "Test SDF Network ; September 2015",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "executable": true,
+              "supportsProof": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "XLM"
               ],
-              "provider": null
+              "provider": "stellar-testnet-horizon"
             }
           ]
         },
@@ -1030,6 +1066,23 @@ export const runtimeCatalog = {
                 "HYPE"
               ],
               "provider": "evm-hyperliquid-testnet"
+            },
+            {
+              "network": "stellar-testnet",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://verification.record.verify",
+              "method": null,
+              "note": "Stellar Testnet record verification is bound to the Testnet network passphrase and a confirmed receipt.",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "supportsExecution": true,
+              "supportsProof": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "XLM"
+              ],
+              "provider": "stellar-testnet-horizon"
             }
           ],
           "networkAvailability": [
@@ -1323,21 +1376,21 @@ export const runtimeCatalog = {
             },
             {
               "network": "stellar-testnet",
-              "stage": "planned",
+              "stage": "available",
               "environment": "testnet",
-              "chainId": null,
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
-              "executable": false,
-              "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "chainId": "Test SDF Network ; September 2015",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "executable": true,
+              "supportsProof": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "XLM"
               ],
-              "provider": null
+              "provider": "stellar-testnet-horizon"
             }
           ]
         }
@@ -1349,7 +1402,8 @@ export const runtimeCatalog = {
       "availability": "available",
       "networks": [
         "solana-devnet",
-        "bnb-testnet"
+        "bnb-testnet",
+        "stellar-testnet"
       ],
       "capabilities": [
         {
@@ -1392,6 +1446,23 @@ export const runtimeCatalog = {
                 "BNB"
               ],
               "provider": "evm-bnb-testnet"
+            },
+            {
+              "network": "stellar-testnet",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://payroll.calculate",
+              "method": null,
+              "note": "Stellar Testnet payroll calculation is represented by a commitment-bound Kernel workflow receipt.",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "supportsExecution": true,
+              "supportsProof": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "XLM"
+              ],
+              "provider": "stellar-testnet-horizon"
             }
           ],
           "networkAvailability": [
@@ -1685,21 +1756,21 @@ export const runtimeCatalog = {
             },
             {
               "network": "stellar-testnet",
-              "stage": "planned",
+              "stage": "available",
               "environment": "testnet",
-              "chainId": null,
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
-              "executable": false,
+              "chainId": "Test SDF Network ; September 2015",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "executable": true,
               "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "XLM"
               ],
-              "provider": null
+              "provider": "stellar-testnet-horizon"
             }
           ]
         },
@@ -1743,6 +1814,23 @@ export const runtimeCatalog = {
                 "BNB"
               ],
               "provider": "evm-bnb-testnet"
+            },
+            {
+              "network": "stellar-testnet",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://payroll.approve",
+              "method": null,
+              "note": "Stellar Testnet payroll approval is represented by a policy commitment bound to a confirmed receipt.",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "supportsExecution": true,
+              "supportsProof": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "XLM"
+              ],
+              "provider": "stellar-testnet-horizon"
             }
           ],
           "networkAvailability": [
@@ -2036,21 +2124,21 @@ export const runtimeCatalog = {
             },
             {
               "network": "stellar-testnet",
-              "stage": "planned",
+              "stage": "available",
               "environment": "testnet",
-              "chainId": null,
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
-              "executable": false,
+              "chainId": "Test SDF Network ; September 2015",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "executable": true,
               "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "XLM"
               ],
-              "provider": null
+              "provider": "stellar-testnet-horizon"
             }
           ]
         },
@@ -2094,6 +2182,23 @@ export const runtimeCatalog = {
                 "BNB"
               ],
               "provider": "evm-bnb-testnet-organizational"
+            },
+            {
+              "network": "stellar-testnet",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://payroll.settle",
+              "method": null,
+              "note": "Stellar Testnet payroll settlement is backed by the confirmed product evidence packet; private payroll inputs remain off-chain.",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "supportsExecution": true,
+              "supportsProof": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "XLM"
+              ],
+              "provider": "stellar-testnet-horizon"
             }
           ],
           "networkAvailability": [
@@ -2387,21 +2492,21 @@ export const runtimeCatalog = {
             },
             {
               "network": "stellar-testnet",
-              "stage": "planned",
+              "stage": "available",
               "environment": "testnet",
-              "chainId": null,
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
-              "executable": false,
+              "chainId": "Test SDF Network ; September 2015",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "executable": true,
               "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "XLM"
               ],
-              "provider": null
+              "provider": "stellar-testnet-horizon"
             }
           ]
         }
@@ -2417,7 +2522,8 @@ export const runtimeCatalog = {
         "arbitrum-sepolia",
         "robinhood-testnet",
         "tempo-testnet",
-        "bnb-testnet"
+        "bnb-testnet",
+        "stellar-testnet"
       ],
       "capabilities": [
         {
@@ -2528,6 +2634,23 @@ export const runtimeCatalog = {
                 "BNB"
               ],
               "provider": "evm-bnb-testnet-organizational"
+            },
+            {
+              "network": "stellar-testnet",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://treasury.policy.check",
+              "method": null,
+              "note": "Stellar Testnet treasury policy evidence carries only workflow and policy commitments.",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "supportsExecution": true,
+              "supportsProof": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "XLM"
+              ],
+              "provider": "stellar-testnet-horizon"
             }
           ],
           "networkAvailability": [
@@ -2821,21 +2944,21 @@ export const runtimeCatalog = {
             },
             {
               "network": "stellar-testnet",
-              "stage": "planned",
+              "stage": "available",
               "environment": "testnet",
-              "chainId": null,
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
-              "executable": false,
+              "chainId": "Test SDF Network ; September 2015",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "executable": true,
               "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "XLM"
               ],
-              "provider": null
+              "provider": "stellar-testnet-horizon"
             }
           ]
         }
@@ -2851,7 +2974,8 @@ export const runtimeCatalog = {
         "arbitrum-sepolia",
         "robinhood-testnet",
         "tempo-testnet",
-        "bnb-testnet"
+        "bnb-testnet",
+        "stellar-testnet"
       ],
       "capabilities": [
         {
@@ -2962,6 +3086,23 @@ export const runtimeCatalog = {
                 "BNB"
               ],
               "provider": "evm-bnb-testnet-organizational"
+            },
+            {
+              "network": "stellar-testnet",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://governance.proposal.execute",
+              "method": null,
+              "note": "Stellar Testnet governance evidence is a policy-commitment workflow verified through the Kernel provider.",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "supportsExecution": true,
+              "supportsProof": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "XLM"
+              ],
+              "provider": "stellar-testnet-horizon"
             }
           ],
           "networkAvailability": [
@@ -3255,21 +3396,21 @@ export const runtimeCatalog = {
             },
             {
               "network": "stellar-testnet",
-              "stage": "planned",
+              "stage": "available",
               "environment": "testnet",
-              "chainId": null,
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
-              "executable": false,
+              "chainId": "Test SDF Network ; September 2015",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "executable": true,
               "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "XLM"
               ],
-              "provider": null
+              "provider": "stellar-testnet-horizon"
             }
           ]
         }
@@ -3285,7 +3426,8 @@ export const runtimeCatalog = {
         "arbitrum-sepolia",
         "robinhood-testnet",
         "tempo-testnet",
-        "bnb-testnet"
+        "bnb-testnet",
+        "stellar-testnet"
       ],
       "capabilities": [
         {
@@ -3396,6 +3538,23 @@ export const runtimeCatalog = {
                 "BNB"
               ],
               "provider": "evm-bnb-testnet-organizational"
+            },
+            {
+              "network": "stellar-testnet",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://auction.bid.commit",
+              "method": null,
+              "note": "Stellar Testnet auction bid evidence publishes a commitment, not bid contents.",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "supportsExecution": true,
+              "supportsProof": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "XLM"
+              ],
+              "provider": "stellar-testnet-horizon"
             }
           ],
           "networkAvailability": [
@@ -3689,21 +3848,21 @@ export const runtimeCatalog = {
             },
             {
               "network": "stellar-testnet",
-              "stage": "planned",
+              "stage": "available",
               "environment": "testnet",
-              "chainId": null,
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
-              "executable": false,
-              "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "chainId": "Test SDF Network ; September 2015",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "executable": true,
+              "supportsProof": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "XLM"
               ],
-              "provider": null
+              "provider": "stellar-testnet-horizon"
             }
           ]
         },
@@ -3815,6 +3974,23 @@ export const runtimeCatalog = {
                 "BNB"
               ],
               "provider": "evm-bnb-testnet-organizational"
+            },
+            {
+              "network": "stellar-testnet",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://auction.settle",
+              "method": null,
+              "note": "Stellar Testnet auction settlement evidence binds the outcome commitment to a confirmed receipt.",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "supportsExecution": true,
+              "supportsProof": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "XLM"
+              ],
+              "provider": "stellar-testnet-horizon"
             }
           ],
           "networkAvailability": [
@@ -4108,21 +4284,21 @@ export const runtimeCatalog = {
             },
             {
               "network": "stellar-testnet",
-              "stage": "planned",
+              "stage": "available",
               "environment": "testnet",
-              "chainId": null,
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
-              "executable": false,
-              "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "chainId": "Test SDF Network ; September 2015",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "executable": true,
+              "supportsProof": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "XLM"
               ],
-              "provider": null
+              "provider": "stellar-testnet-horizon"
             }
           ]
         }
@@ -4470,9 +4646,9 @@ export const runtimeCatalog = {
             },
             {
               "network": "stellar-testnet",
-              "stage": "planned",
+              "stage": "available",
               "environment": "testnet",
-              "chainId": null,
+              "chainId": "Test SDF Network ; September 2015",
               "declared": false,
               "mode": "unbound",
               "evidenceStatus": "planned",
@@ -4484,7 +4660,7 @@ export const runtimeCatalog = {
               "supportedAssets": [
                 "XLM"
               ],
-              "provider": null
+              "provider": "stellar-testnet-horizon"
             }
           ]
         },
@@ -4821,9 +4997,9 @@ export const runtimeCatalog = {
             },
             {
               "network": "stellar-testnet",
-              "stage": "planned",
+              "stage": "available",
               "environment": "testnet",
-              "chainId": null,
+              "chainId": "Test SDF Network ; September 2015",
               "declared": false,
               "mode": "unbound",
               "evidenceStatus": "planned",
@@ -4835,7 +5011,7 @@ export const runtimeCatalog = {
               "supportedAssets": [
                 "XLM"
               ],
-              "provider": null
+              "provider": "stellar-testnet-horizon"
             }
           ]
         }
@@ -4986,8 +5162,10 @@ export const runtimeCatalog = {
       "id": "stellar-testnet",
       "label": "Stellar Testnet",
       "family": "stellar",
-      "stage": "planned",
-      "environment": "testnet"
+      "stage": "available",
+      "environment": "testnet",
+      "chainId": "Test SDF Network ; September 2015",
+      "adapterId": "stellar-testnet-horizon"
     }
   ],
   "paymentRails": [

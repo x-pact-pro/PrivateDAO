@@ -399,9 +399,9 @@
     {
       "product": "blind-verification",
       "ecosystem": "stellar",
-      "declaredLaneCount": 0,
-      "executableLaneCount": 0,
-      "status": "planned",
+      "declaredLaneCount": 1,
+      "executableLaneCount": 1,
+      "status": "verified",
       "capabilities": [
         {
           "capability": "verification.blind.prove",
@@ -409,17 +409,17 @@
             {
               "network": "stellar-testnet",
               "environment": "testnet",
-              "declared": false,
-              "mode": "unbound",
-              "status": "planned",
-              "evidence": "none",
-              "provider": null,
-              "supportsExecution": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
-              "executable": false,
-              "entrypoint": null,
-              "note": "Missing application binding."
+              "declared": true,
+              "mode": "kernel-gateway",
+              "status": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "provider": "stellar-testnet-horizon",
+              "supportsExecution": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "executable": true,
+              "entrypoint": "kernel://verification.blind.prove",
+              "note": "Stellar Testnet product evidence binds the workflow commitment to a confirmed Horizon receipt."
             }
           ]
         }
@@ -1079,9 +1079,9 @@
     {
       "product": "record-verification",
       "ecosystem": "stellar",
-      "declaredLaneCount": 0,
-      "executableLaneCount": 0,
-      "status": "planned",
+      "declaredLaneCount": 2,
+      "executableLaneCount": 2,
+      "status": "verified",
       "capabilities": [
         {
           "capability": "verification.record.create",
@@ -1089,17 +1089,17 @@
             {
               "network": "stellar-testnet",
               "environment": "testnet",
-              "declared": false,
-              "mode": "unbound",
-              "status": "planned",
-              "evidence": "none",
-              "provider": null,
-              "supportsExecution": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
-              "executable": false,
-              "entrypoint": null,
-              "note": "Missing application binding."
+              "declared": true,
+              "mode": "kernel-gateway",
+              "status": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "provider": "stellar-testnet-horizon",
+              "supportsExecution": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "executable": true,
+              "entrypoint": "kernel://verification.record.create",
+              "note": "Stellar Testnet record creation is routed through the Kernel Stellar provider and confirmed by Horizon evidence."
             }
           ]
         },
@@ -1109,17 +1109,17 @@
             {
               "network": "stellar-testnet",
               "environment": "testnet",
-              "declared": false,
-              "mode": "unbound",
-              "status": "planned",
-              "evidence": "none",
-              "provider": null,
-              "supportsExecution": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
-              "executable": false,
-              "entrypoint": null,
-              "note": "Missing application binding."
+              "declared": true,
+              "mode": "kernel-gateway",
+              "status": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "provider": "stellar-testnet-horizon",
+              "supportsExecution": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "executable": true,
+              "entrypoint": "kernel://verification.record.verify",
+              "note": "Stellar Testnet record verification is bound to the Testnet network passphrase and a confirmed receipt."
             }
           ]
         }
@@ -2064,9 +2064,9 @@
     {
       "product": "payroll",
       "ecosystem": "stellar",
-      "declaredLaneCount": 0,
-      "executableLaneCount": 0,
-      "status": "planned",
+      "declaredLaneCount": 3,
+      "executableLaneCount": 3,
+      "status": "verified",
       "capabilities": [
         {
           "capability": "payroll.calculate",
@@ -2074,17 +2074,17 @@
             {
               "network": "stellar-testnet",
               "environment": "testnet",
-              "declared": false,
-              "mode": "unbound",
-              "status": "planned",
-              "evidence": "none",
-              "provider": null,
-              "supportsExecution": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
-              "executable": false,
-              "entrypoint": null,
-              "note": "Missing application binding."
+              "declared": true,
+              "mode": "kernel-gateway",
+              "status": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "provider": "stellar-testnet-horizon",
+              "supportsExecution": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "executable": true,
+              "entrypoint": "kernel://payroll.calculate",
+              "note": "Stellar Testnet payroll calculation is represented by a commitment-bound Kernel workflow receipt."
             }
           ]
         },
@@ -2094,17 +2094,17 @@
             {
               "network": "stellar-testnet",
               "environment": "testnet",
-              "declared": false,
-              "mode": "unbound",
-              "status": "planned",
-              "evidence": "none",
-              "provider": null,
-              "supportsExecution": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
-              "executable": false,
-              "entrypoint": null,
-              "note": "Missing application binding."
+              "declared": true,
+              "mode": "kernel-gateway",
+              "status": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "provider": "stellar-testnet-horizon",
+              "supportsExecution": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "executable": true,
+              "entrypoint": "kernel://payroll.approve",
+              "note": "Stellar Testnet payroll approval is represented by a policy commitment bound to a confirmed receipt."
             }
           ]
         },
@@ -2114,17 +2114,17 @@
             {
               "network": "stellar-testnet",
               "environment": "testnet",
-              "declared": false,
-              "mode": "unbound",
-              "status": "planned",
-              "evidence": "none",
-              "provider": null,
-              "supportsExecution": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
-              "executable": false,
-              "entrypoint": null,
-              "note": "Missing application binding."
+              "declared": true,
+              "mode": "kernel-gateway",
+              "status": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "provider": "stellar-testnet-horizon",
+              "supportsExecution": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "executable": true,
+              "entrypoint": "kernel://payroll.settle",
+              "note": "Stellar Testnet payroll settlement is backed by the confirmed product evidence packet; private payroll inputs remain off-chain."
             }
           ]
         }
@@ -2499,9 +2499,9 @@
     {
       "product": "treasury",
       "ecosystem": "stellar",
-      "declaredLaneCount": 0,
-      "executableLaneCount": 0,
-      "status": "planned",
+      "declaredLaneCount": 1,
+      "executableLaneCount": 1,
+      "status": "verified",
       "capabilities": [
         {
           "capability": "treasury.policy.check",
@@ -2509,17 +2509,17 @@
             {
               "network": "stellar-testnet",
               "environment": "testnet",
-              "declared": false,
-              "mode": "unbound",
-              "status": "planned",
-              "evidence": "none",
-              "provider": null,
-              "supportsExecution": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
-              "executable": false,
-              "entrypoint": null,
-              "note": "Missing application binding."
+              "declared": true,
+              "mode": "kernel-gateway",
+              "status": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "provider": "stellar-testnet-horizon",
+              "supportsExecution": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "executable": true,
+              "entrypoint": "kernel://treasury.policy.check",
+              "note": "Stellar Testnet treasury policy evidence carries only workflow and policy commitments."
             }
           ]
         }
@@ -2894,9 +2894,9 @@
     {
       "product": "governance",
       "ecosystem": "stellar",
-      "declaredLaneCount": 0,
-      "executableLaneCount": 0,
-      "status": "planned",
+      "declaredLaneCount": 1,
+      "executableLaneCount": 1,
+      "status": "verified",
       "capabilities": [
         {
           "capability": "governance.proposal.execute",
@@ -2904,17 +2904,17 @@
             {
               "network": "stellar-testnet",
               "environment": "testnet",
-              "declared": false,
-              "mode": "unbound",
-              "status": "planned",
-              "evidence": "none",
-              "provider": null,
-              "supportsExecution": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
-              "executable": false,
-              "entrypoint": null,
-              "note": "Missing application binding."
+              "declared": true,
+              "mode": "kernel-gateway",
+              "status": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "provider": "stellar-testnet-horizon",
+              "supportsExecution": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "executable": true,
+              "entrypoint": "kernel://governance.proposal.execute",
+              "note": "Stellar Testnet governance evidence is a policy-commitment workflow verified through the Kernel provider."
             }
           ]
         }
@@ -3574,9 +3574,9 @@
     {
       "product": "auction",
       "ecosystem": "stellar",
-      "declaredLaneCount": 0,
-      "executableLaneCount": 0,
-      "status": "planned",
+      "declaredLaneCount": 2,
+      "executableLaneCount": 2,
+      "status": "verified",
       "capabilities": [
         {
           "capability": "auction.bid.commit",
@@ -3584,17 +3584,17 @@
             {
               "network": "stellar-testnet",
               "environment": "testnet",
-              "declared": false,
-              "mode": "unbound",
-              "status": "planned",
-              "evidence": "none",
-              "provider": null,
-              "supportsExecution": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
-              "executable": false,
-              "entrypoint": null,
-              "note": "Missing application binding."
+              "declared": true,
+              "mode": "kernel-gateway",
+              "status": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "provider": "stellar-testnet-horizon",
+              "supportsExecution": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "executable": true,
+              "entrypoint": "kernel://auction.bid.commit",
+              "note": "Stellar Testnet auction bid evidence publishes a commitment, not bid contents."
             }
           ]
         },
@@ -3604,17 +3604,17 @@
             {
               "network": "stellar-testnet",
               "environment": "testnet",
-              "declared": false,
-              "mode": "unbound",
-              "status": "planned",
-              "evidence": "none",
-              "provider": null,
-              "supportsExecution": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
-              "executable": false,
-              "entrypoint": null,
-              "note": "Missing application binding."
+              "declared": true,
+              "mode": "kernel-gateway",
+              "status": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "provider": "stellar-testnet-horizon",
+              "supportsExecution": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "executable": true,
+              "entrypoint": "kernel://auction.settle",
+              "note": "Stellar Testnet auction settlement evidence binds the outcome commitment to a confirmed receipt."
             }
           ]
         }

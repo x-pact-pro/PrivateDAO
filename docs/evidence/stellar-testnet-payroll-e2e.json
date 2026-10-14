@@ -1,0 +1,21 @@
+{
+  "schema": "privatedao.stellar-testnet-payroll-e2e.v1",
+  "network": "stellar-testnet",
+  "environment": "testnet",
+  "provider": "stellar-testnet-horizon",
+  "executionPath": "product->gateway->protocol->kernel->stellar-adapter->horizon",
+  "signerPublicKey": "GBBDH5SMLNRE5FSPNEGISMWSSZBV7OE4L5DUC7BRTWJCJSVYDODJK32L",
+  "recipient": "GBBDH5SMLNRE5FSPNEGISMWSSZBV7OE4L5DUC7BRTWJCJSVYDODJK32L",
+  "amount": "0.0000010",
+  "broadcastExecuted": true,
+  "transactionHash": "8220fea632c55e3dca415b8b46ec82ea9d333cc2461947ef194592e5410a4e1b",
+  "ledger": "5153823",
+  "explorerUrl": "https://stellar.expert/explorer/testnet/tx/8220fea632c55e3dca415b8b46ec82ea9d333cc2461947ef194592e5410a4e1b",
+  "receiptState": "confirmed",
+  "workflow": {
+    "workflowId": "stellar-testnet:payroll.settle:stellar-payroll-e2e-1791792696163",
+    "inputCommitment": "6f587b215151493b74c88e9a95656740524e3685364d1d6916bea22a4a7f310a",
+    "policyCommitment": "6f587b215151493b74c88e9a95656740524e3685364d1d6916bea22a4a7f310a"
+  },
+  "generatedAt": "2026-10-12T08:11:43.186Z"
+}

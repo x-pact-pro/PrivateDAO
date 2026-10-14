@@ -78,6 +78,7 @@ export interface ExecutionReceipt<TResult = unknown> {
   state: Extract<ExecutionState, "confirmed" | "finalized" | "reconciled">;
   signatures: string[];
   result?: TResult;
+  metadata?: Record<string, unknown>;
   reconciliationId?: string;
   proofId?: string;
   createdAt: string;
@@ -188,6 +189,27 @@ export { ZcashNetworkAdapter, ZcashAdapterError, ZCASH_NETWORK_CONFIGS } from ".
 export type { ZcashEnvironment, ZcashNetworkConfig, ZcashTransport, ZcashWalletAdapter } from "./zcash-network.js";
 export { ZalletCliTransport } from "./zallet-cli-transport.js";
 export type { ZalletCliTransportOptions, ZcashRecipient, ZcashSendPayload } from "./zallet-cli-transport.js";
+export {
+  StellarNetworkAdapter,
+  StellarAdapterError,
+  StellarHorizonTransport,
+  STELLAR_NETWORK_CONFIGS,
+  STELLAR_TESTNET_NETWORK_PASSPHRASE,
+  STELLAR_KERNEL_CAPABILITIES,
+} from "./stellar-network.js";
+export type {
+  StellarEnvironment,
+  StellarNetworkConfig,
+  StellarPaymentPayload,
+  StellarPayrollRecipient,
+  StellarPayrollSettlementPayload,
+  StellarRecoveredAccount,
+  StellarTransport,
+  StellarUnsignedPayload,
+  StellarSignedPayload,
+} from "./stellar-network.js";
+export { validateStellarProductWorkflow } from "./stellar-product-workflow.js";
+export type { StellarProductWorkflow } from "./stellar-product-workflow.js";
 export { DeploymentRegistry } from "./deployment-registry.js";
 export type { DeploymentRecord } from "./deployment-registry.js";
 export { createHttpBackedPrivateDaoRuntime } from "./http-runtime.js";
