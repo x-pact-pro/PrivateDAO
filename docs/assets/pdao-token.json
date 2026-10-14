@@ -1,50 +1,11 @@
 {
-  "name": "PrivateDAO Governance Token",
+  "name": "PDAO",
   "symbol": "PDAO",
-  "description": "PDAO is the Testnet Token-2022 governance voting token profile for PrivateDAO. It represents structured governance participation across proposal creation, commit-reveal voting, and treasury-sensitive decision flows without changing the deployed protocol interfaces.",
-  "image": "https://privatedao.org/assets/logo.png",
-  "external_url": "https://privatedao.org/security/",
+  "description": "Public PDAO token identity for PrivateDAO on Solana Mainnet. This metadata is factual and does not promise price performance, liquidity, or investment returns.",
+  "external_url": "https://privatedao.org/token/",
   "attributes": [
-    {
-      "trait_type": "Network",
-      "value": "Testnet"
-    },
-    {
-      "trait_type": "Utility",
-      "value": "Governance Voting Token"
-    },
-    {
-      "trait_type": "Platform",
-      "value": "DeAura"
-    },
-    {
-      "trait_type": "Token Standard",
-      "value": "Token-2022"
-    },
-    {
-      "trait_type": "PrivateDAO Program ID",
-      "value": "EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva"
-    },
-    {
-      "trait_type": "Mint",
-      "value": "DFYvBdivHCe4bSErgCiKm2RhwGEcZYbBPFQzLNr37Bie"
-    },
-    {
-      "trait_type": "Mint Authority",
-      "value": "Disabled"
-    },
-    {
-      "trait_type": "Canonical Governance DAO",
-      "value": "FEz2hCLGpDhJ3cdAm5CCWFzrKv8vDDzmmt9UjdF2fApZ"
-    }
-  ],
-  "properties": {
-    "category": "image",
-    "files": [
-      {
-        "uri": "https://privatedao.org/assets/logo.png",
-        "type": "image/png"
-      }
-    ]
-  }
+    { "trait_type": "Network", "value": "Solana Mainnet" },
+    { "trait_type": "Mint", "value": "9isGuumtaqvJeJeyLF44fvfskk2cv5mYsopexMBfpump" },
+    { "trait_type": "Official contact", "value": "fahd@privatedao.org" }
+  ]
 }

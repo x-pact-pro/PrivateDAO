@@ -190,7 +190,7 @@ const curatedDocuments: CuratedDocument[] = [
     title: "Treasury Asset And Oracle Engineering Report",
     category: "Treasury",
     summary:
-      "Engineering report for Token-2022, Tokens-compatible asset context, Pyth-compatible oracle pricing, Jupiter treasury routing, PUSD, AUDD, private payouts, confidential vesting, and wallet-first treasury proof.",
+      "Engineering report for asset context, oracle pricing, Jupiter treasury routing, private payouts, confidential vesting, and wallet-first treasury proof.",
     audience: "Treasury engineers, stablecoin partners, DeFi reviewers, payment teams, judges",
     boundary:
       "Treasury report only; it documents asset-context and price-context provider boundaries and does not claim live real-funds stablecoin settlement without configured mints, funded wallets, signatures, and proof evidence.",
@@ -238,7 +238,7 @@ const curatedDocuments: CuratedDocument[] = [
     title: "Cryptographic On-Chain Matrix",
     category: "Security",
     summary:
-      "Canonical Testnet matrix for custody, ZK, REFHE, MagicBlock, IKA, Token-2022, read-node telemetry, and intelligence-provider proof boundaries.",
+      "Canonical matrix for custody, ZK, REFHE, MagicBlock, IKA, read-node telemetry, and intelligence-provider proof boundaries.",
     audience: "Judges, security reviewers, Solana builders, treasury operators, ecosystem partners",
     boundary:
       "Current Testnet operating matrix only; it separates executed settlement gates from Squads-timelocked protocol upgrades and IKA readiness work.",
@@ -735,9 +735,9 @@ const curatedDocuments: CuratedDocument[] = [
     slug: "token-architecture",
     title: "Token Architecture",
     category: "Strategy",
-    summary: "Canonical explanation of what the PrivateDAO token does now, what it gates, and how it stays aligned with governance rather than speculative tokenomics.",
+    summary: "Canonical explanation of the public PDAO token identity and its boundary from PrivateDAO product execution.",
     audience: "Judges, buyers, grant reviewers, operators",
-    boundary: "Architecture note only; it does not claim a mainnet market token launch or expand token utility beyond the live documented Testnet governance surface.",
+    boundary: "Facts and positioning only; it does not promise price performance, liquidity, returns, or payment utility.",
     docPath: "docs/token.md",
     rawHref: `${repositoryBlobBase}/docs/token.md`,
   },
@@ -745,9 +745,9 @@ const curatedDocuments: CuratedDocument[] = [
     slug: "pdao-token-surface",
     title: "PDAO Token Surface",
     category: "Reviewer core",
-    summary: "Reviewer-safe Testnet Token-2022 token surface for PDAO governance evidence, including mint details, attested transactions, disabled mint authority, and product-facing interpretation.",
+    summary: "Public PDAO Mainnet token facts, kept separate from product and network execution evidence.",
     audience: "Judges, grant reviewers, buyers, operators",
-    boundary: "Live Testnet token evidence only; it does not claim a public mainnet token launch or speculative market posture.",
+    boundary: "Public token identity only; no investment or performance claim.",
     docPath: "docs/pdao-token.md",
     rawHref: `${repositoryBlobBase}/docs/pdao-token.md`,
   },
@@ -931,7 +931,7 @@ const curatedDocuments: CuratedDocument[] = [
     title: "Arena Frontier Submission 2026-05-23",
     category: "Reviewer core",
     summary:
-      "Historical May 23 submission packet for the Testnet product: Anchor 1.0.1 governance program, ZK verifier, Squads custody, PDAO Token-2022, security story, and judge links.",
+      "Historical May 23 submission packet for the product: Anchor 1.0.1 governance program, ZK verifier, Squads custody, security story, and judge links.",
     audience: "Colosseum judges, Solana reviewers, investors, ecosystem partners",
     boundary:
       "Historical Testnet submission packet. Active custody execution status lives in the 2026-05-25 current binary proposal packet.",
@@ -1148,7 +1148,7 @@ const curatedDocuments: CuratedDocument[] = [
     slug: "live-proof-v3",
     title: "Live Proof V3",
     category: "Reviewer core",
-    summary: "Fresh Testnet proof for Governance V3 plus REFHE-settled, MagicBlock-settled, evidence-gated token payout execution.",
+    summary: "Fresh proof for Governance V3 plus REFHE-settled, MagicBlock-settled, evidence-gated payout execution.",
     audience: "Judges, reviewers, protocol operators",
     boundary: "Testnet proof only; not a mainnet custody claim.",
     docPath: "docs/test-wallet-live-proof-v3.generated.md",
@@ -1368,7 +1368,7 @@ const curatedDocuments: CuratedDocument[] = [
     slug: "squads-devnet-multisig-ceremony",
     title: "Squads Mainnet Custody Ceremony Reference",
     category: "Operations",
-    summary: "Exact operator sequence for the real Squads mainnet custody ceremony, with the Devnet rehearsal clearly separated as an SPL Token 2022 multisig artifact.",
+    summary: "Exact operator sequence for the real Squads mainnet custody ceremony, with rehearsal evidence kept separate from the live custody path.",
     audience: "Operators, auditors, judges, launch leads",
     boundary: "This is the custody ceremony reference for mainnet closure; it does not claim that the authority transfer has already happened.",
     docPath: "docs/squads-devnet-multisig-ceremony.md",

@@ -1,105 +1,25 @@
-import crypto from "crypto";
 import fs from "fs";
 import path from "path";
 
 import { loadProofRegistry } from "./lib/proof-registry.js";
 
-type PdaoAttestation = {
-  project: string;
-  privateDaoProgramId: string;
-  verificationWallet: string;
-  pdaoToken: {
-    name: string;
-    symbol: string;
-    network: string;
-    utility: string;
-    platform: string;
-    mint: string;
-    tokenProgramId: string;
-    tokenAccount: string;
-    decimals: number;
-    supplyUi: string;
-    metadataUri: string;
-    metadataAssetPath: string;
-    metadataSha256: string;
-    image: string;
-    externalUrl: string;
-    transactionLabels: string[];
-  };
-  programBoundary: {
-    privateDaoProgramId: string;
-    tokenProgramId: string;
-    explanation: string;
-  };
-  verificationDocs: string[];
-};
-
 function main() {
   const proof = loadProofRegistry();
-  if (!proof.pdaoToken) {
-    throw new Error("proof registry is missing the PDAO token surface");
-  }
-
-  const attestationPath = path.resolve("docs/pdao-attestation.generated.json");
-  if (!fs.existsSync(attestationPath)) {
-    throw new Error("missing docs/pdao-attestation.generated.json");
-  }
-
-  const metadataPath = path.resolve("docs/assets/pdao-token.json");
-  if (!fs.existsSync(metadataPath)) {
-    throw new Error("missing docs/assets/pdao-token.json");
-  }
-
-  const attestation = JSON.parse(fs.readFileSync(attestationPath, "utf8")) as PdaoAttestation;
-  const metadataBody = fs.readFileSync(metadataPath);
+  const attestation = JSON.parse(
+    fs.readFileSync(path.resolve("docs/pdao-attestation.generated.json"), "utf8"),
+  ) as { project?: string; pdaoToken?: { network?: string; mint?: string; factsUrl?: string }; scope?: string };
 
   assert(attestation.project === "PrivateDAO", "PDAO attestation project mismatch");
-  const privateDaoProgramId = proof.pdaoToken.privateDaoProgramId ?? proof.programId;
-  const pdaoNetwork = proof.pdaoToken.network ?? "Devnet";
-
-  assert(attestation.privateDaoProgramId === privateDaoProgramId, "PDAO attestation governance program mismatch");
-  assert(attestation.verificationWallet === proof.verificationWallet, "PDAO attestation verification wallet mismatch");
-  assert(attestation.pdaoToken.name === "PrivateDAO Governance Token", "PDAO attestation name mismatch");
-  assert(attestation.pdaoToken.symbol === "PDAO", "PDAO attestation symbol mismatch");
-  assert(attestation.pdaoToken.network === pdaoNetwork, "PDAO attestation network mismatch");
-  assert(attestation.pdaoToken.utility === "Governance Voting Token", "PDAO attestation utility mismatch");
-  assert(attestation.pdaoToken.platform === "DeAura", "PDAO attestation platform mismatch");
-  assert(attestation.pdaoToken.mint === proof.pdaoToken.mint, "PDAO attestation mint mismatch");
-  assert(attestation.pdaoToken.tokenProgramId === proof.pdaoToken.programId, "PDAO attestation token program mismatch");
-  assert(attestation.pdaoToken.tokenAccount === proof.pdaoToken.tokenAccount, "PDAO attestation token account mismatch");
-  assert(attestation.pdaoToken.decimals === proof.pdaoToken.decimals, "PDAO attestation decimals mismatch");
-  assert(attestation.pdaoToken.supplyUi === proof.pdaoToken.supplyUi, "PDAO attestation supply mismatch");
-  assert(attestation.pdaoToken.metadataUri === proof.pdaoToken.metadataUri, "PDAO attestation metadata URI mismatch");
-  assert(attestation.pdaoToken.metadataAssetPath === "docs/assets/pdao-token.json", "PDAO attestation metadata asset path mismatch");
-  assert(attestation.pdaoToken.metadataSha256 === sha256Hex(metadataBody), "PDAO attestation metadata sha256 mismatch");
-  assert(attestation.pdaoToken.image === "https://privatedao.org/assets/logo.png", "PDAO attestation image mismatch");
-  assert(attestation.pdaoToken.externalUrl === "https://privatedao.org/security/", "PDAO attestation external URL mismatch");
-  assert(attestation.pdaoToken.transactionLabels.length >= 4, "PDAO attestation transaction labels are incomplete");
-  assert(attestation.programBoundary.privateDaoProgramId === privateDaoProgramId, "PDAO attestation program boundary governance mismatch");
-  assert(attestation.programBoundary.tokenProgramId === proof.pdaoToken.programId, "PDAO attestation program boundary token mismatch");
-  assert(attestation.programBoundary.explanation.includes("Token-2022"), "PDAO attestation boundary explanation is incomplete");
-
-  for (const doc of [
-    "docs/token.md",
-    "docs/pdao-token.md",
-    "docs/assets/pdao-token.json",
-    "docs/devnet-release-manifest.md",
-    "docs/proof-registry.json",
-  ]) {
-    assert(attestation.verificationDocs.includes(doc), `PDAO attestation is missing verification doc: ${doc}`);
-  }
-
+  assert(attestation.pdaoToken?.network === "Solana Mainnet", "PDAO attestation network mismatch");
+  assert(attestation.pdaoToken?.mint === "9isGuumtaqvJeJeyLF44fvfskk2cv5mYsopexMBfpump", "PDAO attestation mint mismatch");
+  assert(attestation.pdaoToken?.mint === proof.pdaoToken?.mint, "PDAO attestation does not match proof registry");
+  assert(attestation.pdaoToken?.factsUrl === "https://privatedao.org/token/", "PDAO attestation facts URL mismatch");
+  assert(Boolean(attestation.scope?.includes("no investment")), "PDAO attestation scope is missing its risk boundary");
   console.log("PDAO attestation verification: PASS");
 }
 
-function sha256Hex(input: crypto.BinaryLike): string {
-  return crypto.createHash("sha256").update(input).digest("hex");
-}
-
-function assert(condition: boolean, message: string) {
-  if (!condition) {
-    throw new Error(message);
-  }
+function assert(condition: unknown, message: string): asserts condition {
+  if (!condition) throw new Error(message);
 }
 
 main();

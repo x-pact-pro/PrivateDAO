@@ -2,7 +2,7 @@
 
 - network: devnet
 - program id: `5AhUsbQ4mJ8Xh7QJEomuS85qGgmK9iNvFqzF669Y7Psx`
-- governance mint: `AZUkprJDfJPgAp7L4z3TpCV3KHqLiA8RjHAVhK9HCvDt`
+- governance mint: ``
 - source wallet run: `20260417125017`
 - primary rpc healthy: yes
 - fallback rpc healthy: yes

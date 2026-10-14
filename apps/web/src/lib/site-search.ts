@@ -872,7 +872,6 @@ function getTokenTruthLeadItems(query: string): SiteSearchItem[] {
     "payment token",
     "token strategy",
     "token surface",
-    "devnet token",
     "live token",
     "governance mint",
   ];

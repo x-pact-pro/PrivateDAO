@@ -4,7 +4,7 @@
   "network": "devnet",
   "sourceWalletRunLabel": "20260417125017",
   "programId": "5AhUsbQ4mJ8Xh7QJEomuS85qGgmK9iNvFqzF669Y7Psx",
-  "governanceMint": "AZUkprJDfJPgAp7L4z3TpCV3KHqLiA8RjHAVhK9HCvDt",
+  "governanceMint": "",
   "primaryRpc": "https://api.devnet.solana.com",
   "fallbackRpc": "https://api.devnet.solana.com",
   "invalidRpc": "http://127.0.0.1:65535",

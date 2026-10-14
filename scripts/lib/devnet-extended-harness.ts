@@ -122,7 +122,7 @@ type HarnessProgram = anchor.Program<any> & { account: any; methods: any };
 
 const COMMITMENT: Commitment = "confirmed";
 const PROGRAM_ID = new PublicKey("5AhUsbQ4mJ8Xh7QJEomuS85qGgmK9iNvFqzF669Y7Psx");
-const PDAO_MINT = new PublicKey("AZUkprJDfJPgAp7L4z3TpCV3KHqLiA8RjHAVhK9HCvDt");
+const PDAO_MINT = new PublicKey("");
 const DEFAULT_COORDINATOR_WALLET = "/home/x-pact/Desktop/wallet-keypair.json";
 const DEFAULT_DEVNET_RPC =
   process.env.ANCHOR_PROVIDER_URL ||

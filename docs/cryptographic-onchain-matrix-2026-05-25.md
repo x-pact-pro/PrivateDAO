@@ -117,7 +117,7 @@ Boundary: No funded IKA dWallet DKG or final 2PC-MPC signature is claimed in thi
 
 Current state: live fixed-supply Testnet token.
 
-Evidence: mint `DFYvBdivHCe4bSErgCiKm2RhwGEcZYbBPFQzLNr37Bie`, supply `1,000,000 PDAO`, and mint authority disabled.
+Evidence: mint ``, supply `1,000,000 PDAO`, and mint authority disabled.
 
 Product meaning: governance and reward lanes have a fixed Testnet asset for reviewer-visible flows.
 

@@ -190,13 +190,6 @@ export default function JudgePage() {
       cta: "Open timelock proof",
     },
     {
-      label: "PDAO Token-2022 fixed supply",
-      value: "1,000,000 PDAO",
-      detail: "Mint DFYvBdiv...37Bie is live on Testnet with mint authority disabled and metadata published.",
-      href: "/documents/pdao-token-surface",
-      cta: "Open token proof",
-    },
-    {
       label: "Production readiness aggregate",
       value: "API + stream + proof",
       detail: "One live JSON route summarizes read-node health, QuickNode stream stats, visitor counters, execution counters, freshness, and public verification links.",
@@ -315,7 +308,7 @@ export default function JudgePage() {
               {[
                 ["Problem", "Public payroll, public governance, public treasury, and public internal operations expose too much."],
                 ["Solution", "Private processes, wallet authorization, encrypted coordination, and verifiable outcomes are one guided flow."],
-                ["Proof", "REFHE, MagicBlock, ZK verifier, Token-2022, Squads, and backend JSON are Testnet-linked."],
+                ["Proof", "REFHE, MagicBlock, ZK verifier, Squads, and backend JSON are linked to reproducible evidence."],
               ].map(([label, detail]) => (
                 <div key={label} className="rounded-2xl border border-white/10 bg-black/22 p-4">
                   <div className="text-[10px] uppercase tracking-[0.24em] text-cyan-100/62">{label}</div>
@@ -582,7 +575,7 @@ export default function JudgePage() {
           <div>
             <div className="text-[11px] uppercase tracking-[0.3em] text-emerald-100/78">2026-05-23 live evidence</div>
             <h2 className="mt-3 max-w-4xl text-2xl font-semibold text-white">
-              Fresh Testnet custody, ZK, timelock, and Token-2022 proof is visible before the archived judge logs.
+              Fresh custody, ZK, timelock, and execution proof is visible before the archived judge logs.
             </h2>
             <p className="mt-3 max-w-4xl text-sm leading-7 text-white/64">
               This panel is the current reviewer entry point. It separates live Testnet evidence from older Devnet

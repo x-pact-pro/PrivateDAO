@@ -10,7 +10,7 @@
     "targetPdaoUi": 100
   },
   "program_id": "5AhUsbQ4mJ8Xh7QJEomuS85qGgmK9iNvFqzF669Y7Psx",
-  "governance_mint": "AZUkprJDfJPgAp7L4z3TpCV3KHqLiA8RjHAVhK9HCvDt",
+  "governance_mint": "",
   "proposal_public_key": "7TKCbcUsrAaQhu3XuCLmXUPo2KCbjDtFF8sxtY6QmuVx",
   "verification_mode": "offchain-groth16",
   "onchain_verifier": false,

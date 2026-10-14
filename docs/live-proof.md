@@ -22,8 +22,8 @@ That packet proves the dedicated `Governance Hardening V3` and `Settlement Harde
 
 - DAO: `FZV9KmpeY1B31XvszQypp5T6nQN5C44JDLM4QWBEDvhx`
 - DAO explorer: `https://solscan.io/account/FZV9KmpeY1B31XvszQypp5T6nQN5C44JDLM4QWBEDvhx?cluster=devnet`
-- Governance mint: `AZUkprJDfJPgAp7L4z3TpCV3KHqLiA8RjHAVhK9HCvDt`
-- Governance mint explorer: `https://solscan.io/account/AZUkprJDfJPgAp7L4z3TpCV3KHqLiA8RjHAVhK9HCvDt?cluster=devnet`
+- Governance mint: ``
+- Governance mint explorer: `https://solscan.io/account/?cluster=devnet`
 - Treasury PDA: `AZUroiNeGAjNdD84eEHnAKHHFwqAFmkjr2g1eoF7Ek5c`
 - Treasury explorer: `https://solscan.io/account/AZUroiNeGAjNdD84eEHnAKHHFwqAFmkjr2g1eoF7Ek5c?cluster=devnet`
 - Proposal PDA: `AegjmwkX1FknBJMDyH5yM6BMhyHsiUreNtz3d8iz3QrP`
@@ -33,7 +33,7 @@ That packet proves the dedicated `Governance Hardening V3` and `Settlement Harde
 
 The canonical reviewer-facing Devnet DAO now uses `PDAO` itself as the actual on-chain governance mint. The live governance mint and the published PDAO mint are the same address:
 
-- `AZUkprJDfJPgAp7L4z3TpCV3KHqLiA8RjHAVhK9HCvDt`
+- ``
 
 ## Transaction Hashes
 
@@ -80,5 +80,5 @@ The current Groth16 stack still generates and verifies proofs off-chain, but the
 ```bash
 ANCHOR_PROVIDER_URL="https://api.devnet.solana.com" \
 ANCHOR_WALLET="operator-keypair.json" \
-npm run live-proof -- --name PDAOCanonical20260404 --governance-mint AZUkprJDfJPgAp7L4z3TpCV3KHqLiA8RjHAVhK9HCvDt
+npm run live-proof -- --name PDAOCanonical20260404
 ```

@@ -49,7 +49,7 @@ const path_1 = __importDefault(require("path"));
 const utils_1 = require("../utils");
 const COMMITMENT = "confirmed";
 const PROGRAM_ID = new web3_js_1.PublicKey("5AhUsbQ4mJ8Xh7QJEomuS85qGgmK9iNvFqzF669Y7Psx");
-const PDAO_MINT = new web3_js_1.PublicKey("AZUkprJDfJPgAp7L4z3TpCV3KHqLiA8RjHAVhK9HCvDt");
+const PDAO_MINT = new web3_js_1.PublicKey("");
 const DEFAULT_COORDINATOR_WALLET = "/home/x-pact/Desktop/wallet-keypair.json";
 const DEFAULT_DEVNET_RPC = process.env.ANCHOR_PROVIDER_URL ||
     process.env.SOLANA_RPC_URL ||

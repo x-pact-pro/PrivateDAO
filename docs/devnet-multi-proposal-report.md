@@ -2,7 +2,7 @@
 
 - network: devnet
 - program id: `5AhUsbQ4mJ8Xh7QJEomuS85qGgmK9iNvFqzF669Y7Psx`
-- governance mint: `AZUkprJDfJPgAp7L4z3TpCV3KHqLiA8RjHAVhK9HCvDt`
+- governance mint: ``
 - DAO: `EyLjhct7TJwb7pa1HssjwZcTT9WMq6Vq5aAxTKsK1b8t`
 - treasury: `CgqzWTGHX3qNDe9FLJEFrmNQr3gddUXbGQuWN5r5YzM6`
 - proposals: 3

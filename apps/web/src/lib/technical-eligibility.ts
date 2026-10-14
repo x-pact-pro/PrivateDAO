@@ -20,7 +20,7 @@ export type TrackTechnicalFit = {
 const coreIdentity = [
   { label: "Program ID", value: "EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva" },
   { label: "Verification Wallet", value: "4Mm5YTRbJuyA8NcWM85wTnx6ZQMXNph2DSnzCCKLhsMD" },
-  { label: "Governance Mint", value: "DFYvBdivHCe4bSErgCiKm2RhwGEcZYbBPFQzLNr37Bie" },
+  { label: "Public PDAO Mint", value: "9isGuumtaqvJeJeyLF44fvfskk2cv5mYsopexMBfpump" },
   { label: "Token Program", value: "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb" },
 ];
 
@@ -51,7 +51,7 @@ const fits: Record<string, TrackTechnicalFit> = {
         sponsor: "Solana Foundation",
         status: "Direct live use",
         detail:
-          "Real Testnet Program ID, governance mint, wallet path, trust packets, and live Testnet routes are all visible in-product instead of staying buried in backend-only artifacts.",
+          "Real program identity, wallet path, trust packets, and live execution routes are visible in-product instead of staying buried in backend-only artifacts.",
       },
     ],
     evidenceRoutes: [

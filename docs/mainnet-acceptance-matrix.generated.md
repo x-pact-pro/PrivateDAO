@@ -54,7 +54,6 @@
 ### token-surface
 
 - status: `accepted-in-repo`
-- rationale: The PDAO token surface is attested, metadata-backed, and aligned with the current Testnet Token-2022 mint while legacy Devnet mint evidence remains archived.
 - evidence:
   - `docs/pdao-token.md`
   - `docs/pdao-attestation.generated.json`

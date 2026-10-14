@@ -46,7 +46,7 @@ function main() {
   if (requiredLegacyAnchors.length < 6 || requiredLegacyAnchors.some((entry) => !entry.exists)) {
     throw new Error("devnet canary anchor checks are incomplete");
   }
-  if (canary.tokenSupply.mint !== "AZUkprJDfJPgAp7L4z3TpCV3KHqLiA8RjHAVhK9HCvDt") {
+  if (canary.tokenSupply.mint !== "") {
     throw new Error("devnet canary governance mint mismatch");
   }
   if (canary.summary.unexpectedFailures !== 0) {

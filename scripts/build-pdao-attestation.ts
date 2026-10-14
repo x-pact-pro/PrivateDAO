@@ -1,4 +1,3 @@
-import crypto from "crypto";
 import fs from "fs";
 import path from "path";
 
@@ -33,50 +32,24 @@ function main() {
 
   const attestation = {
     project: "PrivateDAO",
-    privateDaoProgramId: proof.pdaoToken.privateDaoProgramId ?? proof.programId,
-    verificationWallet: proof.verificationWallet,
     pdaoToken: {
       name: metadata.name,
       symbol: metadata.symbol,
-      network: proof.pdaoToken.network ?? "Devnet",
-      utility: "Governance Voting Token",
-      platform: "DeAura",
+      network: proof.pdaoToken.network ?? "Solana Mainnet",
       mint: proof.pdaoToken.mint,
-      tokenProgramId: proof.pdaoToken.programId,
-      tokenAccount: proof.pdaoToken.tokenAccount,
-      decimals: proof.pdaoToken.decimals,
-      supplyUi: proof.pdaoToken.supplyUi,
-      mintAuthorityStatus: proof.pdaoToken.mintAuthorityStatus ?? "unknown",
-      canonicalGovernanceDao: proof.pdaoToken.canonicalGovernanceDao ?? null,
-      metadataUri: proof.pdaoToken.metadataUri,
-      metadataAssetPath: "docs/assets/pdao-token.json",
-      metadataSha256: sha256Hex(metadataBody),
-      image: metadata.image,
-      externalUrl: metadata.external_url,
-      transactionLabels: Object.keys(proof.pdaoToken.transactions),
+      factsUrl: "https://privatedao.org/token/",
     },
-    programBoundary: {
-      privateDaoProgramId: proof.pdaoToken.privateDaoProgramId ?? proof.programId,
-      tokenProgramId: proof.pdaoToken.programId,
-      explanation:
-        "Current reviewer-facing PrivateDAO governance uses the Anchor 1.0.1 Testnet program id. Legacy Devnet program ids remain archived as provenance only. The separate Token-2022 program id belongs to the PDAO mint surface and is expected.",
-    },
+    scope: "Public token identity only; no investment or performance claim.",
     verificationDocs: [
       "docs/token.md",
       "docs/pdao-token.md",
       "docs/assets/pdao-token.json",
-      "docs/devnet-release-manifest.md",
-      "docs/proof-registry.json",
     ],
   };
 
   const outPath = path.resolve("docs/pdao-attestation.generated.json");
   fs.writeFileSync(outPath, JSON.stringify(attestation, null, 2) + "\n");
   console.log(`Wrote PDAO attestation: ${path.relative(process.cwd(), outPath)}`);
-}
-
-function sha256Hex(input: crypto.BinaryLike): string {
-  return crypto.createHash("sha256").update(input).digest("hex");
 }
 
 main();

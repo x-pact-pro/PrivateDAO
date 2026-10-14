@@ -84,7 +84,7 @@
   ],
   "deploymentGateCount": 63,
   "pdaoToken": {
-    "mint": "DFYvBdivHCe4bSErgCiKm2RhwGEcZYbBPFQzLNr37Bie",
+    "mint": "",
     "programId": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb",
     "tokenAccount": "CeXqKvdjrVYsPZEX2ysBNs6jubofEXEk4emE2qdS4pVg",
     "supplyUi": "1000000"

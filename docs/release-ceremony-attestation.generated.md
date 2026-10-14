@@ -13,7 +13,7 @@
 ## Anchors
 
 - dao: `FZV9KmpeY1B31XvszQypp5T6nQN5C44JDLM4QWBEDvhx`
-- governanceMint: `AZUkprJDfJPgAp7L4z3TpCV3KHqLiA8RjHAVhK9HCvDt`
+- governanceMint: ``
 - treasury: `AZUroiNeGAjNdD84eEHnAKHHFwqAFmkjr2g1eoF7Ek5c`
 - proposal: `AegjmwkX1FknBJMDyH5yM6BMhyHsiUreNtz3d8iz3QrP`
 

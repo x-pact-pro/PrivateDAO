@@ -29,18 +29,18 @@ export type PdaoTokenStrategySnapshot = {
 
 const sharedSnapshot = {
   boundary:
-    "PDAO is preserved Testnet governance-token evidence attached to the current PrivateDAO Testnet path. It is not presented as a public mainnet payment coin or speculative market token.",
-  mint: "DFYvBdivHCe4bSErgCiKm2RhwGEcZYbBPFQzLNr37Bie",
-  network: "Solana Testnet",
-  tokenProgram: "Token-2022",
-  supply: "1,000,000 PDAO",
+    "PDAO is the public Solana Mainnet token identity for PrivateDAO. It is presented as a factual community asset, not as a guaranteed payment instrument or investment return.",
+  mint: "9isGuumtaqvJeJeyLF44fvfskk2cv5mYsopexMBfpump",
+  network: "Solana Mainnet",
+  tokenProgram: "Public mint identity",
+  supply: "See the official public facts page",
   tokenArchitectureHref: "/documents/token-architecture",
   tokenSurfaceHref: "/documents/pdao-token-surface",
   now: [
     {
       label: "Governance participation",
       detail:
-        "PDAO is the live Token-2022 governance mint for the canonical reviewer-facing Testnet path and anchors proposal participation and voting.",
+        "PDAO is the public token identity associated with the PrivateDAO community and product ecosystem.",
     },
     {
       label: "Proposal discipline",
@@ -161,7 +161,7 @@ export function getPdaoTokenStrategySnapshot(
         ...sharedSnapshot,
         title: "PDAO token strategy for operator and execution paths",
         description:
-          "Show the token where operators act: proposal creation, voting, treasury-sensitive motions, and payout governance stay tied to a visible Testnet governance mint with an explicit reviewer boundary.",
+        "Show the public token facts without confusing the token identity with product execution, payment rails, or workflow verification.",
         bestRouteLabel: "Open command-center payout path",
         bestRouteHref: "/command-center",
       };
@@ -170,7 +170,7 @@ export function getPdaoTokenStrategySnapshot(
         ...sharedSnapshot,
         title: "PDAO token strategy for judges and reviewer packets",
         description:
-          "Give reviewers one truth-aligned explanation of what PDAO does now, what it gates, what remains future-facing, and how it connects to ZK, MagicBlock, REFHE, RPC, API, gaming, and payments without overstating token launch scope.",
+          "Give reviewers one truth-aligned explanation of the public Mainnet token identity and keep it separate from PrivateDAO product execution and technical evidence.",
         bestRouteLabel: "Open treasury reviewer packet",
         bestRouteHref: "/documents/treasury-reviewer-packet",
       };

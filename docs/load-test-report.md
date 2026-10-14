@@ -6,7 +6,7 @@
 - number of wallets: 50
 - network: devnet
 - program id: `5AhUsbQ4mJ8Xh7QJEomuS85qGgmK9iNvFqzF669Y7Psx`
-- governance mint: `AZUkprJDfJPgAp7L4z3TpCV3KHqLiA8RjHAVhK9HCvDt`
+- governance mint: ``
 - total tx count: 185
 - average latency ms: 1522.91
 - zk participation summary: 5 zk tester wallets, 7 zk proof artifacts

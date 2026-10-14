@@ -93,7 +93,6 @@ What is already present:
 
 - live frontend
 - live Solana integration
-- live governance token on Devnet via DeAura
 - mobile path
 - token-gated governance flow
 - baseline and additive V3 Devnet proof

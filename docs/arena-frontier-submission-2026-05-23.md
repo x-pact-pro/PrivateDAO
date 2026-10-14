@@ -17,7 +17,6 @@ PrivateDAO is a founder-built Solana Testnet product for private governance, tre
 - Governance protocol: Anchor 1.0.1 Testnet program `EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva`.
 - ZK verifier: standalone Testnet Anchor verifier `5H7Afyqdh5yPekkZJ5UM2j3HNB2bRvU8aVv8XoqeAW1j`.
 - Custody: Squads Protocol v4 vault authority `CALHrBqx6jbzcPn2NVcinqSAHeod65v9LcDuTxsdPqBv` with `2-of-3` threshold and a 48-hour timelock.
-- Governance mint: PDAO Token-2022 mint `DFYvBdivHCe4bSErgCiKm2RhwGEcZYbBPFQzLNr37Bie` with fixed `1,000,000 PDAO` supply and disabled mint authority.
 - Web and Android: wallet-first Testnet execution surfaces with proof, security, learning, business model, and judge routes connected.
 
 ## Six Reviewer Transactions
@@ -42,7 +41,6 @@ PrivateDAO is a founder-built Solana Testnet product for private governance, tre
    `2VH24vsTta1mDwmbN4cFmi2UdM9FNXtrzXjGzSdqSejm75ygek92BjLzYcwyGLmcfakMLyoGHuf3E9ppcd8FhdqY`
    `https://explorer.solana.com/tx/2VH24vsTta1mDwmbN4cFmi2UdM9FNXtrzXjGzSdqSejm75ygek92BjLzYcwyGLmcfakMLyoGHuf3E9ppcd8FhdqY?cluster=testnet`
 
-6. PDAO Token-2022 mint authority disabled:
    `2qFb2dKVEmD2hzmN9d6bajHuxLrk5aqKBvqM1Xb71VNTCfY39XgVV49koPigjoa2Vn41PNMmhp7qxK5KMBxNYvj4`
    `https://solscan.io/tx/2qFb2dKVEmD2hzmN9d6bajHuxLrk5aqKBvqM1Xb71VNTCfY39XgVV49koPigjoa2Vn41PNMmhp7qxK5KMBxNYvj4?cluster=testnet`
 

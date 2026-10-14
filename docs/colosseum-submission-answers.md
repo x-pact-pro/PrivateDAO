@@ -22,7 +22,7 @@ For the public product posture around the current review cycle, use [superteam-t
 - Governance mint evidence:
   - token: `PDAO`
   - network: `Solana Devnet`
-  - mint: `AZUkprJDfJPgAp7L4z3TpCV3KHqLiA8RjHAVhK9HCvDt`
+  - mint: ``
   - token program: `Token-2022`
   - initial supply: `1,000,000 PDAO`
   - mint authority: `disabled`
@@ -102,7 +102,6 @@ If a form asks `Do you have a live token?`, the correct answer is:
 
 Suggested details:
 
-`PrivateDAO has preserved non-market governance-mint evidence called PDAO. Mint: AZUkprJDfJPgAp7L4z3TpCV3KHqLiA8RjHAVhK9HCvDt on Token-2022, with 1,000,000 initial supply and disabled mint authority. It is used as reviewer evidence for governance voting power and remains attached to the current Testnet governance path. It is not a public mainnet market token.`
 
 ## Contact
 

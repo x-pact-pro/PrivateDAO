@@ -86,7 +86,7 @@
     "Real client-side wallet QA remains required before any mainnet cutover claim."
   ],
   "pdaoToken": {
-    "mint": "DFYvBdivHCe4bSErgCiKm2RhwGEcZYbBPFQzLNr37Bie",
+    "mint": "",
     "programId": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb",
     "tokenAccount": "CeXqKvdjrVYsPZEX2ysBNs6jubofEXEk4emE2qdS4pVg"
   }

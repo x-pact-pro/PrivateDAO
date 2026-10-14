@@ -3,7 +3,7 @@
   "deployTx": "2CMEujY1CKnC8rH8BuLy4GvwYk3zfqMfAKaUjybcAvRhS1dnzg3Zd3GeMttBp4vkUbu69GkQtr3TWgbmBqGY8cyC",
   "verificationWallet": "4Mm5YTRbJuyA8NcWM85wTnx6ZQMXNph2DSnzCCKLhsMD",
   "dao": "FZV9KmpeY1B31XvszQypp5T6nQN5C44JDLM4QWBEDvhx",
-  "governanceMint": "AZUkprJDfJPgAp7L4z3TpCV3KHqLiA8RjHAVhK9HCvDt",
+  "governanceMint": "9isGuumtaqvJeJeyLF44fvfskk2cv5mYsopexMBfpump",
   "treasury": "AZUroiNeGAjNdD84eEHnAKHHFwqAFmkjr2g1eoF7Ek5c",
   "proposal": "AegjmwkX1FknBJMDyH5yM6BMhyHsiUreNtz3d8iz3QrP",
   "zkProofAnchors": {
@@ -30,23 +30,11 @@
     ]
   },
   "pdaoToken": {
-    "network": "Testnet",
+    "network": "Solana Mainnet",
     "privateDaoProgramId": "EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva",
-    "mint": "DFYvBdivHCe4bSErgCiKm2RhwGEcZYbBPFQzLNr37Bie",
-    "programId": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb",
-    "tokenAccount": "CeXqKvdjrVYsPZEX2ysBNs6jubofEXEk4emE2qdS4pVg",
-    "metadataUri": "https://privatedao.org/assets/pdao-token.json",
-    "decimals": 9,
-    "supplyUi": "1000000",
-    "mintAuthorityStatus": "disabled",
-    "canonicalGovernanceDao": "FEz2hCLGpDhJ3cdAm5CCWFzrKv8vDDzmmt9UjdF2fApZ",
-    "transactions": {
-      "create-token": "5hYpAkcK7h7sQBP8zCtejDi4F6z7wiurbuqDvgFbGNqjB6bPVu9BGab7iXiXUbBqLYT71VjCPwRjNyeVhqU7sCVE",
-      "initialize-metadata": "5uH1aCevn3GCcrzAUdtWxdQ8e8DngYsFB49nQxNvebB9abzGaMR4e3i2V18jophnuaHEaYGwxgFVUKYJ5cn7jWKN",
-      "create-account": "4TX4uB1YDYFPqyqA3krngaPNA8XWffWBU5gq5bEjAmWg7kv1ZoVFiZ8SdKyQewJGR2GqNxnj6fyYvzFMHs4EuizA",
-      "mint-initial-supply": "2aCsyLrFy2myKd4YR1Sqg6SigvH2F6ivaw86CnRDtHUPoAAFeENkVCAKLVbZM9rsKaH7tPsmWc8JsjMN5G6KB4To",
-      "disable-mint-authority": "2qFb2dKVEmD2hzmN9d6bajHuxLrk5aqKBvqM1Xb71VNTCfY39XgVV49koPigjoa2Vn41PNMmhp7qxK5KMBxNYvj4"
-    }
+    "mint": "9isGuumtaqvJeJeyLF44fvfskk2cv5mYsopexMBfpump",
+    "metadataUri": "https://privatedao.org/token/",
+    "transactions": {}
   },
   "transactions": {
     "create-dao": "5mcyVi3SbZo4hvpVMjH2eZH8FYeywdbbPz4ArmE5wHXH5X9EnP6gSq76ogBWYWVkVUwzrCchPnSdhGV1mFb48s5Q",

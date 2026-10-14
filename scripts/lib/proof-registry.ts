@@ -22,11 +22,11 @@ export type ProofRegistry = {
     network?: string;
     privateDaoProgramId?: string;
     mint: string;
-    programId: string;
-    tokenAccount: string;
-    metadataUri: string;
-    decimals: number;
-    supplyUi: string;
+    programId?: string;
+    tokenAccount?: string;
+    metadataUri?: string;
+    decimals?: number;
+    supplyUi?: string;
     mintAuthorityStatus?: string;
     canonicalGovernanceDao?: string;
     transactions: Record<string, string>;

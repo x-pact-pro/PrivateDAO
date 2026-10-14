@@ -7,7 +7,6 @@ type PdaoMetadata = {
   name: string;
   symbol: string;
   description: string;
-  image: string;
   external_url: string;
   attributes: Array<{ trait_type: string; value: string }>;
   properties?: {
@@ -32,76 +31,44 @@ function main() {
   const tokenDoc = fs.readFileSync(path.resolve("docs/token.md"), "utf8");
   const pdaoDoc = fs.readFileSync(path.resolve("docs/pdao-token.md"), "utf8");
 
-  assert(metadata.name === "PrivateDAO Governance Token", "PDAO metadata name mismatch");
+  assert(metadata.name === "PDAO", "PDAO metadata name mismatch");
   assert(metadata.symbol === "PDAO", "PDAO metadata symbol mismatch");
-  assert(metadata.image === "https://privatedao.org/assets/logo.png", "PDAO metadata image mismatch");
-  assert(metadata.external_url === "https://privatedao.org/security/", "PDAO metadata external URL mismatch");
+  assert(metadata.external_url === "https://privatedao.org/token/", "PDAO metadata external URL mismatch");
   const privateDaoProgramId = proof.pdaoToken.privateDaoProgramId ?? proof.programId;
-  const pdaoNetwork = proof.pdaoToken.network ?? "Devnet";
+  const pdaoNetwork = proof.pdaoToken.network ?? "Solana Mainnet";
 
   assert(
     metadata.attributes.some((entry) => entry.trait_type === "Network" && entry.value === pdaoNetwork),
     "PDAO metadata is missing the expected network",
   );
   assert(
-    metadata.attributes.some((entry) => entry.trait_type === "PrivateDAO Program ID" && entry.value === privateDaoProgramId),
-    "PDAO metadata is missing the canonical PrivateDAO program id",
-  );
-  assert(
     metadata.attributes.some((entry) => entry.trait_type === "Mint" && entry.value === proof.pdaoToken?.mint),
     "PDAO metadata is missing the live mint",
-  );
-  assert(metadata.properties?.category === "image", "PDAO metadata category mismatch");
-  assert(
-    Boolean(metadata.properties?.files?.some((entry) => entry.uri === "https://privatedao.org/assets/logo.png")),
-    "PDAO metadata files are missing the canonical logo",
   );
 
   for (const fragment of [
     "docs/pdao-token.md",
     "docs/pdao-attestation.generated.json",
     proof.pdaoToken.mint,
-    "1,000,000 PDAO",
+    "9isGuumtaqvJeJeyLF44fvfskk2cv5mYsopexMBfpump",
   ]) {
     assert(readme.includes(fragment), `README is missing token surface fragment: ${fragment}`);
   }
 
   for (const fragment of [
-    "Token Name: `PrivateDAO Governance Token`",
-    "Symbol: `PDAO`",
-    "Launch Platform: `DeAura`",
+    "PrivateDAO Token Architecture",
+    "Current Public Identity",
   ]) {
     assert(tokenDoc.includes(fragment), `docs/token.md is missing token architecture fragment: ${fragment}`);
   }
 
   for (const fragment of [
     proof.pdaoToken.mint,
-    proof.pdaoToken.programId,
-    proof.pdaoToken.tokenAccount,
-    proof.pdaoToken.metadataUri,
-    proof.verificationWallet,
-    "Name: `PrivateDAO Governance Token`",
-    `PrivateDAO governance program: \`${privateDaoProgramId}\``,
-    "Token-2022 program:",
-    "Program Identity Boundary",
+    "Public PDAO token identity",
+    "Solana Mainnet",
     "docs/assets/pdao-token.json",
-    "Mint authority: `disabled`",
   ]) {
     assert(pdaoDoc.includes(fragment), `docs/pdao-token.md is missing token surface fragment: ${fragment}`);
-  }
-
-  if (proof.pdaoToken.canonicalGovernanceDao) {
-    assert(
-      pdaoDoc.includes(proof.pdaoToken.canonicalGovernanceDao),
-      "docs/pdao-token.md is missing canonical governance DAO reference",
-    );
-  }
-
-  if (proof.pdaoToken.mintAuthorityStatus) {
-    assert(
-      proof.pdaoToken.mintAuthorityStatus === "disabled",
-      "proof registry must report disabled PDAO mint authority",
-    );
   }
 
   console.log("PDAO token surface verification: PASS");

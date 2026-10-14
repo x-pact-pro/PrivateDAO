@@ -2,9 +2,7 @@ import fs from "fs";
 import path from "path";
 
 const CURRENT_PROGRAM_ID = "EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva";
-const LEGACY_DEVNET_PROGRAM_ID = "5AhUsbQ4mJ8Xh7QJEomuS85qGgmK9iNvFqzF669Y7Psx";
-const CURRENT_PDAO_MINT = "DFYvBdivHCe4bSErgCiKm2RhwGEcZYbBPFQzLNr37Bie";
-const LEGACY_DEVNET_MINT = "AZUkprJDfJPgAp7L4z3TpCV3KHqLiA8RjHAVhK9HCvDt";
+const CURRENT_PDAO_MINT = "9isGuumtaqvJeJeyLF44fvfskk2cv5mYsopexMBfpump";
 
 function read(relativePath: string) {
   return fs.readFileSync(path.resolve(relativePath), "utf8");
@@ -22,7 +20,7 @@ function main() {
   const androidSurface = read("apps/web/src/lib/android-surface.ts");
   const judge = read("apps/web/src/app/judge/page.tsx");
 
-  for (const value of [CURRENT_PROGRAM_ID, CURRENT_PDAO_MINT, LEGACY_DEVNET_PROGRAM_ID, LEGACY_DEVNET_MINT]) {
+  for (const value of [CURRENT_PROGRAM_ID, CURRENT_PDAO_MINT]) {
     assert(doc.includes(value), `current network state doc is missing ${value}`);
   }
 
@@ -37,9 +35,7 @@ function main() {
   }
 
   assert(webConstants.includes(CURRENT_PDAO_MINT), "web constants are not aligned to the current PDAO mint");
-  assert(doc.includes("not the current reviewer-facing program"), "current network state doc must mark legacy IDs as non-current");
   console.log("Current network state verification: PASS");
 }
 
 main();
-

@@ -15,7 +15,7 @@ Proof anchors:
 - 1st Place - Superteam Poland, March 2026: `docs/awards.md`
 - Live product: `https://privatedao.org/`
 - Testnet program: `EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva`
-- PDAO governance mint evidence: `AZUkprJDfJPgAp7L4z3TpCV3KHqLiA8RjHAVhK9HCvDt`
+- PDAO governance mint evidence: ``
 
 ## Slide 2 - The Problem
 
@@ -80,7 +80,6 @@ Implemented and evidenced today:
 - live operational routes for `/start`, `/command-center`, `/dashboard`, `/proof`, `/diagnostics`, and `/services`
 - live custody route for `/custody` covering multisig and authority-transfer workflow
 - Anchor program and PDA account model on the current Testnet path
-- preserved PDAO Token-2022 governance mint evidence for reviewer continuity
 - commit, reveal, finalize, veto, cancel, execute lifecycle
 - treasury SOL and token execution checks
 - confidential payout and encrypted manifest surfaces

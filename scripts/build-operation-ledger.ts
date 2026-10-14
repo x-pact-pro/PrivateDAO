@@ -94,7 +94,7 @@ function main() {
         "docs/proof-registry.json",
       ],
       verification: [
-        "spl-token display --program-2022 DFYvBdivHCe4bSErgCiKm2RhwGEcZYbBPFQzLNr37Bie --url https://api.testnet.solana.com --output json-compact",
+        "spl-token display --program-2022  --url https://api.testnet.solana.com --output json-compact",
         "npm run verify:pdao-surface",
         "npm run verify:pdao-attestation",
         "npm run verify:pdao-live",

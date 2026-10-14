@@ -1,43 +1,11 @@
 {
   "project": "PrivateDAO",
-  "privateDaoProgramId": "EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva",
-  "verificationWallet": "4Mm5YTRbJuyA8NcWM85wTnx6ZQMXNph2DSnzCCKLhsMD",
   "pdaoToken": {
-    "name": "PrivateDAO Governance Token",
-    "symbol": "PDAO",
-    "network": "Testnet",
-    "utility": "Governance Voting Token",
-    "platform": "DeAura",
-    "mint": "DFYvBdivHCe4bSErgCiKm2RhwGEcZYbBPFQzLNr37Bie",
-    "tokenProgramId": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb",
-    "tokenAccount": "CeXqKvdjrVYsPZEX2ysBNs6jubofEXEk4emE2qdS4pVg",
-    "decimals": 9,
-    "supplyUi": "1000000",
-    "mintAuthorityStatus": "disabled",
-    "canonicalGovernanceDao": "FEz2hCLGpDhJ3cdAm5CCWFzrKv8vDDzmmt9UjdF2fApZ",
-    "metadataUri": "https://privatedao.org/assets/pdao-token.json",
-    "metadataAssetPath": "docs/assets/pdao-token.json",
-    "metadataSha256": "cff1e5b03adba3bf3a7e98367e619c04cd73d7317820cd7bbacd7a00767a45cb",
-    "image": "https://privatedao.org/assets/logo.png",
-    "externalUrl": "https://privatedao.org/security/",
-    "transactionLabels": [
-      "create-token",
-      "initialize-metadata",
-      "create-account",
-      "mint-initial-supply",
-      "disable-mint-authority"
-    ]
+    "name": "PDAO",
+    "network": "Solana Mainnet",
+    "mint": "9isGuumtaqvJeJeyLF44fvfskk2cv5mYsopexMBfpump",
+    "factsUrl": "https://privatedao.org/token/",
+    "contact": "fahd@privatedao.org"
   },
-  "programBoundary": {
-    "privateDaoProgramId": "EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva",
-    "tokenProgramId": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb",
-    "explanation": "Current reviewer-facing PrivateDAO governance uses the Anchor 1.0.1 Testnet program id. Legacy Devnet program ids remain archived as provenance only. The separate Token-2022 program id belongs to the PDAO mint surface and is expected."
-  },
-  "verificationDocs": [
-    "docs/token.md",
-    "docs/pdao-token.md",
-    "docs/assets/pdao-token.json",
-    "docs/devnet-release-manifest.md",
-    "docs/proof-registry.json"
-  ]
+  "scope": "Public token identity only; no investment or performance claim."
 }

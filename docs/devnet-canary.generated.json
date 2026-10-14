@@ -71,7 +71,7 @@
     },
     {
       "label": "governance-mint",
-      "address": "AZUkprJDfJPgAp7L4z3TpCV3KHqLiA8RjHAVhK9HCvDt",
+      "address": "",
       "exists": true,
       "lamports": 3563520,
       "owner": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb",
@@ -80,7 +80,7 @@
     }
   ],
   "tokenSupply": {
-    "mint": "AZUkprJDfJPgAp7L4z3TpCV3KHqLiA8RjHAVhK9HCvDt",
+    "mint": "",
     "amount": "1000000000000000",
     "decimals": 9,
     "uiAmountString": "1000000",

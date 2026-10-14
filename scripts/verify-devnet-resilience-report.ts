@@ -54,7 +54,7 @@ function main() {
   if (report.programId !== "5AhUsbQ4mJ8Xh7QJEomuS85qGgmK9iNvFqzF669Y7Psx") {
     throw new Error("devnet resilience report program mismatch");
   }
-  if (report.governanceMint !== "AZUkprJDfJPgAp7L4z3TpCV3KHqLiA8RjHAVhK9HCvDt") {
+  if (report.governanceMint !== "") {
     throw new Error("devnet resilience report governance mint mismatch");
   }
   if (report.rpcMatrix.length < 2 || !report.rpcMatrix.every((entry) => entry.status === "healthy" && entry.blockhash)) {

@@ -8,7 +8,7 @@ const REQUIRED_FRAGMENTS = [
   "1st Place - Superteam Poland",
   "Private governance, confidential treasury operations, and audit-grade runtime evidence",
   "Testnet program: `EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva`",
-  "PDAO governance mint evidence: `AZUkprJDfJPgAp7L4z3TpCV3KHqLiA8RjHAVhK9HCvDt`",
+  "PDAO governance mint evidence: ``",
   "## Slide 2 - The Problem",
   "## Slide 3 - The Product",
   "## Slide 5 - What Works Today",

@@ -23,14 +23,6 @@ const proofRows = [
     href: "/documents/squads-current-binary-upgrade-proposal-2026-05-25",
   },
   {
-    icon: KeyRound,
-    label: "PDAO Token-2022",
-    status: "Deployed and frozen",
-    claim: "The PDAO governance mint is live on Solana Testnet with fixed supply and disabled mint authority.",
-    evidence: "Mint DFYvBdiv...37Bie · 1,000,000 PDAO · Token-2022 metadata and fixed-supply attestation are published.",
-    href: "/documents/pdao-token-surface",
-  },
-  {
     icon: CheckCircle2,
     label: "On-chain governance",
     status: "Testnet executed",

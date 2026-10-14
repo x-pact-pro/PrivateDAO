@@ -35,7 +35,7 @@ Solana has strong DAO, wallet, and infra tooling, but governance privacy is stil
 
 - deployed devnet program
 - live wallet-connected frontend
-- live Devnet governance token surface (`PDAO`)
+- current public PDAO Mainnet token surface (`PDAO`)
 - commit-reveal governance
 - proposal-level `zk_enforced` mode with on-chain receipts
 - token-weighted, quadratic, and dual-chamber voting modes
@@ -91,10 +91,10 @@ The repository now includes:
 
 - Program ID:
   `5AhUsbQ4mJ8Xh7QJEomuS85qGgmK9iNvFqzF669Y7Psx`
-- Live governance mint:
-  `AZUkprJDfJPgAp7L4z3TpCV3KHqLiA8RjHAVhK9HCvDt`
-- Live governance token:
-  `PDAO` on `Token-2022`
+- Public PDAO token mint:
+  `9isGuumtaqvJeJeyLF44fvfskk2cv5mYsopexMBfpump`
+- Public token network:
+  `Solana Mainnet`
 - Repository:
   `https://github.com/X-PACT/PrivateDAO`
 - Live frontend:

@@ -4,7 +4,7 @@
   "network": "devnet",
   "sourceWalletRunLabel": "20260407202442",
   "programId": "5AhUsbQ4mJ8Xh7QJEomuS85qGgmK9iNvFqzF669Y7Psx",
-  "governanceMint": "AZUkprJDfJPgAp7L4z3TpCV3KHqLiA8RjHAVhK9HCvDt",
+  "governanceMint": "",
   "daoPublicKey": "DJQG3JwWXSoacW4HcU9vS7DRY9rSgPTYP4fYn4RdYvGP",
   "treasuryPda": "9PtCioffYDH2paV3iQ7N2yQCqXUpSYiW1AsChTt4xZqa",
   "proposalPublicKey": "HaxTPaViqVepxSWuDbSjN8K1eX6XgMo6rKYKzmEXQKgf",

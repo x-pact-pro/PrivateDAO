@@ -130,7 +130,6 @@ function hasTokenTruthIntent(normalized: string) {
     "payment token",
     "token strategy",
     "token surface",
-    "testnet token",
     "live token",
     "governance mint",
   ].some((term) => normalized.includes(term));

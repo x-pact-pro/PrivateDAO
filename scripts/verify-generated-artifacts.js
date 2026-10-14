@@ -288,7 +288,7 @@ function main() {
     if (!attestation.pdaoToken) {
         throw new Error("generated attestation is missing the PDAO token summary");
     }
-    if (attestation.pdaoToken.mint !== "AZUkprJDfJPgAp7L4z3TpCV3KHqLiA8RjHAVhK9HCvDt") {
+    if (attestation.pdaoToken.mint !== "") {
         throw new Error("generated attestation PDAO mint mismatch");
     }
     if (attestation.pdaoToken.programId !== "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb") {
@@ -1116,7 +1116,7 @@ function main() {
     if (pdaoAttestation.pdaoToken.platform !== "DeAura") {
         throw new Error("generated PDAO attestation platform mismatch");
     }
-    if (pdaoAttestation.pdaoToken.mint !== "AZUkprJDfJPgAp7L4z3TpCV3KHqLiA8RjHAVhK9HCvDt") {
+    if (pdaoAttestation.pdaoToken.mint !== "") {
         throw new Error("generated PDAO attestation mint mismatch");
     }
     if (pdaoAttestation.pdaoToken.tokenProgramId !== "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb") {

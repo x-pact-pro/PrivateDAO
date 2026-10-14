@@ -102,7 +102,6 @@ Yes
 ### Live token details
 
 ```text
-PDAO is live as the Devnet governance mint used by the current PrivateDAO governance flow while the protocol itself is now live on Solana Testnet. It coordinates proposal lifecycle, voting, and treasury-facing governance actions in the reviewer environment. It is not presented as a public mainnet market token.
 ```
 
 ## Grant Milestones Used For Poland

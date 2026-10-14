@@ -62,7 +62,6 @@ Current public launch assets are available under:
 Current Solana Testnet program and proof surfaces:
 
 - PrivateDAO Anchor program ID: `EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva`
-- Current PDAO Token-2022 governance mint evidence: documented in the public PDAO token surface and reviewer packets.
 - Squads/multisig and timelock evidence: documented in the public proof and reviewer documents.
 - ZK/Groth16 verifier, encrypted execution, private payment, payroll, and proof routes: documented as Testnet and mainnet-readiness surfaces.
 

@@ -68,7 +68,6 @@
   - `solana confirm --url https://api.testnet.solana.com zwqNsA3kNP1mgcaS6zNdR92LLdssFULXfsRdkMK3UxraKLM6wYDoPaWCwV3J9PqApK5xJJH8TpxsGyCRcdEah67`
   - `npm run verify:zk-standalone-verifier`
 
-### PDAO Token-2022 governance mint is live on Solana Testnet with disabled mint authority
 
 - id: `pdao-token-2022-testnet`
 - lane: `runtime`
@@ -79,7 +78,7 @@
   - `docs/assets/pdao-token.json`
   - `docs/proof-registry.json`
 - verification:
-  - `spl-token display --program-2022 DFYvBdivHCe4bSErgCiKm2RhwGEcZYbBPFQzLNr37Bie --url https://api.testnet.solana.com --output json-compact`
+  - `spl-token display --program-2022  --url https://api.testnet.solana.com --output json-compact`
   - `npm run verify:pdao-surface`
   - `npm run verify:pdao-attestation`
   - `npm run verify:pdao-live`

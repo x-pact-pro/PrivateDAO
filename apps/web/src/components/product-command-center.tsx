@@ -26,7 +26,7 @@ const capabilityLanes = [
   {
     icon: ReceiptText,
     title: "Proof and judge route",
-    body: "Open live API evidence, explorer signatures, ZK/Groth16 proof packets, Token-2022/PDAO context, and repository evidence from one route.",
+    body: "Open live API evidence, explorer signatures, ZK/Groth16 proof packets, PDAO context, and repository evidence from one route.",
     href: "/judge",
   },
   {
@@ -92,7 +92,7 @@ export function ProductCommandCenter({ compact = false }: { compact?: boolean })
       {!compact ? (
         <div className="mt-5 grid gap-3 md:grid-cols-4">
           {[
-            ["Live evidence", "Explorer signatures, API receipts, ZK/Groth16 proof, Squads timelock, PDAO/Token-2022 context", "/judge"],
+            ["Live evidence", "Explorer signatures, API receipts, ZK/Groth16 proof, Squads timelock, and PDAO context", "/judge"],
             ["Trust and security", "Custody gates, remediation, audit packets, monitoring surfaces", "/security"],
             ["Learn by doing", "Short lessons that open the matching live product route", "/learn"],
             ["Colosseum entry", "Three-minute purpose, demo video, test paths, repo, proof, and route inventory", "/judge"],

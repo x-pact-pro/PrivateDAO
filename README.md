@@ -72,13 +72,12 @@ value.
 
 ### PDAO token surface
 
-The current published token surface is documented in
-[`docs/pdao-token.md`](docs/pdao-token.md) and the machine-readable
-attestation is [`docs/pdao-attestation.generated.json`](docs/pdao-attestation.generated.json).
-The documented Testnet governance token is `PDAO` with mint
-`DFYvBdivHCe4bSErgCiKm2RhwGEcZYbBPFQzLNr37Bie` and a published initial supply
-of `1,000,000 PDAO`. These references describe the current evidence surface;
-they do not claim Mainnet launch, market liquidity, or speculative returns.
+The current public token identity is the Solana Mainnet PDAO mint:
+`9isGuumtaqvJeJeyLF44fvfskk2cv5mYsopexMBfpump`.
+See [`apps/web/src/app/token/page.tsx`](apps/web/src/app/token/page.tsx) for the
+public facts page. The repository facts note is
+[`docs/pdao-token.md`](docs/pdao-token.md), with the machine-readable
+attestation at [`docs/pdao-attestation.generated.json`](docs/pdao-attestation.generated.json).
 
 ## How it works
 

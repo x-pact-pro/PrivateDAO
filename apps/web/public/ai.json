@@ -46,16 +46,16 @@
   "website": "https://privatedao.org",
   "location": "Warsaw, Poland",
   "contact": {
-    "general": "mailto:hello@privatedao.org",
-    "business": "mailto:business@privatedao.org",
-    "sales": "mailto:sales@privatedao.org",
-    "partners": "mailto:partners@privatedao.org",
-    "developers": "mailto:developers@privatedao.org",
-    "support": "mailto:support@privatedao.org",
-    "security": "mailto:security@privatedao.org",
-    "legal": "mailto:legal@privatedao.org",
-    "careers": "mailto:careers@privatedao.org",
-    "billing": "mailto:billing@privatedao.org"
+    "general": "mailto:fahd@privatedao.org",
+    "business": "mailto:fahd@privatedao.org",
+    "sales": "mailto:fahd@privatedao.org",
+    "partners": "mailto:fahd@privatedao.org",
+    "developers": "mailto:fahd@privatedao.org",
+    "support": "mailto:fahd@privatedao.org",
+    "security": "mailto:fahd@privatedao.org",
+    "legal": "mailto:fahd@privatedao.org",
+    "careers": "mailto:fahd@privatedao.org",
+    "billing": "mailto:fahd@privatedao.org"
   },
   "agent_exchange": {
     "name": "PrivateDAO Agent Exchange",

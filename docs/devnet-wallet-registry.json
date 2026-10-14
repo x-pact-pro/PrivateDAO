@@ -10,7 +10,7 @@
     "targetPdaoUi": 100
   },
   "coordinatorWallet": "4Mm5YTRbJuyA8NcWM85wTnx6ZQMXNph2DSnzCCKLhsMD",
-  "governanceMint": "AZUkprJDfJPgAp7L4z3TpCV3KHqLiA8RjHAVhK9HCvDt",
+  "governanceMint": "",
   "wallets": [
     {
       "wallet_index": 1,

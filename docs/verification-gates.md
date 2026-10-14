@@ -403,7 +403,6 @@ npm run verify:pdao-attestation
 npm run verify:pdao-live
 ```
 
-Checks that the published PDAO token docs, local metadata asset, generated attestation, reviewer-facing surfaces, and preserved Devnet token state stay aligned with the canonical proof registry.
 
 ### Review Links
 
