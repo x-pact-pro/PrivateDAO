@@ -62,14 +62,33 @@ explicit compatibility gates. This roadmap is not a claim that PrivateDAO is
 currently quantum-safe, certified, or externally audited for post-quantum
 security.
 
-## Technology validation roadmap
+## Ecosystem programs and technology partners
 
-MongoDB and AMD are identified as planned technology evaluation targets for
-storage, testing, performance, and workload validation around PDAO Wallet and
-the Kernel. Any use of their products will be documented by the relevant test
-or deployment evidence. PrivateDAO does **not** claim a current formal
-partnership, endorsement, certification, or grant relationship with MongoDB or
-AMD unless independently confirmed and recorded in the repository.
+PrivateDAO is participating in the following programs based on accepted
+program communications and the partnership records maintained by the project
+owner:
+
+| Organization | Program or relationship | PrivateDAO use in this project |
+| --- | --- | --- |
+| MongoDB | MongoDB Partner Program and MongoDB for Startups | Evidence-history storage, search, and startup infrastructure validation |
+| IBM | IBM Partner Plus | Enterprise AI and watsonx integration evaluation |
+| AMD | AMD AI Developer Program | AI workload, accelerator, and performance validation |
+| Intel | Intel Partner Plus | OpenVINO inference and performance validation |
+| GitHub | GitHub Developer Program | Developer tooling, repository provenance, and integration testing |
+
+These program relationships do not by themselves mean endorsement of every
+PrivateDAO product, certification, customer reference, grant award, or joint
+commercial offering. Product capabilities remain subject to the evidence and
+status recorded in the repository. The supporting acceptance emails and public
+announcements are retained by the project owner; this repository records the
+program names and their intended technical role without reproducing private
+correspondence.
+
+The PDAO Wallet roadmap will use these relationships for storage, AI
+inference, hardware/performance testing, developer tooling, and operational
+validation as the relevant integrations are enabled. See the [ecosystem program
+record](docs/ecosystem-programs.md) for the technical scope and disclosure
+boundary.
 
 ## Evidence language
 

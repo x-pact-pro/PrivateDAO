@@ -3882,7 +3882,7 @@ async function handle(e) {
     return json({
       integrations: integrationDirectory(),
       provider_status: [intelProviderStatus(config), ibmProviderStatus(config), mongoProviderStatus(config), githubProviderStatus(config)],
-      disclosure: "Client interoperability and program participation are not the same as official partnership, certification or directory placement.",
+      disclosure: "PrivateDAO's accepted ecosystem programs are disclosed in the integration records; program participation is not the same as product endorsement, certification or directory placement.",
     });
   if (method === "GET" && path === "/api/logistics/capabilities")
     return json({

@@ -40,10 +40,11 @@ export const SERVICE_CATEGORIES = Object.freeze([
 ]);
 
 export const INTEGRATIONS = Object.freeze([
-  { id: "ibm-watsonx", name: "IBM watsonx", eyebrow: "Enterprise AI", value: "Enterprise agent workflows", status: "Integration path", note: "Available when the watsonx endpoint and project credentials are configured; no partnership or endorsement is implied." },
-  { id: "intel-openvino", name: "Intel OpenVINO", eyebrow: "AI execution", value: "Local and optimized inference", status: "Provider path supported", note: "Used when an OpenVINO endpoint is configured." },
-  { id: "mongodb", name: "MongoDB", eyebrow: "Data infrastructure", value: "Persistent agent evidence", status: "Evidence history path supported", note: "Optional persistence for completed evidence." },
-  { id: "github", name: "GitHub", eyebrow: "Developer ecosystem", value: "Repository provenance", status: "Public API evidence", note: "Repository evidence is read-only and provenance-labeled." },
+  { id: "ibm-watsonx", name: "IBM watsonx", eyebrow: "IBM Partner Plus", value: "Enterprise agent workflows", status: "Integration path", note: "Available when the watsonx endpoint and project credentials are configured; program participation does not imply endorsement of every capability." },
+  { id: "intel-openvino", name: "Intel OpenVINO", eyebrow: "Intel Partner Plus", value: "Local and optimized inference", status: "Provider path supported", note: "Used when an OpenVINO endpoint is configured; credentials remain environment-only." },
+  { id: "amd-ai", name: "AMD AI Developer Program", eyebrow: "AI performance", value: "AI workload validation", status: "Validation relationship", note: "Program resources support performance and accelerator evaluation; no provider secret is exposed." },
+  { id: "mongodb", name: "MongoDB Atlas", eyebrow: "MongoDB Partner Program", value: "Persistent agent evidence", status: "Evidence history path supported", note: "Production persistence is optional and scoped to evidence history; DynamoDB remains canonical for jobs and payments." },
+  { id: "github", name: "GitHub", eyebrow: "GitHub Developer Program", value: "Repository provenance", status: "Public API evidence", note: "Repository evidence is read-only and provenance-labeled." },
   { id: "mcp-clients", name: "ChatGPT · Claude · Grok · OpenClaw", eyebrow: "Agent interoperability", value: "One MCP endpoint", status: "Client-level interoperability tested", note: "Testing does not imply partnership, certification or directory placement." },
   { id: "kernel", name: "PrivateDAO Kernel", eyebrow: "Execution foundation", value: "Policy-controlled routing", status: "PrivateDAO runtime boundary", note: "The Kernel is the internal routing and lifecycle boundary; it is not a separate vendor claim." },
 ]);
