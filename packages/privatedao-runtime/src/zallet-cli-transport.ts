@@ -79,12 +79,19 @@ export class ZalletCliTransport implements ZcashTransport {
     try {
       const [wallet, status] = await Promise.all([
         this.rpc<Record<string, unknown>>("getwalletinfo"),
-        this.rpc<{ node_tip?: { height?: number }; wallet_tip?: { height?: number }; fully_synced_height?: number }>("getwalletstatus"),
+        this.rpc<{
+          node_tip?: { height?: number };
+          wallet_tip?: { height?: number };
+          fully_synced_height?: number;
+          locked?: boolean;
+          sync_work_remaining?: { unscanned_blocks?: number };
+        }>("getwalletstatus"),
       ]);
       const nodeHeight = Number(status.node_tip?.height ?? -1);
       const walletHeight = Number(status.wallet_tip?.height ?? -1);
       const fullySyncedHeight = Number(status.fully_synced_height ?? -1);
-      const locked = wallet["locked"] === true;
+      const locked = wallet["locked"] === true || status.locked === true;
+      const explicitlyReady = status.locked === false && status.sync_work_remaining?.unscanned_blocks === 0;
       // Zallet's live RPC may omit wallet_tip/fully_synced_height while its
       // wallet index is catching up. A successful balance query is its stable
       // spend-readiness signal; keep the richer height check for providers
@@ -101,6 +108,10 @@ export class ZalletCliTransport implements ZcashTransport {
           syncedToNode = false;
         }
       }
+      // Zallet can be spend-ready while its wallet tip trails the node tip by
+      // the configured finality threshold. Its explicit unlocked status is the
+      // authoritative readiness signal in that case.
+      if (explicitlyReady) syncedToNode = true;
       const heightReady = status.wallet_tip?.height === undefined || status.fully_synced_height === undefined
         ? true
         : walletHeight >= fullySyncedHeight;
@@ -151,6 +162,7 @@ export class ZalletCliTransport implements ZcashTransport {
       record.errorCode = "ZCASH_BROADCAST_DISABLED";
       throw new Error("Zcash broadcast is disabled. Set broadcastEnabled only for an explicitly approved Testnet E2E send.");
     }
+    await this.assertSubmissionTipFresh();
     const result = await this.rpc<unknown>("z_sendmany", [
       payload.fromAddress,
       amounts,
@@ -166,6 +178,20 @@ export class ZalletCliTransport implements ZcashTransport {
     record.signature = txid;
     record.state = "confirmed";
     return { executionId: execution.executionId, signatures: [txid] };
+  }
+
+  private async assertSubmissionTipFresh(): Promise<void> {
+    const status = await this.rpc<{
+      node_tip?: { height?: number };
+      wallet_tip?: { height?: number };
+      locked?: boolean;
+    }>("getwalletstatus");
+    const nodeHeight = Number(status.node_tip?.height ?? -1);
+    const walletHeight = Number(status.wallet_tip?.height ?? -1);
+    if (status.locked === true) throw new Error("Zcash wallet is locked and cannot submit a transaction.");
+    if (nodeHeight < 0 || walletHeight < 0 || walletHeight < nodeHeight) {
+      throw new Error(`Zcash wallet tip is stale for submission (${walletHeight}/${nodeHeight}); wait for the wallet to reach the node tip and retry.`);
+    }
   }
 
   async status(executionId: string): Promise<{ executionId: string; state: ExecutionState; errorCode?: string }> {
