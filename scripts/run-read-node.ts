@@ -2981,7 +2981,7 @@ async function handleIntegrationMatrixAnchor(body: Record<string, unknown>) {
 }
 
 async function handleVisitorPing(body: Record<string, unknown>, req: http.IncomingMessage) {
-  const sessionIdRaw = stringField(body, "sessionId", createHash("sha256").update(`${Date.now()}:${Math.random()}`).digest("hex"));
+  const sessionIdRaw = stringField(body, "sessionId", randomUUID());
   const page = stringField(body, "page", "/").slice(0, 180);
   const countryHint = stringField(body, "countryHint", "unknown").slice(0, 80);
   const row: VisitorPingRow = {
@@ -3115,7 +3115,7 @@ async function executionEventStats() {
 async function handleOperationExecutionEvent(body: Record<string, unknown>, req: http.IncomingMessage) {
   const operationId = normalizeOperationId(stringField(body, "operationId", "unknown-operation"));
   const operationLabel = stringField(body, "operationLabel", operationId).slice(0, 140);
-  const sessionIdRaw = stringField(body, "sessionId", createHash("sha256").update(`${Date.now()}:${Math.random()}`).digest("hex"));
+  const sessionIdRaw = stringField(body, "sessionId", randomUUID());
   const statusRaw = stringField(body, "status", "success").toLowerCase();
   const status = statusRaw === "success" ? "success" : "review";
   const receiptHash = stringField(body, "receiptHash").slice(0, 160) || null;
