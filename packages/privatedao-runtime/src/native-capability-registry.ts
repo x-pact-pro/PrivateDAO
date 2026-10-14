@@ -146,6 +146,7 @@ function nativeAsset(network: NetworkDescriptor): string | null {
     return "ETH";
   }
   if (network.family === "utxo") return "ZEC";
+  if (network.family === "stellar") return "XLM";
   if (network.family === "exchange") return "USDC";
   return null;
 }

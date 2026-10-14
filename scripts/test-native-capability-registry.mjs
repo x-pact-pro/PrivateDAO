@@ -6,7 +6,7 @@ const verified = entries.filter((entry) => entry.status === "testnet_verified");
 const liveAgents = entries.filter((entry) => entry.status === "mainnet_live" && entry.product === "agent");
 const verifiedPayroll = entries.filter((entry) => entry.status === "devnet_verified");
 
-assert.equal(entries.length, 192, "unexpected native capability matrix size");
+assert.equal(entries.length, 204, "unexpected native capability matrix size");
 assert.equal(verified.length, 24, "only the twelve verification and twelve organizational testnet evidence rows should be verified");
 assert.equal(liveAgents.length, 2, "the two live Agent Exchange rows must be runtime-verified");
 assert.equal(verifiedPayroll.length, 3, "only the three Payroll Devnet evidence rows should be verified");

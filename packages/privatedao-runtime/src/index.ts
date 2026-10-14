@@ -154,8 +154,8 @@ export {
   validateProductCatalog,
 } from "./catalog.js";
 export type { ProductAvailability, ProductDescriptor, ProductDomain } from "./catalog.js";
-export { NETWORK_MATRIX, getNetwork, isNetworkAvailable } from "./networks.js";
-export type { NetworkDescriptor, NetworkFamily, NetworkStage } from "./networks.js";
+export { NETWORK_MATRIX, PRIMARY_ECOSYSTEMS, getNetwork, isNetworkAvailable, validatePrimaryEcosystems } from "./networks.js";
+export type { EcosystemDescriptor, EcosystemId, NetworkDescriptor, NetworkFamily, NetworkStage } from "./networks.js";
 export {
   InMemoryProtocolRegistry,
   canApprove,
