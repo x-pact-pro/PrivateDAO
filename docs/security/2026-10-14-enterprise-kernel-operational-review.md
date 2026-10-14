@@ -14,6 +14,9 @@ dependency graph used by the Zcash provider.
   access is rejected by the repository boundary checks.
 - Agent Exchange is explicitly classified as `agent-exchange` and is excluded
   from the six-product enterprise evidence set.
+- Product gateway reads and submissions now compare the caller-supplied context
+  with the context recorded at preparation time, preventing execution-ID
+  context substitution across products, capabilities, or networks.
 - Zcash remains Testnet-only in the adapter and Mainnet construction is
   rejected. Foundation tests must not be presented as product-specific E2E.
 - The actionable Rustls advisories were remediated by updating `rustls` from
