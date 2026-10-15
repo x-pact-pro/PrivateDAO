@@ -255,7 +255,7 @@ const ORGANIZATIONAL_PAYROLL_EVIDENCE = {
     provider: "evm-base-sepolia-organizational",
     contracts: ["0x07236df28d60ef7cde8a8a3fe5e62ceade706837"],
     assets: ["ETH"],
-    commit: "pending",
+    commit: "ea2d39fc2",
     timestamp: "2026-10-15T18:08:23.902Z",
   },
 } as const;
