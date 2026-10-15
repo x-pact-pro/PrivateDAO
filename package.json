@@ -96,6 +96,7 @@
     "test:vendored-bigint-buffer": "node scripts/test-vendored-bigint-buffer.mjs",
     "test:poseidon-vectors": "node scripts/test-poseidon-vectors.mjs",
     "test:zk-dependency-boundary": "node scripts/test-zk-dependency-boundary.mjs",
+    "test:e2e:blind:solana": "node --import tsx scripts/run-blind-solana-devnet-e2e.mjs",
     "test:runtime:http-runtime": "node --import tsx scripts/test-runtime-http-runtime.mjs",
     "test:runtime:payroll": "node --import tsx scripts/test-runtime-payroll.mjs",
     "test:runtime:evm-foundation": "node --import tsx scripts/test-evm-foundation.mjs",
