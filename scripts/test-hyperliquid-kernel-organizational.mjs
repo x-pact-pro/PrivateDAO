@@ -87,7 +87,7 @@ async function execute(product, capability, address, abi, functionName, args, ro
   assert.equal(receipt.state, "confirmed");
   assert.equal(receipt.network, NETWORK);
   assert.equal(receipt.chainId, config.chainId);
-  assert.equal(receipt.provider, "privatedao-viem-evm");
+  assert.equal(receipt.provider, providerId);
   return { product, capability, executionId: prepared.executionId, txHash: receipt.signatures[0], blockNumber: receipt.blockNumber, explorerUrl: receipt.explorerUrl };
 }
 

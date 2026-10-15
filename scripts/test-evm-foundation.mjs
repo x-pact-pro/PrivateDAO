@@ -122,6 +122,16 @@ await assert.rejects(
 await viemTransport.submit(contractWritePrepared, contractWritePrepared.unsignedPayload);
 assert.equal(submittedPayload.functionName, "anchorRecord");
 assert.equal(submittedPayload.account.address, contractWriteIntent.payload.account);
+const viemAdapter = new EvmNetworkAdapter({
+  id: "evm-ethereum-sepolia-viem-test",
+  config,
+  capabilities: ["verification.record.create"],
+  transport: viemTransport,
+});
+const viemAdapterPrepared = await viemAdapter.prepare(contractWriteIntent);
+await viemAdapter.submit(viemAdapterPrepared, viemAdapterPrepared.unsignedPayload);
+const viemAdapterReceipt = await viemAdapter.receipt(viemAdapterPrepared.executionId);
+assert.equal(viemAdapterReceipt.provider, "evm-ethereum-sepolia-viem-test", "EVM adapter must bind transport receipts to its provider identity");
 
 // Every configured testnet must pass the same lifecycle contract. This is a
 // local adapter test only; it does not imply deployed contracts or on-chain

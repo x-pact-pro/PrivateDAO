@@ -131,7 +131,6 @@ export class ViemEvmTransport implements EvmTransport {
       requestId: record.intent.context.requestId,
       capability: record.intent.context.capability,
       network: this.network,
-      provider: "privatedao-viem-evm",
       state: "confirmed",
       signatures: [record.signature],
       createdAt: new Date().toISOString(),
