@@ -32,8 +32,12 @@ Testnet runner, and the Rust dependency graph used by the Zcash provider.
   MagicBlock public API and the ephemeral-rollups SDK version remain fixed.
 - The patched auction crate passes `cargo check -p privatedao-auction --lib`,
   and `cargo audit --json` reports zero vulnerabilities for the workspace.
-- `npm audit --omit=dev` reports no production vulnerabilities when the Node
-  dependency tree is installed.
+- Root `npm audit --omit=dev` reports no production vulnerabilities. The
+  separate `apps/web` production lockfile now has the direct critical findings
+  remediated (Next, shell-quote, sharp, source-map-js, and brace-expansion),
+  but still reports 12 transitive findings in the React Native/MagicBlock
+  dependency graph. Those remaining findings are recorded below and are not
+  claimed as resolved.
 
 ## Remaining dependency findings
 
@@ -50,6 +54,12 @@ container dependency. Replacing the remaining Solana cryptography or wire
 format dependencies requires an upstream SDK compatibility change and must be
 validated with the full Anchor and MagicBlock test suite. No keypairs were
 generated and no deployment was performed during this review.
+
+The web residuals are isolated to transitive packages pulled by the Solana
+wallet adapter and MagicBlock SDK: React Native/Metro, `micromatch`/`braces`,
+`@phala/dcap-qvl`, and `elliptic`. The web lockfile uses the patched versions
+available without changing application APIs; the remaining upstream findings
+have no compatible non-vulnerable upgrade identified in this review.
 
 ## Release gate
 
