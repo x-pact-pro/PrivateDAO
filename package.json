@@ -97,6 +97,7 @@
     "test:runtime:http-runtime": "node --import tsx scripts/test-runtime-http-runtime.mjs",
     "test:runtime:payroll": "node --import tsx scripts/test-runtime-payroll.mjs",
     "test:runtime:evm-foundation": "node --import tsx scripts/test-evm-foundation.mjs",
+    "test:evm:verification-gateway-path": "node scripts/test-evm-verification-gateway-path.mjs",
     "test:runtime:stellar": "node --import tsx scripts/test-stellar-kernel.mjs",
     "test:runtime:solana": "node --import tsx scripts/test-solana-kernel.mjs",
     "verify:stellar:evidence": "node --import tsx scripts/verify-stellar-product-e2e-evidence.mjs",
