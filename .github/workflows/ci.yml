@@ -57,18 +57,12 @@ jobs:
 
       - name: Install Anchor CLI
         run: |
-          timeout --signal=TERM --kill-after=30s 10m cargo install --git https://github.com/coral-xyz/anchor avm --locked --force
-          for attempt in 1 2 3; do
-            if timeout --signal=TERM --kill-after=30s 3m avm install 1.0.1; then
-              avm use 1.0.1
-              anchor --version
-              exit 0
-            fi
-            echo "avm install 1.0.1 failed on attempt ${attempt}; retrying after backoff" >&2
-            sleep $((attempt * 10))
-          done
-          echo "Failed to install Anchor CLI 1.0.1 after retries" >&2
-          exit 1
+          # Anchor 1.0.1 supports direct installation from its immutable release tag.
+          # This avoids bootstrapping AVM and then compiling/downloading a second CLI
+          # during the same job, which can otherwise exhaust the CI time budget.
+          timeout --signal=TERM --kill-after=30s 15m \
+            cargo install --git https://github.com/coral-xyz/anchor --tag v1.0.1 anchor-cli --locked --force
+          anchor --version
 
       - name: Install dependencies
         run: |
