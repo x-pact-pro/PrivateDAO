@@ -26,30 +26,30 @@ Testnet runner, and the Rust dependency graph used by the Zcash provider.
   chain IDs 97 and 998. HyperEVM evidence is not used for HyperCore claims.
 - The actionable Rustls advisories were remediated by updating `rustls` from
   `0.23.45` to `0.23.46` in the lockfile.
+- The `rkyv 0.7.46` vulnerability was remediated by a narrowly scoped local
+  compatibility patch for `magicblock-delegation-program-api 3.1.0`. The
+  patch changes only its `AlignedVec` dependency to `rkyv 0.8.18`; the
+  MagicBlock public API and the ephemeral-rollups SDK version remain fixed.
+- The patched auction crate passes `cargo check -p privatedao-auction --lib`,
+  and `cargo audit --json` reports zero vulnerabilities for the workspace.
 - `npm audit --omit=dev` reports no production vulnerabilities when the Node
   dependency tree is installed.
 
 ## Remaining dependency findings
 
-`cargo audit` still reports one vulnerability and maintenance warnings in
-transitive Solana/MagicBlock dependencies:
+`cargo audit` now reports no vulnerabilities, but still reports maintenance
+and unsoundness warnings in transitive Solana/MagicBlock dependencies:
 
-- `rkyv 0.7.46` is pulled through `magicblock-delegation-program-api` and
-  `ephemeral-rollups-sdk` by `programs/privatedao-auction`.
 - `libsecp256k1 0.6.0` and `rand 0.7.3` are pulled through
   `solana-secp256k1-recover` and `solana-program` on the same path.
 - `atomic-polyfill`, `bincode`, `js-sys`, and `wasm-bindgen` have maintenance
   or yanked-release warnings in the transitive graph.
 
-The current audit result is one vulnerability and six allowed warnings. The
-repository has no direct `rkyv` dependency, so a safe fix requires an upstream
-MagicBlock/Solana compatibility upgrade rather than a direct override.
-
-These cannot be safely replaced with an arbitrary direct dependency without
-validating the Anchor and MagicBlock ABI compatibility. The next remediation
-must upgrade the upstream Solana/MagicBlock stack as a compatibility change,
-then rerun the full program build and tests. No keypairs were generated and no
-deployment was performed during this review.
+The local MagicBlock patch is intentionally limited to the vulnerable archive
+container dependency. Replacing the remaining Solana cryptography or wire
+format dependencies requires an upstream SDK compatibility change and must be
+validated with the full Anchor and MagicBlock test suite. No keypairs were
+generated and no deployment was performed during this review.
 
 ## Release gate
 

@@ -1,6 +1,6 @@
 {
   "project": "PrivateDAO",
-  "generatedAt": "2026-10-15T02:34:20+03:00",
+  "generatedAt": "2026-10-15T02:41:17+03:00",
   "algorithm": "sha256",
   "packageManager": "npm+yarn",
   "topLevel": {
@@ -13,7 +13,7 @@
   "lockfiles": {
     "cargo": {
       "path": "Cargo.lock",
-      "packageCount": 590
+      "packageCount": 592
     },
     "npm": {
       "path": "package-lock.json",
@@ -28,13 +28,13 @@
   "files": [
     {
       "path": "Cargo.toml",
-      "sha256": "30b256a478b15b9f03c3f8f6b49c16944dd14470f339a09a274619f14db7416e",
-      "bytes": 532
+      "sha256": "682b0d2d4f93a905e1476f061407bbd8191315f1b1e5450d0e5a97b46b02067e",
+      "bytes": 622
     },
     {
       "path": "Cargo.lock",
-      "sha256": "5c7ef22d9b595205b844cd297b0128079cbbc9247527c848a60f61b092337de2",
-      "bytes": 164838
+      "sha256": "6cafcd04f9d1f3cc95481af42a43c7616cabeaa167acd9cf3c21fd9b193d5a39",
+      "bytes": 165118
     },
     {
       "path": "Anchor.toml",
@@ -57,7 +57,7 @@
       "bytes": 328063
     }
   ],
-  "aggregateSha256": "d2ba285790f726bfc0584837ed849b4876672672fb475e6a65fe3bd2575c6db2",
+  "aggregateSha256": "aedf8821bb1fb1ed206362b284559d3019d8c818b431af5a4e7f7a36d8c5ed8d",
   "reviewCommands": [
     "npm run build:supply-chain-attestation",
     "npm run verify:supply-chain-attestation",

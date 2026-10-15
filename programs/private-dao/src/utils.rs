@@ -914,13 +914,9 @@ mod tests {
             &non_zero_hash,
         )
         .is_ok());
-        assert!(validate_refhe_envelope(
-            "",
-            &non_zero_hash,
-            &non_zero_hash,
-            &non_zero_hash,
-        )
-        .is_err());
+        assert!(
+            validate_refhe_envelope("", &non_zero_hash, &non_zero_hash, &non_zero_hash,).is_err()
+        );
         assert!(validate_refhe_envelope(
             "box://refhe/model",
             &[0u8; 32],
