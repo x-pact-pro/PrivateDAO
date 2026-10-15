@@ -290,6 +290,13 @@ fn secure_dir(path: &Path) -> Result<()> {
     Ok(())
 }
 
+fn require_https_endpoint(endpoint: &str) -> Result<()> {
+    if !endpoint.starts_with("https://") {
+        bail!("lightwalletd endpoint must use HTTPS");
+    }
+    Ok(())
+}
+
 fn recover_wallet() -> Result<()> {
     if env::var("PDAO_ZCASH_NETWORK").as_deref() != Ok("testnet") {
         bail!("provider is Testnet-only");
@@ -313,6 +320,7 @@ fn recover_wallet() -> Result<()> {
     secure_dir(&blocks_path)?;
 
     let endpoint = required("PDAO_ZCASH_LIGHTWALLETD_URL")?;
+    require_https_endpoint(&endpoint)?;
     let birthday_height = FUNDING_HEIGHT
         .checked_sub(BIRTHDAY_MARGIN)
         .context("birthday margin underflow")?;
@@ -328,15 +336,11 @@ fn recover_wallet() -> Result<()> {
     runtime.block_on(async {
         let endpoint_builder = Endpoint::from_shared(endpoint.clone())?
             .connect_timeout(std::time::Duration::from_secs(15));
-        let channel = (if endpoint.starts_with("https://") {
-            endpoint_builder
-                .tls_config(ClientTlsConfig::new().with_webpki_roots())
-                .context("unable to configure lightwalletd TLS")?
-                .connect()
-                .await
-        } else {
-            endpoint_builder.connect().await
-        })
+        let channel = endpoint_builder
+            .tls_config(ClientTlsConfig::new().with_webpki_roots())
+            .context("unable to configure lightwalletd TLS")?
+            .connect()
+            .await
         .with_context(|| format!("unable to connect to lightwalletd endpoint {endpoint}"))?;
         let mut client = CompactTxStreamerClient::new(channel);
 
@@ -405,7 +409,7 @@ fn recover_wallet() -> Result<()> {
 
 #[cfg(test)]
 mod tests {
-    use super::{derive_identity, fingerprint};
+    use super::{derive_identity, fingerprint, require_https_endpoint};
 
     #[test]
     fn broadcast_is_never_an_available_success_path() {
@@ -424,5 +428,12 @@ mod tests {
         let first = derive_identity(&[7u8; 32]).unwrap();
         let second = derive_identity(&[8u8; 32]).unwrap();
         assert_ne!(first, second);
+    }
+
+    #[test]
+    fn lightwalletd_endpoint_requires_tls() {
+        assert!(require_https_endpoint("https://lightwalletd.example").is_ok());
+        assert!(require_https_endpoint("http://lightwalletd.example").is_err());
+        assert!(require_https_endpoint("lightwalletd.example").is_err());
     }
 }
