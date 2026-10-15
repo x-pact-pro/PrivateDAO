@@ -48,9 +48,9 @@ export const PRODUCT_CATALOG: readonly ProductDescriptor[] = [
     name: "Blind Verification",
     domain: "enterprise",
     availability: "available",
-    networks: [solanaDevnet, ethereumSepolia, arbitrumSepolia, tempoTestnet, baseSepolia, bnbTestnet, hyperliquidTestnet, stellarTestnet],
+    networks: [solanaDevnet, ethereumSepolia, arbitrumSepolia, tempoTestnet, baseSepolia, bnbTestnet, robinhoodTestnet, hyperliquidTestnet, stellarTestnet],
     capabilities: [
-      capability("verification.blind.prove", "blind-verification", false, true, [solanaDevnet, ethereumSepolia, arbitrumSepolia, tempoTestnet, baseSepolia, bnbTestnet, hyperliquidTestnet, stellarTestnet]),
+      capability("verification.blind.prove", "blind-verification", false, true, [solanaDevnet, ethereumSepolia, arbitrumSepolia, tempoTestnet, baseSepolia, bnbTestnet, robinhoodTestnet, hyperliquidTestnet, stellarTestnet]),
     ],
   },
   {
@@ -58,10 +58,10 @@ export const PRODUCT_CATALOG: readonly ProductDescriptor[] = [
     name: "Record Verification",
     domain: "enterprise",
     availability: "available",
-    networks: [solanaDevnet, ethereumSepolia, arbitrumSepolia, tempoTestnet, baseSepolia, bnbTestnet, hyperliquidTestnet, stellarTestnet],
+    networks: [solanaDevnet, ethereumSepolia, arbitrumSepolia, tempoTestnet, baseSepolia, bnbTestnet, robinhoodTestnet, hyperliquidTestnet, stellarTestnet],
     capabilities: [
-      capability("verification.record.create", "record-verification", false, true, [solanaDevnet, ethereumSepolia, arbitrumSepolia, tempoTestnet, baseSepolia, bnbTestnet, hyperliquidTestnet, stellarTestnet]),
-      capability("verification.record.verify", "record-verification", false, true, [solanaDevnet, ethereumSepolia, arbitrumSepolia, tempoTestnet, baseSepolia, bnbTestnet, hyperliquidTestnet, stellarTestnet]),
+      capability("verification.record.create", "record-verification", false, true, [solanaDevnet, ethereumSepolia, arbitrumSepolia, tempoTestnet, baseSepolia, bnbTestnet, robinhoodTestnet, hyperliquidTestnet, stellarTestnet]),
+      capability("verification.record.verify", "record-verification", false, true, [solanaDevnet, ethereumSepolia, arbitrumSepolia, tempoTestnet, baseSepolia, bnbTestnet, robinhoodTestnet, hyperliquidTestnet, stellarTestnet]),
     ],
   },
   {

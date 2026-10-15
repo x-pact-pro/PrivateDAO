@@ -88,12 +88,18 @@ verification ID, and validity state. The JSON manifest under
 expected to be the application shell because the verification check runs in
 the browser. No source record or private inputs are returned.
 
-Ethereum Sepolia and Base Sepolia are application-bound for the two verified
-verification products. Base Sepolia also has committed organizational E2E
-evidence for Treasury, Governance, and Sealed Auction execution. Hyperliquid
-HyperEVM and Robinhood remain unverified for verification products until
-funded real deployments and independent E2E evidence are available. No
-capability is upgraded from documentation alone.
+Ethereum Sepolia, Base Sepolia, and Robinhood Testnet are application-bound for
+the two verified verification products. Base Sepolia and Robinhood Testnet also
+have committed organizational E2E evidence for Treasury, Governance, and Sealed
+Auction execution. Hyperliquid HyperEVM remains unverified for verification
+products until independent verification evidence is available. No capability is
+upgraded from documentation alone.
+
+Robinhood Testnet has a committed `testnet_verified` artifact at
+`deployments/phase-2-e2e-robinhood-testnet.json`. It records real Kernel-routed
+record anchoring and blind proof transactions on chain 46630, plus confirmed
+wrong-chain, altered-proof, expiry, and revocation checks. The corresponding
+public verification links are application-bound and remain Testnet-only.
 
 Tempo Testnet has a committed `testnet_verified` artifact at
 `deployments/phase-2-e2e-tempo-testnet.json`. The run deployed independent

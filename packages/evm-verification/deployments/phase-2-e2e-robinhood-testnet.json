@@ -1,0 +1,62 @@
+{
+  "generatedAt": "2026-10-15T04:03:29.445Z",
+  "status": "testnet_verified",
+  "scope": [
+    "robinhood-testnet"
+  ],
+  "networks": [
+    {
+      "network": "robinhood-testnet",
+      "chainId": 46630,
+      "contracts": {
+        "verifier": {
+          "address": "0xccfd62e867475fd70137d065792e72919357ce44",
+          "hash": "0x8bfcc875ff96aff7413c17895ee14f5466c35830a3fdbf34e6f40e930ca3eb52",
+          "blockNumber": "135541046"
+        },
+        "blind": {
+          "address": "0x3fc47618e59c5bf8a19fe6a5298938fc9b8c3bdc",
+          "hash": "0x785cdb7458235e65f05a2eece4fd0a8047223a0a8be81d2e97778df50b9b6810",
+          "blockNumber": "135541076"
+        },
+        "record": {
+          "address": "0x672899b8ad719468b20ee0b662bc30a8a22e6585",
+          "hash": "0xc32839f9e59c8cbf95c161c21a82845be4915a2d044aba455bfa1b3cb44aae27",
+          "blockNumber": "135541099"
+        }
+      },
+      "record": {
+        "txHash": "0xe4a78a899896ac2a26133502ac1bb8f1290355dda2625abe39040859f7b29cfd",
+        "blockNumber": "135541128",
+        "verificationId": "0x6948dd39c2dd1b734250e8a396fa07a42925f6f494b1fa7f73b259044e2c59be",
+        "explorerUrl": "https://explorer.testnet.chain.robinhood.com/tx/0xe4a78a899896ac2a26133502ac1bb8f1290355dda2625abe39040859f7b29cfd"
+      },
+      "blind": {
+        "txHash": "0xec47fd081a532f020b889a8c3e74ebcbede958b63417a2a5a908c3c265119b37",
+        "blockNumber": "135541225",
+        "verificationId": "0x1802cc34109e42d7d5447bad5522be68d1e4c425d4c9def882c005e713630a51",
+        "explorerUrl": "https://explorer.testnet.chain.robinhood.com/tx/0xec47fd081a532f020b889a8c3e74ebcbede958b63417a2a5a908c3c265119b37"
+      },
+      "revocation": {
+        "recordTxHash": "0x3115744b72f892fa687cd6b72e2d8e69508f80571db64fa21b09c70fb86077e8",
+        "blindTxHash": "0x4b5fdcf6f5c853583f33fe7e36d1747676b38c44c2644a73e8d662822cdf5e62",
+        "disposableRecordVerificationId": "0x16af2fb636ea54dd7f478e0112c1e92d3ffec32e4463bf698e861cb6c1484568",
+        "disposableBlindVerificationId": "0x1a7e4e294514a60f8965f42fc0538bcf8c5cb3935ac9b021878d82b69be88dce"
+      },
+      "checks": {
+        "recordVerified": true,
+        "blindProofVerified": true,
+        "wrongChainRejected": true,
+        "alteredProofRejected": true,
+        "expiredRecordRejected": true,
+        "expiredBlindRejected": true,
+        "recordRevoked": true,
+        "blindProofRevoked": true
+      },
+      "links": {
+        "record": "https://privatedao.org/verify/evm?network=robinhood-testnet&type=record&id=0x6948dd39c2dd1b734250e8a396fa07a42925f6f494b1fa7f73b259044e2c59be",
+        "blind": "https://privatedao.org/verify/evm?network=robinhood-testnet&type=blind&id=0x1802cc34109e42d7d5447bad5522be68d1e4c425d4c9def882c005e713630a51"
+      }
+    }
+  ]
+}

@@ -14,6 +14,7 @@ export const runtimeCatalog = {
         "tempo-testnet",
         "base-sepolia",
         "bnb-testnet",
+        "robinhood-testnet",
         "hyperliquid-testnet",
         "stellar-testnet"
       ],
@@ -126,6 +127,23 @@ export const runtimeCatalog = {
                 "BNB"
               ],
               "provider": "evm-bnb-testnet"
+            },
+            {
+              "network": "robinhood-testnet",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://verification.blind.prove",
+              "method": null,
+              "note": "Robinhood Testnet blind verification passed real Groth16 proof verification, altered-proof, wrong-chain, expiry, and revocation checks.",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "supportsExecution": true,
+              "supportsProof": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "ETH"
+              ],
+              "provider": "evm-robinhood-testnet"
             },
             {
               "network": "hyperliquid-testnet",
@@ -348,14 +366,14 @@ export const runtimeCatalog = {
               "stage": "available",
               "environment": "testnet",
               "chainId": "46630",
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
-              "executable": false,
-              "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "executable": true,
+              "supportsProof": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "ETH"
               ],
@@ -484,6 +502,7 @@ export const runtimeCatalog = {
         "tempo-testnet",
         "base-sepolia",
         "bnb-testnet",
+        "robinhood-testnet",
         "hyperliquid-testnet",
         "stellar-testnet"
       ],
@@ -596,6 +615,23 @@ export const runtimeCatalog = {
                 "BNB"
               ],
               "provider": "evm-bnb-testnet"
+            },
+            {
+              "network": "robinhood-testnet",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://verification.record.create",
+              "method": null,
+              "note": "Robinhood Testnet record anchoring passed a real receipt, confirmed-block verification, expiry rejection, and owner revocation.",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "supportsExecution": true,
+              "supportsProof": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "ETH"
+              ],
+              "provider": "evm-robinhood-testnet"
             },
             {
               "network": "hyperliquid-testnet",
@@ -818,14 +854,14 @@ export const runtimeCatalog = {
               "stage": "available",
               "environment": "testnet",
               "chainId": "46630",
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
-              "executable": false,
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "executable": true,
               "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "ETH"
               ],
@@ -1051,6 +1087,23 @@ export const runtimeCatalog = {
               "provider": "evm-bnb-testnet"
             },
             {
+              "network": "robinhood-testnet",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://verification.record.verify",
+              "method": null,
+              "note": "Robinhood Testnet record verification is bound to chain ID 46630 and the deployed registry domain.",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "supportsExecution": true,
+              "supportsProof": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "ETH"
+              ],
+              "provider": "evm-robinhood-testnet"
+            },
+            {
               "network": "hyperliquid-testnet",
               "mode": "kernel-gateway",
               "entrypoint": "kernel://verification.record.verify",
@@ -1271,14 +1324,14 @@ export const runtimeCatalog = {
               "stage": "available",
               "environment": "testnet",
               "chainId": "46630",
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
-              "executable": false,
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "executable": true,
               "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "ETH"
               ],

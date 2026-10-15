@@ -123,6 +123,18 @@ const HYPERLIQUID_TESTNET_EVIDENCE = {
   timestamp: "2026-10-11T14:08:00.682Z",
 } as const;
 
+const ROBINHOOD_TESTNET_EVIDENCE = {
+  provider: "evm-robinhood-testnet",
+  verifier: "0xccfd62e867475fd70137d065792e72919357ce44",
+  contracts: [
+    "0xccfd62e867475fd70137d065792e72919357ce44",
+    "0x3fc47618e59c5bf8a19fe6a5298938fc9b8c3bdc",
+    "0x672899b8ad719468b20ee0b662bc30a8a22e6585",
+  ],
+  commit: "877ebe2a9",
+  timestamp: "2026-10-15T04:03:29.445Z",
+} as const;
+
 const STELLAR_TESTNET_EVIDENCE = {
   provider: "stellar-testnet-horizon",
   commit: "7aeff6d4b",
@@ -417,6 +429,27 @@ function applyHyperliquidTestnetEvidence(entry: NativeCapabilityEntry): NativeCa
   };
 }
 
+function applyRobinhoodTestnetEvidence(entry: NativeCapabilityEntry): NativeCapabilityEntry {
+  const isBlind = entry.product === "blind-verification" && entry.capability === "verification.blind.prove";
+  const isRecord = entry.product === "record-verification" && ["verification.record.create", "verification.record.verify"].includes(entry.capability);
+  if (entry.network !== "robinhood-testnet" || (!isBlind && !isRecord)) return entry;
+  return {
+    ...entry,
+    provider: ROBINHOOD_TESTNET_EVIDENCE.provider,
+    contracts: ROBINHOOD_TESTNET_EVIDENCE.contracts,
+    verifier: ROBINHOOD_TESTNET_EVIDENCE.verifier,
+    walletModel: "provider-wallet",
+    supportsExecution: true,
+    supportsProof: isBlind,
+    supportsReceipt: true,
+    supportsReconciliation: true,
+    status: "testnet_verified",
+    lastVerifiedCommit: ROBINHOOD_TESTNET_EVIDENCE.commit,
+    lastVerifiedTimestamp: ROBINHOOD_TESTNET_EVIDENCE.timestamp,
+    evidence: "testnet-e2e",
+  };
+}
+
 function applyStellarTestnetEvidence(entry: NativeCapabilityEntry): NativeCapabilityEntry {
   if (entry.network !== "stellar-testnet" || entry.product === "agent" || !entry.declared) return entry;
   const verified = (STELLAR_TESTNET_EVIDENCE.capabilities as readonly string[]).includes(entry.capability);
@@ -472,7 +505,7 @@ function applyOrganizationalEvidence(entry: NativeCapabilityEntry): NativeCapabi
 export function buildNativeCapabilityRegistry(): readonly NativeCapabilityEntry[] {
   return PRODUCT_CATALOG.flatMap((product) =>
     product.capabilities.flatMap((capability) =>
-      NETWORK_MATRIX.map((network) => applyOrganizationalEvidence(applyStellarTestnetEvidence(applyHyperliquidTestnetEvidence(applyBnbTestnetEvidence(applyTempoTestnetEvidence(applyPayrollDevnetEvidence(applyAgentMainnetEvidence(applyArbitrumSepoliaEvidence(applyBaseSepoliaEvidence(applyEthereumSepoliaEvidence({
+      NETWORK_MATRIX.map((network) => applyOrganizationalEvidence(applyStellarTestnetEvidence(applyRobinhoodTestnetEvidence(applyHyperliquidTestnetEvidence(applyBnbTestnetEvidence(applyTempoTestnetEvidence(applyPayrollDevnetEvidence(applyAgentMainnetEvidence(applyArbitrumSepoliaEvidence(applyBaseSepoliaEvidence(applyEthereumSepoliaEvidence({
         product: product.id,
         capability: capability.id,
         network: network.id,
@@ -497,7 +530,7 @@ export function buildNativeCapabilityRegistry(): readonly NativeCapabilityEntry[
         lastVerifiedCommit: null,
         lastVerifiedTimestamp: null,
         evidence: "none",
-      }))))))))))) ,
+      })))))))))))) ,
     ),
   );
 }

@@ -11,7 +11,7 @@ A lane is **verified** only when it is declared, bound through kernel://, has an
 | blind-verification | arbitrum | verified | 1/1 | verification.blind.prove: arbitrum-sepolia=kernel-gateway/testnet_verified, arbitrum-one=unbound/planned |
 | blind-verification | bnb | verified | 1/1 | verification.blind.prove: bnb-testnet=kernel-gateway/testnet_verified, bnb-mainnet=unbound/planned |
 | blind-verification | base | verified | 1/1 | verification.blind.prove: base-sepolia=kernel-gateway/testnet_verified, base-mainnet=unbound/planned |
-| blind-verification | robinhood | planned | 0/0 | verification.blind.prove: robinhood-testnet=unbound/planned, robinhood-mainnet=unbound/planned |
+| blind-verification | robinhood | verified | 1/1 | verification.blind.prove: robinhood-testnet=kernel-gateway/testnet_verified, robinhood-mainnet=unbound/planned |
 | blind-verification | tempo | verified | 1/1 | verification.blind.prove: tempo-testnet=kernel-gateway/testnet_verified, tempo-mainnet=unbound/planned |
 | blind-verification | zcash | planned | 0/0 | verification.blind.prove: zcash-testnet=unbound/planned |
 | blind-verification | hyperliquid | verified | 1/1 | verification.blind.prove: hyperliquid-testnet=kernel-gateway/testnet_verified |
@@ -21,7 +21,7 @@ A lane is **verified** only when it is declared, bound through kernel://, has an
 | record-verification | arbitrum | verified | 2/2 | verification.record.create: arbitrum-sepolia=kernel-gateway/testnet_verified, arbitrum-one=unbound/planned; verification.record.verify: arbitrum-sepolia=kernel-gateway/testnet_verified, arbitrum-one=unbound/planned |
 | record-verification | bnb | verified | 2/2 | verification.record.create: bnb-testnet=kernel-gateway/testnet_verified, bnb-mainnet=unbound/planned; verification.record.verify: bnb-testnet=kernel-gateway/testnet_verified, bnb-mainnet=unbound/planned |
 | record-verification | base | verified | 2/2 | verification.record.create: base-sepolia=kernel-gateway/testnet_verified, base-mainnet=unbound/planned; verification.record.verify: base-sepolia=kernel-gateway/testnet_verified, base-mainnet=unbound/planned |
-| record-verification | robinhood | planned | 0/0 | verification.record.create: robinhood-testnet=unbound/planned, robinhood-mainnet=unbound/planned; verification.record.verify: robinhood-testnet=unbound/planned, robinhood-mainnet=unbound/planned |
+| record-verification | robinhood | verified | 2/2 | verification.record.create: robinhood-testnet=kernel-gateway/testnet_verified, robinhood-mainnet=unbound/planned; verification.record.verify: robinhood-testnet=kernel-gateway/testnet_verified, robinhood-mainnet=unbound/planned |
 | record-verification | tempo | verified | 2/2 | verification.record.create: tempo-testnet=kernel-gateway/testnet_verified, tempo-mainnet=unbound/planned; verification.record.verify: tempo-testnet=kernel-gateway/testnet_verified, tempo-mainnet=unbound/planned |
 | record-verification | zcash | planned | 0/0 | verification.record.create: zcash-testnet=unbound/planned; verification.record.verify: zcash-testnet=unbound/planned |
 | record-verification | hyperliquid | verified | 2/2 | verification.record.create: hyperliquid-testnet=kernel-gateway/testnet_verified; verification.record.verify: hyperliquid-testnet=kernel-gateway/testnet_verified |

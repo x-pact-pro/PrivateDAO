@@ -1,6 +1,6 @@
 {
   "schema": "privatedao.native-capability-matrix.v1",
-  "generatedAt": "2026-10-15T02:47:54.807Z",
+  "generatedAt": "2026-10-15T04:05:22.308Z",
   "bridgeFree": true,
   "entries": [
     {
@@ -302,28 +302,32 @@
       "capability": "verification.blind.prove",
       "network": "robinhood-testnet",
       "networkFamily": "evm",
-      "declared": false,
+      "declared": true,
       "environment": "testnet",
       "chainId": "46630",
       "nativeAsset": "ETH",
       "supportedAssets": [
         "ETH"
       ],
-      "contracts": [],
-      "verifier": null,
+      "contracts": [
+        "0xccfd62e867475fd70137d065792e72919357ce44",
+        "0x3fc47618e59c5bf8a19fe6a5298938fc9b8c3bdc",
+        "0x672899b8ad719468b20ee0b662bc30a8a22e6585"
+      ],
+      "verifier": "0xccfd62e867475fd70137d065792e72919357ce44",
       "provider": "evm-robinhood-testnet",
-      "walletModel": "external-wallet",
-      "supportsExecution": false,
+      "walletModel": "provider-wallet",
+      "supportsExecution": true,
       "supportsPrivateExecution": false,
       "supportsPrivateSettlement": false,
-      "supportsProof": false,
-      "supportsReceipt": false,
-      "supportsReconciliation": false,
+      "supportsProof": true,
+      "supportsReceipt": true,
+      "supportsReconciliation": true,
       "supportsMainnet": false,
-      "status": "planned",
-      "lastVerifiedCommit": null,
-      "lastVerifiedTimestamp": null,
-      "evidence": "none"
+      "status": "testnet_verified",
+      "lastVerifiedCommit": "877ebe2a9",
+      "lastVerifiedTimestamp": "2026-10-15T04:03:29.445Z",
+      "evidence": "testnet-e2e"
     },
     {
       "product": "blind-verification",
@@ -799,28 +803,32 @@
       "capability": "verification.record.create",
       "network": "robinhood-testnet",
       "networkFamily": "evm",
-      "declared": false,
+      "declared": true,
       "environment": "testnet",
       "chainId": "46630",
       "nativeAsset": "ETH",
       "supportedAssets": [
         "ETH"
       ],
-      "contracts": [],
-      "verifier": null,
+      "contracts": [
+        "0xccfd62e867475fd70137d065792e72919357ce44",
+        "0x3fc47618e59c5bf8a19fe6a5298938fc9b8c3bdc",
+        "0x672899b8ad719468b20ee0b662bc30a8a22e6585"
+      ],
+      "verifier": "0xccfd62e867475fd70137d065792e72919357ce44",
       "provider": "evm-robinhood-testnet",
-      "walletModel": "external-wallet",
-      "supportsExecution": false,
+      "walletModel": "provider-wallet",
+      "supportsExecution": true,
       "supportsPrivateExecution": false,
       "supportsPrivateSettlement": false,
       "supportsProof": false,
-      "supportsReceipt": false,
-      "supportsReconciliation": false,
+      "supportsReceipt": true,
+      "supportsReconciliation": true,
       "supportsMainnet": false,
-      "status": "planned",
-      "lastVerifiedCommit": null,
-      "lastVerifiedTimestamp": null,
-      "evidence": "none"
+      "status": "testnet_verified",
+      "lastVerifiedCommit": "877ebe2a9",
+      "lastVerifiedTimestamp": "2026-10-15T04:03:29.445Z",
+      "evidence": "testnet-e2e"
     },
     {
       "product": "record-verification",
@@ -1296,28 +1304,32 @@
       "capability": "verification.record.verify",
       "network": "robinhood-testnet",
       "networkFamily": "evm",
-      "declared": false,
+      "declared": true,
       "environment": "testnet",
       "chainId": "46630",
       "nativeAsset": "ETH",
       "supportedAssets": [
         "ETH"
       ],
-      "contracts": [],
-      "verifier": null,
+      "contracts": [
+        "0xccfd62e867475fd70137d065792e72919357ce44",
+        "0x3fc47618e59c5bf8a19fe6a5298938fc9b8c3bdc",
+        "0x672899b8ad719468b20ee0b662bc30a8a22e6585"
+      ],
+      "verifier": "0xccfd62e867475fd70137d065792e72919357ce44",
       "provider": "evm-robinhood-testnet",
-      "walletModel": "external-wallet",
-      "supportsExecution": false,
+      "walletModel": "provider-wallet",
+      "supportsExecution": true,
       "supportsPrivateExecution": false,
       "supportsPrivateSettlement": false,
       "supportsProof": false,
-      "supportsReceipt": false,
-      "supportsReconciliation": false,
+      "supportsReceipt": true,
+      "supportsReconciliation": true,
       "supportsMainnet": false,
-      "status": "planned",
-      "lastVerifiedCommit": null,
-      "lastVerifiedTimestamp": null,
-      "evidence": "none"
+      "status": "testnet_verified",
+      "lastVerifiedCommit": "877ebe2a9",
+      "lastVerifiedTimestamp": "2026-10-15T04:03:29.445Z",
+      "evidence": "testnet-e2e"
     },
     {
       "product": "record-verification",

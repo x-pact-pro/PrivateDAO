@@ -253,9 +253,9 @@
     {
       "product": "blind-verification",
       "ecosystem": "robinhood",
-      "declaredLaneCount": 0,
-      "executableLaneCount": 0,
-      "status": "planned",
+      "declaredLaneCount": 1,
+      "executableLaneCount": 1,
+      "status": "verified",
       "capabilities": [
         {
           "capability": "verification.blind.prove",
@@ -263,17 +263,17 @@
             {
               "network": "robinhood-testnet",
               "environment": "testnet",
-              "declared": false,
-              "mode": "unbound",
-              "status": "planned",
-              "evidence": "none",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "status": "testnet_verified",
+              "evidence": "testnet-e2e",
               "provider": "evm-robinhood-testnet",
-              "supportsExecution": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
-              "executable": false,
-              "entrypoint": null,
-              "note": "Missing application binding."
+              "supportsExecution": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "executable": true,
+              "entrypoint": "kernel://verification.blind.prove",
+              "note": "Robinhood Testnet blind verification passed real Groth16 proof verification, altered-proof, wrong-chain, expiry, and revocation checks."
             },
             {
               "network": "robinhood-mainnet",
@@ -823,9 +823,9 @@
     {
       "product": "record-verification",
       "ecosystem": "robinhood",
-      "declaredLaneCount": 0,
-      "executableLaneCount": 0,
-      "status": "planned",
+      "declaredLaneCount": 2,
+      "executableLaneCount": 2,
+      "status": "verified",
       "capabilities": [
         {
           "capability": "verification.record.create",
@@ -833,17 +833,17 @@
             {
               "network": "robinhood-testnet",
               "environment": "testnet",
-              "declared": false,
-              "mode": "unbound",
-              "status": "planned",
-              "evidence": "none",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "status": "testnet_verified",
+              "evidence": "testnet-e2e",
               "provider": "evm-robinhood-testnet",
-              "supportsExecution": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
-              "executable": false,
-              "entrypoint": null,
-              "note": "Missing application binding."
+              "supportsExecution": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "executable": true,
+              "entrypoint": "kernel://verification.record.create",
+              "note": "Robinhood Testnet record anchoring passed a real receipt, confirmed-block verification, expiry rejection, and owner revocation."
             },
             {
               "network": "robinhood-mainnet",
@@ -868,17 +868,17 @@
             {
               "network": "robinhood-testnet",
               "environment": "testnet",
-              "declared": false,
-              "mode": "unbound",
-              "status": "planned",
-              "evidence": "none",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "status": "testnet_verified",
+              "evidence": "testnet-e2e",
               "provider": "evm-robinhood-testnet",
-              "supportsExecution": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
-              "executable": false,
-              "entrypoint": null,
-              "note": "Missing application binding."
+              "supportsExecution": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "executable": true,
+              "entrypoint": "kernel://verification.record.verify",
+              "note": "Robinhood Testnet record verification is bound to chain ID 46630 and the deployed registry domain."
             },
             {
               "network": "robinhood-mainnet",
