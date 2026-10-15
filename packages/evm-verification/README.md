@@ -9,6 +9,10 @@ This package contains the Phase 2 Sepolia/Base Sepolia verification contracts.
   verifier address.
 - `RecordVerificationRegistry.sol` anchors a selective-disclosure record digest
   with chain and contract domain separation, expiry, and owner revocation.
+- `PrivateDaoPayroll.sol` binds an off-chain payroll batch commitment to a
+  maker/checker approval and native-asset settlement receipt. A network remains
+  unverified until its organizational E2E artifact contains and independently
+  verifies the payroll receipts.
 - `scripts/run-e2e.mjs` is a real deployment and E2E runner. It requires funded
   testnet credentials and fails closed when they are absent.
 
@@ -48,7 +52,7 @@ token, not the standard EVM gas-balance path. Tempo Testnet is only promoted
 after the same contract-write, receipt, proof, expiry, wrong-chain, altered-
 proof, and revocation checks pass on the Tempo chain itself.
 
-The organizational Treasury, Governance, and Sealed Auction E2E runner uses
+The organizational Treasury, Payroll, Governance, and Sealed Auction E2E runner uses
 `PDAO_EVM_NETWORK` for one standard-EVM testnet at a time:
 
 ```bash
@@ -62,7 +66,9 @@ Supported values are `ethereum-sepolia`, `arbitrum-sepolia`, `bnb-testnet`,
 `tempo-testnet`. Hyperliquid uses HYPE as the native gas asset on chain 998.
 Tempo uses the
 AlphaUSD TIP-20 token and the tokenized Treasury/Auction contracts because
-Tempo rejects native `msg.value` transfers. The runner requires a funded
+Tempo rejects native `msg.value` transfers. Native-asset networks also run the
+Payroll contract; Tempo's token-denominated payroll lane remains disabled until
+a token payroll contract is independently evidenced. The runner requires a funded
 testnet deployer, writes a network-specific evidence file only after all
 receipts and state assertions pass, and rejects unsupported or Mainnet
 networks.

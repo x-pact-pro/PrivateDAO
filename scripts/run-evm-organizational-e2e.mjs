@@ -91,6 +91,8 @@ const erc20Abi = parseAbi([
 
 const treasuryAbi = JSON.parse(await readFile(path.join(PACKAGE, `artifacts/${tempoTokenMode ? "PrivateDaoTokenTreasury" : "PrivateDaoTreasury"}.abi`), "utf8"));
 const treasuryBytecode = `0x${(await readFile(path.join(PACKAGE, `artifacts/${tempoTokenMode ? "PrivateDaoTokenTreasury" : "PrivateDaoTreasury"}.bin`), "utf8")).trim()}`;
+const payrollAbi = JSON.parse(await readFile(path.join(PACKAGE, "artifacts/PrivateDaoPayroll.abi"), "utf8"));
+const payrollBytecode = `0x${(await readFile(path.join(PACKAGE, "artifacts/PrivateDaoPayroll.bin"), "utf8")).trim()}`;
 const governanceAbi = JSON.parse(await readFile(path.join(PACKAGE, "artifacts/PrivateDaoGovernance.abi"), "utf8"));
 const governanceBytecode = `0x${(await readFile(path.join(PACKAGE, "artifacts/PrivateDaoGovernance.bin"), "utf8")).trim()}`;
 const auctionAbi = JSON.parse(await readFile(path.join(PACKAGE, `artifacts/${tempoTokenMode ? "PrivateDaoTokenSealedAuction" : "PrivateDaoSealedAuction"}.abi`), "utf8"));
@@ -209,6 +211,25 @@ for (let attempt = 0; attempt < 90; attempt += 1) {
 }
 assert.equal(Number(payment[3]), 3, "treasury payment was not executed after receipt confirmation");
 deployments.evidence.treasury = { checkerFundingHash, treasuryApprovalHash, treasuryFundingHash, requestedHash, approvedHash, executedHash, paymentId, status: "executed" };
+
+// Payroll binds only a commitment and the approved payout on-chain. Tempo's
+// token-denominated lane remains disabled until a token payroll contract is
+// independently evidenced; this branch is native-asset EVM only.
+if (!tempoTokenMode) {
+  const payroll = await deploy(deployerWallet, payrollAbi, payrollBytecode, [checker.address]);
+  deployments.contracts.payroll = payroll;
+  const payrollBatchId = keccak256(`0x${Buffer.from(`payroll-batch:${runId}`).toString("hex")}`);
+  const payrollBatchCommitment = keccak256(`0x${Buffer.from(`payroll-commitment:${runId}`).toString("hex")}`);
+  const payrollAmount = parseEther("0.0001");
+  const payrollFundingHash = await deployerWallet.sendTransaction({ to: payroll.address, value: payrollAmount, gas: 100_000n, nonce: await takeNonce(deployerWallet.account), ...(await feeOverrides()) });
+  await tx(payrollFundingHash);
+  const payrollCreateHash = await write(deployerWallet, payroll.address, payrollAbi, "createPayroll", [payrollBatchId, payrollBatchCommitment, recipient, payrollAmount]);
+  const payrollApproveHash = await write(checkerWallet, payroll.address, payrollAbi, "approvePayroll", [payrollBatchId]);
+  const payrollSettleHash = await write(deployerWallet, payroll.address, payrollAbi, "settlePayroll", [payrollBatchId]);
+  const payrollBatch = await publicClient.readContract({ address: payroll.address, abi: payrollAbi, functionName: "batches", args: [payrollBatchId] });
+  assert.equal(Number(payrollBatch[3]), 3, "payroll batch was not settled");
+  deployments.evidence.payroll = { payrollFundingHash, payrollCreateHash, payrollApproveHash, payrollSettleHash, payrollBatchId, payrollBatchCommitment, status: "settled" };
+}
 
 const governance = await deploy(deployerWallet, governanceAbi, governanceBytecode, []);
 deployments.contracts.governance = governance;
