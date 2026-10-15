@@ -143,6 +143,36 @@ async function gatewayWrite(providerId, wallet, product, capability, label, addr
   return receipt.signatures[0];
 }
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+async function waitForPaymentState(address, paymentId, minimumState, label) {
+  let lastError;
+  for (let attempt = 0; attempt < 60; attempt += 1) {
+    try {
+      const payment = await publicClient.readContract({ address, abi: treasuryAbi, functionName: "payments", args: [paymentId] });
+      if (Number(payment[3]) >= minimumState) return payment;
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      if (!/UnknownPayment|payment.*not found/i.test(message)) throw error;
+      lastError = error;
+    }
+    await sleep(1_000);
+  }
+  throw new Error(`${label} did not become visible after the confirmed transaction${lastError ? `: ${lastError.message}` : ""}`);
+}
+async function waitForBatchState(address, batchId, minimumState, label) {
+  let lastError;
+  for (let attempt = 0; attempt < 60; attempt += 1) {
+    try {
+      const batch = await publicClient.readContract({ address, abi: payrollAbi, functionName: "batches", args: [batchId] });
+      if (Number(batch[3]) >= minimumState) return batch;
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      if (!/UnknownBatch|batch.*not found/i.test(message)) throw error;
+      lastError = error;
+    }
+    await sleep(1_000);
+  }
+  throw new Error(`${label} did not become visible after the confirmed transaction${lastError ? `: ${lastError.message}` : ""}`);
+}
 async function waitForChainTimestamp(target) {
   for (let attempt = 0; attempt < 180; attempt += 1) {
     const block = await publicClient.getBlock({ blockTag: "latest" });
@@ -237,13 +267,9 @@ for (let attempt = 0; attempt < 20; attempt += 1) {
 }
 assert.equal(configuredBudget, paymentAmount, "configured budget was not visible after its successful receipt");
 const requestedHash = await gatewayWrite(ownerProviderId, deployerWallet, "treasury", "treasury.policy.check", "request-payment", treasury.address, treasuryAbi, "requestPayment", [paymentId, budgetId, recipient, paymentAmount]);
+await waitForPaymentState(treasury.address, paymentId, 1, "requested payment");
 const approvedHash = await gatewayWrite(checkerProviderId, checkerWallet, "treasury", "treasury.policy.check", "approve-payment", treasury.address, treasuryAbi, "approvePayment", [paymentId]);
-let approvedPayment;
-for (let attempt = 0; attempt < 20; attempt += 1) {
-  approvedPayment = await publicClient.readContract({ address: treasury.address, abi: treasuryAbi, functionName: "payments", args: [paymentId] });
-  if (Number(approvedPayment[3]) === 2) break;
-  await sleep(1_000);
-}
+const approvedPayment = await waitForPaymentState(treasury.address, paymentId, 2, "approved payment");
 assert.equal(Number(approvedPayment[3]), 2, "approved payment was not visible before execution");
 const executedHash = await gatewayWrite(ownerProviderId, deployerWallet, "treasury", "treasury.policy.check", "execute-payment", treasury.address, treasuryAbi, "executePayment", [paymentId]);
 let payment;
@@ -267,9 +293,11 @@ if (!tempoTokenMode) {
   const payrollFundingHash = await deployerWallet.sendTransaction({ to: payroll.address, value: payrollAmount, gas: 100_000n, nonce: await takeNonce(deployerWallet.account), ...(await feeOverrides()) });
   await tx(payrollFundingHash);
   const payrollCreateHash = await gatewayWrite(ownerProviderId, deployerWallet, "payroll", "payroll.approve", "create-payroll", payroll.address, payrollAbi, "createPayroll", [payrollBatchId, payrollBatchCommitment, recipient, payrollAmount]);
+  await waitForBatchState(payroll.address, payrollBatchId, 1, "created payroll batch");
   const payrollApproveHash = await gatewayWrite(checkerProviderId, checkerWallet, "payroll", "payroll.approve", "approve-payroll", payroll.address, payrollAbi, "approvePayroll", [payrollBatchId]);
+  await waitForBatchState(payroll.address, payrollBatchId, 2, "approved payroll batch");
   const payrollSettleHash = await gatewayWrite(ownerProviderId, deployerWallet, "payroll", "payroll.settle", "settle-payroll", payroll.address, payrollAbi, "settlePayroll", [payrollBatchId]);
-  const payrollBatch = await publicClient.readContract({ address: payroll.address, abi: payrollAbi, functionName: "batches", args: [payrollBatchId] });
+  const payrollBatch = await waitForBatchState(payroll.address, payrollBatchId, 3, "settled payroll batch");
   assert.equal(Number(payrollBatch[3]), 3, "payroll batch was not settled");
   deployments.evidence.payroll = { payrollFundingHash, payrollCreateHash, payrollApproveHash, payrollSettleHash, payrollBatchId, payrollBatchCommitment, status: "settled" };
 }
