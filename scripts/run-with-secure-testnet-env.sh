@@ -27,7 +27,7 @@ set -u
 export PDAO_ALCHEMY_API_KEY_FILE="$ALCHEMY_FILE"
 export PDAO_EVM_NETWORK="${PDAO_EVM_NETWORK:-ethereum-sepolia}"
 case "$PDAO_EVM_NETWORK" in
-  ethereum-sepolia|arbitrum-sepolia|base-sepolia|hyperliquid-testnet|tempo-testnet) ;;
+  ethereum-sepolia|arbitrum-sepolia|base-sepolia|bnb-testnet|robinhood-testnet|hyperliquid-testnet|tempo-testnet) ;;
   *) echo "refusing unsupported or non-testnet EVM network: $PDAO_EVM_NETWORK" >&2; exit 1 ;;
 esac
 

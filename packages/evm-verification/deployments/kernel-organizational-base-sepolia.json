@@ -1,0 +1,35 @@
+{
+  "schema": "privatedao.kernel-organizational-e2e.v1",
+  "network": "base-sepolia",
+  "chainId": 84532,
+  "environment": "testnet",
+  "provider": "evm-base-sepolia-organizational",
+  "gateway": "ProductExecutionGateway",
+  "verifiedAt": "2026-10-15T03:04:40.306Z",
+  "results": [
+    {
+      "product": "treasury",
+      "capability": "treasury.policy.check",
+      "executionId": "evm-treasury-3b88942a-0177-431a-a530-ca1b2980c67c",
+      "txHash": "0x0c036a8e66768fe97c6db5376aa9e1d1976d186f080f851f06e0ed138c7b42f3",
+      "blockNumber": "48132595",
+      "explorerUrl": "https://sepolia.basescan.org/tx/0x0c036a8e66768fe97c6db5376aa9e1d1976d186f080f851f06e0ed138c7b42f3"
+    },
+    {
+      "product": "governance",
+      "capability": "governance.proposal.execute",
+      "executionId": "evm-governance-7b0fe36f-4b3e-42ff-848e-55ea664f2d98",
+      "txHash": "0x2d3eaa73e454c30e222e467cf44fa3711b03319a2f523a1750f5a5721d19e183",
+      "blockNumber": "48132596",
+      "explorerUrl": "https://sepolia.basescan.org/tx/0x2d3eaa73e454c30e222e467cf44fa3711b03319a2f523a1750f5a5721d19e183"
+    },
+    {
+      "product": "auction",
+      "capability": "auction.bid.commit",
+      "executionId": "evm-auction-4386360c-fedc-4ba6-b465-9a7591ccf017",
+      "txHash": "0xb6c8ac4512e8735ac83f8736b96938988914db609ef162581ea20f1e55f9ea30",
+      "blockNumber": "48132597",
+      "explorerUrl": "https://sepolia.basescan.org/tx/0xb6c8ac4512e8735ac83f8736b96938988914db609ef162581ea20f1e55f9ea30"
+    }
+  ]
+}
