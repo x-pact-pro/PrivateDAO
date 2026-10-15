@@ -2524,6 +2524,7 @@ export const runtimeCatalog = {
         "robinhood-testnet",
         "tempo-testnet",
         "bnb-testnet",
+        "hyperliquid-testnet",
         "stellar-testnet"
       ],
       "capabilities": [
@@ -2652,6 +2653,23 @@ export const runtimeCatalog = {
                 "BNB"
               ],
               "provider": "evm-bnb-testnet-organizational"
+            },
+            {
+              "network": "hyperliquid-testnet",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://treasury.policy.check",
+              "method": null,
+              "note": "HyperEVM Testnet organizational Treasury is backed by the committed contract workflow and a Kernel Gateway receipt.",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "supportsExecution": true,
+              "supportsProof": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "HYPE"
+              ],
+              "provider": "evm-hyperliquid-testnet-organizational"
             },
             {
               "network": "stellar-testnet",
@@ -2947,18 +2965,18 @@ export const runtimeCatalog = {
               "stage": "available",
               "environment": "testnet",
               "chainId": "998",
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
-              "executable": false,
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "executable": true,
               "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "HYPE"
               ],
-              "provider": "evm-hyperliquid-testnet"
+              "provider": "evm-hyperliquid-testnet-organizational"
             },
             {
               "network": "stellar-testnet",
@@ -2994,6 +3012,7 @@ export const runtimeCatalog = {
         "robinhood-testnet",
         "tempo-testnet",
         "bnb-testnet",
+        "hyperliquid-testnet",
         "stellar-testnet"
       ],
       "capabilities": [
@@ -3122,6 +3141,23 @@ export const runtimeCatalog = {
                 "BNB"
               ],
               "provider": "evm-bnb-testnet-organizational"
+            },
+            {
+              "network": "hyperliquid-testnet",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://governance.proposal.execute",
+              "method": null,
+              "note": "HyperEVM Testnet organizational Governance is backed by the committed proposal workflow and a Kernel Gateway receipt.",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "supportsExecution": true,
+              "supportsProof": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "HYPE"
+              ],
+              "provider": "evm-hyperliquid-testnet-organizational"
             },
             {
               "network": "stellar-testnet",
@@ -3417,18 +3453,18 @@ export const runtimeCatalog = {
               "stage": "available",
               "environment": "testnet",
               "chainId": "998",
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
-              "executable": false,
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "executable": true,
               "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "HYPE"
               ],
-              "provider": "evm-hyperliquid-testnet"
+              "provider": "evm-hyperliquid-testnet-organizational"
             },
             {
               "network": "stellar-testnet",
@@ -3464,6 +3500,7 @@ export const runtimeCatalog = {
         "robinhood-testnet",
         "tempo-testnet",
         "bnb-testnet",
+        "hyperliquid-testnet",
         "stellar-testnet"
       ],
       "capabilities": [
@@ -3592,6 +3629,23 @@ export const runtimeCatalog = {
                 "BNB"
               ],
               "provider": "evm-bnb-testnet-organizational"
+            },
+            {
+              "network": "hyperliquid-testnet",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://auction.bid.commit",
+              "method": null,
+              "note": "HyperEVM Testnet sealed auction bid commitment is backed by the committed organizational workflow and a Kernel Gateway receipt.",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "supportsExecution": true,
+              "supportsProof": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "HYPE"
+              ],
+              "provider": "evm-hyperliquid-testnet-organizational"
             },
             {
               "network": "stellar-testnet",
@@ -3887,18 +3941,18 @@ export const runtimeCatalog = {
               "stage": "available",
               "environment": "testnet",
               "chainId": "998",
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
-              "executable": false,
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "executable": true,
               "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "HYPE"
               ],
-              "provider": "evm-hyperliquid-testnet"
+              "provider": "evm-hyperliquid-testnet-organizational"
             },
             {
               "network": "stellar-testnet",
@@ -4045,6 +4099,23 @@ export const runtimeCatalog = {
                 "BNB"
               ],
               "provider": "evm-bnb-testnet-organizational"
+            },
+            {
+              "network": "hyperliquid-testnet",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://auction.settle",
+              "method": null,
+              "note": "HyperEVM Testnet sealed auction settlement is backed by the committed organizational workflow and a Kernel Gateway receipt.",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "supportsExecution": true,
+              "supportsProof": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "HYPE"
+              ],
+              "provider": "evm-hyperliquid-testnet-organizational"
             },
             {
               "network": "stellar-testnet",
@@ -4340,18 +4411,18 @@ export const runtimeCatalog = {
               "stage": "available",
               "environment": "testnet",
               "chainId": "998",
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
-              "executable": false,
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "executable": true,
               "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "HYPE"
               ],
-              "provider": "evm-hyperliquid-testnet"
+              "provider": "evm-hyperliquid-testnet-organizational"
             },
             {
               "network": "stellar-testnet",
