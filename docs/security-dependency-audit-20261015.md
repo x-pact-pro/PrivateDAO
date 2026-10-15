@@ -56,6 +56,13 @@ The web audit is therefore **not clean**. The production claim is limited to
 the root runtime graph; it must not be generalized to the web graph until the
 upstream fixes are released and validated.
 
+`npm audit fix --prefix apps/web --package-lock-only --dry-run --json` proposed
+zero lockfile changes and left the same 16 findings. The available automated
+Next fix is a major downgrade to `eslint-config-next@14.2.35`, and the available
+MagicBlock fix is a major move to `@magicblock-labs/ephemeral-rollups-sdk@0.8.5`.
+Neither is an acceptable security migration without a coordinated framework,
+wallet, TEE-attestation, and browser-regression review.
+
 ## Rust Upstream Warnings
 
 `cargo audit` reports no Rust advisory classified as a vulnerability for the current graph. It does report four upstream warnings: `atomic-polyfill` and `bincode` are unmaintained, `libsecp256k1` is unmaintained, and `rand 0.7.3` has an unsoundness advisory. The first and third paths originate in Anchor/Solana and Ephemeral Rollups; the `rand` path is through `libsecp256k1` and Solana's recovery stack. `js-sys` and `wasm-bindgen` are yanked versions pulled through the Zcash/rollup dependency graph.
