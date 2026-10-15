@@ -38,7 +38,21 @@ jobs:
 
       - name: Install Solana CLI
         run: |
-          sh -c "$(curl -sSfL https://release.anza.xyz/stable/install)"
+          for attempt in 1 2 3; do
+            rm -f "$RUNNER_TEMP/solana-install.sh"
+            if curl --fail --location --retry 5 --retry-all-errors --retry-delay 2 --proto '=https' --tlsv1.2 \
+              https://release.anza.xyz/stable/install -o "$RUNNER_TEMP/solana-install.sh" \
+              && timeout --signal=TERM --kill-after=30s 5m sh "$RUNNER_TEMP/solana-install.sh" \
+              && "$HOME/.local/share/solana/install/active_release/bin/solana" --version; then
+              break
+            fi
+            if [ "$attempt" -eq 3 ]; then
+              echo "Solana CLI installation failed after ${attempt} attempts" >&2
+              exit 1
+            fi
+            echo "Solana CLI installation failed on attempt ${attempt}; retrying" >&2
+            sleep $((attempt * 10))
+          done
           echo "$HOME/.local/share/solana/install/active_release/bin" >> $GITHUB_PATH
 
       - name: Install Anchor CLI
