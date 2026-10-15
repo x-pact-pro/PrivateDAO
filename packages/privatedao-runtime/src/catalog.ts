@@ -69,11 +69,11 @@ export const PRODUCT_CATALOG: readonly ProductDescriptor[] = [
     name: "Confidential Payroll",
     domain: "enterprise",
     availability: "available",
-    networks: [solanaDevnet, bnbTestnet, stellarTestnet],
+    networks: [solanaDevnet, ethereumSepolia, arbitrumSepolia, baseSepolia, robinhoodTestnet, bnbTestnet, hyperliquidTestnet, stellarTestnet],
     capabilities: [
-      capability("payroll.calculate", "payroll", false, true, [solanaDevnet, bnbTestnet, stellarTestnet]),
-      capability("payroll.approve", "payroll", true, true, [solanaDevnet, bnbTestnet, stellarTestnet]),
-      capability("payroll.settle", "payroll", true, true, [solanaDevnet, bnbTestnet, stellarTestnet]),
+      capability("payroll.calculate", "payroll", false, true, [solanaDevnet, ethereumSepolia, arbitrumSepolia, baseSepolia, robinhoodTestnet, bnbTestnet, hyperliquidTestnet, stellarTestnet]),
+      capability("payroll.approve", "payroll", true, true, [solanaDevnet, ethereumSepolia, arbitrumSepolia, baseSepolia, robinhoodTestnet, bnbTestnet, hyperliquidTestnet, stellarTestnet]),
+      capability("payroll.settle", "payroll", true, true, [solanaDevnet, ethereumSepolia, arbitrumSepolia, baseSepolia, robinhoodTestnet, bnbTestnet, hyperliquidTestnet, stellarTestnet]),
     ],
   },
   {

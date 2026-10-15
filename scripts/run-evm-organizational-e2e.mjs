@@ -17,6 +17,7 @@ import {
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 import { createClient as createTempoClient } from "viem/tempo";
 import { tempoModerato } from "viem/chains";
+import { EVM_NETWORK_CONFIGS, EvmNetworkAdapter, InMemoryProviderRegistry, ViemEvmTransport, createPrivateDaoRuntime } from "../packages/privatedao-runtime/src/index.ts";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const PACKAGE = path.join(ROOT, "packages/evm-verification");
@@ -34,6 +35,9 @@ const NETWORK_CONFIG = {
 };
 const networkConfig = NETWORK_CONFIG[NETWORK];
 if (!networkConfig) throw new Error(`Unsupported organizational E2E network: ${NETWORK}. Use a configured testnet only.`);
+const providerConfig = EVM_NETWORK_CONFIGS.find((entry) => entry.network === NETWORK);
+if (!providerConfig) throw new Error(`No registered EVM provider configuration for ${NETWORK}.`);
+if (providerConfig.environment !== "testnet" || providerConfig.mainnetEnabled) throw new Error(`Organizational E2E is testnet-only: ${NETWORK}.`);
 const CHAIN_ID = networkConfig.chainId;
 const RPC_ENV = networkConfig.rpcEnv;
 const rawKey = process.env.PDAO_EVM_DEPLOYER_PRIVATE_KEY?.trim();
@@ -82,6 +86,23 @@ const checkerTempoClient = NETWORK === "tempo-testnet"
   : null;
 const checkerWallet = checkerTempoClient ?? createWalletClient({ account: checker, chain, transport });
 const tempoTokenMode = NETWORK === "tempo-testnet";
+const ownerProviderId = `evm-${NETWORK}-organizational-owner`;
+const checkerProviderId = `evm-${NETWORK}-organizational-checker`;
+const organizationalCapabilities = ["treasury.policy.check", "payroll.calculate", "payroll.approve", "payroll.settle", "governance.proposal.execute", "auction.bid.commit", "auction.settle"];
+const providers = new InMemoryProviderRegistry();
+providers.register(new EvmNetworkAdapter({
+  id: ownerProviderId,
+  config: providerConfig,
+  capabilities: organizationalCapabilities,
+  transport: new ViemEvmTransport(publicClient, deployerWallet, providerConfig.network, providerConfig.chainId, providerConfig.environment, providerConfig.explorerBaseUrl, providerConfig.nativeAsset),
+}));
+providers.register(new EvmNetworkAdapter({
+  id: checkerProviderId,
+  config: providerConfig,
+  capabilities: organizationalCapabilities,
+  transport: new ViemEvmTransport(publicClient, checkerWallet, providerConfig.network, providerConfig.chainId, providerConfig.environment, providerConfig.explorerBaseUrl, providerConfig.nativeAsset),
+}));
+const runtime = createPrivateDaoRuntime(providers);
 const erc20Abi = parseAbi([
   "function approve(address spender, uint256 amount) returns (bool)",
   "function transfer(address to, uint256 amount) returns (bool)",
@@ -99,6 +120,21 @@ const auctionAbi = JSON.parse(await readFile(path.join(PACKAGE, `artifacts/${tem
 const auctionBytecode = `0x${(await readFile(path.join(PACKAGE, `artifacts/${tempoTokenMode ? "PrivateDaoTokenSealedAuction" : "PrivateDaoSealedAuction"}.bin`), "utf8")).trim()}`;
 
 const runId = `${Date.now()}-${process.pid}`;
+async function gatewayWrite(providerId, wallet, product, capability, label, address, abi, functionName, args, value) {
+  const requestId = `${NETWORK}-${product}-${label}-${runId}`;
+  const payload = { kind: "contract-write", address, abi, functionName, args, account: wallet.account.address, ...(value === undefined ? {} : { value }) };
+  const intent = {
+    context: { requestId, idempotencyKey: requestId, product, capability, network: NETWORK, provider: providerId, organizationId: "privatedao-organizational-e2e", actorId: wallet.account.address },
+    payload,
+    accounts: [{ role: "payer", address: wallet.account.address, network: NETWORK }],
+  };
+  const prepared = await runtime.gateway.prepare(intent, providerId === checkerProviderId ? "checker" : "maker");
+  const role = providerId === checkerProviderId ? "checker" : "maker";
+  await runtime.gateway.submit(prepared, prepared.unsignedPayload, role);
+  const receipt = await runtime.gateway.receipt({ executionId: prepared.executionId, intent: prepared.intent }, role);
+  assert.equal(receipt.state, "confirmed");
+  return receipt.signatures[0];
+}
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 async function waitForChainTimestamp(target) {
   for (let attempt = 0; attempt < 180; attempt += 1) {
@@ -185,7 +221,7 @@ const budgetId = keccak256(`0x${Buffer.from(`budget:${runId}`).toString("hex")}`
 const paymentId = keccak256(`0x${Buffer.from(`payment:${runId}`).toString("hex")}`);
 const recipient = checker.address;
 const paymentAmount = tempoTokenMode ? parseUnits("0.1", TEMPO_TOKEN_DECIMALS) : parseEther("0.0001");
-await write(deployerWallet, treasury.address, treasuryAbi, "configureBudget", [budgetId, paymentAmount]);
+await gatewayWrite(ownerProviderId, deployerWallet, "treasury", "treasury.policy.check", "configure-budget", treasury.address, treasuryAbi, "configureBudget", [budgetId, paymentAmount]);
 let configuredBudget = 0n;
 for (let attempt = 0; attempt < 20; attempt += 1) {
   configuredBudget = await publicClient.readContract({ address: treasury.address, abi: treasuryAbi, functionName: "budgetRemaining", args: [budgetId] });
@@ -193,8 +229,8 @@ for (let attempt = 0; attempt < 20; attempt += 1) {
   await sleep(1_000);
 }
 assert.equal(configuredBudget, paymentAmount, "configured budget was not visible after its successful receipt");
-const requestedHash = await write(deployerWallet, treasury.address, treasuryAbi, "requestPayment", [paymentId, budgetId, recipient, paymentAmount]);
-const approvedHash = await write(checkerWallet, treasury.address, treasuryAbi, "approvePayment", [paymentId]);
+const requestedHash = await gatewayWrite(ownerProviderId, deployerWallet, "treasury", "treasury.policy.check", "request-payment", treasury.address, treasuryAbi, "requestPayment", [paymentId, budgetId, recipient, paymentAmount]);
+const approvedHash = await gatewayWrite(checkerProviderId, checkerWallet, "treasury", "treasury.policy.check", "approve-payment", treasury.address, treasuryAbi, "approvePayment", [paymentId]);
 let approvedPayment;
 for (let attempt = 0; attempt < 20; attempt += 1) {
   approvedPayment = await publicClient.readContract({ address: treasury.address, abi: treasuryAbi, functionName: "payments", args: [paymentId] });
@@ -202,7 +238,7 @@ for (let attempt = 0; attempt < 20; attempt += 1) {
   await sleep(1_000);
 }
 assert.equal(Number(approvedPayment[3]), 2, "approved payment was not visible before execution");
-const executedHash = await write(deployerWallet, treasury.address, treasuryAbi, "executePayment", [paymentId]);
+const executedHash = await gatewayWrite(ownerProviderId, deployerWallet, "treasury", "treasury.policy.check", "execute-payment", treasury.address, treasuryAbi, "executePayment", [paymentId]);
 let payment;
 for (let attempt = 0; attempt < 90; attempt += 1) {
   payment = await publicClient.readContract({ address: treasury.address, abi: treasuryAbi, functionName: "payments", args: [paymentId] });
@@ -223,9 +259,9 @@ if (!tempoTokenMode) {
   const payrollAmount = parseEther("0.0001");
   const payrollFundingHash = await deployerWallet.sendTransaction({ to: payroll.address, value: payrollAmount, gas: 100_000n, nonce: await takeNonce(deployerWallet.account), ...(await feeOverrides()) });
   await tx(payrollFundingHash);
-  const payrollCreateHash = await write(deployerWallet, payroll.address, payrollAbi, "createPayroll", [payrollBatchId, payrollBatchCommitment, recipient, payrollAmount]);
-  const payrollApproveHash = await write(checkerWallet, payroll.address, payrollAbi, "approvePayroll", [payrollBatchId]);
-  const payrollSettleHash = await write(deployerWallet, payroll.address, payrollAbi, "settlePayroll", [payrollBatchId]);
+  const payrollCreateHash = await gatewayWrite(ownerProviderId, deployerWallet, "payroll", "payroll.approve", "create-payroll", payroll.address, payrollAbi, "createPayroll", [payrollBatchId, payrollBatchCommitment, recipient, payrollAmount]);
+  const payrollApproveHash = await gatewayWrite(checkerProviderId, checkerWallet, "payroll", "payroll.approve", "approve-payroll", payroll.address, payrollAbi, "approvePayroll", [payrollBatchId]);
+  const payrollSettleHash = await gatewayWrite(ownerProviderId, deployerWallet, "payroll", "payroll.settle", "settle-payroll", payroll.address, payrollAbi, "settlePayroll", [payrollBatchId]);
   const payrollBatch = await publicClient.readContract({ address: payroll.address, abi: payrollAbi, functionName: "batches", args: [payrollBatchId] });
   assert.equal(Number(payrollBatch[3]), 3, "payroll batch was not settled");
   deployments.evidence.payroll = { payrollFundingHash, payrollCreateHash, payrollApproveHash, payrollSettleHash, payrollBatchId, payrollBatchCommitment, status: "settled" };
@@ -242,15 +278,15 @@ if (!Number.isInteger(governanceCommitSeconds) || !Number.isInteger(governanceRe
 const windowSafetySeconds = BigInt(process.env.PDAO_EVM_WINDOW_SAFETY_SECONDS || "20");
 const commitEnd = now + BigInt(governanceCommitSeconds) + windowSafetySeconds;
 const revealEnd = now + BigInt(governanceRevealSeconds) + windowSafetySeconds;
-const proposalHash = await write(deployerWallet, governance.address, governanceAbi, "createProposal", [proposalId, actionHash, commitEnd, revealEnd, 1n]);
+const proposalHash = await gatewayWrite(ownerProviderId, deployerWallet, "governance", "governance.proposal.execute", "create-proposal", governance.address, governanceAbi, "createProposal", [proposalId, actionHash, commitEnd, revealEnd, 1n]);
 const voteSalt = keccak256(`0x${Buffer.from(`vote-salt:${runId}`).toString("hex")}`);
 const voteCommitment = keccak256(encodeAbiParameters([{ type: "bytes32" }, { type: "address" }, { type: "bool" }, { type: "bytes32" }], [proposalId, deployer.address, true, voteSalt]));
-const voteCommitHash = await write(deployerWallet, governance.address, governanceAbi, "commitVote", [proposalId, voteCommitment]);
-await expectRevert(() => write(deployerWallet, governance.address, governanceAbi, "revealVote", [proposalId, true, voteSalt]), "early governance reveal");
+const voteCommitHash = await gatewayWrite(ownerProviderId, deployerWallet, "governance", "governance.proposal.execute", "commit-vote", governance.address, governanceAbi, "commitVote", [proposalId, voteCommitment]);
+await expectRevert(() => publicClient.simulateContract({ address: governance.address, abi: governanceAbi, functionName: "revealVote", args: [proposalId, true, voteSalt], account: deployer.address }), "early governance reveal");
 await waitForChainTimestamp(commitEnd + 1n);
-const voteRevealHash = await write(deployerWallet, governance.address, governanceAbi, "revealVote", [proposalId, true, voteSalt]);
+const voteRevealHash = await gatewayWrite(ownerProviderId, deployerWallet, "governance", "governance.proposal.execute", "reveal-vote", governance.address, governanceAbi, "revealVote", [proposalId, true, voteSalt]);
 await waitForChainTimestamp(revealEnd + 1n);
-const proposalFinalizeHash = await write(deployerWallet, governance.address, governanceAbi, "finalizeProposal", [proposalId]);
+const proposalFinalizeHash = await gatewayWrite(ownerProviderId, deployerWallet, "governance", "governance.proposal.execute", "finalize-proposal", governance.address, governanceAbi, "finalizeProposal", [proposalId]);
 let proposal;
 for (let attempt = 0; attempt < 90; attempt += 1) {
   proposal = await publicClient.readContract({ address: governance.address, abi: governanceAbi, functionName: "proposals", args: [proposalId] });
@@ -268,20 +304,22 @@ const escrow = tempoTokenMode ? parseUnits("0.3", TEMPO_TOKEN_DECIMALS) : parseE
 const auctionNow = (await publicClient.getBlock({ blockTag: "latest" })).timestamp;
 const biddingEnd = auctionNow + BigInt(governanceCommitSeconds) + windowSafetySeconds;
 const auctionRevealEnd = auctionNow + BigInt(governanceRevealSeconds) + windowSafetySeconds;
-const auctionCreateHash = await write(deployerWallet, auction.address, auctionAbi, "createAuction", [auctionId, deployer.address, biddingEnd, auctionRevealEnd]);
+const auctionCreateHash = await gatewayWrite(ownerProviderId, deployerWallet, "auction", "auction.bid.commit", "create-auction", auction.address, auctionAbi, "createAuction", [auctionId, deployer.address, biddingEnd, auctionRevealEnd]);
 const bidSalt = keccak256(`0x${Buffer.from(`bid-salt:${runId}`).toString("hex")}`);
 const bidCommitment = keccak256(encodeAbiParameters([{ type: "bytes32" }, { type: "address" }, { type: "uint256" }, { type: "bytes32" }], [auctionId, checker.address, bidAmount, bidSalt]));
 const bidApprovalHash = tempoTokenMode ? await write(checkerWallet, TEMPO_FEE_TOKEN, erc20Abi, "approve", [auction.address, escrow]) : null;
 const bidCommitHash = tempoTokenMode
   ? await write(checkerWallet, auction.address, auctionAbi, "commitBid", [auctionId, bidCommitment, escrow])
-  : await checkerWallet.writeContract({ address: auction.address, abi: auctionAbi, functionName: "commitBid", args: [auctionId, bidCommitment], value: escrow, gas: writeGasLimit, nonce: await takeNonce(checkerWallet.account), ...(await feeOverrides()) });
+  : await gatewayWrite(checkerProviderId, checkerWallet, "auction", "auction.bid.commit", "commit-bid", auction.address, auctionAbi, "commitBid", [auctionId, bidCommitment], escrow);
 if (!tempoTokenMode) await tx(bidCommitHash);
-await expectRevert(() => checkerWallet.writeContract({ address: auction.address, abi: auctionAbi, functionName: "revealBid", args: [auctionId, bidAmount + 1n, bidSalt] }), "altered auction reveal");
+await expectRevert(() => publicClient.simulateContract({ address: auction.address, abi: auctionAbi, functionName: "revealBid", args: [auctionId, bidAmount + 1n, bidSalt], account: checker.address }), "altered auction reveal");
 await waitForChainTimestamp(biddingEnd + 1n);
-const bidRevealHash = await write(checkerWallet, auction.address, auctionAbi, "revealBid", [auctionId, bidAmount, bidSalt]);
+const bidRevealHash = tempoTokenMode
+  ? await write(checkerWallet, auction.address, auctionAbi, "revealBid", [auctionId, bidAmount, bidSalt])
+  : await gatewayWrite(checkerProviderId, checkerWallet, "auction", "auction.bid.commit", "reveal-bid", auction.address, auctionAbi, "revealBid", [auctionId, bidAmount, bidSalt]);
 await waitForChainTimestamp(auctionRevealEnd + 1n);
-const auctionFinalizeHash = await write(deployerWallet, auction.address, auctionAbi, "finalizeAuction", [auctionId]);
-const auctionSettleHash = await write(deployerWallet, auction.address, auctionAbi, "settleAuction", [auctionId]);
+const auctionFinalizeHash = await gatewayWrite(ownerProviderId, deployerWallet, "auction", "auction.settle", "finalize-auction", auction.address, auctionAbi, "finalizeAuction", [auctionId]);
+const auctionSettleHash = await gatewayWrite(ownerProviderId, deployerWallet, "auction", "auction.settle", "settle-auction", auction.address, auctionAbi, "settleAuction", [auctionId]);
 let auctionState;
 for (let attempt = 0; attempt < 90; attempt += 1) {
   auctionState = await publicClient.readContract({ address: auction.address, abi: auctionAbi, functionName: "auctions", args: [auctionId] });

@@ -62,11 +62,11 @@ assert.throws(
   () => createHttpBackedPrivateDaoRuntime({
     baseUrl: "https://api.example.test",
     providerId: "invalid-provider",
-    network: "ethereum-sepolia",
+    network: "zcash-testnet",
     capabilities: ["payroll.settle"],
     fetchImpl: async () => json({}),
   }),
-  /not declared for ethereum-sepolia/,
+  /not declared for zcash-testnet/,
 );
 
 assert.throws(
