@@ -131,7 +131,7 @@ const ROBINHOOD_TESTNET_EVIDENCE = {
     "0x3fc47618e59c5bf8a19fe6a5298938fc9b8c3bdc",
     "0x672899b8ad719468b20ee0b662bc30a8a22e6585",
   ],
-  commit: "877ebe2a9",
+  commit: "62ca8d314",
   timestamp: "2026-10-15T04:03:29.445Z",
 } as const;
 
