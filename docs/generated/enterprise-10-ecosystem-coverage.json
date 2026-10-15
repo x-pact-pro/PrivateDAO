@@ -3140,7 +3140,7 @@
       "ecosystem": "solana",
       "declaredLaneCount": 1,
       "executableLaneCount": 0,
-      "status": "unbound",
+      "status": "planned",
       "capabilities": [
         {
           "capability": "governance.proposal.execute",
@@ -3149,16 +3149,16 @@
               "network": "solana-devnet",
               "environment": "devnet",
               "declared": true,
-              "mode": "unbound",
-              "status": "missing",
+              "mode": "kernel-gateway",
+              "status": "implementation",
               "evidence": "none",
-              "provider": null,
+              "provider": "solana-devnet",
               "supportsExecution": false,
               "supportsReceipt": false,
               "supportsReconciliation": false,
               "executable": false,
-              "entrypoint": null,
-              "note": "No exact Kernel-backed governance execution action is exposed by the web app."
+              "entrypoint": "kernel://governance.proposal.execute",
+              "note": "Solana Devnet governance proposal execution is exposed through the Kernel adapter readiness path; no onchain broadcast or receipt is claimed until an independent funded E2E is recorded."
             },
             {
               "network": "solana-mainnet-beta",

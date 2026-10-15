@@ -381,6 +381,7 @@ assert.equal(listApplicationBindings().find((entry) => entry.capability === "age
 assert.equal(listApplicationBindings().find((entry) => entry.capability === "verification.blind.prove")?.mode, "kernel-gateway");
 assert.equal(listApplicationBindings().find((entry) => entry.capability === "auction.settle")?.mode, "kernel-gateway");
 assert.equal(listApplicationBindings().find((entry) => entry.capability === "auction.bid.commit")?.mode, "kernel-gateway");
+assert.equal(listApplicationBindings().find((entry) => entry.product === "governance" && entry.network === "solana-devnet")?.mode, "kernel-gateway");
 
 let currentTime = "2026-09-09T00:00:00.000Z";
 const expiredKernel = new PrivateDaoKernel(registry, { now: () => currentTime });

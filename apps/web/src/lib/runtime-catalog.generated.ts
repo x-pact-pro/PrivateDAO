@@ -4344,10 +4344,10 @@ export const runtimeCatalog = {
           "applicationBindings": [
             {
               "network": "solana-devnet",
-              "mode": "unbound",
-              "entrypoint": null,
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://governance.proposal.execute",
               "method": null,
-              "note": "No exact Kernel-backed governance execution action is exposed by the web app.",
+              "note": "Solana Devnet governance proposal execution is exposed through the Kernel adapter readiness path; no onchain broadcast or receipt is claimed until an independent funded E2E is recorded.",
               "evidenceStatus": "implementation",
               "evidence": "none",
               "supportsExecution": false,
@@ -4520,7 +4520,7 @@ export const runtimeCatalog = {
               "environment": "devnet",
               "chainId": null,
               "declared": true,
-              "mode": "unbound",
+              "mode": "kernel-gateway",
               "evidenceStatus": "implementation",
               "evidence": "none",
               "executable": false,

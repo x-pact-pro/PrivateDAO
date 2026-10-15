@@ -397,8 +397,9 @@ export const APPLICATION_CAPABILITY_BINDINGS: readonly ApplicationCapabilityBind
     product: "governance",
     capability: "governance.proposal.execute",
     network: "solana-devnet",
-    mode: "unbound",
-    note: "No exact Kernel-backed governance execution action is exposed by the web app.",
+    mode: "kernel-gateway",
+    entrypoint: "kernel://governance.proposal.execute",
+    note: "Solana Devnet governance proposal execution is exposed through the Kernel adapter readiness path; no onchain broadcast or receipt is claimed until an independent funded E2E is recorded.",
   },
   {
     product: "governance",

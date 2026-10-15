@@ -46,7 +46,7 @@ A lane is **verified** only when it is declared, bound through kernel://, has an
 | treasury | zcash | planned | 0/1 | treasury.policy.check: zcash-testnet=kernel-gateway/implementation |
 | treasury | hyperliquid | verified | 1/1 | treasury.policy.check: hyperliquid-testnet=kernel-gateway/testnet_verified |
 | treasury | stellar | verified | 1/1 | treasury.policy.check: stellar-testnet=kernel-gateway/testnet_verified |
-| governance | solana | unbound | 0/1 | governance.proposal.execute: solana-devnet=unbound/missing, solana-mainnet-beta=unbound/missing |
+| governance | solana | planned | 0/1 | governance.proposal.execute: solana-devnet=kernel-gateway/implementation, solana-mainnet-beta=unbound/missing |
 | governance | ethereum | verified | 1/1 | governance.proposal.execute: ethereum-sepolia=kernel-gateway/testnet_verified, ethereum-mainnet=unbound/missing |
 | governance | arbitrum | verified | 1/1 | governance.proposal.execute: arbitrum-sepolia=kernel-gateway/testnet_verified, arbitrum-one=unbound/missing |
 | governance | bnb | verified | 1/1 | governance.proposal.execute: bnb-testnet=kernel-gateway/testnet_verified, bnb-mainnet=unbound/missing |
