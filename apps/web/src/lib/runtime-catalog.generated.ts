@@ -2443,16 +2443,16 @@ export const runtimeCatalog = {
               "entrypoint": "kernel://payroll.calculate",
               "method": null,
               "note": "Arbitrum Sepolia has a Kernel-backed native-asset payroll contract path; independent payroll evidence is still required before promotion.",
-              "evidenceStatus": "implementation",
-              "evidence": "none",
-              "supportsExecution": false,
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "supportsExecution": true,
               "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "ETH"
               ],
-              "provider": "evm-arbitrum-sepolia"
+              "provider": "evm-arbitrum-sepolia-organizational"
             },
             {
               "network": "base-sepolia",
@@ -2637,16 +2637,16 @@ export const runtimeCatalog = {
               "chainId": "421614",
               "declared": true,
               "mode": "kernel-gateway",
-              "evidenceStatus": "implementation",
-              "evidence": "none",
-              "executable": false,
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "executable": true,
               "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "ETH"
               ],
-              "provider": "evm-arbitrum-sepolia"
+              "provider": "evm-arbitrum-sepolia-organizational"
             },
             {
               "network": "arbitrum-one",
@@ -2914,16 +2914,16 @@ export const runtimeCatalog = {
               "entrypoint": "kernel://payroll.approve",
               "method": null,
               "note": "Arbitrum Sepolia has a Kernel-backed payroll approval path; independent payroll evidence is still required before promotion.",
-              "evidenceStatus": "implementation",
-              "evidence": "none",
-              "supportsExecution": false,
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "supportsExecution": true,
               "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "ETH"
               ],
-              "provider": "evm-arbitrum-sepolia"
+              "provider": "evm-arbitrum-sepolia-organizational"
             },
             {
               "network": "base-sepolia",
@@ -3108,16 +3108,16 @@ export const runtimeCatalog = {
               "chainId": "421614",
               "declared": true,
               "mode": "kernel-gateway",
-              "evidenceStatus": "implementation",
-              "evidence": "none",
-              "executable": false,
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "executable": true,
               "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "ETH"
               ],
-              "provider": "evm-arbitrum-sepolia"
+              "provider": "evm-arbitrum-sepolia-organizational"
             },
             {
               "network": "arbitrum-one",
@@ -3385,16 +3385,16 @@ export const runtimeCatalog = {
               "entrypoint": "kernel://payroll.settle",
               "method": null,
               "note": "Arbitrum Sepolia has a Kernel-backed native-asset payroll settlement path; no independent payroll receipt is claimed here.",
-              "evidenceStatus": "implementation",
-              "evidence": "none",
-              "supportsExecution": false,
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "supportsExecution": true,
               "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "ETH"
               ],
-              "provider": "evm-arbitrum-sepolia"
+              "provider": "evm-arbitrum-sepolia-organizational"
             },
             {
               "network": "base-sepolia",
@@ -3579,16 +3579,16 @@ export const runtimeCatalog = {
               "chainId": "421614",
               "declared": true,
               "mode": "kernel-gateway",
-              "evidenceStatus": "implementation",
-              "evidence": "none",
-              "executable": false,
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "executable": true,
               "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "ETH"
               ],
-              "provider": "evm-arbitrum-sepolia"
+              "provider": "evm-arbitrum-sepolia-organizational"
             },
             {
               "network": "arbitrum-one",

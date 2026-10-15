@@ -1,6 +1,6 @@
 {
   "schema": "privatedao.native-capability-matrix.v1",
-  "generatedAt": "2026-10-15T18:13:28.886Z",
+  "generatedAt": "2026-10-15T18:36:34.345Z",
   "bridgeFree": true,
   "entries": [
     {
@@ -2636,21 +2636,23 @@
       "supportedAssets": [
         "ETH"
       ],
-      "contracts": [],
+      "contracts": [
+        "0xe41496546cd1ad97b7c92b6d4de5220e2d261c72"
+      ],
       "verifier": null,
-      "provider": "evm-arbitrum-sepolia",
+      "provider": "evm-arbitrum-sepolia-organizational",
       "walletModel": "external-wallet",
-      "supportsExecution": false,
+      "supportsExecution": true,
       "supportsPrivateExecution": false,
       "supportsPrivateSettlement": false,
       "supportsProof": false,
-      "supportsReceipt": false,
-      "supportsReconciliation": false,
+      "supportsReceipt": true,
+      "supportsReconciliation": true,
       "supportsMainnet": false,
-      "status": "implementation",
-      "lastVerifiedCommit": null,
-      "lastVerifiedTimestamp": null,
-      "evidence": "none"
+      "status": "testnet_verified",
+      "lastVerifiedCommit": "pending",
+      "lastVerifiedTimestamp": "2026-10-15T18:35:10.382Z",
+      "evidence": "testnet-e2e"
     },
     {
       "product": "payroll",
@@ -3120,21 +3122,23 @@
       "supportedAssets": [
         "ETH"
       ],
-      "contracts": [],
+      "contracts": [
+        "0xe41496546cd1ad97b7c92b6d4de5220e2d261c72"
+      ],
       "verifier": null,
-      "provider": "evm-arbitrum-sepolia",
+      "provider": "evm-arbitrum-sepolia-organizational",
       "walletModel": "external-wallet",
-      "supportsExecution": false,
+      "supportsExecution": true,
       "supportsPrivateExecution": false,
       "supportsPrivateSettlement": false,
       "supportsProof": false,
-      "supportsReceipt": false,
-      "supportsReconciliation": false,
+      "supportsReceipt": true,
+      "supportsReconciliation": true,
       "supportsMainnet": false,
-      "status": "implementation",
-      "lastVerifiedCommit": null,
-      "lastVerifiedTimestamp": null,
-      "evidence": "none"
+      "status": "testnet_verified",
+      "lastVerifiedCommit": "pending",
+      "lastVerifiedTimestamp": "2026-10-15T18:35:10.382Z",
+      "evidence": "testnet-e2e"
     },
     {
       "product": "payroll",
@@ -3604,21 +3608,23 @@
       "supportedAssets": [
         "ETH"
       ],
-      "contracts": [],
+      "contracts": [
+        "0xe41496546cd1ad97b7c92b6d4de5220e2d261c72"
+      ],
       "verifier": null,
-      "provider": "evm-arbitrum-sepolia",
+      "provider": "evm-arbitrum-sepolia-organizational",
       "walletModel": "external-wallet",
-      "supportsExecution": false,
+      "supportsExecution": true,
       "supportsPrivateExecution": false,
       "supportsPrivateSettlement": false,
       "supportsProof": false,
-      "supportsReceipt": false,
-      "supportsReconciliation": false,
+      "supportsReceipt": true,
+      "supportsReconciliation": true,
       "supportsMainnet": false,
-      "status": "implementation",
-      "lastVerifiedCommit": null,
-      "lastVerifiedTimestamp": null,
-      "evidence": "none"
+      "status": "testnet_verified",
+      "lastVerifiedCommit": "pending",
+      "lastVerifiedTimestamp": "2026-10-15T18:35:10.382Z",
+      "evidence": "testnet-e2e"
     },
     {
       "product": "payroll",
