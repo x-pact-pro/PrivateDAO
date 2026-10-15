@@ -1,6 +1,6 @@
 {
   "schema": "privatedao.native-capability-matrix.v1",
-  "generatedAt": "2026-10-15T04:07:34.827Z",
+  "generatedAt": "2026-10-15T04:14:08.312Z",
   "bridgeFree": true,
   "entries": [
     {
@@ -2644,23 +2644,21 @@
       "supportedAssets": [
         "BNB"
       ],
-      "contracts": [
-        "0x62f8f7ffc4235a1dde58ba811fa9c448c56f7620"
-      ],
-      "verifier": "0x26e3515d02bb3d8122fad109d159f43e81e8beeb",
-      "provider": "evm-bnb-testnet-organizational",
-      "walletModel": "provider-wallet",
-      "supportsExecution": true,
+      "contracts": [],
+      "verifier": null,
+      "provider": "evm-bnb-testnet",
+      "walletModel": "external-wallet",
+      "supportsExecution": false,
       "supportsPrivateExecution": false,
       "supportsPrivateSettlement": false,
       "supportsProof": false,
-      "supportsReceipt": true,
-      "supportsReconciliation": true,
+      "supportsReceipt": false,
+      "supportsReconciliation": false,
       "supportsMainnet": false,
-      "status": "testnet_verified",
-      "lastVerifiedCommit": "9755727ba",
-      "lastVerifiedTimestamp": "2026-10-11T15:16:22.645Z",
-      "evidence": "testnet-e2e"
+      "status": "implementation",
+      "lastVerifiedCommit": null,
+      "lastVerifiedTimestamp": null,
+      "evidence": "none"
     },
     {
       "product": "payroll",

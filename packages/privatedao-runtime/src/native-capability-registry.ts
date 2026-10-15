@@ -385,13 +385,12 @@ function applyTempoTestnetEvidence(entry: NativeCapabilityEntry): NativeCapabili
 function applyBnbTestnetEvidence(entry: NativeCapabilityEntry): NativeCapabilityEntry {
   const isBlind = entry.product === "blind-verification" && entry.capability === "verification.blind.prove";
   const isRecord = entry.product === "record-verification" && ["verification.record.create", "verification.record.verify"].includes(entry.capability);
-  const isPayroll = entry.product === "payroll" && entry.capability === "payroll.settle";
-  if (entry.network !== "bnb-testnet" || (!isBlind && !isRecord && !isPayroll)) return entry;
+  if (entry.network !== "bnb-testnet" || (!isBlind && !isRecord)) return entry;
   return {
     ...entry,
-    provider: isPayroll ? "evm-bnb-testnet-organizational" : BNB_TESTNET_EVIDENCE.provider,
+    provider: BNB_TESTNET_EVIDENCE.provider,
     supportedAssets: ["BNB"],
-    contracts: isPayroll ? ["0x62f8f7ffc4235a1dde58ba811fa9c448c56f7620"] : BNB_TESTNET_EVIDENCE.contracts,
+    contracts: BNB_TESTNET_EVIDENCE.contracts,
     verifier: BNB_TESTNET_EVIDENCE.verifier,
     walletModel: "provider-wallet",
     supportsExecution: true,
