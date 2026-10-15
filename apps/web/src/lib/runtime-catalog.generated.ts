@@ -2225,16 +2225,16 @@ export const runtimeCatalog = {
               "entrypoint": "kernel://payroll.settle",
               "method": null,
               "note": "BNB Testnet payroll settlement is backed by a real payout receipt; it is not advertised as shielded settlement.",
-              "evidenceStatus": "testnet_verified",
-              "evidence": "testnet-e2e",
-              "supportsExecution": true,
+              "evidenceStatus": "implementation",
+              "evidence": "none",
+              "supportsExecution": false,
               "supportsProof": false,
-              "supportsReceipt": true,
-              "supportsReconciliation": true,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
               "supportedAssets": [
                 "BNB"
               ],
-              "provider": "evm-bnb-testnet-organizational"
+              "provider": "evm-bnb-testnet"
             },
             {
               "network": "stellar-testnet",
@@ -2370,16 +2370,16 @@ export const runtimeCatalog = {
               "chainId": "97",
               "declared": true,
               "mode": "kernel-gateway",
-              "evidenceStatus": "testnet_verified",
-              "evidence": "testnet-e2e",
-              "executable": true,
+              "evidenceStatus": "implementation",
+              "evidence": "none",
+              "executable": false,
               "supportsProof": false,
-              "supportsReceipt": true,
-              "supportsReconciliation": true,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
               "supportedAssets": [
                 "BNB"
               ],
-              "provider": "evm-bnb-testnet-organizational"
+              "provider": "evm-bnb-testnet"
             },
             {
               "network": "bnb-mainnet",
