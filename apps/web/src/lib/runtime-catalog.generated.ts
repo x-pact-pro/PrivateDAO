@@ -16,7 +16,8 @@ export const runtimeCatalog = {
         "bnb-testnet",
         "robinhood-testnet",
         "hyperliquid-testnet",
-        "stellar-testnet"
+        "stellar-testnet",
+        "zcash-testnet"
       ],
       "capabilities": [
         {
@@ -178,6 +179,23 @@ export const runtimeCatalog = {
                 "XLM"
               ],
               "provider": "stellar-testnet-horizon"
+            },
+            {
+              "network": "zcash-testnet",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://verification.blind.prove",
+              "method": null,
+              "note": "Zcash Testnet is routed through the Kernel Gateway; independent Orchard product evidence is still required.",
+              "evidenceStatus": "implementation",
+              "evidence": "none",
+              "supportsExecution": false,
+              "supportsProof": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "supportedAssets": [
+                "ZEC"
+              ],
+              "provider": null
             }
           ],
           "networkAvailability": [
@@ -435,12 +453,12 @@ export const runtimeCatalog = {
             },
             {
               "network": "zcash-testnet",
-              "stage": "planned",
+              "stage": "available",
               "environment": "testnet",
               "chainId": null,
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "implementation",
               "evidence": "none",
               "executable": false,
               "supportsProof": false,
@@ -504,7 +522,8 @@ export const runtimeCatalog = {
         "bnb-testnet",
         "robinhood-testnet",
         "hyperliquid-testnet",
-        "stellar-testnet"
+        "stellar-testnet",
+        "zcash-testnet"
       ],
       "capabilities": [
         {
@@ -666,6 +685,23 @@ export const runtimeCatalog = {
                 "XLM"
               ],
               "provider": "stellar-testnet-horizon"
+            },
+            {
+              "network": "zcash-testnet",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://verification.record.create",
+              "method": null,
+              "note": "Zcash Testnet is routed through the Kernel Gateway; independent Orchard product evidence is still required.",
+              "evidenceStatus": "implementation",
+              "evidence": "none",
+              "supportsExecution": false,
+              "supportsProof": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "supportedAssets": [
+                "ZEC"
+              ],
+              "provider": null
             }
           ],
           "networkAvailability": [
@@ -923,12 +959,12 @@ export const runtimeCatalog = {
             },
             {
               "network": "zcash-testnet",
-              "stage": "planned",
+              "stage": "available",
               "environment": "testnet",
               "chainId": null,
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "implementation",
               "evidence": "none",
               "executable": false,
               "supportsProof": false,
@@ -1136,6 +1172,23 @@ export const runtimeCatalog = {
                 "XLM"
               ],
               "provider": "stellar-testnet-horizon"
+            },
+            {
+              "network": "zcash-testnet",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://verification.record.verify",
+              "method": null,
+              "note": "Zcash Testnet is routed through the Kernel Gateway; independent Orchard product evidence is still required.",
+              "evidenceStatus": "implementation",
+              "evidence": "none",
+              "supportsExecution": false,
+              "supportsProof": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "supportedAssets": [
+                "ZEC"
+              ],
+              "provider": null
             }
           ],
           "networkAvailability": [
@@ -1393,12 +1446,12 @@ export const runtimeCatalog = {
             },
             {
               "network": "zcash-testnet",
-              "stage": "planned",
+              "stage": "available",
               "environment": "testnet",
               "chainId": null,
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "implementation",
               "evidence": "none",
               "executable": false,
               "supportsProof": false,
@@ -1461,7 +1514,8 @@ export const runtimeCatalog = {
         "robinhood-testnet",
         "bnb-testnet",
         "hyperliquid-testnet",
-        "stellar-testnet"
+        "stellar-testnet",
+        "zcash-testnet"
       ],
       "capabilities": [
         {
@@ -1606,6 +1660,23 @@ export const runtimeCatalog = {
                 "XLM"
               ],
               "provider": "stellar-testnet-horizon"
+            },
+            {
+              "network": "zcash-testnet",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://payroll.calculate",
+              "method": null,
+              "note": "Zcash Testnet is routed through the Kernel Gateway; independent Orchard product evidence is still required.",
+              "evidenceStatus": "implementation",
+              "evidence": "none",
+              "supportsExecution": false,
+              "supportsProof": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "supportedAssets": [
+                "ZEC"
+              ],
+              "provider": null
             }
           ],
           "networkAvailability": [
@@ -1863,12 +1934,12 @@ export const runtimeCatalog = {
             },
             {
               "network": "zcash-testnet",
-              "stage": "planned",
+              "stage": "available",
               "environment": "testnet",
               "chainId": null,
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "implementation",
               "evidence": "none",
               "executable": false,
               "supportsProof": false,
@@ -2059,6 +2130,23 @@ export const runtimeCatalog = {
                 "XLM"
               ],
               "provider": "stellar-testnet-horizon"
+            },
+            {
+              "network": "zcash-testnet",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://payroll.approve",
+              "method": null,
+              "note": "Zcash Testnet is routed through the Kernel Gateway; independent Orchard product evidence is still required.",
+              "evidenceStatus": "implementation",
+              "evidence": "none",
+              "supportsExecution": false,
+              "supportsProof": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "supportedAssets": [
+                "ZEC"
+              ],
+              "provider": null
             }
           ],
           "networkAvailability": [
@@ -2316,12 +2404,12 @@ export const runtimeCatalog = {
             },
             {
               "network": "zcash-testnet",
-              "stage": "planned",
+              "stage": "available",
               "environment": "testnet",
               "chainId": null,
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "implementation",
               "evidence": "none",
               "executable": false,
               "supportsProof": false,
@@ -2512,6 +2600,23 @@ export const runtimeCatalog = {
                 "XLM"
               ],
               "provider": "stellar-testnet-horizon"
+            },
+            {
+              "network": "zcash-testnet",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://payroll.settle",
+              "method": null,
+              "note": "Zcash Testnet is routed through the Kernel Gateway; independent Orchard product evidence is still required.",
+              "evidenceStatus": "implementation",
+              "evidence": "none",
+              "supportsExecution": false,
+              "supportsProof": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "supportedAssets": [
+                "ZEC"
+              ],
+              "provider": null
             }
           ],
           "networkAvailability": [
@@ -2769,12 +2874,12 @@ export const runtimeCatalog = {
             },
             {
               "network": "zcash-testnet",
-              "stage": "planned",
+              "stage": "available",
               "environment": "testnet",
               "chainId": null,
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "implementation",
               "evidence": "none",
               "executable": false,
               "supportsProof": false,
@@ -2838,7 +2943,8 @@ export const runtimeCatalog = {
         "tempo-testnet",
         "bnb-testnet",
         "hyperliquid-testnet",
-        "stellar-testnet"
+        "stellar-testnet",
+        "zcash-testnet"
       ],
       "capabilities": [
         {
@@ -3000,6 +3106,23 @@ export const runtimeCatalog = {
                 "XLM"
               ],
               "provider": "stellar-testnet-horizon"
+            },
+            {
+              "network": "zcash-testnet",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://treasury.policy.check",
+              "method": null,
+              "note": "Zcash Testnet is routed through the Kernel Gateway; independent Orchard product evidence is still required.",
+              "evidenceStatus": "implementation",
+              "evidence": "none",
+              "supportsExecution": false,
+              "supportsProof": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "supportedAssets": [
+                "ZEC"
+              ],
+              "provider": null
             }
           ],
           "networkAvailability": [
@@ -3257,12 +3380,12 @@ export const runtimeCatalog = {
             },
             {
               "network": "zcash-testnet",
-              "stage": "planned",
+              "stage": "available",
               "environment": "testnet",
               "chainId": null,
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "implementation",
               "evidence": "none",
               "executable": false,
               "supportsProof": false,
@@ -3326,7 +3449,8 @@ export const runtimeCatalog = {
         "tempo-testnet",
         "bnb-testnet",
         "hyperliquid-testnet",
-        "stellar-testnet"
+        "stellar-testnet",
+        "zcash-testnet"
       ],
       "capabilities": [
         {
@@ -3488,6 +3612,23 @@ export const runtimeCatalog = {
                 "XLM"
               ],
               "provider": "stellar-testnet-horizon"
+            },
+            {
+              "network": "zcash-testnet",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://governance.proposal.execute",
+              "method": null,
+              "note": "Zcash Testnet is routed through the Kernel Gateway; independent Orchard product evidence is still required.",
+              "evidenceStatus": "implementation",
+              "evidence": "none",
+              "supportsExecution": false,
+              "supportsProof": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "supportedAssets": [
+                "ZEC"
+              ],
+              "provider": null
             }
           ],
           "networkAvailability": [
@@ -3745,12 +3886,12 @@ export const runtimeCatalog = {
             },
             {
               "network": "zcash-testnet",
-              "stage": "planned",
+              "stage": "available",
               "environment": "testnet",
               "chainId": null,
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "implementation",
               "evidence": "none",
               "executable": false,
               "supportsProof": false,
@@ -3814,7 +3955,8 @@ export const runtimeCatalog = {
         "tempo-testnet",
         "bnb-testnet",
         "hyperliquid-testnet",
-        "stellar-testnet"
+        "stellar-testnet",
+        "zcash-testnet"
       ],
       "capabilities": [
         {
@@ -3976,6 +4118,23 @@ export const runtimeCatalog = {
                 "XLM"
               ],
               "provider": "stellar-testnet-horizon"
+            },
+            {
+              "network": "zcash-testnet",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://auction.bid.commit",
+              "method": null,
+              "note": "Zcash Testnet is routed through the Kernel Gateway; independent Orchard product evidence is still required.",
+              "evidenceStatus": "implementation",
+              "evidence": "none",
+              "supportsExecution": false,
+              "supportsProof": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "supportedAssets": [
+                "ZEC"
+              ],
+              "provider": null
             }
           ],
           "networkAvailability": [
@@ -4233,12 +4392,12 @@ export const runtimeCatalog = {
             },
             {
               "network": "zcash-testnet",
-              "stage": "planned",
+              "stage": "available",
               "environment": "testnet",
               "chainId": null,
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "implementation",
               "evidence": "none",
               "executable": false,
               "supportsProof": false,
@@ -4446,6 +4605,23 @@ export const runtimeCatalog = {
                 "XLM"
               ],
               "provider": "stellar-testnet-horizon"
+            },
+            {
+              "network": "zcash-testnet",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://auction.settle",
+              "method": null,
+              "note": "Zcash Testnet is routed through the Kernel Gateway; independent Orchard product evidence is still required.",
+              "evidenceStatus": "implementation",
+              "evidence": "none",
+              "supportsExecution": false,
+              "supportsProof": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "supportedAssets": [
+                "ZEC"
+              ],
+              "provider": null
             }
           ],
           "networkAvailability": [
@@ -4703,12 +4879,12 @@ export const runtimeCatalog = {
             },
             {
               "network": "zcash-testnet",
-              "stage": "planned",
+              "stage": "available",
               "environment": "testnet",
               "chainId": null,
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "implementation",
               "evidence": "none",
               "executable": false,
               "supportsProof": false,
@@ -5065,7 +5241,7 @@ export const runtimeCatalog = {
             },
             {
               "network": "zcash-testnet",
-              "stage": "planned",
+              "stage": "available",
               "environment": "testnet",
               "chainId": null,
               "declared": false,
@@ -5416,7 +5592,7 @@ export const runtimeCatalog = {
             },
             {
               "network": "zcash-testnet",
-              "stage": "planned",
+              "stage": "available",
               "environment": "testnet",
               "chainId": null,
               "declared": false,
@@ -5601,7 +5777,7 @@ export const runtimeCatalog = {
       "id": "zcash-testnet",
       "label": "Zcash Testnet",
       "family": "utxo",
-      "stage": "planned",
+      "stage": "available",
       "environment": "testnet"
     },
     {

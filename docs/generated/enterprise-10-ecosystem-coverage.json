@@ -341,7 +341,7 @@
     {
       "product": "blind-verification",
       "ecosystem": "zcash",
-      "declaredLaneCount": 0,
+      "declaredLaneCount": 1,
       "executableLaneCount": 0,
       "status": "planned",
       "capabilities": [
@@ -351,17 +351,17 @@
             {
               "network": "zcash-testnet",
               "environment": "testnet",
-              "declared": false,
-              "mode": "unbound",
-              "status": "planned",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "status": "implementation",
               "evidence": "none",
               "provider": null,
               "supportsExecution": false,
               "supportsReceipt": false,
               "supportsReconciliation": false,
               "executable": false,
-              "entrypoint": null,
-              "note": "Missing application binding."
+              "entrypoint": "kernel://verification.blind.prove",
+              "note": "Zcash Testnet is routed through the Kernel Gateway; independent Orchard product evidence is still required."
             }
           ]
         }
@@ -981,7 +981,7 @@
     {
       "product": "record-verification",
       "ecosystem": "zcash",
-      "declaredLaneCount": 0,
+      "declaredLaneCount": 2,
       "executableLaneCount": 0,
       "status": "planned",
       "capabilities": [
@@ -991,17 +991,17 @@
             {
               "network": "zcash-testnet",
               "environment": "testnet",
-              "declared": false,
-              "mode": "unbound",
-              "status": "planned",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "status": "implementation",
               "evidence": "none",
               "provider": null,
               "supportsExecution": false,
               "supportsReceipt": false,
               "supportsReconciliation": false,
               "executable": false,
-              "entrypoint": null,
-              "note": "Missing application binding."
+              "entrypoint": "kernel://verification.record.create",
+              "note": "Zcash Testnet is routed through the Kernel Gateway; independent Orchard product evidence is still required."
             }
           ]
         },
@@ -1011,17 +1011,17 @@
             {
               "network": "zcash-testnet",
               "environment": "testnet",
-              "declared": false,
-              "mode": "unbound",
-              "status": "planned",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "status": "implementation",
               "evidence": "none",
               "provider": null,
               "supportsExecution": false,
               "supportsReceipt": false,
               "supportsReconciliation": false,
               "executable": false,
-              "entrypoint": null,
-              "note": "Missing application binding."
+              "entrypoint": "kernel://verification.record.verify",
+              "note": "Zcash Testnet is routed through the Kernel Gateway; independent Orchard product evidence is still required."
             }
           ]
         }
@@ -1926,7 +1926,7 @@
     {
       "product": "payroll",
       "ecosystem": "zcash",
-      "declaredLaneCount": 0,
+      "declaredLaneCount": 3,
       "executableLaneCount": 0,
       "status": "planned",
       "capabilities": [
@@ -1936,17 +1936,17 @@
             {
               "network": "zcash-testnet",
               "environment": "testnet",
-              "declared": false,
-              "mode": "unbound",
-              "status": "planned",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "status": "implementation",
               "evidence": "none",
               "provider": null,
               "supportsExecution": false,
               "supportsReceipt": false,
               "supportsReconciliation": false,
               "executable": false,
-              "entrypoint": null,
-              "note": "Missing application binding."
+              "entrypoint": "kernel://payroll.calculate",
+              "note": "Zcash Testnet is routed through the Kernel Gateway; independent Orchard product evidence is still required."
             }
           ]
         },
@@ -1956,17 +1956,17 @@
             {
               "network": "zcash-testnet",
               "environment": "testnet",
-              "declared": false,
-              "mode": "unbound",
-              "status": "planned",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "status": "implementation",
               "evidence": "none",
               "provider": null,
               "supportsExecution": false,
               "supportsReceipt": false,
               "supportsReconciliation": false,
               "executable": false,
-              "entrypoint": null,
-              "note": "Missing application binding."
+              "entrypoint": "kernel://payroll.approve",
+              "note": "Zcash Testnet is routed through the Kernel Gateway; independent Orchard product evidence is still required."
             }
           ]
         },
@@ -1976,17 +1976,17 @@
             {
               "network": "zcash-testnet",
               "environment": "testnet",
-              "declared": false,
-              "mode": "unbound",
-              "status": "planned",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "status": "implementation",
               "evidence": "none",
               "provider": null,
               "supportsExecution": false,
               "supportsReceipt": false,
               "supportsReconciliation": false,
               "executable": false,
-              "entrypoint": null,
-              "note": "Missing application binding."
+              "entrypoint": "kernel://payroll.settle",
+              "note": "Zcash Testnet is routed through the Kernel Gateway; independent Orchard product evidence is still required."
             }
           ]
         }
@@ -2441,7 +2441,7 @@
     {
       "product": "treasury",
       "ecosystem": "zcash",
-      "declaredLaneCount": 0,
+      "declaredLaneCount": 1,
       "executableLaneCount": 0,
       "status": "planned",
       "capabilities": [
@@ -2451,17 +2451,17 @@
             {
               "network": "zcash-testnet",
               "environment": "testnet",
-              "declared": false,
-              "mode": "unbound",
-              "status": "planned",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "status": "implementation",
               "evidence": "none",
               "provider": null,
               "supportsExecution": false,
               "supportsReceipt": false,
               "supportsReconciliation": false,
               "executable": false,
-              "entrypoint": null,
-              "note": "Missing application binding."
+              "entrypoint": "kernel://treasury.policy.check",
+              "note": "Zcash Testnet is routed through the Kernel Gateway; independent Orchard product evidence is still required."
             }
           ]
         }
@@ -2836,7 +2836,7 @@
     {
       "product": "governance",
       "ecosystem": "zcash",
-      "declaredLaneCount": 0,
+      "declaredLaneCount": 1,
       "executableLaneCount": 0,
       "status": "planned",
       "capabilities": [
@@ -2846,17 +2846,17 @@
             {
               "network": "zcash-testnet",
               "environment": "testnet",
-              "declared": false,
-              "mode": "unbound",
-              "status": "planned",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "status": "implementation",
               "evidence": "none",
               "provider": null,
               "supportsExecution": false,
               "supportsReceipt": false,
               "supportsReconciliation": false,
               "executable": false,
-              "entrypoint": null,
-              "note": "Missing application binding."
+              "entrypoint": "kernel://governance.proposal.execute",
+              "note": "Zcash Testnet is routed through the Kernel Gateway; independent Orchard product evidence is still required."
             }
           ]
         }
@@ -3476,7 +3476,7 @@
     {
       "product": "auction",
       "ecosystem": "zcash",
-      "declaredLaneCount": 0,
+      "declaredLaneCount": 2,
       "executableLaneCount": 0,
       "status": "planned",
       "capabilities": [
@@ -3486,17 +3486,17 @@
             {
               "network": "zcash-testnet",
               "environment": "testnet",
-              "declared": false,
-              "mode": "unbound",
-              "status": "planned",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "status": "implementation",
               "evidence": "none",
               "provider": null,
               "supportsExecution": false,
               "supportsReceipt": false,
               "supportsReconciliation": false,
               "executable": false,
-              "entrypoint": null,
-              "note": "Missing application binding."
+              "entrypoint": "kernel://auction.bid.commit",
+              "note": "Zcash Testnet is routed through the Kernel Gateway; independent Orchard product evidence is still required."
             }
           ]
         },
@@ -3506,17 +3506,17 @@
             {
               "network": "zcash-testnet",
               "environment": "testnet",
-              "declared": false,
-              "mode": "unbound",
-              "status": "planned",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "status": "implementation",
               "evidence": "none",
               "provider": null,
               "supportsExecution": false,
               "supportsReceipt": false,
               "supportsReconciliation": false,
               "executable": false,
-              "entrypoint": null,
-              "note": "Missing application binding."
+              "entrypoint": "kernel://auction.settle",
+              "note": "Zcash Testnet is routed through the Kernel Gateway; independent Orchard product evidence is still required."
             }
           ]
         }

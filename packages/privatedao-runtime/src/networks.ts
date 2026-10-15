@@ -192,7 +192,9 @@ export const NETWORK_MATRIX: readonly NetworkDescriptor[] = [
     id: "zcash-testnet",
     label: "Zcash Testnet",
     family: "utxo",
-    stage: "planned",
+    // The Kernel adapter and Gateway route are available; product E2E evidence
+    // remains tracked independently in the capability registry.
+    stage: "available",
     environment: "testnet",
     finalityModel: "shielded transaction confirmation",
   },

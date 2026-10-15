@@ -2,6 +2,8 @@ import assert from "node:assert/strict";
 import { mkdir, writeFile } from "node:fs/promises";
 import { dirname } from "node:path";
 import {
+  createPrivateDaoRuntime,
+  InMemoryProviderRegistry,
   ZCASH_NETWORK_CONFIGS,
   ZalletCliTransport,
   ZcashNetworkAdapter,
@@ -68,6 +70,9 @@ const adapter = new ZcashNetworkAdapter({
   capabilities: [capability],
   transport,
 });
+const providers = new InMemoryProviderRegistry();
+providers.register(adapter);
+const runtime = createPrivateDaoRuntime(providers);
 
 const health = await adapter.health();
 assert.equal(
@@ -101,7 +106,7 @@ const intent = {
   ],
 };
 
-const prepared = await adapter.prepare(intent);
+const prepared = await runtime.gateway.prepare(intent, "maker");
 if (dryRun) {
   await emitResult({
     network: "zcash-testnet",
@@ -116,12 +121,12 @@ if (dryRun) {
   });
   process.exit(0);
 }
-const submitted = await adapter.submit(prepared, prepared.unsignedPayload);
+const submitted = await runtime.gateway.submit(prepared, prepared.unsignedPayload, "maker");
 const deadline = Date.now() + receiptTimeoutMs;
 let receipt;
 while (Date.now() < deadline) {
   try {
-    receipt = await adapter.receipt(submitted.executionId);
+    receipt = await runtime.gateway.receipt({ executionId: submitted.executionId, intent: prepared.intent }, "maker");
     break;
   } catch (error) {
     if (!(error instanceof Error) || !/not sufficiently confirmed/i.test(error.message)) throw error;
