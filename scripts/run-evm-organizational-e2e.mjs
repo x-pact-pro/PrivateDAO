@@ -9,6 +9,7 @@ import {
   encodeAbiParameters,
   http,
   keccak256,
+  formatUnits,
   parseAbi,
   parseEther,
   parseUnits,
@@ -228,7 +229,16 @@ const deployerBalance = tempoTokenMode
 const minimumFunding = tempoTokenMode
   ? parseUnits(process.env.PDAO_EVM_MINIMUM_FUNDING || "2", TEMPO_TOKEN_DECIMALS)
   : parseEther(process.env.PDAO_EVM_MINIMUM_FUNDING || "0.01");
-assert.ok(deployerBalance > minimumFunding, `deployer lacks enough ${tempoTokenMode ? "Tempo pathUSD" : "native testnet asset"} for ${NETWORK} E2E`);
+if (deployerBalance <= minimumFunding) {
+  const unit = tempoTokenMode ? "pathUSD" : networkConfig.currency.symbol;
+  const decimals = tempoTokenMode ? TEMPO_TOKEN_DECIMALS : 18;
+  throw new Error(
+    `deployer lacks enough ${unit} for ${NETWORK} E2E: ` +
+    `balance=${formatUnits(deployerBalance, decimals)} ${unit}, ` +
+    `required>${formatUnits(minimumFunding, decimals)} ${unit}, ` +
+    `address=${deployer.address}`,
+  );
+}
 
 const deployments = {
   network: NETWORK,
