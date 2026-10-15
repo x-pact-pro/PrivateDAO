@@ -23,6 +23,7 @@ const network = "solana-devnet";
 const capability = "treasury.policy.check";
 let prepareCalls = 0;
 let submitCalls = 0;
+let receiptNetwork = network;
 
 const provider = {
   id: "runtime-test-provider",
@@ -52,7 +53,7 @@ const provider = {
       executionId,
       requestId: "runtime-test-request",
       capability,
-      network,
+      network: receiptNetwork,
       state: "finalized",
       signatures: ["runtime-test-signature"],
       createdAt: new Date(0).toISOString(),
@@ -85,6 +86,12 @@ const [submittedFirst, submittedSecond] = await Promise.all([
 ]);
 assert.equal(submitCalls, 1);
 assert.deepEqual(submittedFirst, submittedSecond);
+assert.equal((await kernel.receipt(first.executionId)).network, network);
+receiptNetwork = "ethereum-sepolia";
+await assert.rejects(
+  () => kernel.receipt(first.executionId),
+  (error) => error?.code === "PROVIDER_FAILURE" && /prepared execution context/.test(error.details?.cause || ""),
+);
 
 const products = listProducts();
 assert.equal(products.find((product) => product.id === "blind-verification")?.name, "Blind Verification");

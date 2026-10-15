@@ -260,7 +260,16 @@ export class PrivateDaoKernel {
     const record = this.getRecord(executionId);
     try {
       const receipt = await record.provider.receipt<TResult>(executionId);
-      if (receipt.executionId !== executionId) throw new Error("Provider returned a receipt for a different execution.");
+      const expectedContext = record.prepared.intent.context;
+      if (
+        receipt.executionId !== executionId ||
+        receipt.requestId !== expectedContext.requestId ||
+        receipt.capability !== expectedContext.capability ||
+        receipt.network !== expectedContext.network ||
+        (receipt.provider !== undefined && receipt.provider !== record.provider.id)
+      ) {
+        throw new Error("Provider returned a receipt that does not match the prepared execution context.");
+      }
       record.receipt = receipt;
       record.state = receipt.state;
       this.emit({
