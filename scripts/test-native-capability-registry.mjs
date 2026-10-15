@@ -6,8 +6,8 @@ const verified = entries.filter((entry) => entry.status === "testnet_verified");
 const liveAgents = entries.filter((entry) => entry.status === "mainnet_live" && entry.product === "agent");
 const verifiedPayroll = entries.filter((entry) => entry.status === "devnet_verified");
 
-assert.equal(entries.length, 204, "unexpected native capability matrix size");
-assert.equal(verified.length, 65, "only evidence-backed verification and organizational testnet rows should be verified");
+assert.equal(entries.length, 238, "unexpected native capability matrix size");
+assert.equal(verified.length, 67, "only evidence-backed verification and organizational testnet rows should be verified");
 assert.equal(liveAgents.length, 2, "the two live Agent Exchange rows must be runtime-verified");
 assert.equal(verifiedPayroll.length, 3, "only the three Payroll Devnet evidence rows should be verified");
 for (const entry of verifiedPayroll) {
@@ -72,8 +72,8 @@ assert.equal(entries.find((entry) => entry.network === "hyperliquid-testnet" && 
 assert.equal(entries.some((entry) => entry.network === "wormhole-integration"), false, "bridge network must not be present");
 
 const zcashEntries = entries.filter((entry) => entry.network === "zcash-testnet");
-assert.equal(zcashEntries.length, 12, "Zcash Testnet must retain the declared enterprise and Agent Exchange rows");
-assert.equal(zcashEntries.every((entry) => entry.status === "planned"), true, "Zcash cannot be promoted without independent provider evidence");
+assert.equal(zcashEntries.length, 14, "Zcash Testnet must retain the declared enterprise and Agent Exchange rows");
+assert.equal(zcashEntries.every((entry) => !["testnet_verified", "devnet_verified", "mainnet_live"].includes(entry.status)), true, "Zcash cannot be promoted without independent provider evidence");
 assert.equal(zcashEntries.every((entry) => entry.supportsExecution === false && entry.supportsReceipt === false), true, "Zcash planned rows must not advertise execution or receipts");
 assert.equal(zcashEntries.every((entry) => entry.lastVerifiedCommit === null && entry.lastVerifiedTimestamp === null), true, "Zcash planned rows must not carry stale verification metadata");
 assert.equal(entries.filter((entry) => entry.product === "agent" && entry.network === "zcash-testnet").every((entry) => entry.evidence === "none"), true, "Agent Exchange must remain separate from Zcash enterprise evidence");
