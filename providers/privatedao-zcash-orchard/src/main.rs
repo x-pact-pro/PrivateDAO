@@ -334,14 +334,15 @@ fn recover_wallet() -> Result<()> {
     let _ = rustls::crypto::ring::default_provider().install_default();
     let runtime = tokio::runtime::Runtime::new().context("unable to create Tokio runtime")?;
     runtime.block_on(async {
-        let endpoint_builder = Endpoint::from_shared(endpoint.clone())?
+        let endpoint_builder = Endpoint::from_shared(endpoint.clone())
+            .map_err(|_| anyhow::anyhow!("lightwalletd endpoint is invalid"))?
             .connect_timeout(std::time::Duration::from_secs(15));
         let channel = endpoint_builder
             .tls_config(ClientTlsConfig::new().with_webpki_roots())
             .context("unable to configure lightwalletd TLS")?
             .connect()
             .await
-        .with_context(|| format!("unable to connect to lightwalletd endpoint {endpoint}"))?;
+        .context("unable to connect to configured lightwalletd endpoint")?;
         let mut client = CompactTxStreamerClient::new(channel);
 
         let tree_state = client
