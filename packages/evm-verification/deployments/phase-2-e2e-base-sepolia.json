@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-17T09:43:13.310Z",
+  "generatedAt": "2026-10-15T17:06:54.672Z",
   "status": "testnet_verified",
   "scope": [
     "base-sepolia"
@@ -26,22 +26,22 @@
         }
       },
       "record": {
-        "txHash": "0x7b49ff793e588760095b234189c4fa35829be5dc960f2d22f4d1683a4e16bbe2",
-        "blockNumber": "46934942",
-        "verificationId": "0x20e1ef89e6e1080e58c4db810a06313825373a9745b3007da38a9b7fcc16ee48",
-        "explorerUrl": "https://sepolia.basescan.org/tx/0x7b49ff793e588760095b234189c4fa35829be5dc960f2d22f4d1683a4e16bbe2"
+        "txHash": "0x72964ae29366f37205f61de17f2fcfab08dd93083e88db0f1a49cf20b82c871b",
+        "blockNumber": "48157851",
+        "verificationId": "0xa21015511e8bd40a03ae9fe45d86533969f7993116c5564cf1941cea57986ba6",
+        "explorerUrl": "https://sepolia.basescan.org/tx/0x72964ae29366f37205f61de17f2fcfab08dd93083e88db0f1a49cf20b82c871b"
       },
       "blind": {
-        "txHash": "0x220af80816988d9d19ab102160b8946ebac428caef6e65150534f8544917d243",
-        "blockNumber": "46934944",
-        "verificationId": "0x624a5057d97b5f6db52390a1cb12e85f58f1beac4177298ce93a525e10f11de8",
-        "explorerUrl": "https://sepolia.basescan.org/tx/0x220af80816988d9d19ab102160b8946ebac428caef6e65150534f8544917d243"
+        "txHash": "0x844981da5705ead57029e8bd24e1c822305b51860430fb77f681dde169bfa03d",
+        "blockNumber": "48157857",
+        "verificationId": "0xe55f021978205b58614641a04ffefa870dc491ab1fe3103c5dd78c0f3703af45",
+        "explorerUrl": "https://sepolia.basescan.org/tx/0x844981da5705ead57029e8bd24e1c822305b51860430fb77f681dde169bfa03d"
       },
       "revocation": {
-        "recordTxHash": "0x52b0565f2c5629822443bdfd390a898a2c876d4be60aea348d1c832cdb765ef5",
-        "blindTxHash": "0xdc30bb8f1fe8f951fbf189fb1fbb54526eadecdda437185381c647e336ba1ba5",
-        "disposableRecordVerificationId": "0x9840a0471ec5371bc8956f2aee53722d8182f0560b5dd9e04e86c8e230525d92",
-        "disposableBlindVerificationId": "0x68e8da879ba2bfd9590bea92c2a6e51cd3b557b77488a3c5956c33b04a86ffce"
+        "recordTxHash": "0xbd1f31e060d501da71a21381b589c4c10e5462cfdaa8d950f22764609790ca00",
+        "blindTxHash": "0xb7333da6b9a217da7c4cad5a56f35559ed41115646fd7b7c7d94ce290f827669",
+        "disposableRecordVerificationId": "0x0e86774d91344696f2db808d8c679fd22667caff2672c6a0d91388d1c19107e7",
+        "disposableBlindVerificationId": "0xd0d38453c2b721b8367b360d4fafb555e98c64d15ae7ad6f37cd634a39ddbee4"
       },
       "checks": {
         "recordVerified": true,
@@ -54,8 +54,8 @@
         "blindProofRevoked": true
       },
       "links": {
-        "record": "https://privatedao.org/verify/evm?network=base-sepolia&type=record&id=0x20e1ef89e6e1080e58c4db810a06313825373a9745b3007da38a9b7fcc16ee48",
-        "blind": "https://privatedao.org/verify/evm?network=base-sepolia&type=blind&id=0x624a5057d97b5f6db52390a1cb12e85f58f1beac4177298ce93a525e10f11de8"
+        "record": "https://privatedao.org/verify/evm?network=base-sepolia&type=record&id=0xa21015511e8bd40a03ae9fe45d86533969f7993116c5564cf1941cea57986ba6",
+        "blind": "https://privatedao.org/verify/evm?network=base-sepolia&type=blind&id=0xe55f021978205b58614641a04ffefa870dc491ab1fe3103c5dd78c0f3703af45"
       }
     }
   ]

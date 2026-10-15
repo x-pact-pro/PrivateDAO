@@ -61,8 +61,8 @@ const BASE_SEPOLIA_EVIDENCE = {
     "0xa0cbe18d8b8b54befda83f33288347466f2c88b9",
   ],
   provider: "evm-base-sepolia",
-  commit: "7dcfce7",
-  timestamp: "2026-09-17T00:39:48.896Z",
+  commit: "a3859799d",
+  timestamp: "2026-10-15T17:06:54.672Z",
 } as const;
 
 const ARBITRUM_SEPOLIA_EVIDENCE = {
@@ -294,8 +294,8 @@ function applyEthereumSepoliaEvidence(entry: NativeCapabilityEntry): NativeCapab
 }
 
 function applyBaseSepoliaEvidence(entry: NativeCapabilityEntry): NativeCapabilityEntry {
-  const isBlind = entry.product === "blind-verification" && entry.capability === "verification.blind.prove";
-  const isRecord = entry.product === "record-verification" && ["verification.record.create", "verification.record.verify"].includes(entry.capability);
+  const isBlind = entry.product === "blind-verification" && ["verification.blind.prove", "verification.blind.revoke"].includes(entry.capability);
+  const isRecord = entry.product === "record-verification" && ["verification.record.create", "verification.record.verify", "verification.record.revoke"].includes(entry.capability);
   if (entry.network !== "base-sepolia" || (!isBlind && !isRecord)) return entry;
   return {
     ...entry,
