@@ -6595,7 +6595,8 @@ async function handle(req: http.IncomingMessage, res: http.ServerResponse) {
           publicOutcome: proofPackage.publicOutcome,
           proofHash: proofPackage.originalProofHash,
           publicProofPackage: proofPackage,
-          privateDataExcluded: proofPackage.valuesHiddenDuringAuction,
+          privateDataExcluded: true,
+          hiddenFields: [...proofPackage.valuesHiddenDuringAuction],
           explanation: "Private bid values and salts are excluded from the public proof package.",
         });
       } catch {

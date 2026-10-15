@@ -54,7 +54,8 @@ try {
   });
   assert.equal(bid.status, 200, JSON.stringify(bid.body));
   assert.equal(bid.body.ok, true);
-  assert.equal(bid.body.privateDataExcluded.length > 0, true);
+  assert.equal(bid.body.privateDataExcluded, true);
+  assert.equal(Array.isArray(bid.body.hiddenFields) && bid.body.hiddenFields.length > 0, true);
 
   const bidderA = new Uint8Array(32).fill(0x11);
   const bidderB = new Uint8Array(32).fill(0x22);

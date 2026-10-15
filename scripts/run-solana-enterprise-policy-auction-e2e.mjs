@@ -72,7 +72,15 @@ const serializedOutcomeMetadata = Object.fromEntries(
 const bidReceipt = await execute({
   context: context("auction", "auction.bid.commit", "privatedao-auction-bid-commit"),
   payload: {
-    config: { auctionId: `${runId}-auction`, network, asset: "SOL" },
+    config: {
+      auctionId: `${runId}-auction`,
+      title: "PrivateDAO enterprise policy auction",
+      mode: "public-sealed",
+      startingPrice: 1,
+      depositRequired: 1,
+      network,
+      asset: "SOL",
+    },
     privateBids: [
       { bidderId: "bidder-a", amount: 10, salt: "salt-a" },
       { bidderId: "bidder-b", amount: 20, salt: "salt-b" },
