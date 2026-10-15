@@ -93,10 +93,15 @@ async function runOne(product, capability) {
   assert.equal(evidence.product, product);
   assert.equal(evidence.capability, capability);
   if (process.env.PDAO_ZCASH_DRY_RUN === "1") assert.equal(evidence.broadcastAttempted, false);
+  const statusLabel = evidence.state === "finalized"
+    ? "pass"
+    : evidence.state === "prepared"
+      ? "dry-run"
+      : "fail";
   return {
     product,
     capability,
-    status: evidence.state === "finalized" || evidence.state === "prepared" ? "pass" : "fail",
+    status: statusLabel,
     executionId: evidence.executionId,
     signature: evidence.signature,
     blockNumber: evidence.blockNumber,
