@@ -70,4 +70,11 @@ assert.equal(entries.find((entry) => entry.network === "hyperliquid-testnet" && 
 assert.equal(entries.find((entry) => entry.network === "hyperliquid-testnet" && entry.product === "record-verification")?.status, "testnet_verified", "HyperEVM record verification must reflect its committed E2E evidence");
 
 assert.equal(entries.some((entry) => entry.network === "wormhole-integration"), false, "bridge network must not be present");
+
+const zcashEntries = entries.filter((entry) => entry.network === "zcash-testnet");
+assert.equal(zcashEntries.length, 12, "Zcash Testnet must retain the declared enterprise and Agent Exchange rows");
+assert.equal(zcashEntries.every((entry) => entry.status === "planned"), true, "Zcash cannot be promoted without independent provider evidence");
+assert.equal(zcashEntries.every((entry) => entry.supportsExecution === false && entry.supportsReceipt === false), true, "Zcash planned rows must not advertise execution or receipts");
+assert.equal(zcashEntries.every((entry) => entry.lastVerifiedCommit === null && entry.lastVerifiedTimestamp === null), true, "Zcash planned rows must not carry stale verification metadata");
+assert.equal(entries.filter((entry) => entry.product === "agent" && entry.network === "zcash-testnet").every((entry) => entry.evidence === "none"), true, "Agent Exchange must remain separate from Zcash enterprise evidence");
 console.log(`[native-capability-registry] rows=${entries.length} verified=${verified.length} bridge-free=true`);
