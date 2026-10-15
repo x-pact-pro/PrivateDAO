@@ -105,6 +105,7 @@
     "verify:stellar:evidence": "node --import tsx scripts/verify-stellar-product-e2e-evidence.mjs",
     "test:runtime:zcash-foundation": "node --import tsx scripts/test-zcash-foundation.mjs",
     "test:zcash:e2e-runner": "node scripts/test-zcash-e2e-runner.mjs",
+    "test:zcash:gateway-path": "node scripts/test-zcash-gateway-path.mjs",
     "test:zcash:wait-ready": "node scripts/test-zcash-wait-ready.mjs",
     "status:zcash:testnet": "node scripts/check-zcash-testnet-sync.mjs",
     "wait:zcash:testnet-ready": "node scripts/wait-zcash-testnet-ready.mjs",
