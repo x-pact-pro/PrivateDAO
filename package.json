@@ -111,6 +111,8 @@
     "test:evm:phase2": "node --import tsx packages/evm-verification/scripts/run-e2e.mjs",
     "test:evm:organizational": "node --import tsx scripts/run-evm-organizational-e2e.mjs",
     "verify:evm:organizational:hyperliquid": "node scripts/verify-organizational-hyperliquid-evidence.mjs",
+    "test:evm:kernel:hyperliquid": "node --import tsx scripts/test-hyperliquid-kernel-organizational.mjs",
+    "verify:evm:kernel:hyperliquid": "node scripts/verify-hyperliquid-kernel-evidence.mjs",
     "verify:bnb:evidence": "node scripts/verify-bnb-evidence.mjs",
     "verify:bnb:organizational-evidence": "node scripts/verify-bnb-organizational-evidence.mjs",
     "verify:bnb:organizational-readiness": "node scripts/verify-bnb-organizational-readiness.mjs",

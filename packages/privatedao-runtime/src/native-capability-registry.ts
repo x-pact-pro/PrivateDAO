@@ -211,6 +211,17 @@ const ORGANIZATIONAL_EVIDENCE = {
     commit: "ef862608a",
     timestamp: "2026-10-11T17:04:22.062Z",
   },
+  "hyperliquid-testnet": {
+    provider: "evm-hyperliquid-testnet-organizational",
+    contracts: [
+      "0x6376b8909dba5d61d3267eb092fdd51718cfc524",
+      "0x987457e59339e8e291db1cb58a71a19af82e81ff",
+      "0x672899b8ad719468b20ee0b662bc30a8a22e6585",
+    ],
+    assets: ["HYPE"],
+    commit: "25ed8bb4b",
+    timestamp: "2026-10-15T02:42:28.053Z",
+  },
 } as const;
 
 function nativeAsset(network: NetworkDescriptor): string | null {

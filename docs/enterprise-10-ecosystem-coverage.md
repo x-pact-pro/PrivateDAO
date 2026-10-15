@@ -44,7 +44,7 @@ A lane is **verified** only when it is declared, bound through kernel://, has an
 | treasury | robinhood | verified | 1/1 | treasury.policy.check: robinhood-testnet=kernel-gateway/testnet_verified, robinhood-mainnet=unbound/planned |
 | treasury | tempo | verified | 1/1 | treasury.policy.check: tempo-testnet=kernel-gateway/testnet_verified, tempo-mainnet=unbound/planned |
 | treasury | zcash | planned | 0/0 | treasury.policy.check: zcash-testnet=unbound/planned |
-| treasury | hyperliquid | planned | 0/0 | treasury.policy.check: hyperliquid-testnet=unbound/planned |
+| treasury | hyperliquid | verified | 1/1 | treasury.policy.check: hyperliquid-testnet=kernel-gateway/testnet_verified |
 | treasury | stellar | verified | 1/1 | treasury.policy.check: stellar-testnet=kernel-gateway/testnet_verified |
 | governance | solana | unbound | 0/1 | governance.proposal.execute: solana-devnet=unbound/implementation, solana-mainnet-beta=unbound/planned |
 | governance | ethereum | verified | 1/1 | governance.proposal.execute: ethereum-sepolia=kernel-gateway/testnet_verified, ethereum-mainnet=unbound/planned |
@@ -54,7 +54,7 @@ A lane is **verified** only when it is declared, bound through kernel://, has an
 | governance | robinhood | verified | 1/1 | governance.proposal.execute: robinhood-testnet=kernel-gateway/testnet_verified, robinhood-mainnet=unbound/planned |
 | governance | tempo | verified | 1/1 | governance.proposal.execute: tempo-testnet=kernel-gateway/testnet_verified, tempo-mainnet=unbound/planned |
 | governance | zcash | planned | 0/0 | governance.proposal.execute: zcash-testnet=unbound/planned |
-| governance | hyperliquid | planned | 0/0 | governance.proposal.execute: hyperliquid-testnet=unbound/planned |
+| governance | hyperliquid | verified | 1/1 | governance.proposal.execute: hyperliquid-testnet=kernel-gateway/testnet_verified |
 | governance | stellar | verified | 1/1 | governance.proposal.execute: stellar-testnet=kernel-gateway/testnet_verified |
 | auction | solana | planned | 0/2 | auction.bid.commit: solana-devnet=kernel-gateway/implementation, solana-mainnet-beta=unbound/planned; auction.settle: solana-devnet=kernel-gateway/implementation, solana-mainnet-beta=unbound/planned |
 | auction | ethereum | verified | 2/2 | auction.bid.commit: ethereum-sepolia=kernel-gateway/testnet_verified, ethereum-mainnet=unbound/planned; auction.settle: ethereum-sepolia=kernel-gateway/testnet_verified, ethereum-mainnet=unbound/planned |
@@ -64,5 +64,5 @@ A lane is **verified** only when it is declared, bound through kernel://, has an
 | auction | robinhood | verified | 2/2 | auction.bid.commit: robinhood-testnet=kernel-gateway/testnet_verified, robinhood-mainnet=unbound/planned; auction.settle: robinhood-testnet=kernel-gateway/testnet_verified, robinhood-mainnet=unbound/planned |
 | auction | tempo | verified | 2/2 | auction.bid.commit: tempo-testnet=kernel-gateway/testnet_verified, tempo-mainnet=unbound/planned; auction.settle: tempo-testnet=kernel-gateway/testnet_verified, tempo-mainnet=unbound/planned |
 | auction | zcash | planned | 0/0 | auction.bid.commit: zcash-testnet=unbound/planned; auction.settle: zcash-testnet=unbound/planned |
-| auction | hyperliquid | planned | 0/0 | auction.bid.commit: hyperliquid-testnet=unbound/planned; auction.settle: hyperliquid-testnet=unbound/planned |
+| auction | hyperliquid | verified | 2/2 | auction.bid.commit: hyperliquid-testnet=kernel-gateway/testnet_verified; auction.settle: hyperliquid-testnet=kernel-gateway/testnet_verified |
 | auction | stellar | verified | 2/2 | auction.bid.commit: stellar-testnet=kernel-gateway/testnet_verified; auction.settle: stellar-testnet=kernel-gateway/testnet_verified |

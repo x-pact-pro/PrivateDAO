@@ -2470,9 +2470,9 @@
     {
       "product": "treasury",
       "ecosystem": "hyperliquid",
-      "declaredLaneCount": 0,
-      "executableLaneCount": 0,
-      "status": "planned",
+      "declaredLaneCount": 1,
+      "executableLaneCount": 1,
+      "status": "verified",
       "capabilities": [
         {
           "capability": "treasury.policy.check",
@@ -2480,17 +2480,17 @@
             {
               "network": "hyperliquid-testnet",
               "environment": "testnet",
-              "declared": false,
-              "mode": "unbound",
-              "status": "planned",
-              "evidence": "none",
-              "provider": "evm-hyperliquid-testnet",
-              "supportsExecution": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
-              "executable": false,
-              "entrypoint": null,
-              "note": "Missing application binding."
+              "declared": true,
+              "mode": "kernel-gateway",
+              "status": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "provider": "evm-hyperliquid-testnet-organizational",
+              "supportsExecution": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "executable": true,
+              "entrypoint": "kernel://treasury.policy.check",
+              "note": "HyperEVM Testnet organizational Treasury is backed by the committed contract workflow and a Kernel Gateway receipt."
             }
           ]
         }
@@ -2865,9 +2865,9 @@
     {
       "product": "governance",
       "ecosystem": "hyperliquid",
-      "declaredLaneCount": 0,
-      "executableLaneCount": 0,
-      "status": "planned",
+      "declaredLaneCount": 1,
+      "executableLaneCount": 1,
+      "status": "verified",
       "capabilities": [
         {
           "capability": "governance.proposal.execute",
@@ -2875,17 +2875,17 @@
             {
               "network": "hyperliquid-testnet",
               "environment": "testnet",
-              "declared": false,
-              "mode": "unbound",
-              "status": "planned",
-              "evidence": "none",
-              "provider": "evm-hyperliquid-testnet",
-              "supportsExecution": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
-              "executable": false,
-              "entrypoint": null,
-              "note": "Missing application binding."
+              "declared": true,
+              "mode": "kernel-gateway",
+              "status": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "provider": "evm-hyperliquid-testnet-organizational",
+              "supportsExecution": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "executable": true,
+              "entrypoint": "kernel://governance.proposal.execute",
+              "note": "HyperEVM Testnet organizational Governance is backed by the committed proposal workflow and a Kernel Gateway receipt."
             }
           ]
         }
@@ -3525,9 +3525,9 @@
     {
       "product": "auction",
       "ecosystem": "hyperliquid",
-      "declaredLaneCount": 0,
-      "executableLaneCount": 0,
-      "status": "planned",
+      "declaredLaneCount": 2,
+      "executableLaneCount": 2,
+      "status": "verified",
       "capabilities": [
         {
           "capability": "auction.bid.commit",
@@ -3535,17 +3535,17 @@
             {
               "network": "hyperliquid-testnet",
               "environment": "testnet",
-              "declared": false,
-              "mode": "unbound",
-              "status": "planned",
-              "evidence": "none",
-              "provider": "evm-hyperliquid-testnet",
-              "supportsExecution": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
-              "executable": false,
-              "entrypoint": null,
-              "note": "Missing application binding."
+              "declared": true,
+              "mode": "kernel-gateway",
+              "status": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "provider": "evm-hyperliquid-testnet-organizational",
+              "supportsExecution": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "executable": true,
+              "entrypoint": "kernel://auction.bid.commit",
+              "note": "HyperEVM Testnet sealed auction bid commitment is backed by the committed organizational workflow and a Kernel Gateway receipt."
             }
           ]
         },
@@ -3555,17 +3555,17 @@
             {
               "network": "hyperliquid-testnet",
               "environment": "testnet",
-              "declared": false,
-              "mode": "unbound",
-              "status": "planned",
-              "evidence": "none",
-              "provider": "evm-hyperliquid-testnet",
-              "supportsExecution": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
-              "executable": false,
-              "entrypoint": null,
-              "note": "Missing application binding."
+              "declared": true,
+              "mode": "kernel-gateway",
+              "status": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "provider": "evm-hyperliquid-testnet-organizational",
+              "supportsExecution": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "executable": true,
+              "entrypoint": "kernel://auction.settle",
+              "note": "HyperEVM Testnet sealed auction settlement is backed by the committed organizational workflow and a Kernel Gateway receipt."
             }
           ]
         }

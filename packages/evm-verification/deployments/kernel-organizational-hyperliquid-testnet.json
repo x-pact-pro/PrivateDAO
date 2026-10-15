@@ -1,0 +1,32 @@
+{
+  "schema": "privatedao.kernel-organizational-e2e.v1",
+  "network": "hyperliquid-testnet",
+  "chainId": 998,
+  "environment": "testnet",
+  "provider": "evm-hyperliquid-testnet-organizational",
+  "gateway": "ProductExecutionGateway",
+  "verifiedAt": "2026-10-15T05:52:54+03:00",
+  "results": [
+    {
+      "product": "treasury",
+      "capability": "treasury.policy.check",
+      "executionId": "evm-treasury-057a771a-f645-4246-9f8c-95bdfe88ffb1",
+      "txHash": "0x45a4b0b969aac0093f3cb3640b052c9bfcab7e15892a642e56d4cdd41c8bc8f5",
+      "blockNumber": "66934584"
+    },
+    {
+      "product": "governance",
+      "capability": "governance.proposal.execute",
+      "executionId": "evm-governance-0201f029-0066-4295-aac7-671cdc04004b",
+      "txHash": "0x41cbc1fecc04b20707486ee8de85224ebb9405a59cd81ba2ef21bc0ddd7e8ec9",
+      "blockNumber": "66934588"
+    },
+    {
+      "product": "auction",
+      "capability": "auction.bid.commit",
+      "executionId": "evm-auction-1ec21038-ec15-4040-89da-88b00de16b1a",
+      "txHash": "0xfb6419b7652886c465d3590d1df072504c237a976c13afec8336e510f81ef085",
+      "blockNumber": "66934592"
+    }
+  ]
+}

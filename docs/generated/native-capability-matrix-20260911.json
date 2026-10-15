@@ -1,6 +1,6 @@
 {
   "schema": "privatedao.native-capability-matrix.v1",
-  "generatedAt": "2026-10-15T01:06:20.295Z",
+  "generatedAt": "2026-10-15T02:47:54.807Z",
   "bridgeFree": true,
   "entries": [
     {
@@ -3380,28 +3380,32 @@
       "capability": "treasury.policy.check",
       "network": "hyperliquid-testnet",
       "networkFamily": "evm",
-      "declared": false,
+      "declared": true,
       "environment": "testnet",
       "chainId": "998",
       "nativeAsset": "HYPE",
       "supportedAssets": [
         "HYPE"
       ],
-      "contracts": [],
+      "contracts": [
+        "0x6376b8909dba5d61d3267eb092fdd51718cfc524",
+        "0x987457e59339e8e291db1cb58a71a19af82e81ff",
+        "0x672899b8ad719468b20ee0b662bc30a8a22e6585"
+      ],
       "verifier": null,
-      "provider": "evm-hyperliquid-testnet",
+      "provider": "evm-hyperliquid-testnet-organizational",
       "walletModel": "external-wallet",
-      "supportsExecution": false,
+      "supportsExecution": true,
       "supportsPrivateExecution": false,
       "supportsPrivateSettlement": false,
       "supportsProof": false,
-      "supportsReceipt": false,
-      "supportsReconciliation": false,
+      "supportsReceipt": true,
+      "supportsReconciliation": true,
       "supportsMainnet": false,
-      "status": "planned",
-      "lastVerifiedCommit": null,
-      "lastVerifiedTimestamp": null,
-      "evidence": "none"
+      "status": "testnet_verified",
+      "lastVerifiedCommit": "25ed8bb4b",
+      "lastVerifiedTimestamp": "2026-10-15T02:42:28.053Z",
+      "evidence": "testnet-e2e"
     },
     {
       "product": "treasury",
@@ -3881,28 +3885,32 @@
       "capability": "governance.proposal.execute",
       "network": "hyperliquid-testnet",
       "networkFamily": "evm",
-      "declared": false,
+      "declared": true,
       "environment": "testnet",
       "chainId": "998",
       "nativeAsset": "HYPE",
       "supportedAssets": [
         "HYPE"
       ],
-      "contracts": [],
+      "contracts": [
+        "0x6376b8909dba5d61d3267eb092fdd51718cfc524",
+        "0x987457e59339e8e291db1cb58a71a19af82e81ff",
+        "0x672899b8ad719468b20ee0b662bc30a8a22e6585"
+      ],
       "verifier": null,
-      "provider": "evm-hyperliquid-testnet",
+      "provider": "evm-hyperliquid-testnet-organizational",
       "walletModel": "external-wallet",
-      "supportsExecution": false,
+      "supportsExecution": true,
       "supportsPrivateExecution": false,
       "supportsPrivateSettlement": false,
       "supportsProof": false,
-      "supportsReceipt": false,
-      "supportsReconciliation": false,
+      "supportsReceipt": true,
+      "supportsReconciliation": true,
       "supportsMainnet": false,
-      "status": "planned",
-      "lastVerifiedCommit": null,
-      "lastVerifiedTimestamp": null,
-      "evidence": "none"
+      "status": "testnet_verified",
+      "lastVerifiedCommit": "25ed8bb4b",
+      "lastVerifiedTimestamp": "2026-10-15T02:42:28.053Z",
+      "evidence": "testnet-e2e"
     },
     {
       "product": "governance",
@@ -4382,28 +4390,32 @@
       "capability": "auction.bid.commit",
       "network": "hyperliquid-testnet",
       "networkFamily": "evm",
-      "declared": false,
+      "declared": true,
       "environment": "testnet",
       "chainId": "998",
       "nativeAsset": "HYPE",
       "supportedAssets": [
         "HYPE"
       ],
-      "contracts": [],
+      "contracts": [
+        "0x6376b8909dba5d61d3267eb092fdd51718cfc524",
+        "0x987457e59339e8e291db1cb58a71a19af82e81ff",
+        "0x672899b8ad719468b20ee0b662bc30a8a22e6585"
+      ],
       "verifier": null,
-      "provider": "evm-hyperliquid-testnet",
+      "provider": "evm-hyperliquid-testnet-organizational",
       "walletModel": "external-wallet",
-      "supportsExecution": false,
+      "supportsExecution": true,
       "supportsPrivateExecution": false,
       "supportsPrivateSettlement": false,
       "supportsProof": false,
-      "supportsReceipt": false,
-      "supportsReconciliation": false,
+      "supportsReceipt": true,
+      "supportsReconciliation": true,
       "supportsMainnet": false,
-      "status": "planned",
-      "lastVerifiedCommit": null,
-      "lastVerifiedTimestamp": null,
-      "evidence": "none"
+      "status": "testnet_verified",
+      "lastVerifiedCommit": "25ed8bb4b",
+      "lastVerifiedTimestamp": "2026-10-15T02:42:28.053Z",
+      "evidence": "testnet-e2e"
     },
     {
       "product": "auction",
@@ -4883,28 +4895,32 @@
       "capability": "auction.settle",
       "network": "hyperliquid-testnet",
       "networkFamily": "evm",
-      "declared": false,
+      "declared": true,
       "environment": "testnet",
       "chainId": "998",
       "nativeAsset": "HYPE",
       "supportedAssets": [
         "HYPE"
       ],
-      "contracts": [],
+      "contracts": [
+        "0x6376b8909dba5d61d3267eb092fdd51718cfc524",
+        "0x987457e59339e8e291db1cb58a71a19af82e81ff",
+        "0x672899b8ad719468b20ee0b662bc30a8a22e6585"
+      ],
       "verifier": null,
-      "provider": "evm-hyperliquid-testnet",
+      "provider": "evm-hyperliquid-testnet-organizational",
       "walletModel": "external-wallet",
-      "supportsExecution": false,
+      "supportsExecution": true,
       "supportsPrivateExecution": false,
       "supportsPrivateSettlement": false,
       "supportsProof": false,
-      "supportsReceipt": false,
-      "supportsReconciliation": false,
+      "supportsReceipt": true,
+      "supportsReconciliation": true,
       "supportsMainnet": false,
-      "status": "planned",
-      "lastVerifiedCommit": null,
-      "lastVerifiedTimestamp": null,
-      "evidence": "none"
+      "status": "testnet_verified",
+      "lastVerifiedCommit": "25ed8bb4b",
+      "lastVerifiedTimestamp": "2026-10-15T02:42:28.053Z",
+      "evidence": "testnet-e2e"
     },
     {
       "product": "auction",
