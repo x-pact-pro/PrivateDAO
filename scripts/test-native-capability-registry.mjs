@@ -7,7 +7,7 @@ const liveAgents = entries.filter((entry) => entry.status === "mainnet_live" && 
 const verifiedPayroll = entries.filter((entry) => entry.status === "devnet_verified");
 
 assert.equal(entries.length, 238, "unexpected native capability matrix size");
-assert.equal(verified.length, 71, "only evidence-backed verification and organizational testnet rows should be verified");
+assert.equal(verified.length, 73, "only evidence-backed verification and organizational testnet rows should be verified");
 assert.equal(liveAgents.length, 2, "the two live Agent Exchange rows must be runtime-verified");
 assert.equal(verifiedPayroll.length, 3, "only the three Payroll Devnet evidence rows should be verified");
 for (const entry of verifiedPayroll) {
@@ -53,7 +53,7 @@ assert.equal(verified.filter((entry) => entry.provider === "evm-arbitrum-sepolia
 assert.equal(verified.filter((entry) => entry.provider === "evm-arbitrum-sepolia-organizational").length, 4, "Arbitrum organizational evidence must cover treasury, governance, and auction lanes");
 assert.equal(verified.filter((entry) => entry.provider === "evm-robinhood-testnet-organizational").length, 4, "Robinhood organizational evidence must cover treasury, governance, and auction lanes");
 assert.equal(verified.filter((entry) => entry.provider === "evm-robinhood-testnet").length, 3, "Robinhood Testnet must cover blind and record verification lanes");
-assert.equal(verified.filter((entry) => entry.provider === "evm-bnb-testnet").length, 3, "BNB Testnet must have three verified verification rows");
+assert.equal(verified.filter((entry) => entry.provider === "evm-bnb-testnet").length, 5, "BNB Testnet must have five verified verification rows including revocation controls");
 assert.equal(verified.filter((entry) => entry.provider === "evm-bnb-testnet-organizational").length, 7, "BNB organizational evidence must cover Treasury, Payroll, Governance, and Auction lanes");
 assert.equal(verified.filter((entry) => entry.network === "bnb-testnet").every((entry) => entry.chainId === "97"), true);
 assert.equal(verified.filter((entry) => entry.provider === "evm-hyperliquid-testnet").length, 3, "HyperEVM evidence must cover blind and record verification lanes");

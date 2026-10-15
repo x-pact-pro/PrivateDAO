@@ -1,6 +1,6 @@
 {
   "schema": "privatedao.native-capability-matrix.v1",
-  "generatedAt": "2026-10-15T17:10:26.780Z",
+  "generatedAt": "2026-10-15T17:13:20.662Z",
   "bridgeFree": true,
   "entries": [
     {
@@ -205,8 +205,8 @@
       "supportsReconciliation": true,
       "supportsMainnet": false,
       "status": "testnet_verified",
-      "lastVerifiedCommit": "9755727ba",
-      "lastVerifiedTimestamp": "2026-10-11T15:16:22.645Z",
+      "lastVerifiedCommit": "77b83fe42",
+      "lastVerifiedTimestamp": "2026-10-15T17:12:47.533Z",
       "evidence": "testnet-e2e"
     },
     {
@@ -691,21 +691,24 @@
       "supportedAssets": [
         "BNB"
       ],
-      "contracts": [],
-      "verifier": null,
+      "contracts": [
+        "0xdd01da1b53ba46bf1ce8c71bc1c5e86e8784694b",
+        "0x6f813e1221cb5f760bb5c467983c014bbe4b3b5c"
+      ],
+      "verifier": "0x26e3515d02bb3d8122fad109d159f43e81e8beeb",
       "provider": "evm-bnb-testnet",
-      "walletModel": "external-wallet",
-      "supportsExecution": false,
+      "walletModel": "provider-wallet",
+      "supportsExecution": true,
       "supportsPrivateExecution": false,
       "supportsPrivateSettlement": false,
-      "supportsProof": false,
-      "supportsReceipt": false,
-      "supportsReconciliation": false,
+      "supportsProof": true,
+      "supportsReceipt": true,
+      "supportsReconciliation": true,
       "supportsMainnet": false,
-      "status": "implementation",
-      "lastVerifiedCommit": null,
-      "lastVerifiedTimestamp": null,
-      "evidence": "none"
+      "status": "testnet_verified",
+      "lastVerifiedCommit": "77b83fe42",
+      "lastVerifiedTimestamp": "2026-10-15T17:12:47.533Z",
+      "evidence": "testnet-e2e"
     },
     {
       "product": "blind-verification",
@@ -1193,8 +1196,8 @@
       "supportsReconciliation": true,
       "supportsMainnet": false,
       "status": "testnet_verified",
-      "lastVerifiedCommit": "9755727ba",
-      "lastVerifiedTimestamp": "2026-10-11T15:16:22.645Z",
+      "lastVerifiedCommit": "77b83fe42",
+      "lastVerifiedTimestamp": "2026-10-15T17:12:47.533Z",
       "evidence": "testnet-e2e"
     },
     {
@@ -1694,8 +1697,8 @@
       "supportsReconciliation": true,
       "supportsMainnet": false,
       "status": "testnet_verified",
-      "lastVerifiedCommit": "9755727ba",
-      "lastVerifiedTimestamp": "2026-10-11T15:16:22.645Z",
+      "lastVerifiedCommit": "77b83fe42",
+      "lastVerifiedTimestamp": "2026-10-15T17:12:47.533Z",
       "evidence": "testnet-e2e"
     },
     {
@@ -2180,21 +2183,24 @@
       "supportedAssets": [
         "BNB"
       ],
-      "contracts": [],
-      "verifier": null,
+      "contracts": [
+        "0xdd01da1b53ba46bf1ce8c71bc1c5e86e8784694b",
+        "0x6f813e1221cb5f760bb5c467983c014bbe4b3b5c"
+      ],
+      "verifier": "0x26e3515d02bb3d8122fad109d159f43e81e8beeb",
       "provider": "evm-bnb-testnet",
-      "walletModel": "external-wallet",
-      "supportsExecution": false,
+      "walletModel": "provider-wallet",
+      "supportsExecution": true,
       "supportsPrivateExecution": false,
       "supportsPrivateSettlement": false,
       "supportsProof": false,
-      "supportsReceipt": false,
-      "supportsReconciliation": false,
+      "supportsReceipt": true,
+      "supportsReconciliation": true,
       "supportsMainnet": false,
-      "status": "implementation",
-      "lastVerifiedCommit": null,
-      "lastVerifiedTimestamp": null,
-      "evidence": "none"
+      "status": "testnet_verified",
+      "lastVerifiedCommit": "77b83fe42",
+      "lastVerifiedTimestamp": "2026-10-15T17:12:47.533Z",
+      "evidence": "testnet-e2e"
     },
     {
       "product": "record-verification",

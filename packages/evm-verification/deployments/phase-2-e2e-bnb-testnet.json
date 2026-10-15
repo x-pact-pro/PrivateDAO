@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-11T15:16:22.645Z",
+  "generatedAt": "2026-10-15T17:12:47.533Z",
   "status": "testnet_verified",
   "scope": [
     "bnb-testnet"
@@ -8,9 +8,6 @@
     {
       "network": "bnb-testnet",
       "chainId": 97,
-      "attribution": {
-        "dataSuffixConfigured": false
-      },
       "contracts": {
         "verifier": {
           "address": "0x26e3515d02bb3d8122fad109d159f43e81e8beeb",
@@ -29,26 +26,22 @@
         }
       },
       "record": {
-        "workflow": "record-verification",
-        "txHash": "0x14d077e2ac39c593e044b1ec274a0e56ea429fd07781463a1a7d04db1205c7c1",
-        "blockNumber": "136188346",
-        "status": "success",
-        "verificationId": "0x3751fd48c758ef3ed640cd063bfb51d083d34358fe794bf14f7d03efb7e85f67",
-        "explorerUrl": "https://testnet.bscscan.com/tx/0x14d077e2ac39c593e044b1ec274a0e56ea429fd07781463a1a7d04db1205c7c1"
+        "txHash": "0x61094a68118a917ad51d7577c5630a7d0754cc02433bbb79a1697c1b905de8bc",
+        "blockNumber": "136971841",
+        "verificationId": "0x23e06e39285c555eda6944967ba6ac29b658954f90abe8715ff2d31c0c160ad6",
+        "explorerUrl": "https://testnet.bscscan.com/tx/0x61094a68118a917ad51d7577c5630a7d0754cc02433bbb79a1697c1b905de8bc"
       },
       "blind": {
-        "workflow": "blind-verification",
-        "txHash": "0x1c93bf12e64c6721972ddfcbe282fbad753e7213e04114a4d2786e43c859914b",
-        "blockNumber": "136188395",
-        "status": "success",
-        "verificationId": "0x31ef51b7c2013416ddd1d953b76a86bddbbfe268d87a43a16e0776be7af74c53",
-        "explorerUrl": "https://testnet.bscscan.com/tx/0x1c93bf12e64c6721972ddfcbe282fbad753e7213e04114a4d2786e43c859914b"
+        "txHash": "0x2704cac3e7875d44e608e048fb9df57146ff0310f8c6957b7f859e6f4009cf3a",
+        "blockNumber": "136971864",
+        "verificationId": "0xdd32ca19ab644988073c4a0957c4dc637f1d3bb287a136b950fb389903980612",
+        "explorerUrl": "https://testnet.bscscan.com/tx/0x2704cac3e7875d44e608e048fb9df57146ff0310f8c6957b7f859e6f4009cf3a"
       },
       "revocation": {
-        "recordTxHash": "0x660ed0123ca4e79de8b987933959fefb78736f7ce41ff21bab63eb5b0807b895",
-        "blindTxHash": "0xa2c9e0be7f33b1c10d9f54a8e5bea1153a5e0b5405c20de84af4c0c4fc67fbb2",
-        "disposableRecordVerificationId": "0xab98ef5e756fefcb6a56d8528e48cb8d73777b8047fa0b685caa994980ae4140",
-        "disposableBlindVerificationId": "0x1fdd3528053b44e4910b4785a84a3f577a2231a12d6820f55ea8cbe3f9e66c9e"
+        "recordTxHash": "0xb1da7ff972a3baaf56e79ad25801cc17e3e66b15ee6ec53054b1c8597fc62cf0",
+        "blindTxHash": "0x0ebff0ea77c089fca6ab63a2753df14c5d900c1c4c9baee37a1191eaef9d71f9",
+        "disposableRecordVerificationId": "0x2a6e8643c529b377eb5d138e524d1f1029f3d1169652481994749b9ac2655d62",
+        "disposableBlindVerificationId": "0xc6e32d85f2cb24e5f527ac123e41ffae4f970af79ae37c9f5ecaf89990b4e391"
       },
       "checks": {
         "recordVerified": true,
@@ -61,8 +54,8 @@
         "blindProofRevoked": true
       },
       "links": {
-        "record": "https://privatedao.org/verify/evm?network=bnb-testnet&type=record&id=0x3751fd48c758ef3ed640cd063bfb51d083d34358fe794bf14f7d03efb7e85f67",
-        "blind": "https://privatedao.org/verify/evm?network=bnb-testnet&type=blind&id=0x31ef51b7c2013416ddd1d953b76a86bddbbfe268d87a43a16e0776be7af74c53"
+        "record": "https://privatedao.org/verify/evm?network=bnb-testnet&type=record&id=0x23e06e39285c555eda6944967ba6ac29b658954f90abe8715ff2d31c0c160ad6",
+        "blind": "https://privatedao.org/verify/evm?network=bnb-testnet&type=blind&id=0xdd32ca19ab644988073c4a0957c4dc637f1d3bb287a136b950fb389903980612"
       }
     }
   ]

@@ -108,8 +108,8 @@ const BNB_TESTNET_EVIDENCE = {
     "0xdd01da1b53ba46bf1ce8c71bc1c5e86e8784694b",
     "0x6f813e1221cb5f760bb5c467983c014bbe4b3b5c",
   ],
-  commit: "9755727ba",
-  timestamp: "2026-10-11T15:16:22.645Z",
+  commit: "77b83fe42",
+  timestamp: "2026-10-15T17:12:47.533Z",
 } as const;
 
 const HYPERLIQUID_TESTNET_EVIDENCE = {
@@ -400,8 +400,8 @@ function applyTempoTestnetEvidence(entry: NativeCapabilityEntry): NativeCapabili
 }
 
 function applyBnbTestnetEvidence(entry: NativeCapabilityEntry): NativeCapabilityEntry {
-  const isBlind = entry.product === "blind-verification" && entry.capability === "verification.blind.prove";
-  const isRecord = entry.product === "record-verification" && ["verification.record.create", "verification.record.verify"].includes(entry.capability);
+  const isBlind = entry.product === "blind-verification" && ["verification.blind.prove", "verification.blind.revoke"].includes(entry.capability);
+  const isRecord = entry.product === "record-verification" && ["verification.record.create", "verification.record.verify", "verification.record.revoke"].includes(entry.capability);
   if (entry.network !== "bnb-testnet" || (!isBlind && !isRecord)) return entry;
   return {
     ...entry,
