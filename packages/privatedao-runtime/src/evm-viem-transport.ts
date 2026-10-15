@@ -94,6 +94,7 @@ export class ViemEvmTransport implements EvmTransport {
       abi: payload.abi,
       functionName: payload.functionName,
       args: payload.args,
+      account: payload.account,
       ...(payload.value === undefined ? {} : { value: payload.value }),
     });
     record.signature = signature;

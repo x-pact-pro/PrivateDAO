@@ -120,6 +120,7 @@ await assert.rejects(
 );
 await viemTransport.submit(contractWritePrepared, contractWritePrepared.unsignedPayload);
 assert.equal(submittedPayload.functionName, "anchorRecord");
+assert.equal(submittedPayload.account, contractWriteIntent.payload.account);
 
 // Every configured testnet must pass the same lifecycle contract. This is a
 // local adapter test only; it does not imply deployed contracts or on-chain
