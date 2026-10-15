@@ -25,6 +25,11 @@ The remaining npm findings are development-only test-runner findings:
 
 The former `circomlibjs` -> `ethers 5.x` -> `elliptic` chain was removed. `@iden3/js-crypto@1.3.3` is now used for the BN254 Poseidon primitive, with `@noble/hashes@2.2.0` pinned to satisfy its peer dependency. Its Poseidon implementation is explicitly identified as circomlib-compatible, and five fixed compatibility vectors pass.
 
+The boundary is enforced by `npm run test:zk-dependency-boundary`: it fails if
+the legacy packages return to the root graph or if the pinned Poseidon
+provider drifts. This is a guard, not a cryptographic substitute for the
+upstream TEE dependency review described below.
+
 The remaining `mocha` finding cannot be fixed by the currently compatible `ts-mocha@10.1.0` toolchain without a major test-runner migration. It does not ship in production runtime dependencies.
 
 ## Web Dependency Graph
