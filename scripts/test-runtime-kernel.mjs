@@ -79,6 +79,10 @@ const intent = {
 const [first, second] = await Promise.all([kernel.prepare(intent), kernel.prepare(intent)]);
 assert.equal(prepareCalls, 1);
 assert.equal(first.executionId, second.executionId);
+await assert.rejects(
+  () => kernel.prepare({ ...intent, payload: { policy: "different" } }),
+  (error) => error?.code === "DUPLICATE_IDEMPOTENCY_KEY",
+);
 
 const [submittedFirst, submittedSecond] = await Promise.all([
   kernel.submit(first.executionId, first.unsignedPayload),
