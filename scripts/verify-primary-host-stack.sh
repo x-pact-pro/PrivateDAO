@@ -7,6 +7,20 @@ STACK_DIR="$REPO_ROOT/deploy/primary-host"
 ENV_FILE="$STACK_DIR/.env"
 EXPECTED_PROGRAM_ID="${PRIVATE_DAO_EXPECTED_PROGRAM_ID:-EP9xE8MJZ6FfyEwLqns6HDdUZBknEa7WGYs1Jzsecuva}"
 
+# Caddy only needs public edge configuration. Never inject the full runtime
+# environment (which may contain RPC credentials and service tokens) into it.
+if awk '
+  /^  edge:$/ { in_edge=1; next }
+  in_edge && /^  [a-z0-9-]+:$/ { in_edge=0 }
+  in_edge && /^    env_file:/ { found=1 }
+  END { exit found ? 1 : 0 }
+' "$STACK_DIR/docker-compose.yml"; then
+  :
+else
+  echo "Primary host secret boundary failed: edge must not receive env_file" >&2
+  exit 1
+fi
+
 bash "$SCRIPT_DIR/up-primary-host-stack.sh"
 
 cleanup() {
