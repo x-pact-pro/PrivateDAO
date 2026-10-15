@@ -10,7 +10,9 @@ export type ProductId =
 export type CapabilityId =
   | "verification.record.create"
   | "verification.record.verify"
+  | "verification.record.revoke"
   | "verification.blind.prove"
+  | "verification.blind.revoke"
   | "payroll.calculate"
   | "payroll.approve"
   | "payroll.settle"

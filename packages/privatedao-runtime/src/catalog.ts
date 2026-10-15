@@ -24,6 +24,7 @@ const robinhoodTestnet = "robinhood-testnet" as NetworkId;
 const tempoTestnet = "tempo-testnet" as NetworkId;
 const stellarTestnet = "stellar-testnet" as NetworkId;
 const zcashTestnet = "zcash-testnet" as NetworkId;
+const evmContractControlNetworks = [ethereumSepolia, arbitrumSepolia, baseSepolia, bnbTestnet, robinhoodTestnet, hyperliquidTestnet, tempoTestnet] as const;
 
 function capability(
   id: CapabilityId,
@@ -52,6 +53,7 @@ export const PRODUCT_CATALOG: readonly ProductDescriptor[] = [
     networks: [solanaDevnet, ethereumSepolia, arbitrumSepolia, tempoTestnet, baseSepolia, bnbTestnet, robinhoodTestnet, hyperliquidTestnet, stellarTestnet, zcashTestnet],
     capabilities: [
       capability("verification.blind.prove", "blind-verification", false, true, [solanaDevnet, ethereumSepolia, arbitrumSepolia, tempoTestnet, baseSepolia, bnbTestnet, robinhoodTestnet, hyperliquidTestnet, stellarTestnet, zcashTestnet]),
+      capability("verification.blind.revoke", "blind-verification", true, true, evmContractControlNetworks),
     ],
   },
   {
@@ -63,6 +65,7 @@ export const PRODUCT_CATALOG: readonly ProductDescriptor[] = [
     capabilities: [
       capability("verification.record.create", "record-verification", false, true, [solanaDevnet, ethereumSepolia, arbitrumSepolia, tempoTestnet, baseSepolia, bnbTestnet, robinhoodTestnet, hyperliquidTestnet, stellarTestnet, zcashTestnet]),
       capability("verification.record.verify", "record-verification", false, true, [solanaDevnet, ethereumSepolia, arbitrumSepolia, tempoTestnet, baseSepolia, bnbTestnet, robinhoodTestnet, hyperliquidTestnet, stellarTestnet, zcashTestnet]),
+      capability("verification.record.revoke", "record-verification", true, true, evmContractControlNetworks),
     ],
   },
   {

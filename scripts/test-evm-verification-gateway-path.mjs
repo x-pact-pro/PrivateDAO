@@ -9,8 +9,12 @@ assert.match(source, /new InMemoryProviderRegistry\(\)/);
 assert.match(source, /runtime\.gateway\.prepare\(intent, "maker"\)/);
 assert.match(source, /runtime\.gateway\.submit\(prepared, prepared\.unsignedPayload, "maker"\)/);
 assert.match(source, /runtime\.gateway\.receipt\(/);
-assert.doesNotMatch(source, /executeViaKernel\(adapter/);
+assert.doesNotMatch(source, /executeContractControlCheck/);
+assert.doesNotMatch(source, /adapter\.prepare\(/);
+assert.doesNotMatch(source, /adapter\.submit\(/);
+assert.doesNotMatch(source, /adapter\.receipt\(/);
+assert.match(source, /capability: "verification\.record\.revoke"/);
+assert.match(source, /capability: "verification\.blind\.revoke"/);
 assert.doesNotMatch(source, /InMemoryProtocolRegistry/);
-assert.match(source, /executeContractControlCheck/);
 
 console.log("[evm-verification-gateway-path] product writes are guarded by ProductExecutionGateway");

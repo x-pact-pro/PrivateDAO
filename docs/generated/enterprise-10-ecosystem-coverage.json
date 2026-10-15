@@ -71,15 +71,50 @@
               "note": "Missing application binding."
             }
           ]
+        },
+        {
+          "capability": "verification.blind.revoke",
+          "lanes": [
+            {
+              "network": "solana-devnet",
+              "environment": "devnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "solana-devnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            },
+            {
+              "network": "solana-mainnet-beta",
+              "environment": "mainnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "solana-mainnet-beta",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
         }
       ]
     },
     {
       "product": "blind-verification",
       "ecosystem": "ethereum",
-      "declaredLaneCount": 1,
+      "declaredLaneCount": 2,
       "executableLaneCount": 1,
-      "status": "verified",
+      "status": "partial",
       "capabilities": [
         {
           "capability": "verification.blind.prove",
@@ -115,15 +150,50 @@
               "note": "Missing application binding."
             }
           ]
+        },
+        {
+          "capability": "verification.blind.revoke",
+          "lanes": [
+            {
+              "network": "ethereum-sepolia",
+              "environment": "testnet",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "status": "implementation",
+              "evidence": "none",
+              "provider": "evm-ethereum-sepolia",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": "kernel://verification.blind.revoke",
+              "note": "EVM blind-proof revocation is an explicit Kernel capability; the provider performs no direct product call outside the gateway."
+            },
+            {
+              "network": "ethereum-mainnet",
+              "environment": "mainnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-ethereum-mainnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
         }
       ]
     },
     {
       "product": "blind-verification",
       "ecosystem": "arbitrum",
-      "declaredLaneCount": 1,
+      "declaredLaneCount": 2,
       "executableLaneCount": 1,
-      "status": "verified",
+      "status": "partial",
       "capabilities": [
         {
           "capability": "verification.blind.prove",
@@ -159,15 +229,50 @@
               "note": "Missing application binding."
             }
           ]
+        },
+        {
+          "capability": "verification.blind.revoke",
+          "lanes": [
+            {
+              "network": "arbitrum-sepolia",
+              "environment": "testnet",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "status": "implementation",
+              "evidence": "none",
+              "provider": "evm-arbitrum-sepolia",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": "kernel://verification.blind.revoke",
+              "note": "EVM blind-proof revocation is an explicit Kernel capability; the provider performs no direct product call outside the gateway."
+            },
+            {
+              "network": "arbitrum-one",
+              "environment": "mainnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-arbitrum-one",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
         }
       ]
     },
     {
       "product": "blind-verification",
       "ecosystem": "bnb",
-      "declaredLaneCount": 1,
+      "declaredLaneCount": 2,
       "executableLaneCount": 1,
-      "status": "verified",
+      "status": "partial",
       "capabilities": [
         {
           "capability": "verification.blind.prove",
@@ -203,15 +308,50 @@
               "note": "Missing application binding."
             }
           ]
+        },
+        {
+          "capability": "verification.blind.revoke",
+          "lanes": [
+            {
+              "network": "bnb-testnet",
+              "environment": "testnet",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "status": "implementation",
+              "evidence": "none",
+              "provider": "evm-bnb-testnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": "kernel://verification.blind.revoke",
+              "note": "EVM blind-proof revocation is an explicit Kernel capability; the provider performs no direct product call outside the gateway."
+            },
+            {
+              "network": "bnb-mainnet",
+              "environment": "mainnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-bnb-mainnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
         }
       ]
     },
     {
       "product": "blind-verification",
       "ecosystem": "base",
-      "declaredLaneCount": 1,
+      "declaredLaneCount": 2,
       "executableLaneCount": 1,
-      "status": "verified",
+      "status": "partial",
       "capabilities": [
         {
           "capability": "verification.blind.prove",
@@ -247,15 +387,50 @@
               "note": "Missing application binding."
             }
           ]
+        },
+        {
+          "capability": "verification.blind.revoke",
+          "lanes": [
+            {
+              "network": "base-sepolia",
+              "environment": "testnet",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "status": "implementation",
+              "evidence": "none",
+              "provider": "evm-base-sepolia",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": "kernel://verification.blind.revoke",
+              "note": "EVM blind-proof revocation is an explicit Kernel capability; the provider performs no direct product call outside the gateway."
+            },
+            {
+              "network": "base-mainnet",
+              "environment": "mainnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-base-mainnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
         }
       ]
     },
     {
       "product": "blind-verification",
       "ecosystem": "robinhood",
-      "declaredLaneCount": 1,
+      "declaredLaneCount": 2,
       "executableLaneCount": 1,
-      "status": "verified",
+      "status": "partial",
       "capabilities": [
         {
           "capability": "verification.blind.prove",
@@ -291,15 +466,50 @@
               "note": "Missing application binding."
             }
           ]
+        },
+        {
+          "capability": "verification.blind.revoke",
+          "lanes": [
+            {
+              "network": "robinhood-testnet",
+              "environment": "testnet",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "status": "implementation",
+              "evidence": "none",
+              "provider": "evm-robinhood-testnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": "kernel://verification.blind.revoke",
+              "note": "EVM blind-proof revocation is an explicit Kernel capability; the provider performs no direct product call outside the gateway."
+            },
+            {
+              "network": "robinhood-mainnet",
+              "environment": "mainnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-robinhood-mainnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
         }
       ]
     },
     {
       "product": "blind-verification",
       "ecosystem": "tempo",
-      "declaredLaneCount": 1,
+      "declaredLaneCount": 2,
       "executableLaneCount": 1,
-      "status": "verified",
+      "status": "partial",
       "capabilities": [
         {
           "capability": "verification.blind.prove",
@@ -318,6 +528,41 @@
               "executable": true,
               "entrypoint": "kernel://verification.blind.prove",
               "note": "Tempo Testnet Groth16 verifier and blind registry passed real on-chain proof, altered-proof, wrong-chain, expiry, and revocation checks."
+            },
+            {
+              "network": "tempo-mainnet",
+              "environment": "mainnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-tempo-mainnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
+        },
+        {
+          "capability": "verification.blind.revoke",
+          "lanes": [
+            {
+              "network": "tempo-testnet",
+              "environment": "testnet",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "status": "implementation",
+              "evidence": "none",
+              "provider": "evm-tempo-testnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": "kernel://verification.blind.revoke",
+              "note": "EVM blind-proof revocation is an explicit Kernel capability; the provider performs no direct product call outside the gateway."
             },
             {
               "network": "tempo-mainnet",
@@ -364,15 +609,35 @@
               "note": "Zcash Testnet is routed through the Kernel Gateway; independent Orchard product evidence is still required."
             }
           ]
+        },
+        {
+          "capability": "verification.blind.revoke",
+          "lanes": [
+            {
+              "network": "zcash-testnet",
+              "environment": "testnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": null,
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
         }
       ]
     },
     {
       "product": "blind-verification",
       "ecosystem": "hyperliquid",
-      "declaredLaneCount": 1,
+      "declaredLaneCount": 2,
       "executableLaneCount": 1,
-      "status": "verified",
+      "status": "partial",
       "capabilities": [
         {
           "capability": "verification.blind.prove",
@@ -391,6 +656,26 @@
               "executable": true,
               "entrypoint": "kernel://verification.blind.prove",
               "note": "HyperEVM Testnet blind verification passed the committed proof, revocation, and receipt checks; this does not claim HyperCore execution."
+            }
+          ]
+        },
+        {
+          "capability": "verification.blind.revoke",
+          "lanes": [
+            {
+              "network": "hyperliquid-testnet",
+              "environment": "testnet",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "status": "implementation",
+              "evidence": "none",
+              "provider": "evm-hyperliquid-testnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": "kernel://verification.blind.revoke",
+              "note": "EVM blind-proof revocation is an explicit Kernel capability; the provider performs no direct product call outside the gateway."
             }
           ]
         }
@@ -420,6 +705,26 @@
               "executable": true,
               "entrypoint": "kernel://verification.blind.prove",
               "note": "Stellar Testnet product evidence binds the workflow commitment to a confirmed Horizon receipt."
+            }
+          ]
+        },
+        {
+          "capability": "verification.blind.revoke",
+          "lanes": [
+            {
+              "network": "stellar-testnet",
+              "environment": "testnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "stellar-testnet-horizon",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
             }
           ]
         }
@@ -501,15 +806,50 @@
               "note": "Missing application binding."
             }
           ]
+        },
+        {
+          "capability": "verification.record.revoke",
+          "lanes": [
+            {
+              "network": "solana-devnet",
+              "environment": "devnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "solana-devnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            },
+            {
+              "network": "solana-mainnet-beta",
+              "environment": "mainnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "solana-mainnet-beta",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
         }
       ]
     },
     {
       "product": "record-verification",
       "ecosystem": "ethereum",
-      "declaredLaneCount": 2,
+      "declaredLaneCount": 3,
       "executableLaneCount": 2,
-      "status": "verified",
+      "status": "partial",
       "capabilities": [
         {
           "capability": "verification.record.create",
@@ -580,15 +920,50 @@
               "note": "Missing application binding."
             }
           ]
+        },
+        {
+          "capability": "verification.record.revoke",
+          "lanes": [
+            {
+              "network": "ethereum-sepolia",
+              "environment": "testnet",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "status": "implementation",
+              "evidence": "none",
+              "provider": "evm-ethereum-sepolia",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": "kernel://verification.record.revoke",
+              "note": "EVM contract revocation is an explicit Kernel capability; the provider performs no direct product call outside the gateway."
+            },
+            {
+              "network": "ethereum-mainnet",
+              "environment": "mainnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-ethereum-mainnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
         }
       ]
     },
     {
       "product": "record-verification",
       "ecosystem": "arbitrum",
-      "declaredLaneCount": 2,
+      "declaredLaneCount": 3,
       "executableLaneCount": 2,
-      "status": "verified",
+      "status": "partial",
       "capabilities": [
         {
           "capability": "verification.record.create",
@@ -659,15 +1034,50 @@
               "note": "Missing application binding."
             }
           ]
+        },
+        {
+          "capability": "verification.record.revoke",
+          "lanes": [
+            {
+              "network": "arbitrum-sepolia",
+              "environment": "testnet",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "status": "implementation",
+              "evidence": "none",
+              "provider": "evm-arbitrum-sepolia",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": "kernel://verification.record.revoke",
+              "note": "EVM contract revocation is an explicit Kernel capability; the provider performs no direct product call outside the gateway."
+            },
+            {
+              "network": "arbitrum-one",
+              "environment": "mainnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-arbitrum-one",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
         }
       ]
     },
     {
       "product": "record-verification",
       "ecosystem": "bnb",
-      "declaredLaneCount": 2,
+      "declaredLaneCount": 3,
       "executableLaneCount": 2,
-      "status": "verified",
+      "status": "partial",
       "capabilities": [
         {
           "capability": "verification.record.create",
@@ -738,15 +1148,50 @@
               "note": "Missing application binding."
             }
           ]
+        },
+        {
+          "capability": "verification.record.revoke",
+          "lanes": [
+            {
+              "network": "bnb-testnet",
+              "environment": "testnet",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "status": "implementation",
+              "evidence": "none",
+              "provider": "evm-bnb-testnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": "kernel://verification.record.revoke",
+              "note": "EVM contract revocation is an explicit Kernel capability; the provider performs no direct product call outside the gateway."
+            },
+            {
+              "network": "bnb-mainnet",
+              "environment": "mainnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-bnb-mainnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
         }
       ]
     },
     {
       "product": "record-verification",
       "ecosystem": "base",
-      "declaredLaneCount": 2,
+      "declaredLaneCount": 3,
       "executableLaneCount": 2,
-      "status": "verified",
+      "status": "partial",
       "capabilities": [
         {
           "capability": "verification.record.create",
@@ -817,15 +1262,50 @@
               "note": "Missing application binding."
             }
           ]
+        },
+        {
+          "capability": "verification.record.revoke",
+          "lanes": [
+            {
+              "network": "base-sepolia",
+              "environment": "testnet",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "status": "implementation",
+              "evidence": "none",
+              "provider": "evm-base-sepolia",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": "kernel://verification.record.revoke",
+              "note": "EVM contract revocation is an explicit Kernel capability; the provider performs no direct product call outside the gateway."
+            },
+            {
+              "network": "base-mainnet",
+              "environment": "mainnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-base-mainnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
         }
       ]
     },
     {
       "product": "record-verification",
       "ecosystem": "robinhood",
-      "declaredLaneCount": 2,
+      "declaredLaneCount": 3,
       "executableLaneCount": 2,
-      "status": "verified",
+      "status": "partial",
       "capabilities": [
         {
           "capability": "verification.record.create",
@@ -896,15 +1376,50 @@
               "note": "Missing application binding."
             }
           ]
+        },
+        {
+          "capability": "verification.record.revoke",
+          "lanes": [
+            {
+              "network": "robinhood-testnet",
+              "environment": "testnet",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "status": "implementation",
+              "evidence": "none",
+              "provider": "evm-robinhood-testnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": "kernel://verification.record.revoke",
+              "note": "EVM contract revocation is an explicit Kernel capability; the provider performs no direct product call outside the gateway."
+            },
+            {
+              "network": "robinhood-mainnet",
+              "environment": "mainnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-robinhood-mainnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
         }
       ]
     },
     {
       "product": "record-verification",
       "ecosystem": "tempo",
-      "declaredLaneCount": 2,
+      "declaredLaneCount": 3,
       "executableLaneCount": 2,
-      "status": "verified",
+      "status": "partial",
       "capabilities": [
         {
           "capability": "verification.record.create",
@@ -975,6 +1490,41 @@
               "note": "Missing application binding."
             }
           ]
+        },
+        {
+          "capability": "verification.record.revoke",
+          "lanes": [
+            {
+              "network": "tempo-testnet",
+              "environment": "testnet",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "status": "implementation",
+              "evidence": "none",
+              "provider": "evm-tempo-testnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": "kernel://verification.record.revoke",
+              "note": "EVM contract revocation is an explicit Kernel capability; the provider performs no direct product call outside the gateway."
+            },
+            {
+              "network": "tempo-mainnet",
+              "environment": "mainnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "evm-tempo-mainnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
         }
       ]
     },
@@ -1024,15 +1574,35 @@
               "note": "Zcash Testnet is routed through the Kernel Gateway; independent Orchard product evidence is still required."
             }
           ]
+        },
+        {
+          "capability": "verification.record.revoke",
+          "lanes": [
+            {
+              "network": "zcash-testnet",
+              "environment": "testnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": null,
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
+            }
+          ]
         }
       ]
     },
     {
       "product": "record-verification",
       "ecosystem": "hyperliquid",
-      "declaredLaneCount": 2,
+      "declaredLaneCount": 3,
       "executableLaneCount": 2,
-      "status": "verified",
+      "status": "partial",
       "capabilities": [
         {
           "capability": "verification.record.create",
@@ -1071,6 +1641,26 @@
               "executable": true,
               "entrypoint": "kernel://verification.record.verify",
               "note": "HyperEVM Testnet record verification passed the committed proof, revocation, and receipt checks; this does not claim HyperCore execution."
+            }
+          ]
+        },
+        {
+          "capability": "verification.record.revoke",
+          "lanes": [
+            {
+              "network": "hyperliquid-testnet",
+              "environment": "testnet",
+              "declared": true,
+              "mode": "kernel-gateway",
+              "status": "implementation",
+              "evidence": "none",
+              "provider": "evm-hyperliquid-testnet",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": "kernel://verification.record.revoke",
+              "note": "EVM contract revocation is an explicit Kernel capability; the provider performs no direct product call outside the gateway."
             }
           ]
         }
@@ -1120,6 +1710,26 @@
               "executable": true,
               "entrypoint": "kernel://verification.record.verify",
               "note": "Stellar Testnet record verification is bound to the Testnet network passphrase and a confirmed receipt."
+            }
+          ]
+        },
+        {
+          "capability": "verification.record.revoke",
+          "lanes": [
+            {
+              "network": "stellar-testnet",
+              "environment": "testnet",
+              "declared": false,
+              "mode": "unbound",
+              "status": "planned",
+              "evidence": "none",
+              "provider": "stellar-testnet-horizon",
+              "supportsExecution": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "executable": false,
+              "entrypoint": null,
+              "note": "Missing application binding."
             }
           ]
         }

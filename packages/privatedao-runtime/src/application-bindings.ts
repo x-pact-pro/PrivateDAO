@@ -14,12 +14,42 @@ export interface ApplicationCapabilityBinding {
   note: string;
 }
 
+const EVM_CONTRACT_CONTROL_NETWORKS: readonly NetworkId[] = [
+  "ethereum-sepolia",
+  "arbitrum-sepolia",
+  "base-sepolia",
+  "bnb-testnet",
+  "robinhood-testnet",
+  "hyperliquid-testnet",
+  "tempo-testnet",
+];
+
+const EVM_CONTRACT_CONTROL_BINDINGS: readonly ApplicationCapabilityBinding[] = EVM_CONTRACT_CONTROL_NETWORKS.flatMap((network) => [
+  {
+    product: "record-verification",
+    capability: "verification.record.revoke",
+    network,
+    mode: "kernel-gateway",
+    entrypoint: "kernel://verification.record.revoke",
+    note: "EVM contract revocation is an explicit Kernel capability; the provider performs no direct product call outside the gateway.",
+  },
+  {
+    product: "blind-verification",
+    capability: "verification.blind.revoke",
+    network,
+    mode: "kernel-gateway",
+    entrypoint: "kernel://verification.blind.revoke",
+    note: "EVM blind-proof revocation is an explicit Kernel capability; the provider performs no direct product call outside the gateway.",
+  },
+]);
+
 /**
  * The application boundary is intentionally explicit while product routes are
  * being migrated. A legacy provider is an observed route, not Kernel evidence;
  * an unbound capability cannot be selected for execution.
  */
 export const APPLICATION_CAPABILITY_BINDINGS: readonly ApplicationCapabilityBinding[] = [
+  ...EVM_CONTRACT_CONTROL_BINDINGS,
   {
     product: "blind-verification",
     capability: "verification.blind.prove",

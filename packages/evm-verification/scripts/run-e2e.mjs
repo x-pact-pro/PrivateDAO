@@ -92,20 +92,6 @@ async function executeViaKernel(runtime, { network, provider, product, capabilit
   return runtime.gateway.receipt({ executionId: prepared.executionId, intent: prepared.intent }, "maker");
 }
 
-// Revocation is a contract-control assertion until it is promoted to an
-// explicit catalog capability and application binding. Keep that boundary
-// visible instead of inventing a Gateway capability for it.
-async function executeContractControlCheck(adapter, { network, product, capability, requestId, payload }) {
-  const intent = {
-    context: { requestId, idempotencyKey: `${network}:${requestId}`, product, capability, network },
-    payload,
-    accounts: [{ role: "payer", address: payload.account, network }],
-  };
-  const prepared = await adapter.prepare(intent);
-  await adapter.submit(prepared, prepared.unsignedPayload);
-  return adapter.receipt(prepared.executionId);
-}
-
 function chainFor(network) {
   if (network.id === "tempo-testnet") return tempoModerato;
   return defineChain({
@@ -298,7 +284,7 @@ async function main() {
     const revokeRecordEvent = await eventArgsFromReceipt(publicClient, revokeRecordHash, recordAbi, "RecordAnchored");
     const revokeRecordVerificationId = revokeRecordEvent.verificationId;
     await readLatestUntilTrue(publicClient, { address: record.address, abi: verifyRecordAbi, functionName: "isValid", args: [revokeRecordVerificationId] }, `${network.id} disposable record`);
-    const recordRevokeReceipt = await executeContractControlCheck(adapter, { network: network.id, product: "record-verification", capability: "verification.record.revoke", requestId: `${network.id}-record-revoke-${runId}`, payload: { kind: "contract-write", address: record.address, abi: revokeFunctionAbi, functionName: "revoke", args: [revokeRecordVerificationId], account: account.address } });
+    const recordRevokeReceipt = await executeViaKernel(runtime, { network: network.id, provider: providerId, product: "record-verification", capability: "verification.record.revoke", requestId: `${network.id}-record-revoke-${runId}`, payload: { kind: "contract-write", address: record.address, abi: revokeFunctionAbi, functionName: "revoke", args: [revokeRecordVerificationId], account: account.address } });
     let recordRevoked = false;
     for (let attempt = 0; attempt < 12 && !recordRevoked; attempt += 1) {
       recordRevoked = !(await publicClient.readContract({ address: record.address, abi: verifyRecordAbi, functionName: "isValid", args: [revokeRecordVerificationId] }));
@@ -319,7 +305,7 @@ async function main() {
     const revokeBlindEvent = await eventArgsFromReceipt(publicClient, revokeBlindHash, blindAbi, "BlindProofVerified");
     const revokeBlindVerificationId = revokeBlindEvent.verificationId;
     await readLatestUntilTrue(publicClient, { address: blind.address, abi: verifyBlindAbi, functionName: "isValid", args: [revokeBlindVerificationId] }, `${network.id} disposable blind proof`);
-    const blindRevokeReceipt = await executeContractControlCheck(adapter, { network: network.id, product: "blind-verification", capability: "verification.blind.revoke", requestId: `${network.id}-blind-revoke-${runId}`, payload: { kind: "contract-write", address: blind.address, abi: revokeFunctionAbi, functionName: "revoke", args: [revokeBlindVerificationId], account: account.address } });
+    const blindRevokeReceipt = await executeViaKernel(runtime, { network: network.id, provider: providerId, product: "blind-verification", capability: "verification.blind.revoke", requestId: `${network.id}-blind-revoke-${runId}`, payload: { kind: "contract-write", address: blind.address, abi: revokeFunctionAbi, functionName: "revoke", args: [revokeBlindVerificationId], account: account.address } });
     let blindRevoked = false;
     for (let attempt = 0; attempt < 12 && !blindRevoked; attempt += 1) {
       blindRevoked = !(await publicClient.readContract({ address: blind.address, abi: verifyBlindAbi, functionName: "isValid", args: [revokeBlindVerificationId] }));
