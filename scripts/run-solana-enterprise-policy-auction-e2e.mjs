@@ -10,7 +10,9 @@ const runId = `solana-enterprise-${Date.now()}`;
 const runtime = createPrivateDaoRuntime();
 
 function context(product, capability, provider) {
-  const requestId = `${runId}-${product}`;
+  // Each capability is a separate Kernel execution. Including it in the
+  // idempotency key prevents settle from reusing the bid commitment receipt.
+  const requestId = `${runId}-${product}-${capability.replaceAll(".", "-")}`;
   return {
     requestId,
     idempotencyKey: requestId,
@@ -99,6 +101,8 @@ const outcomeReceipt = await execute({
   },
   accounts: [],
 });
+assert.notEqual(outcomeReceipt.executionId, bidReceipt.executionId);
+assert.notEqual(outcomeReceipt.provider, bidReceipt.provider);
 assert.equal(outcomeReceipt.result?.ok, true);
 assert.equal(outcomeReceipt.result?.privateDataExcluded, true);
 
