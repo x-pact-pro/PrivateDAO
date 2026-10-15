@@ -3347,10 +3347,10 @@ export const runtimeCatalog = {
           "applicationBindings": [
             {
               "network": "solana-devnet",
-              "mode": "legacy-provider",
-              "entrypoint": "/api/private-payout/prepare",
-              "method": "POST",
-              "note": "Existing private-payout provider route; it is not evidence of an end-to-end payroll settlement.",
+              "mode": "unbound",
+              "entrypoint": null,
+              "method": null,
+              "note": "The legacy private-payout route remains available only as a legacy surface; Payroll settlement must use a Kernel provider with independent settlement evidence.",
               "evidenceStatus": "devnet_verified",
               "evidence": "devnet-e2e",
               "supportsExecution": true,
@@ -3506,7 +3506,7 @@ export const runtimeCatalog = {
               "environment": "devnet",
               "chainId": null,
               "declared": true,
-              "mode": "legacy-provider",
+              "mode": "unbound",
               "evidenceStatus": "devnet_verified",
               "evidence": "devnet-e2e",
               "executable": false,

@@ -214,10 +214,8 @@ export const APPLICATION_CAPABILITY_BINDINGS: readonly ApplicationCapabilityBind
     product: "payroll",
     capability: "payroll.settle",
     network: "solana-devnet",
-    mode: "legacy-provider",
-    entrypoint: "/api/private-payout/prepare",
-    method: "POST",
-    note: "Existing private-payout provider route; it is not evidence of an end-to-end payroll settlement.",
+    mode: "unbound",
+    note: "The legacy private-payout route remains available only as a legacy surface; Payroll settlement must use a Kernel provider with independent settlement evidence.",
   },
   {
     product: "payroll",
@@ -888,6 +886,9 @@ export function validateApplicationBindings(
     if (!product || !capability) errors.push(`binding references unknown capability ${key}`);
     if (product && !product.networks.includes(binding.network)) errors.push(`${key}: network is not declared by product`);
     if (capability && !capability.networks.includes(binding.network)) errors.push(`${key}: network is not declared by capability`);
+    if (product?.domain === "enterprise" && binding.mode === "legacy-provider") {
+      errors.push(`${key}: enterprise products cannot expose legacy-provider bindings; use the Kernel gateway`);
+    }
     if (binding.mode === "unbound" && binding.entrypoint) errors.push(`${key}: unbound binding cannot have an entrypoint`);
     if (binding.mode !== "unbound" && !binding.entrypoint) errors.push(`${key}: executable binding requires an entrypoint`);
     if (binding.mode === "unbound" && binding.method) errors.push(`${key}: unbound binding cannot have an HTTP method`);
