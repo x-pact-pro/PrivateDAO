@@ -236,6 +236,23 @@ const ORGANIZATIONAL_EVIDENCE = {
   },
 } as const;
 
+const ORGANIZATIONAL_PAYROLL_EVIDENCE = {
+  "ethereum-sepolia": {
+    provider: "evm-ethereum-sepolia-organizational",
+    contracts: ["0xcd6709c1bc73a746e1ba094c6d04f9f3442ba1fc"],
+    assets: ["ETH"],
+    commit: "39e969024",
+    timestamp: "2026-10-15T08:11:09.510Z",
+  },
+  "bnb-testnet": {
+    provider: "evm-bnb-testnet-organizational",
+    contracts: ["0x0a1a6467fdcc858899692c0f7d15beca2483d069"],
+    assets: ["BNB"],
+    commit: "ef862608a",
+    timestamp: "2026-10-12T00:18:34.179Z",
+  },
+} as const;
+
 function nativeAsset(network: NetworkDescriptor): string | null {
   if (network.family === "solana") return "SOL";
   if (network.family === "evm") {
@@ -496,6 +513,29 @@ function applyOrganizationalEvidence(entry: NativeCapabilityEntry): NativeCapabi
   };
 }
 
+function applyOrganizationalPayrollEvidence(entry: NativeCapabilityEntry): NativeCapabilityEntry {
+  const evidence = ORGANIZATIONAL_PAYROLL_EVIDENCE[entry.network as keyof typeof ORGANIZATIONAL_PAYROLL_EVIDENCE];
+  if (entry.product !== "payroll" || !evidence) return entry;
+  if (!["payroll.calculate", "payroll.approve", "payroll.settle"].includes(entry.capability)) return entry;
+  return {
+    ...entry,
+    provider: evidence.provider,
+    supportedAssets: evidence.assets,
+    contracts: evidence.contracts,
+    walletModel: "external-wallet",
+    supportsExecution: true,
+    supportsPrivateExecution: false,
+    supportsPrivateSettlement: false,
+    supportsProof: false,
+    supportsReceipt: true,
+    supportsReconciliation: true,
+    status: "testnet_verified",
+    lastVerifiedCommit: evidence.commit,
+    lastVerifiedTimestamp: evidence.timestamp,
+    evidence: "testnet-e2e",
+  };
+}
+
 /**
  * Conservative native capability registry. Planned entries are emitted so
  * discovery can explain the roadmap, but only evidence-backed entries are
@@ -504,7 +544,7 @@ function applyOrganizationalEvidence(entry: NativeCapabilityEntry): NativeCapabi
 export function buildNativeCapabilityRegistry(): readonly NativeCapabilityEntry[] {
   return PRODUCT_CATALOG.flatMap((product) =>
     product.capabilities.flatMap((capability) =>
-      NETWORK_MATRIX.map((network) => applyOrganizationalEvidence(applyStellarTestnetEvidence(applyRobinhoodTestnetEvidence(applyHyperliquidTestnetEvidence(applyBnbTestnetEvidence(applyTempoTestnetEvidence(applyPayrollDevnetEvidence(applyAgentMainnetEvidence(applyArbitrumSepoliaEvidence(applyBaseSepoliaEvidence(applyEthereumSepoliaEvidence({
+      NETWORK_MATRIX.map((network) => applyOrganizationalEvidence(applyOrganizationalPayrollEvidence(applyStellarTestnetEvidence(applyRobinhoodTestnetEvidence(applyHyperliquidTestnetEvidence(applyBnbTestnetEvidence(applyTempoTestnetEvidence(applyPayrollDevnetEvidence(applyAgentMainnetEvidence(applyArbitrumSepoliaEvidence(applyBaseSepoliaEvidence(applyEthereumSepoliaEvidence({
         product: product.id,
         capability: capability.id,
         network: network.id,
@@ -529,7 +569,7 @@ export function buildNativeCapabilityRegistry(): readonly NativeCapabilityEntry[
         lastVerifiedCommit: null,
         lastVerifiedTimestamp: null,
         evidence: "none",
-      })))))))))))) ,
+      }))))))))))))) ,
     ),
   );
 }

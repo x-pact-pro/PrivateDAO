@@ -1,6 +1,6 @@
 {
   "schema": "privatedao.native-capability-matrix.v1",
-  "generatedAt": "2026-10-15T06:06:47.877Z",
+  "generatedAt": "2026-10-15T08:21:10.715Z",
   "bridgeFree": true,
   "entries": [
     {
@@ -1576,21 +1576,23 @@
       "supportedAssets": [
         "ETH"
       ],
-      "contracts": [],
+      "contracts": [
+        "0xcd6709c1bc73a746e1ba094c6d04f9f3442ba1fc"
+      ],
       "verifier": null,
-      "provider": "evm-ethereum-sepolia",
+      "provider": "evm-ethereum-sepolia-organizational",
       "walletModel": "external-wallet",
-      "supportsExecution": false,
+      "supportsExecution": true,
       "supportsPrivateExecution": false,
       "supportsPrivateSettlement": false,
       "supportsProof": false,
-      "supportsReceipt": false,
-      "supportsReconciliation": false,
+      "supportsReceipt": true,
+      "supportsReconciliation": true,
       "supportsMainnet": false,
-      "status": "implementation",
-      "lastVerifiedCommit": null,
-      "lastVerifiedTimestamp": null,
-      "evidence": "none"
+      "status": "testnet_verified",
+      "lastVerifiedCommit": "39e969024",
+      "lastVerifiedTimestamp": "2026-10-15T08:11:09.510Z",
+      "evidence": "testnet-e2e"
     },
     {
       "product": "payroll",
@@ -1688,21 +1690,23 @@
       "supportedAssets": [
         "BNB"
       ],
-      "contracts": [],
+      "contracts": [
+        "0x0a1a6467fdcc858899692c0f7d15beca2483d069"
+      ],
       "verifier": null,
-      "provider": "evm-bnb-testnet",
+      "provider": "evm-bnb-testnet-organizational",
       "walletModel": "external-wallet",
-      "supportsExecution": false,
+      "supportsExecution": true,
       "supportsPrivateExecution": false,
       "supportsPrivateSettlement": false,
       "supportsProof": false,
-      "supportsReceipt": false,
-      "supportsReconciliation": false,
+      "supportsReceipt": true,
+      "supportsReconciliation": true,
       "supportsMainnet": false,
-      "status": "implementation",
-      "lastVerifiedCommit": null,
-      "lastVerifiedTimestamp": null,
-      "evidence": "none"
+      "status": "testnet_verified",
+      "lastVerifiedCommit": "ef862608a",
+      "lastVerifiedTimestamp": "2026-10-12T00:18:34.179Z",
+      "evidence": "testnet-e2e"
     },
     {
       "product": "payroll",
@@ -2054,21 +2058,23 @@
       "supportedAssets": [
         "ETH"
       ],
-      "contracts": [],
+      "contracts": [
+        "0xcd6709c1bc73a746e1ba094c6d04f9f3442ba1fc"
+      ],
       "verifier": null,
-      "provider": "evm-ethereum-sepolia",
+      "provider": "evm-ethereum-sepolia-organizational",
       "walletModel": "external-wallet",
-      "supportsExecution": false,
+      "supportsExecution": true,
       "supportsPrivateExecution": false,
       "supportsPrivateSettlement": false,
       "supportsProof": false,
-      "supportsReceipt": false,
-      "supportsReconciliation": false,
+      "supportsReceipt": true,
+      "supportsReconciliation": true,
       "supportsMainnet": false,
-      "status": "implementation",
-      "lastVerifiedCommit": null,
-      "lastVerifiedTimestamp": null,
-      "evidence": "none"
+      "status": "testnet_verified",
+      "lastVerifiedCommit": "39e969024",
+      "lastVerifiedTimestamp": "2026-10-15T08:11:09.510Z",
+      "evidence": "testnet-e2e"
     },
     {
       "product": "payroll",
@@ -2166,21 +2172,23 @@
       "supportedAssets": [
         "BNB"
       ],
-      "contracts": [],
+      "contracts": [
+        "0x0a1a6467fdcc858899692c0f7d15beca2483d069"
+      ],
       "verifier": null,
-      "provider": "evm-bnb-testnet",
+      "provider": "evm-bnb-testnet-organizational",
       "walletModel": "external-wallet",
-      "supportsExecution": false,
+      "supportsExecution": true,
       "supportsPrivateExecution": false,
       "supportsPrivateSettlement": false,
       "supportsProof": false,
-      "supportsReceipt": false,
-      "supportsReconciliation": false,
+      "supportsReceipt": true,
+      "supportsReconciliation": true,
       "supportsMainnet": false,
-      "status": "implementation",
-      "lastVerifiedCommit": null,
-      "lastVerifiedTimestamp": null,
-      "evidence": "none"
+      "status": "testnet_verified",
+      "lastVerifiedCommit": "ef862608a",
+      "lastVerifiedTimestamp": "2026-10-12T00:18:34.179Z",
+      "evidence": "testnet-e2e"
     },
     {
       "product": "payroll",
@@ -2532,21 +2540,23 @@
       "supportedAssets": [
         "ETH"
       ],
-      "contracts": [],
+      "contracts": [
+        "0xcd6709c1bc73a746e1ba094c6d04f9f3442ba1fc"
+      ],
       "verifier": null,
-      "provider": "evm-ethereum-sepolia",
+      "provider": "evm-ethereum-sepolia-organizational",
       "walletModel": "external-wallet",
-      "supportsExecution": false,
+      "supportsExecution": true,
       "supportsPrivateExecution": false,
       "supportsPrivateSettlement": false,
       "supportsProof": false,
-      "supportsReceipt": false,
-      "supportsReconciliation": false,
+      "supportsReceipt": true,
+      "supportsReconciliation": true,
       "supportsMainnet": false,
-      "status": "implementation",
-      "lastVerifiedCommit": null,
-      "lastVerifiedTimestamp": null,
-      "evidence": "none"
+      "status": "testnet_verified",
+      "lastVerifiedCommit": "39e969024",
+      "lastVerifiedTimestamp": "2026-10-15T08:11:09.510Z",
+      "evidence": "testnet-e2e"
     },
     {
       "product": "payroll",
@@ -2644,21 +2654,23 @@
       "supportedAssets": [
         "BNB"
       ],
-      "contracts": [],
+      "contracts": [
+        "0x0a1a6467fdcc858899692c0f7d15beca2483d069"
+      ],
       "verifier": null,
-      "provider": "evm-bnb-testnet",
+      "provider": "evm-bnb-testnet-organizational",
       "walletModel": "external-wallet",
-      "supportsExecution": false,
+      "supportsExecution": true,
       "supportsPrivateExecution": false,
       "supportsPrivateSettlement": false,
       "supportsProof": false,
-      "supportsReceipt": false,
-      "supportsReconciliation": false,
+      "supportsReceipt": true,
+      "supportsReconciliation": true,
       "supportsMainnet": false,
-      "status": "implementation",
-      "lastVerifiedCommit": null,
-      "lastVerifiedTimestamp": null,
-      "evidence": "none"
+      "status": "testnet_verified",
+      "lastVerifiedCommit": "ef862608a",
+      "lastVerifiedTimestamp": "2026-10-12T00:18:34.179Z",
+      "evidence": "testnet-e2e"
     },
     {
       "product": "payroll",

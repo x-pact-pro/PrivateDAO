@@ -195,7 +195,7 @@ export const APPLICATION_CAPABILITY_BINDINGS: readonly ApplicationCapabilityBind
     network: "ethereum-sepolia",
     mode: "kernel-gateway",
     entrypoint: "kernel://payroll.calculate",
-    note: "Ethereum Sepolia has a Kernel-backed native-asset payroll contract path; independent payroll evidence is still required before promotion.",
+    note: "Ethereum Sepolia Payroll calculate is backed by the independent Kernel/Gateway Payroll E2E artifact and verified receipts.",
   },
   {
     product: "payroll",
@@ -203,7 +203,7 @@ export const APPLICATION_CAPABILITY_BINDINGS: readonly ApplicationCapabilityBind
     network: "ethereum-sepolia",
     mode: "kernel-gateway",
     entrypoint: "kernel://payroll.approve",
-    note: "Ethereum Sepolia has a Kernel-backed payroll approval path; independent payroll evidence is still required before promotion.",
+    note: "Ethereum Sepolia Payroll approval is backed by the independent Kernel/Gateway Payroll E2E artifact and verified receipts.",
   },
   {
     product: "payroll",
@@ -211,7 +211,7 @@ export const APPLICATION_CAPABILITY_BINDINGS: readonly ApplicationCapabilityBind
     network: "ethereum-sepolia",
     mode: "kernel-gateway",
     entrypoint: "kernel://payroll.settle",
-    note: "Ethereum Sepolia has a Kernel-backed native-asset payroll settlement path; no independent payroll receipt is claimed here.",
+    note: "Ethereum Sepolia Payroll settlement is backed by the independent Kernel/Gateway Payroll E2E artifact and a settled on-chain batch.",
   },
   {
     product: "payroll",
@@ -530,7 +530,7 @@ export const APPLICATION_CAPABILITY_BINDINGS: readonly ApplicationCapabilityBind
     network: "bnb-testnet",
     mode: "kernel-gateway",
     entrypoint: "kernel://payroll.calculate",
-    note: "BNB Testnet payroll calculation is a Kernel policy step; no settlement is implied by calculation.",
+    note: "BNB Testnet payroll calculation is backed by the committed organizational Payroll E2E evidence artifact.",
   },
   {
     product: "payroll",
@@ -538,7 +538,7 @@ export const APPLICATION_CAPABILITY_BINDINGS: readonly ApplicationCapabilityBind
     network: "bnb-testnet",
     mode: "kernel-gateway",
     entrypoint: "kernel://payroll.approve",
-    note: "BNB Testnet payroll approval is a Kernel Maker/Checker policy step.",
+    note: "BNB Testnet payroll approval is backed by the committed organizational Payroll E2E evidence artifact.",
   },
   {
     product: "payroll",
@@ -546,7 +546,7 @@ export const APPLICATION_CAPABILITY_BINDINGS: readonly ApplicationCapabilityBind
     network: "bnb-testnet",
     mode: "kernel-gateway",
     entrypoint: "kernel://payroll.settle",
-    note: "BNB Testnet payroll settlement has a Kernel-backed contract path, but remains unverified until a fresh independent payout receipt is recorded; it is not advertised as shielded settlement.",
+    note: "BNB Testnet payroll settlement is backed by the committed organizational Payroll E2E evidence artifact; it is not advertised as shielded settlement.",
   },
   {
     product: "treasury",

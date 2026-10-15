@@ -98,6 +98,7 @@
     "test:runtime:payroll": "node --import tsx scripts/test-runtime-payroll.mjs",
     "test:runtime:evm-foundation": "node --import tsx scripts/test-evm-foundation.mjs",
     "test:evm:organizational-gateway-path": "node scripts/test-evm-organizational-gateway-path.mjs",
+    "test:evm:organizational-payroll-evidence": "node --import tsx scripts/verify-evm-organizational-payroll-evidence.mjs",
     "test:evm:verification-gateway-path": "node scripts/test-evm-verification-gateway-path.mjs",
     "test:runtime:stellar": "node --import tsx scripts/test-stellar-kernel.mjs",
     "test:runtime:solana": "node --import tsx scripts/test-solana-kernel.mjs",

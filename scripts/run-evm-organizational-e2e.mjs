@@ -24,6 +24,8 @@ const PACKAGE = path.join(ROOT, "packages/evm-verification");
 const TEMPO_FEE_TOKEN = "0x20c0000000000000000000000000000000000001";
 const TEMPO_TOKEN_DECIMALS = 6;
 const NETWORK = process.env.PDAO_EVM_NETWORK?.trim() || "ethereum-sepolia";
+const PRODUCT_MODE = process.env.PDAO_EVM_PRODUCT?.trim() || "all";
+if (!new Set(["all", "payroll"]).has(PRODUCT_MODE)) throw new Error("PDAO_EVM_PRODUCT must be all or payroll.");
 const NETWORK_CONFIG = {
   "ethereum-sepolia": { chainId: 11155111, rpcEnv: "PDAO_EVM_ETHEREUM_SEPOLIA_RPC_URL", currency: { name: "Sepolia Ether", symbol: "ETH", decimals: 18 } },
   "arbitrum-sepolia": { chainId: 421614, rpcEnv: "PDAO_EVM_ARBITRUM_SEPOLIA_RPC_URL", currency: { name: "Arbitrum Sepolia Ether", symbol: "ETH", decimals: 18 } },
@@ -90,6 +92,7 @@ const checkerTempoClient = NETWORK === "tempo-testnet"
   : null;
 const checkerWallet = checkerTempoClient ?? createWalletClient({ account: checker, chain, transport });
 const tempoTokenMode = NETWORK === "tempo-testnet";
+if (PRODUCT_MODE === "payroll" && tempoTokenMode) throw new Error("Tempo payroll-only E2E is disabled until the token payroll lane is independently evidenced.");
 const ownerProviderId = `evm-${NETWORK}-organizational-owner`;
 const checkerProviderId = `evm-${NETWORK}-organizational-checker`;
 const organizationalCapabilities = ["treasury.policy.check", "payroll.calculate", "payroll.approve", "payroll.settle", "governance.proposal.execute", "auction.bid.commit", "auction.settle"];
@@ -269,6 +272,14 @@ if (!tempoTokenMode) {
   const payrollBatch = await publicClient.readContract({ address: payroll.address, abi: payrollAbi, functionName: "batches", args: [payrollBatchId] });
   assert.equal(Number(payrollBatch[3]), 3, "payroll batch was not settled");
   deployments.evidence.payroll = { payrollFundingHash, payrollCreateHash, payrollApproveHash, payrollSettleHash, payrollBatchId, payrollBatchCommitment, status: "settled" };
+}
+
+if (PRODUCT_MODE === "payroll") {
+  await mkdir(path.join(PACKAGE, "deployments"), { recursive: true });
+  const outputPath = path.join(PACKAGE, `deployments/organizational-${NETWORK}-payroll.json`);
+  await writeFile(outputPath, `${JSON.stringify({ ...deployments, schema: "privatedao.organizational-payroll-e2e.v1" }, null, 2)}\n`);
+  console.log(JSON.stringify({ network: NETWORK, chainId: CHAIN_ID, product: "payroll", contracts: deployments.contracts, evidence: { payroll: deployments.evidence.payroll } }, null, 2));
+  process.exit(0);
 }
 
 const governance = await deploy(deployerWallet, governanceAbi, governanceBytecode, []);
