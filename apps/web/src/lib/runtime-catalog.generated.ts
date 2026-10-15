@@ -2409,16 +2409,16 @@ export const runtimeCatalog = {
               "entrypoint": "kernel://payroll.calculate",
               "method": null,
               "note": "Kernel-native deterministic calculation; no wallet signature or settlement is performed.",
-              "evidenceStatus": "devnet_verified",
-              "evidence": "devnet-e2e",
-              "supportsExecution": true,
+              "evidenceStatus": "implementation",
+              "evidence": "none",
+              "supportsExecution": false,
               "supportsProof": false,
-              "supportsReceipt": true,
+              "supportsReceipt": false,
               "supportsReconciliation": false,
               "supportedAssets": [
-                "WSOL"
+                "SOL"
               ],
-              "provider": "umbra-solana-devnet"
+              "provider": "solana-devnet"
             },
             {
               "network": "ethereum-sepolia",
@@ -2565,16 +2565,16 @@ export const runtimeCatalog = {
               "chainId": null,
               "declared": true,
               "mode": "kernel-gateway",
-              "evidenceStatus": "devnet_verified",
-              "evidence": "devnet-e2e",
-              "executable": true,
+              "evidenceStatus": "implementation",
+              "evidence": "none",
+              "executable": false,
               "supportsProof": false,
-              "supportsReceipt": true,
+              "supportsReceipt": false,
               "supportsReconciliation": false,
               "supportedAssets": [
-                "WSOL"
+                "SOL"
               ],
-              "provider": "umbra-solana-devnet"
+              "provider": "solana-devnet"
             },
             {
               "network": "solana-mainnet-beta",
@@ -2880,16 +2880,16 @@ export const runtimeCatalog = {
               "entrypoint": "kernel://payroll.approve",
               "method": null,
               "note": "Kernel-backed Maker/Checker policy gate; wallet/network adapter must verify the supplied checker signature before production promotion.",
-              "evidenceStatus": "devnet_verified",
-              "evidence": "devnet-e2e",
-              "supportsExecution": true,
+              "evidenceStatus": "implementation",
+              "evidence": "none",
+              "supportsExecution": false,
               "supportsProof": false,
-              "supportsReceipt": true,
+              "supportsReceipt": false,
               "supportsReconciliation": false,
               "supportedAssets": [
-                "WSOL"
+                "SOL"
               ],
-              "provider": "umbra-solana-devnet"
+              "provider": "solana-devnet"
             },
             {
               "network": "ethereum-sepolia",
@@ -3036,16 +3036,16 @@ export const runtimeCatalog = {
               "chainId": null,
               "declared": true,
               "mode": "kernel-gateway",
-              "evidenceStatus": "devnet_verified",
-              "evidence": "devnet-e2e",
-              "executable": true,
+              "evidenceStatus": "implementation",
+              "evidence": "none",
+              "executable": false,
               "supportsProof": false,
-              "supportsReceipt": true,
+              "supportsReceipt": false,
               "supportsReconciliation": false,
               "supportedAssets": [
-                "WSOL"
+                "SOL"
               ],
-              "provider": "umbra-solana-devnet"
+              "provider": "solana-devnet"
             },
             {
               "network": "solana-mainnet-beta",
@@ -3351,16 +3351,16 @@ export const runtimeCatalog = {
               "entrypoint": null,
               "method": null,
               "note": "The legacy private-payout route remains available only as a legacy surface; Payroll settlement must use a Kernel provider with independent settlement evidence.",
-              "evidenceStatus": "devnet_verified",
-              "evidence": "devnet-e2e",
-              "supportsExecution": true,
-              "supportsProof": true,
-              "supportsReceipt": true,
-              "supportsReconciliation": true,
+              "evidenceStatus": "implementation",
+              "evidence": "none",
+              "supportsExecution": false,
+              "supportsProof": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
               "supportedAssets": [
-                "WSOL"
+                "SOL"
               ],
-              "provider": "umbra-solana-devnet"
+              "provider": "solana-devnet"
             },
             {
               "network": "ethereum-sepolia",
@@ -3507,16 +3507,16 @@ export const runtimeCatalog = {
               "chainId": null,
               "declared": true,
               "mode": "unbound",
-              "evidenceStatus": "devnet_verified",
-              "evidence": "devnet-e2e",
+              "evidenceStatus": "implementation",
+              "evidence": "none",
               "executable": false,
-              "supportsProof": true,
-              "supportsReceipt": true,
-              "supportsReconciliation": true,
+              "supportsProof": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
               "supportedAssets": [
-                "WSOL"
+                "SOL"
               ],
-              "provider": "umbra-solana-devnet"
+              "provider": "solana-devnet"
             },
             {
               "network": "solana-mainnet-beta",
