@@ -107,9 +107,13 @@ const contractWriteIntent = {
     account: "0x0000000000000000000000000000000000000002",
     value: 0n,
   },
-  accounts: [],
+  accounts: [{ role: "payer", address: "0x0000000000000000000000000000000000000002", network: "ethereum-sepolia" }],
 };
 const contractWritePrepared = await viemTransport.prepare(contractWriteIntent);
+await assert.rejects(
+  () => viemTransport.prepare({ ...contractWriteIntent, idempotencyKey: "evm-payer-mismatch", payload: { ...contractWriteIntent.payload, account: "0x0000000000000000000000000000000000000003" } }),
+  /payer account does not match/,
+);
 await assert.rejects(
   () => viemTransport.submit(contractWritePrepared, { ...contractWritePrepared.unsignedPayload, functionName: "drain" }),
   /does not match the prepared transaction intent/,

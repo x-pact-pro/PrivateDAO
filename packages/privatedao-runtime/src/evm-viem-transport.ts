@@ -61,6 +61,7 @@ export class ViemEvmTransport implements EvmTransport {
 
   async prepare<TPayload, TUnsigned>(intent: ExecutionIntent<TPayload>): Promise<PreparedExecution<TUnsigned>> {
     const payload = parsePayload(intent.payload);
+    assertPayerMatches(intent, payload, this.network);
     const previous = this.idempotency.get(intent.context.idempotencyKey);
     if (previous) {
       const record = this.executions.get(previous);
@@ -138,9 +139,17 @@ export class ViemEvmTransport implements EvmTransport {
 
   async estimateFee<TPayload>(intent: ExecutionIntent<TPayload>): Promise<FeeEstimate> {
     const payload = parsePayload(intent.payload);
+    assertPayerMatches(intent, payload, this.network);
     const gas = await this.publicClient.estimateContractGas({ address: payload.address, abi: payload.abi, functionName: payload.functionName, args: payload.args, account: payload.account });
     const price = await this.publicClient.getGasPrice();
     return { network: this.network, atomicAmount: (gas * price).toString(), asset: this.nativeAsset };
+  }
+}
+
+function assertPayerMatches(intent: ExecutionIntent<unknown>, payload: ViemContractWritePayload, network: string): void {
+  const payers = intent.accounts.filter((account) => account.role === "payer");
+  if (payers.length !== 1 || payers[0].network !== network || payers[0].address.toLowerCase() !== payload.account.toLowerCase()) {
+    throw new Error("EVM payer account does not match the contract-write account or network.");
   }
 }
 
