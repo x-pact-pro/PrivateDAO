@@ -34,17 +34,18 @@ receipts, and reconciliation remain Kernel concerns.
 
 The target enterprise inventory contains ten ecosystems: Solana, Ethereum,
 Arbitrum, BNB Chain, Base, Robinhood Chain, Tempo, Zcash, Hyperliquid, and
-Stellar. The runtime now records all ten explicitly. Stellar is currently a
-planned ecosystem with no provider, product binding, receipt, or execution
-claim; the inventory entry is a scope marker, not support evidence.
+Stellar. The runtime records all ten explicitly. The generated
+`docs/enterprise-10-ecosystem-coverage.md` report is the current source of
+truth for each product/ecosystem row: a verified Stellar row is evidence for
+that specific capability only, while planned or unbound rows remain gaps.
 
 The repository may contain configuration for multiple ecosystems, but a
 configured adapter is not proof of product execution. A product/network row is
 advertised as verified only when the registry contains independent execution
-evidence and a receipt path for that capability. The current organizational E2E
-evidence includes Ethereum Sepolia, Arbitrum Sepolia, Robinhood Testnet, and
-Tempo Testnet for the specific Treasury, Governance, and Auction lanes listed in
-the coverage report.
+evidence and a receipt path for that capability. Current organizational E2E
+evidence is recorded per row in the coverage report, including the specific
+product, capability, network, and receipt scope. No network-level claim is
+inferred from another product's evidence.
 
 Zcash Testnet currently has a foundation adapter and isolated Testnet wallet
 path; it must not be described as six independently verified enterprise
