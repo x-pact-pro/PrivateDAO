@@ -324,15 +324,21 @@ const auctionCreateHash = await gatewayWrite(ownerProviderId, deployerWallet, "a
 const bidSalt = keccak256(`0x${Buffer.from(`bid-salt:${runId}`).toString("hex")}`);
 const bidCommitment = keccak256(encodeAbiParameters([{ type: "bytes32" }, { type: "address" }, { type: "uint256" }, { type: "bytes32" }], [auctionId, checker.address, bidAmount, bidSalt]));
 const bidApprovalHash = tempoTokenMode ? await write(checkerWallet, TEMPO_FEE_TOKEN, erc20Abi, "approve", [auction.address, escrow]) : null;
-const bidCommitHash = tempoTokenMode
-  ? await write(checkerWallet, auction.address, auctionAbi, "commitBid", [auctionId, bidCommitment, escrow])
-  : await gatewayWrite(checkerProviderId, checkerWallet, "auction", "auction.bid.commit", "commit-bid", auction.address, auctionAbi, "commitBid", [auctionId, bidCommitment], escrow);
-if (!tempoTokenMode) await tx(bidCommitHash);
+const bidCommitHash = await gatewayWrite(
+  checkerProviderId,
+  checkerWallet,
+  "auction",
+  "auction.bid.commit",
+  "commit-bid",
+  auction.address,
+  auctionAbi,
+  "commitBid",
+  tempoTokenMode ? [auctionId, bidCommitment, escrow] : [auctionId, bidCommitment],
+  tempoTokenMode ? undefined : escrow,
+);
 await expectRevert(() => publicClient.simulateContract({ address: auction.address, abi: auctionAbi, functionName: "revealBid", args: [auctionId, bidAmount + 1n, bidSalt], account: checker.address }), "altered auction reveal");
 await waitForChainTimestamp(biddingEnd + 1n);
-const bidRevealHash = tempoTokenMode
-  ? await write(checkerWallet, auction.address, auctionAbi, "revealBid", [auctionId, bidAmount, bidSalt])
-  : await gatewayWrite(checkerProviderId, checkerWallet, "auction", "auction.bid.commit", "reveal-bid", auction.address, auctionAbi, "revealBid", [auctionId, bidAmount, bidSalt]);
+const bidRevealHash = await gatewayWrite(checkerProviderId, checkerWallet, "auction", "auction.bid.commit", "reveal-bid", auction.address, auctionAbi, "revealBid", [auctionId, bidAmount, bidSalt]);
 await waitForChainTimestamp(auctionRevealEnd + 1n);
 const auctionFinalizeHash = await gatewayWrite(ownerProviderId, deployerWallet, "auction", "auction.settle", "finalize-auction", auction.address, auctionAbi, "finalizeAuction", [auctionId]);
 const auctionSettleHash = await gatewayWrite(ownerProviderId, deployerWallet, "auction", "auction.settle", "settle-auction", auction.address, auctionAbi, "settleAuction", [auctionId]);

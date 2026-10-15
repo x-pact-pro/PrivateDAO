@@ -17,10 +17,8 @@ for (const marker of [
   'gatewayWrite(ownerProviderId, deployerWallet, "governance"',
   'gatewayWrite(ownerProviderId, deployerWallet, "auction"',
   'gatewayWrite(checkerProviderId, checkerWallet, "auction"',
-  "const bidCommitHash = tempoTokenMode\n  ? await write(checkerWallet, auction.address, auctionAbi, \"commitBid\"",
-  "  : await gatewayWrite(checkerProviderId, checkerWallet, \"auction\", \"auction.bid.commit\"",
-  "const bidRevealHash = tempoTokenMode\n  ? await write(checkerWallet, auction.address, auctionAbi, \"revealBid\"",
-  "  : await gatewayWrite(checkerProviderId, checkerWallet, \"auction\", \"auction.bid.commit\"",
+  "const bidCommitHash = await gatewayWrite(",
+  "const bidRevealHash = await gatewayWrite(checkerProviderId, checkerWallet, \"auction\", \"auction.bid.commit\"",
 ]) {
   assert.ok(source.includes(marker), `missing Kernel Gateway marker: ${marker}`);
 }
@@ -31,6 +29,8 @@ for (const forbidden of [
   "write(deployerWallet, governance.address",
   "write(checkerWallet, governance.address",
   "checkerWallet.writeContract({ address: auction.address",
+  "await write(checkerWallet, auction.address, auctionAbi, \"commitBid\"",
+  "await write(checkerWallet, auction.address, auctionAbi, \"revealBid\"",
 ]) {
   assert.equal(source.includes(forbidden), false, `product write bypasses Kernel Gateway: ${forbidden}`);
 }
