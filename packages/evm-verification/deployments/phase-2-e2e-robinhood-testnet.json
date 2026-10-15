@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-15T04:03:29.445Z",
+  "generatedAt": "2026-10-15T17:18:44.919Z",
   "status": "testnet_verified",
   "scope": [
     "robinhood-testnet"
@@ -26,22 +26,22 @@
         }
       },
       "record": {
-        "txHash": "0xe4a78a899896ac2a26133502ac1bb8f1290355dda2625abe39040859f7b29cfd",
-        "blockNumber": "135541128",
-        "verificationId": "0x6948dd39c2dd1b734250e8a396fa07a42925f6f494b1fa7f73b259044e2c59be",
-        "explorerUrl": "https://explorer.testnet.chain.robinhood.com/tx/0xe4a78a899896ac2a26133502ac1bb8f1290355dda2625abe39040859f7b29cfd"
+        "txHash": "0x0a605e3600100c19b08a80c149ea78bdb6edd84baa06cd25a2f728639585e772",
+        "blockNumber": "135991677",
+        "verificationId": "0x15b87383dc048f3e93bf36187d935700f2f3f383a0054a499725701560dce33f",
+        "explorerUrl": "https://explorer.testnet.chain.robinhood.com/tx/0x0a605e3600100c19b08a80c149ea78bdb6edd84baa06cd25a2f728639585e772"
       },
       "blind": {
-        "txHash": "0xec47fd081a532f020b889a8c3e74ebcbede958b63417a2a5a908c3c265119b37",
-        "blockNumber": "135541225",
-        "verificationId": "0x1802cc34109e42d7d5447bad5522be68d1e4c425d4c9def882c005e713630a51",
-        "explorerUrl": "https://explorer.testnet.chain.robinhood.com/tx/0xec47fd081a532f020b889a8c3e74ebcbede958b63417a2a5a908c3c265119b37"
+        "txHash": "0x80e31d2db12d526dd9cbb629f5f63c2a5bd5e0cc34da62d40b93a8887681c2ca",
+        "blockNumber": "135991780",
+        "verificationId": "0x38af8f3910279045986970d09ab10cd6c41d1139b4aa3f9103c545cebce14a47",
+        "explorerUrl": "https://explorer.testnet.chain.robinhood.com/tx/0x80e31d2db12d526dd9cbb629f5f63c2a5bd5e0cc34da62d40b93a8887681c2ca"
       },
       "revocation": {
-        "recordTxHash": "0x3115744b72f892fa687cd6b72e2d8e69508f80571db64fa21b09c70fb86077e8",
-        "blindTxHash": "0x4b5fdcf6f5c853583f33fe7e36d1747676b38c44c2644a73e8d662822cdf5e62",
-        "disposableRecordVerificationId": "0x16af2fb636ea54dd7f478e0112c1e92d3ffec32e4463bf698e861cb6c1484568",
-        "disposableBlindVerificationId": "0x1a7e4e294514a60f8965f42fc0538bcf8c5cb3935ac9b021878d82b69be88dce"
+        "recordTxHash": "0x8869a5681be1cb5e50892395a90ed302c9f7aae2fda7e5681620df6acc264bd0",
+        "blindTxHash": "0x94586113e88c16dc2f0c11bc1e80e7da70382fdc74e11a3bbc442650e4931a19",
+        "disposableRecordVerificationId": "0x4c02019b851fc83366056c1ac1bb187ff01a8db7a938f3a3d2ceac8900e4e2fc",
+        "disposableBlindVerificationId": "0x2c6d5113e806a1d1095abbc2e109238057686e05fa1c9991381f65b7da6780b1"
       },
       "checks": {
         "recordVerified": true,
@@ -54,8 +54,8 @@
         "blindProofRevoked": true
       },
       "links": {
-        "record": "https://privatedao.org/verify/evm?network=robinhood-testnet&type=record&id=0x6948dd39c2dd1b734250e8a396fa07a42925f6f494b1fa7f73b259044e2c59be",
-        "blind": "https://privatedao.org/verify/evm?network=robinhood-testnet&type=blind&id=0x1802cc34109e42d7d5447bad5522be68d1e4c425d4c9def882c005e713630a51"
+        "record": "https://privatedao.org/verify/evm?network=robinhood-testnet&type=record&id=0x15b87383dc048f3e93bf36187d935700f2f3f383a0054a499725701560dce33f",
+        "blind": "https://privatedao.org/verify/evm?network=robinhood-testnet&type=blind&id=0x38af8f3910279045986970d09ab10cd6c41d1139b4aa3f9103c545cebce14a47"
       }
     }
   ]

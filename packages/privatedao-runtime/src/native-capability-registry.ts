@@ -131,8 +131,8 @@ const ROBINHOOD_TESTNET_EVIDENCE = {
     "0x3fc47618e59c5bf8a19fe6a5298938fc9b8c3bdc",
     "0x672899b8ad719468b20ee0b662bc30a8a22e6585",
   ],
-  commit: "62ca8d314",
-  timestamp: "2026-10-15T04:03:29.445Z",
+  commit: "3ff8d9e79",
+  timestamp: "2026-10-15T17:18:44.919Z",
 } as const;
 
 const STELLAR_TESTNET_EVIDENCE = {
@@ -446,8 +446,8 @@ function applyHyperliquidTestnetEvidence(entry: NativeCapabilityEntry): NativeCa
 }
 
 function applyRobinhoodTestnetEvidence(entry: NativeCapabilityEntry): NativeCapabilityEntry {
-  const isBlind = entry.product === "blind-verification" && entry.capability === "verification.blind.prove";
-  const isRecord = entry.product === "record-verification" && ["verification.record.create", "verification.record.verify"].includes(entry.capability);
+  const isBlind = entry.product === "blind-verification" && ["verification.blind.prove", "verification.blind.revoke"].includes(entry.capability);
+  const isRecord = entry.product === "record-verification" && ["verification.record.create", "verification.record.verify", "verification.record.revoke"].includes(entry.capability);
   if (entry.network !== "robinhood-testnet" || (!isBlind && !isRecord)) return entry;
   return {
     ...entry,
