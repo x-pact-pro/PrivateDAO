@@ -88,6 +88,7 @@ const viemTransport = new ViemEvmTransport(
     async getGasPrice() { return 2n; },
   },
   {
+    account: { address: "0x0000000000000000000000000000000000000002" },
     async writeContract(payload) { submittedPayload = payload; return "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"; },
   },
   "ethereum-sepolia",
@@ -120,7 +121,7 @@ await assert.rejects(
 );
 await viemTransport.submit(contractWritePrepared, contractWritePrepared.unsignedPayload);
 assert.equal(submittedPayload.functionName, "anchorRecord");
-assert.equal(submittedPayload.account, contractWriteIntent.payload.account);
+assert.equal(submittedPayload.account.address, contractWriteIntent.payload.account);
 
 // Every configured testnet must pass the same lifecycle contract. This is a
 // local adapter test only; it does not imply deployed contracts or on-chain

@@ -57,6 +57,10 @@ const rpcTimeoutMs = Number(process.env.PDAO_EVM_RPC_TIMEOUT_MS || 120_000);
 if (!Number.isInteger(rpcTimeoutMs) || rpcTimeoutMs < 10_000 || rpcTimeoutMs > 300_000) {
   throw new Error("PDAO_EVM_RPC_TIMEOUT_MS must be an integer between 10000 and 300000.");
 }
+const txReceiptTimeoutMs = Number(process.env.PDAO_EVM_TX_RECEIPT_TIMEOUT_MS || 120_000);
+if (!Number.isInteger(txReceiptTimeoutMs) || txReceiptTimeoutMs < 10_000 || txReceiptTimeoutMs > 300_000) {
+  throw new Error("PDAO_EVM_TX_RECEIPT_TIMEOUT_MS must be an integer between 10000 and 300000.");
+}
 const transport = http(rpcUrl, {
   timeout: rpcTimeoutMs,
   // A lost response must not cause viem to replay a side-effecting transaction.
@@ -147,10 +151,10 @@ async function waitForChainTimestamp(target) {
 const nonceCache = new Map();
 async function takeNonce(account) {
   const address = account.address;
-  if (!nonceCache.has(address)) {
-    nonceCache.set(address, await publicClient.getTransactionCount({ address, blockTag: "pending" }));
-  }
-  const nonce = nonceCache.get(address);
+  // Public testnet RPCs can lag while another submission is being indexed.
+  // Refresh pending state for every write and never move the local cursor back.
+  const observed = await publicClient.getTransactionCount({ address, blockTag: "pending" });
+  const nonce = Math.max(nonceCache.get(address) ?? 0, observed);
   nonceCache.set(address, nonce + 1);
   return nonce;
 }
@@ -163,7 +167,7 @@ async function feeOverrides() {
   return { maxFeePerGas: scaled, maxPriorityFeePerGas: gasPrice };
 }
 const tx = async (hash) => {
-  const receipt = await publicClient.waitForTransactionReceipt({ hash });
+  const receipt = await publicClient.waitForTransactionReceipt({ hash, timeout: txReceiptTimeoutMs });
   assert.equal(receipt.status, "success", `transaction reverted: ${hash}`);
   return receipt;
 };
@@ -275,7 +279,8 @@ const now = (await publicClient.getBlock({ blockTag: "latest" })).timestamp;
 const governanceCommitSeconds = Number(process.env.PDAO_EVM_GOVERNANCE_COMMIT_SECONDS || "120");
 const governanceRevealSeconds = Number(process.env.PDAO_EVM_GOVERNANCE_REVEAL_SECONDS || "300");
 if (!Number.isInteger(governanceCommitSeconds) || !Number.isInteger(governanceRevealSeconds) || governanceCommitSeconds < 5 || governanceRevealSeconds <= governanceCommitSeconds) throw new Error("Invalid governance test windows.");
-const windowSafetySeconds = BigInt(process.env.PDAO_EVM_WINDOW_SAFETY_SECONDS || "20");
+const windowSafetySeconds = BigInt(process.env.PDAO_EVM_WINDOW_SAFETY_SECONDS || "30");
+if (windowSafetySeconds < 30n) throw new Error("PDAO_EVM_WINDOW_SAFETY_SECONDS must be at least 30 seconds for RPC propagation safety.");
 const commitEnd = now + BigInt(governanceCommitSeconds) + windowSafetySeconds;
 const revealEnd = now + BigInt(governanceRevealSeconds) + windowSafetySeconds;
 const proposalHash = await gatewayWrite(ownerProviderId, deployerWallet, "governance", "governance.proposal.execute", "create-proposal", governance.address, governanceAbi, "createProposal", [proposalId, actionHash, commitEnd, revealEnd, 1n]);

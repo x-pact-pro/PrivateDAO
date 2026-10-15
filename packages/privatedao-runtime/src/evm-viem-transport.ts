@@ -27,6 +27,7 @@ type ViemPublicClient = {
 const RECEIPT_TIMEOUT_MS = Number(process.env.PRIVATEDAO_EVM_RECEIPT_TIMEOUT_MS || 120_000);
 
 type ViemWalletClient = {
+  account?: { address: `0x${string}` };
   writeContract(input: Record<string, unknown>): Promise<`0x${string}`>;
 };
 
@@ -89,12 +90,18 @@ export class ViemEvmTransport implements EvmTransport {
     if (record.state !== "awaiting_signature" && record.state !== "prepared") throw new Error(`Cannot submit EVM execution from ${record.state}.`);
     const payload = parsePayload(signedPayload);
     assertPayloadMatches(record.prepared.unsignedPayload, payload);
+    const configuredAccount = this.walletClient.account;
+    if (configuredAccount && configuredAccount.address.toLowerCase() !== payload.account.toLowerCase()) {
+      throw new Error("EVM wallet signer does not match the prepared payer account.");
+    }
     const signature = await this.walletClient.writeContract({
       address: payload.address,
       abi: payload.abi,
       functionName: payload.functionName,
       args: payload.args,
-      account: payload.account,
+      // Preserve viem's local Account object so signing happens locally. Passing
+      // only an address makes viem fall back to eth_sendTransaction on the RPC.
+      account: configuredAccount ?? payload.account,
       ...(payload.value === undefined ? {} : { value: payload.value }),
     });
     record.signature = signature;
