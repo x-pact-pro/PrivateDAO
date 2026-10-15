@@ -58,16 +58,14 @@ assert.deepEqual(await runtime.gateway.submit(prepared, prepared.unsignedPayload
 assert.equal((await runtime.gateway.status(prepared, "maker")).state, "finalized");
 assert.equal((await runtime.gateway.receipt(prepared, "maker")).state, "finalized");
 
-assert.throws(
-  () => createHttpBackedPrivateDaoRuntime({
-    baseUrl: "https://api.example.test",
-    providerId: "invalid-provider",
-    network: "zcash-testnet",
-    capabilities: ["payroll.settle"],
-    fetchImpl: async () => json({}),
-  }),
-  /not declared for zcash-testnet/,
-);
+const zcashRuntime = createHttpBackedPrivateDaoRuntime({
+  baseUrl: "https://api.example.test",
+  providerId: "zcash-provider",
+  network: "zcash-testnet",
+  capabilities: ["payroll.settle"],
+  fetchImpl: async () => json({}),
+});
+assert.ok(zcashRuntime.gateway, "Zcash Testnet product bindings must compose through the Kernel gateway");
 
 assert.throws(
   () => createHttpBackedPrivateDaoRuntime({
