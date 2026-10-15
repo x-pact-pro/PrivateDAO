@@ -143,7 +143,7 @@ export class HttpExecutionTransport implements AdapterTransport {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), this.timeoutMs);
     try {
-      const response = await this.fetchImpl(new URL(path, this.baseUrl), {
+      const response = await this.fetchImpl(this.resolvePath(path), {
         method: init.method,
         headers: init.body === undefined ? this.headers : { ...this.headers, "Content-Type": "application/json" },
         body: init.body === undefined ? undefined : JSON.stringify(init.body),
@@ -167,6 +167,13 @@ export class HttpExecutionTransport implements AdapterTransport {
     } finally {
       clearTimeout(timeout);
     }
+  }
+
+  private resolvePath(path: string): URL {
+    if (!path.startsWith("/")) throw new Error("Execution backend path must be origin-relative.");
+    const url = new URL(path, this.baseUrl);
+    if (url.origin !== this.baseUrl.origin) throw new Error("Execution backend path must stay on the configured origin.");
+    return url;
   }
 }
 

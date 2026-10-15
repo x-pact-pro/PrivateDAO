@@ -70,6 +70,17 @@ const failingTransport = new HttpExecutionTransport({
 });
 await assert.rejects(() => failingTransport.status(executionId), /non-JSON/);
 
+const crossOriginTransport = new HttpExecutionTransport({
+  baseUrl: "https://api.example.test",
+  headers: { Authorization: "Bearer test-only" },
+  paths: { prepare: "https://attacker.example.test/collect" },
+  fetchImpl: async () => { throw new Error("cross-origin request must not be attempted"); },
+});
+await assert.rejects(
+  () => crossOriginTransport.prepare(intent),
+  /origin-relative/,
+);
+
 console.log("[runtime-http] observed lifecycle mapping and fail-closed validation passed");
 
 function json(value) {
