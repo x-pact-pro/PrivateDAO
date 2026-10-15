@@ -269,7 +269,7 @@ const ORGANIZATIONAL_PAYROLL_EVIDENCE = {
     provider: "evm-robinhood-testnet-organizational",
     contracts: ["0xff3bbac12cb2630bee9f0576ea2ea202a059edf7"],
     assets: ["ETH"],
-    commit: "pending",
+    commit: "619c65f03",
     timestamp: "2026-10-15T18:40:40.109Z",
   },
 } as const;
