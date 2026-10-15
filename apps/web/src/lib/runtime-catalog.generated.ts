@@ -2224,7 +2224,7 @@ export const runtimeCatalog = {
               "mode": "kernel-gateway",
               "entrypoint": "kernel://payroll.settle",
               "method": null,
-              "note": "BNB Testnet payroll settlement is backed by a real payout receipt; it is not advertised as shielded settlement.",
+              "note": "BNB Testnet payroll settlement has a Kernel-backed contract path, but remains unverified until a fresh independent payout receipt is recorded; it is not advertised as shielded settlement.",
               "evidenceStatus": "implementation",
               "evidence": "none",
               "supportsExecution": false,
