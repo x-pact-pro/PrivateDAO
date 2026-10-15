@@ -636,8 +636,8 @@
       "product": "blind-verification",
       "ecosystem": "hyperliquid",
       "declaredLaneCount": 2,
-      "executableLaneCount": 1,
-      "status": "partial",
+      "executableLaneCount": 2,
+      "status": "verified",
       "capabilities": [
         {
           "capability": "verification.blind.prove",
@@ -667,13 +667,13 @@
               "environment": "testnet",
               "declared": true,
               "mode": "kernel-gateway",
-              "status": "implementation",
-              "evidence": "none",
+              "status": "testnet_verified",
+              "evidence": "testnet-e2e",
               "provider": "evm-hyperliquid-testnet",
-              "supportsExecution": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
-              "executable": false,
+              "supportsExecution": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "executable": true,
               "entrypoint": "kernel://verification.blind.revoke",
               "note": "EVM blind-proof revocation is an explicit Kernel capability; the provider performs no direct product call outside the gateway."
             }
@@ -1601,8 +1601,8 @@
       "product": "record-verification",
       "ecosystem": "hyperliquid",
       "declaredLaneCount": 3,
-      "executableLaneCount": 2,
-      "status": "partial",
+      "executableLaneCount": 3,
+      "status": "verified",
       "capabilities": [
         {
           "capability": "verification.record.create",
@@ -1652,13 +1652,13 @@
               "environment": "testnet",
               "declared": true,
               "mode": "kernel-gateway",
-              "status": "implementation",
-              "evidence": "none",
+              "status": "testnet_verified",
+              "evidence": "testnet-e2e",
               "provider": "evm-hyperliquid-testnet",
-              "supportsExecution": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
-              "executable": false,
+              "supportsExecution": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "executable": true,
               "entrypoint": "kernel://verification.record.revoke",
               "note": "EVM contract revocation is an explicit Kernel capability; the provider performs no direct product call outside the gateway."
             }

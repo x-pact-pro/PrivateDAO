@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-11T14:08:00.682Z",
+  "generatedAt": "2026-10-15T17:15:50.077Z",
   "status": "testnet_verified",
   "scope": [
     "hyperliquid-testnet"
@@ -8,9 +8,6 @@
     {
       "network": "hyperliquid-testnet",
       "chainId": 998,
-      "attribution": {
-        "dataSuffixConfigured": false
-      },
       "contracts": {
         "verifier": {
           "address": "0x26e3515d02bb3d8122fad109d159f43e81e8beeb",
@@ -29,26 +26,22 @@
         }
       },
       "record": {
-        "workflow": "record-verification",
-        "txHash": "0x229332900b11e0319adbf39b2aedc87de5bb570a58cce3831f2663cc9165cec7",
-        "blockNumber": "66624478",
-        "status": "success",
-        "verificationId": "0x532bb582a9b0f3fa13dab1751be3ff9457a88e0340a2b7df846dadb6e88bc252",
-        "explorerUrl": "https://www.hyperscan.com/tx/0x229332900b11e0319adbf39b2aedc87de5bb570a58cce3831f2663cc9165cec7"
+        "txHash": "0x63abf924376c100bafb3c5e2738cbf967717d584cedff389c9797a37c6d010e4",
+        "blockNumber": "66987214",
+        "verificationId": "0x01643d729a7d06566bc165cd763e8fcb5d1a8ca1be790823cd0d6f1ae8e6718c",
+        "explorerUrl": "https://www.hyperscan.com/tx/0x63abf924376c100bafb3c5e2738cbf967717d584cedff389c9797a37c6d010e4"
       },
       "blind": {
-        "workflow": "blind-verification",
-        "txHash": "0x4b09c1bb9d80ffd50374c8d34a3f9ec61bd58af3f61c42ef45e27673386ba5c1",
-        "blockNumber": "66624492",
-        "status": "success",
-        "verificationId": "0xc58fe52a37421d78debbe6ae4dff8acb646499f18be2aa6c10e3068177db230b",
-        "explorerUrl": "https://www.hyperscan.com/tx/0x4b09c1bb9d80ffd50374c8d34a3f9ec61bd58af3f61c42ef45e27673386ba5c1"
+        "txHash": "0xaf0208ca3bfb3daa404bc9ccbe883b4606ed8dcb3955fa8bfbb55a9840913d57",
+        "blockNumber": "66987228",
+        "verificationId": "0x7a2451793730944a99a0c5cf53854a728f8b210b8f50fbbe4d1495886e8a6234",
+        "explorerUrl": "https://www.hyperscan.com/tx/0xaf0208ca3bfb3daa404bc9ccbe883b4606ed8dcb3955fa8bfbb55a9840913d57"
       },
       "revocation": {
-        "recordTxHash": "0x9033a9fac4dbdc60d939dbc6d9bdba7b73b97100ff6eab113716dc9d4fa1928d",
-        "blindTxHash": "0x7fdb433f422075dfaf37e88bee5405f6feefa719d821c56738267bdeb8dd8a47",
-        "disposableRecordVerificationId": "0x252c92182f805c575911d9a951ed021cb8c93476a589c15acf2b0d9ac06543a7",
-        "disposableBlindVerificationId": "0x5b51f784d4fa823a48142ff43de3eb1913b89346a144287ea9b69f259a1745b9"
+        "recordTxHash": "0x98193ca6c0b64fca3847472110c3f814e613ae1ef1c57ed5c44c34dbde108ae4",
+        "blindTxHash": "0xab5af808b686966a5e15ffb07ea32f82063edd7bbae1f01c53a2544a6f21df6d",
+        "disposableRecordVerificationId": "0x0c4643948ca80af551a336ce898e5784bf1af0890a7ea9a6476eb3193d3e389f",
+        "disposableBlindVerificationId": "0x961ec9cad5cf48ad78a36d4c5c2527f7a997dcb5f5b2f5f2e3331a09e06321fe"
       },
       "checks": {
         "recordVerified": true,
@@ -61,8 +54,8 @@
         "blindProofRevoked": true
       },
       "links": {
-        "record": "https://privatedao.org/verify/evm?network=hyperliquid-testnet&type=record&id=0x532bb582a9b0f3fa13dab1751be3ff9457a88e0340a2b7df846dadb6e88bc252",
-        "blind": "https://privatedao.org/verify/evm?network=hyperliquid-testnet&type=blind&id=0xc58fe52a37421d78debbe6ae4dff8acb646499f18be2aa6c10e3068177db230b"
+        "record": "https://privatedao.org/verify/evm?network=hyperliquid-testnet&type=record&id=0x01643d729a7d06566bc165cd763e8fcb5d1a8ca1be790823cd0d6f1ae8e6718c",
+        "blind": "https://privatedao.org/verify/evm?network=hyperliquid-testnet&type=blind&id=0x7a2451793730944a99a0c5cf53854a728f8b210b8f50fbbe4d1495886e8a6234"
       }
     }
   ]
