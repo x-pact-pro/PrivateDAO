@@ -30,14 +30,14 @@ Testnet runner, and the Rust dependency graph used by the Zcash provider.
   compatibility patch for `magicblock-delegation-program-api 3.1.0`. The
   patch changes only its `AlignedVec` dependency to `rkyv 0.8.18`; the
   MagicBlock public API and the ephemeral-rollups SDK version remain fixed.
-- The patched auction crate passes `cargo check -p privatedao-auction --lib`,
-  and `cargo audit --json` reports zero vulnerabilities for the workspace.
-- Root `npm audit --omit=dev` reports no production vulnerabilities. The
-  separate `apps/web` production lockfile now has the direct critical findings
-  remediated (Next, shell-quote, sharp, source-map-js, and brace-expansion),
-  but still reports 12 transitive findings in the React Native/MagicBlock
-  dependency graph. Those remaining findings are recorded below and are not
-  claimed as resolved.
+- The patched auction crate passes `cargo check -p privatedao-auction --lib`.
+  `cargo audit` reports no Rust vulnerabilities, with maintenance and
+  unsoundness warnings recorded below.
+- Root `npm audit --omit=dev` reports zero production vulnerabilities. The full
+  root audit has only low-severity development findings after the Mocha and
+  brace-expansion lockfile refresh. The separate `apps/web` production
+  lockfile reports 12 transitive findings (9 high and 3 low) in the React
+  Native/Metro/MagicBlock graph; those findings are not claimed as resolved.
 
 ## Remaining dependency findings
 
@@ -57,9 +57,11 @@ generated and no deployment was performed during this review.
 
 The web residuals are isolated to transitive packages pulled by the Solana
 wallet adapter and MagicBlock SDK: React Native/Metro, `micromatch`/`braces`,
-`@phala/dcap-qvl`, and `elliptic`. The web lockfile uses the patched versions
-available without changing application APIs; the remaining upstream findings
-have no compatible non-vulnerable upgrade identified in this review.
+`@phala/dcap-qvl`, and `elliptic`. `next` and `eslint-config-next` are pinned
+to the current compatible 16.4.1 release. The remaining ESLint and React
+Native/Metro advisories have no compatible non-vulnerable upgrade identified
+in this review; the suggested downgrade to Next 14 is not compatible with the
+current application and was not applied.
 
 ## Release gate
 
