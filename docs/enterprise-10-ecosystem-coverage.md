@@ -6,7 +6,7 @@ A lane is **verified** only when it is declared, bound through kernel://, has an
 
 | Product | Ecosystem | Status | Executable / Declared | Capability lanes |
 | --- | --- | --- | ---: | --- |
-| blind-verification | solana | planned | 0/1 | verification.blind.prove: solana-devnet=kernel-gateway/implementation, solana-mainnet-beta=unbound/planned; verification.blind.revoke: solana-devnet=unbound/planned, solana-mainnet-beta=unbound/planned |
+| blind-verification | solana | verified | 1/1 | verification.blind.prove: solana-devnet=kernel-gateway/devnet_verified, solana-mainnet-beta=unbound/planned; verification.blind.revoke: solana-devnet=unbound/planned, solana-mainnet-beta=unbound/planned |
 | blind-verification | ethereum | verified | 2/2 | verification.blind.prove: ethereum-sepolia=kernel-gateway/testnet_verified, ethereum-mainnet=unbound/planned; verification.blind.revoke: ethereum-sepolia=kernel-gateway/testnet_verified, ethereum-mainnet=unbound/planned |
 | blind-verification | arbitrum | verified | 2/2 | verification.blind.prove: arbitrum-sepolia=kernel-gateway/testnet_verified, arbitrum-one=unbound/planned; verification.blind.revoke: arbitrum-sepolia=kernel-gateway/testnet_verified, arbitrum-one=unbound/planned |
 | blind-verification | bnb | verified | 2/2 | verification.blind.prove: bnb-testnet=kernel-gateway/testnet_verified, bnb-mainnet=unbound/planned; verification.blind.revoke: bnb-testnet=kernel-gateway/testnet_verified, bnb-mainnet=unbound/planned |
