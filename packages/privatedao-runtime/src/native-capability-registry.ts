@@ -97,8 +97,8 @@ const TEMPO_TESTNET_EVIDENCE = {
     "0xffe6e9a78dafd35f230ad51c7bd96ba469d53405",
     "0x9570769a1a4980d199845ccb276706face805cb4",
   ],
-  commit: "7b4d430",
-  timestamp: "2026-09-16T21:53:12.853Z",
+  commit: "a2dc61d2a",
+  timestamp: "2026-10-15T17:59:13.787Z",
 } as const;
 
 const BNB_TESTNET_EVIDENCE = {
@@ -378,8 +378,8 @@ function applyPayrollDevnetEvidence(entry: NativeCapabilityEntry): NativeCapabil
 }
 
 function applyTempoTestnetEvidence(entry: NativeCapabilityEntry): NativeCapabilityEntry {
-  const isBlind = entry.product === "blind-verification" && entry.capability === "verification.blind.prove";
-  const isRecord = entry.product === "record-verification" && ["verification.record.create", "verification.record.verify"].includes(entry.capability);
+  const isBlind = entry.product === "blind-verification" && ["verification.blind.prove", "verification.blind.revoke"].includes(entry.capability);
+  const isRecord = entry.product === "record-verification" && ["verification.record.create", "verification.record.verify", "verification.record.revoke"].includes(entry.capability);
   if (entry.network !== "tempo-testnet" || (!isBlind && !isRecord)) return entry;
   return {
     ...entry,

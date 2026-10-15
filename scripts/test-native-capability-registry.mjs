@@ -7,7 +7,7 @@ const liveAgents = entries.filter((entry) => entry.status === "mainnet_live" && 
 const verifiedPayroll = entries.filter((entry) => entry.status === "devnet_verified");
 
 assert.equal(entries.length, 238, "unexpected native capability matrix size");
-assert.equal(verified.length, 77, "only evidence-backed verification and organizational testnet rows should be verified");
+assert.equal(verified.length, 79, "only evidence-backed verification and organizational testnet rows should be verified");
 assert.equal(liveAgents.length, 2, "the two live Agent Exchange rows must be runtime-verified");
 assert.equal(verifiedPayroll.length, 3, "only the three Payroll Devnet evidence rows should be verified");
 for (const entry of verifiedPayroll) {
@@ -41,9 +41,9 @@ for (const entry of verified.filter((candidate) => candidate.network === "tempo-
   assert.equal(entry.provider, "evm-tempo-testnet");
   assert.equal(entry.chainId, "42431");
   assert.equal(entry.supportsMainnet, false);
-  assert.equal(entry.lastVerifiedCommit, "7b4d430");
+  assert.equal(entry.lastVerifiedCommit, "a2dc61d2a");
 }
-assert.equal(verified.filter((entry) => entry.network === "tempo-testnet" && entry.provider === "evm-tempo-testnet").length, 3, "Tempo must have three verified verification rows");
+assert.equal(verified.filter((entry) => entry.network === "tempo-testnet" && entry.provider === "evm-tempo-testnet").length, 5, "Tempo must have five verified verification rows including revocation controls");
 assert.equal(verified.filter((entry) => entry.provider === "evm-ethereum-sepolia-organizational").length, 7, "Ethereum organizational evidence must cover treasury, payroll, governance, and auction lanes");
 assert.equal(verified.filter((entry) => entry.provider === "evm-tempo-testnet-organizational").length, 4, "Tempo organizational evidence must cover treasury, governance, and auction lanes");
 assert.equal(verified.filter((entry) => entry.provider === "evm-base-sepolia").length, 5, "Base Sepolia must have five verified verification rows including revocation controls");

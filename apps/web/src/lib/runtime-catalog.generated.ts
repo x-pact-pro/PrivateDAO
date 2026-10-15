@@ -624,14 +624,14 @@ export const runtimeCatalog = {
               "entrypoint": "kernel://verification.blind.revoke",
               "method": null,
               "note": "EVM blind-proof revocation is an explicit Kernel capability; the provider performs no direct product call outside the gateway.",
-              "evidenceStatus": "implementation",
-              "evidence": "none",
-              "supportsExecution": false,
-              "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "supportsExecution": true,
+              "supportsProof": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
-                "USD"
+                "AlphaUSD"
               ],
               "provider": "evm-tempo-testnet"
             }
@@ -860,14 +860,14 @@ export const runtimeCatalog = {
               "chainId": "42431",
               "declared": true,
               "mode": "kernel-gateway",
-              "evidenceStatus": "implementation",
-              "evidence": "none",
-              "executable": false,
-              "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "executable": true,
+              "supportsProof": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
-                "USD"
+                "AlphaUSD"
               ],
               "provider": "evm-tempo-testnet"
             },
@@ -2056,14 +2056,14 @@ export const runtimeCatalog = {
               "entrypoint": "kernel://verification.record.revoke",
               "method": null,
               "note": "EVM contract revocation is an explicit Kernel capability; the provider performs no direct product call outside the gateway.",
-              "evidenceStatus": "implementation",
-              "evidence": "none",
-              "supportsExecution": false,
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "supportsExecution": true,
               "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
-                "USD"
+                "AlphaUSD"
               ],
               "provider": "evm-tempo-testnet"
             }
@@ -2292,14 +2292,14 @@ export const runtimeCatalog = {
               "chainId": "42431",
               "declared": true,
               "mode": "kernel-gateway",
-              "evidenceStatus": "implementation",
-              "evidence": "none",
-              "executable": false,
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "executable": true,
               "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
-                "USD"
+                "AlphaUSD"
               ],
               "provider": "evm-tempo-testnet"
             },
