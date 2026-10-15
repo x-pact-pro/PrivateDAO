@@ -1493,17 +1493,17 @@ export const runtimeCatalog = {
               "mode": "kernel-gateway",
               "entrypoint": "kernel://payroll.calculate",
               "method": null,
-              "note": "Ethereum Sepolia has a Kernel-backed native-asset payroll contract path; independent payroll evidence is still required before promotion.",
-              "evidenceStatus": "implementation",
-              "evidence": "none",
-              "supportsExecution": false,
+              "note": "Ethereum Sepolia Payroll calculate is backed by the independent Kernel/Gateway Payroll E2E artifact and verified receipts.",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "supportsExecution": true,
               "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "ETH"
               ],
-              "provider": "evm-ethereum-sepolia"
+              "provider": "evm-ethereum-sepolia-organizational"
             },
             {
               "network": "arbitrum-sepolia",
@@ -1561,17 +1561,17 @@ export const runtimeCatalog = {
               "mode": "kernel-gateway",
               "entrypoint": "kernel://payroll.calculate",
               "method": null,
-              "note": "BNB Testnet payroll calculation is a Kernel policy step; no settlement is implied by calculation.",
-              "evidenceStatus": "implementation",
-              "evidence": "none",
-              "supportsExecution": false,
+              "note": "BNB Testnet payroll calculation is backed by the committed organizational Payroll E2E evidence artifact.",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "supportsExecution": true,
               "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "BNB"
               ],
-              "provider": "evm-bnb-testnet"
+              "provider": "evm-bnb-testnet-organizational"
             },
             {
               "network": "hyperliquid-testnet",
@@ -1652,16 +1652,16 @@ export const runtimeCatalog = {
               "chainId": "11155111",
               "declared": true,
               "mode": "kernel-gateway",
-              "evidenceStatus": "implementation",
-              "evidence": "none",
-              "executable": false,
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "executable": true,
               "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "ETH"
               ],
-              "provider": "evm-ethereum-sepolia"
+              "provider": "evm-ethereum-sepolia-organizational"
             },
             {
               "network": "ethereum-mainnet",
@@ -1724,16 +1724,16 @@ export const runtimeCatalog = {
               "chainId": "97",
               "declared": true,
               "mode": "kernel-gateway",
-              "evidenceStatus": "implementation",
-              "evidence": "none",
-              "executable": false,
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "executable": true,
               "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "BNB"
               ],
-              "provider": "evm-bnb-testnet"
+              "provider": "evm-bnb-testnet-organizational"
             },
             {
               "network": "bnb-mainnet",
@@ -1946,17 +1946,17 @@ export const runtimeCatalog = {
               "mode": "kernel-gateway",
               "entrypoint": "kernel://payroll.approve",
               "method": null,
-              "note": "Ethereum Sepolia has a Kernel-backed payroll approval path; independent payroll evidence is still required before promotion.",
-              "evidenceStatus": "implementation",
-              "evidence": "none",
-              "supportsExecution": false,
+              "note": "Ethereum Sepolia Payroll approval is backed by the independent Kernel/Gateway Payroll E2E artifact and verified receipts.",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "supportsExecution": true,
               "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "ETH"
               ],
-              "provider": "evm-ethereum-sepolia"
+              "provider": "evm-ethereum-sepolia-organizational"
             },
             {
               "network": "arbitrum-sepolia",
@@ -2014,17 +2014,17 @@ export const runtimeCatalog = {
               "mode": "kernel-gateway",
               "entrypoint": "kernel://payroll.approve",
               "method": null,
-              "note": "BNB Testnet payroll approval is a Kernel Maker/Checker policy step.",
-              "evidenceStatus": "implementation",
-              "evidence": "none",
-              "supportsExecution": false,
+              "note": "BNB Testnet payroll approval is backed by the committed organizational Payroll E2E evidence artifact.",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "supportsExecution": true,
               "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "BNB"
               ],
-              "provider": "evm-bnb-testnet"
+              "provider": "evm-bnb-testnet-organizational"
             },
             {
               "network": "hyperliquid-testnet",
@@ -2105,16 +2105,16 @@ export const runtimeCatalog = {
               "chainId": "11155111",
               "declared": true,
               "mode": "kernel-gateway",
-              "evidenceStatus": "implementation",
-              "evidence": "none",
-              "executable": false,
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "executable": true,
               "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "ETH"
               ],
-              "provider": "evm-ethereum-sepolia"
+              "provider": "evm-ethereum-sepolia-organizational"
             },
             {
               "network": "ethereum-mainnet",
@@ -2177,16 +2177,16 @@ export const runtimeCatalog = {
               "chainId": "97",
               "declared": true,
               "mode": "kernel-gateway",
-              "evidenceStatus": "implementation",
-              "evidence": "none",
-              "executable": false,
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "executable": true,
               "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "BNB"
               ],
-              "provider": "evm-bnb-testnet"
+              "provider": "evm-bnb-testnet-organizational"
             },
             {
               "network": "bnb-mainnet",
@@ -2399,17 +2399,17 @@ export const runtimeCatalog = {
               "mode": "kernel-gateway",
               "entrypoint": "kernel://payroll.settle",
               "method": null,
-              "note": "Ethereum Sepolia has a Kernel-backed native-asset payroll settlement path; no independent payroll receipt is claimed here.",
-              "evidenceStatus": "implementation",
-              "evidence": "none",
-              "supportsExecution": false,
+              "note": "Ethereum Sepolia Payroll settlement is backed by the independent Kernel/Gateway Payroll E2E artifact and a settled on-chain batch.",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "supportsExecution": true,
               "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "ETH"
               ],
-              "provider": "evm-ethereum-sepolia"
+              "provider": "evm-ethereum-sepolia-organizational"
             },
             {
               "network": "arbitrum-sepolia",
@@ -2467,17 +2467,17 @@ export const runtimeCatalog = {
               "mode": "kernel-gateway",
               "entrypoint": "kernel://payroll.settle",
               "method": null,
-              "note": "BNB Testnet payroll settlement has a Kernel-backed contract path, but remains unverified until a fresh independent payout receipt is recorded; it is not advertised as shielded settlement.",
-              "evidenceStatus": "implementation",
-              "evidence": "none",
-              "supportsExecution": false,
+              "note": "BNB Testnet payroll settlement is backed by the committed organizational Payroll E2E evidence artifact; it is not advertised as shielded settlement.",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "supportsExecution": true,
               "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "BNB"
               ],
-              "provider": "evm-bnb-testnet"
+              "provider": "evm-bnb-testnet-organizational"
             },
             {
               "network": "hyperliquid-testnet",
@@ -2558,16 +2558,16 @@ export const runtimeCatalog = {
               "chainId": "11155111",
               "declared": true,
               "mode": "kernel-gateway",
-              "evidenceStatus": "implementation",
-              "evidence": "none",
-              "executable": false,
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "executable": true,
               "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "ETH"
               ],
-              "provider": "evm-ethereum-sepolia"
+              "provider": "evm-ethereum-sepolia-organizational"
             },
             {
               "network": "ethereum-mainnet",
@@ -2630,16 +2630,16 @@ export const runtimeCatalog = {
               "chainId": "97",
               "declared": true,
               "mode": "kernel-gateway",
-              "evidenceStatus": "implementation",
-              "evidence": "none",
-              "executable": false,
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "executable": true,
               "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "BNB"
               ],
-              "provider": "evm-bnb-testnet"
+              "provider": "evm-bnb-testnet-organizational"
             },
             {
               "network": "bnb-mainnet",
