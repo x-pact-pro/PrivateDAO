@@ -83,8 +83,8 @@ assert.throws(
     ...intent,
     context: {
       ...intent.context,
-      product: "governance",
-      capability: "governance.proposal.execute",
+      product: "agent",
+      capability: "agent.invoke",
       idempotencyKey: "idempotency-runtime-unsupported",
     },
   }, "maker"),
