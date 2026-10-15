@@ -197,6 +197,8 @@ export {
   STELLAR_TESTNET_NETWORK_PASSPHRASE,
   STELLAR_KERNEL_CAPABILITIES,
 } from "./stellar-network.js";
+export { SolanaNetworkAdapter, SolanaAdapterError, SOLANA_NETWORK_CONFIGS } from "./solana-network.js";
+export type { SolanaEnvironment, SolanaNetworkConfig, SolanaTransport, SolanaWalletAdapter } from "./solana-network.js";
 export type {
   StellarEnvironment,
   StellarNetworkConfig,
