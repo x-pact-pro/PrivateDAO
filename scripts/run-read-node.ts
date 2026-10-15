@@ -3861,7 +3861,9 @@ function signedCommercialLicense(input: {
     expiresAt: input.licenseEnd,
     capacity: input.capacity,
   });
-  const signature = createHmac("sha256", process.env.PD_LICENSE_SIGNING_SECRET || "privatedao-public-review-license-boundary")
+  const signingSecret = process.env.PD_LICENSE_SIGNING_SECRET?.trim() || "";
+  if (!signingSecret) throw new Error("Commercial license signing is not configured.");
+  const signature = createHmac("sha256", signingSecret)
     .update(payload)
     .digest("hex");
   return {
