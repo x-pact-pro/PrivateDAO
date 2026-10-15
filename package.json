@@ -134,6 +134,7 @@
     "verify:canonical-repository": "node scripts/verify-canonical-repository.mjs",
     "verify:tracked-secrets": "node scripts/verify-tracked-secrets.mjs",
     "verify:application-bindings": "node scripts/verify-application-bindings.mjs",
+    "test:enterprise-boundary": "node --import tsx scripts/test-enterprise-boundary.mjs",
     "build:enterprise-coverage": "node --import tsx scripts/build-enterprise-coverage-report.mjs",
     "verify:enterprise-coverage": "node --import tsx scripts/verify-enterprise-coverage-report.mjs",
     "verify:legacy-route-archive": "node scripts/verify-legacy-route-archive.mjs",

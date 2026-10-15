@@ -113,6 +113,9 @@ jobs:
       - name: Runtime kernel typecheck
         run: npm run typecheck:runtime
 
+      - name: Verify enterprise and Agent Exchange boundary
+        run: npm run test:enterprise-boundary
+
       - name: EVM foundation tests
         run: npm run test:runtime:evm-foundation
 
