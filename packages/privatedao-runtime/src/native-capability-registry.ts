@@ -82,14 +82,6 @@ const AGENT_MAINNET_EVIDENCE = {
   timestamp: "2026-09-11T01:18:16Z",
 } as const;
 
-const PAYROLL_SOLANA_DEVNET_EVIDENCE = {
-  provider: "umbra-solana-devnet",
-  program: "DSuKkyqGVGgo4QtPABfxKJKygUDACbUhirnuv63mEpAJ",
-  asset: "WSOL",
-  commit: "adcb3ae",
-  timestamp: "2026-09-11T21:36:18.740Z",
-} as const;
-
 const BLIND_SOLANA_DEVNET_EVIDENCE = {
   provider: "privatedao-blind-policy-proof",
   commit: "6be6daf6a",
@@ -382,26 +374,10 @@ function applyAgentMainnetEvidence(entry: NativeCapabilityEntry): NativeCapabili
 }
 
 function applyPayrollDevnetEvidence(entry: NativeCapabilityEntry): NativeCapabilityEntry {
-  if (entry.product !== "payroll" || entry.network !== "solana-devnet") return entry;
-  if (!["payroll.calculate", "payroll.approve", "payroll.settle"].includes(entry.capability)) return entry;
-  const isSettlement = entry.capability === "payroll.settle";
-  return {
-    ...entry,
-    provider: PAYROLL_SOLANA_DEVNET_EVIDENCE.provider,
-    supportedAssets: [PAYROLL_SOLANA_DEVNET_EVIDENCE.asset],
-    contracts: [PAYROLL_SOLANA_DEVNET_EVIDENCE.program],
-    walletModel: "external-wallet",
-    supportsExecution: true,
-    supportsPrivateExecution: isSettlement,
-    supportsPrivateSettlement: isSettlement,
-    supportsProof: isSettlement,
-    supportsReceipt: true,
-    supportsReconciliation: isSettlement,
-    status: "devnet_verified",
-    lastVerifiedCommit: PAYROLL_SOLANA_DEVNET_EVIDENCE.commit,
-    lastVerifiedTimestamp: PAYROLL_SOLANA_DEVNET_EVIDENCE.timestamp,
-    evidence: "devnet-e2e",
-  };
+  // The Umbra/PayrollStore packet is a legacy wallet-side path. It is
+  // deliberately excluded until the same flow runs through the Kernel
+  // ProductExecutionGateway with an independent receipt.
+  return entry;
 }
 
 function applyBlindSolanaDevnetEvidence(entry: NativeCapabilityEntry): NativeCapabilityEntry {
