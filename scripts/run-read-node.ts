@@ -1086,14 +1086,10 @@ function toFieldString(value: bigint) {
 }
 
 async function poseidonHash(...items: bigint[]) {
-  const { buildPoseidon } = requireFromRoot("circomlibjs") as {
-    buildPoseidon: () => Promise<{
-      F: { toString: (value: unknown) => string };
-      (items: bigint[]): unknown;
-    }>;
+  const { Poseidon } = requireFromRoot("@iden3/js-crypto") as {
+    Poseidon: { hash: (items: bigint[]) => bigint };
   };
-  const poseidon = await buildPoseidon();
-  return BigInt(poseidon.F.toString(poseidon(items)));
+  return Poseidon.hash(items);
 }
 
 function normalizeBlindPolicyInputs(value: unknown): BlindPolicyPrivateInputs {

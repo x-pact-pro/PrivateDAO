@@ -18,7 +18,7 @@ import {
   getOrCreateAssociatedTokenAccount,
   TOKEN_2022_PROGRAM_ID,
 } from "@solana/spl-token";
-import { buildPoseidon } from "circomlibjs";
+import { Poseidon } from "@iden3/js-crypto";
 import crypto from "crypto";
 import fs from "fs";
 import path from "path";
@@ -1893,9 +1893,7 @@ function runLocal(command: string, args: string[], cwd: string) {
 }
 
 async function poseidonHash(...items: bigint[]): Promise<bigint> {
-  const poseidon = await buildPoseidon();
-  const F = poseidon.F;
-  return BigInt(F.toString(poseidon(items)));
+  return Poseidon.hash(items);
 }
 
 async function generateVoteProof(

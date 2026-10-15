@@ -17,7 +17,7 @@ exports.createMembershipSnapshot = createMembershipSnapshot;
 exports.assertSnapshotUsable = assertSnapshotUsable;
 exports.createAnonymousVoteEnvelope = createAnonymousVoteEnvelope;
 const crypto_1 = require("crypto");
-const circomlibjs_1 = require("circomlibjs");
+const js_crypto_1 = require("@iden3/js-crypto");
 let poseidonPromise = null;
 function generateSalt32() {
     return (0, crypto_1.randomBytes)(32);
@@ -195,9 +195,9 @@ async function createAnonymousVoteEnvelope(input) {
 }
 async function getPoseidonRuntime() {
     if (!poseidonPromise) {
-        poseidonPromise = (0, circomlibjs_1.buildPoseidon)().then((poseidon) => ({
-            hash: (...items) => BigInt(poseidon.F.toString(poseidon(items))),
-        }));
+        poseidonPromise = Promise.resolve({
+            hash: (...items) => js_crypto_1.Poseidon.hash(items),
+        });
     }
     return poseidonPromise;
 }

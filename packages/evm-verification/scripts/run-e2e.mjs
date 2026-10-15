@@ -1,7 +1,7 @@
 import { readFile, writeFile, mkdir } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { buildPoseidon } from "circomlibjs";
+import { Poseidon } from "@iden3/js-crypto";
 import * as snarkjs from "snarkjs";
 import {
   createPublicClient,
@@ -60,8 +60,7 @@ const verifierBytecode = `0x${(await readFile(path.join(PACKAGE, "artifacts/Grot
 const blindBytecode = `0x${(await readFile(path.join(PACKAGE, "artifacts/BlindVerificationRegistry.bin"), "utf8")).trim()}`;
 const recordBytecode = `0x${(await readFile(path.join(PACKAGE, "artifacts/RecordVerificationRegistry.bin"), "utf8")).trim()}`;
 
-const poseidon = await buildPoseidon();
-const poseidonField = (values) => BigInt(poseidon.F.toString(poseidon(values.map((value) => BigInt(value)))));
+const poseidonField = (values) => Poseidon.hash(values.map((value) => BigInt(value)));
 
 const domainTypes = [
   { type: "string" }, { type: "uint256" }, { type: "address" },
