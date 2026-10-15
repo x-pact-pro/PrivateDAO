@@ -1,6 +1,6 @@
 {
   "schema": "privatedao.native-capability-matrix.v1",
-  "generatedAt": "2026-10-15T18:38:26.730Z",
+  "generatedAt": "2026-10-15T18:41:55.370Z",
   "bridgeFree": true,
   "entries": [
     {
@@ -2810,21 +2810,23 @@
       "supportedAssets": [
         "ETH"
       ],
-      "contracts": [],
+      "contracts": [
+        "0xff3bbac12cb2630bee9f0576ea2ea202a059edf7"
+      ],
       "verifier": null,
-      "provider": "evm-robinhood-testnet",
+      "provider": "evm-robinhood-testnet-organizational",
       "walletModel": "external-wallet",
-      "supportsExecution": false,
+      "supportsExecution": true,
       "supportsPrivateExecution": false,
       "supportsPrivateSettlement": false,
       "supportsProof": false,
-      "supportsReceipt": false,
-      "supportsReconciliation": false,
+      "supportsReceipt": true,
+      "supportsReconciliation": true,
       "supportsMainnet": false,
-      "status": "implementation",
-      "lastVerifiedCommit": null,
-      "lastVerifiedTimestamp": null,
-      "evidence": "none"
+      "status": "testnet_verified",
+      "lastVerifiedCommit": "pending",
+      "lastVerifiedTimestamp": "2026-10-15T18:40:40.109Z",
+      "evidence": "testnet-e2e"
     },
     {
       "product": "payroll",
@@ -3296,21 +3298,23 @@
       "supportedAssets": [
         "ETH"
       ],
-      "contracts": [],
+      "contracts": [
+        "0xff3bbac12cb2630bee9f0576ea2ea202a059edf7"
+      ],
       "verifier": null,
-      "provider": "evm-robinhood-testnet",
+      "provider": "evm-robinhood-testnet-organizational",
       "walletModel": "external-wallet",
-      "supportsExecution": false,
+      "supportsExecution": true,
       "supportsPrivateExecution": false,
       "supportsPrivateSettlement": false,
       "supportsProof": false,
-      "supportsReceipt": false,
-      "supportsReconciliation": false,
+      "supportsReceipt": true,
+      "supportsReconciliation": true,
       "supportsMainnet": false,
-      "status": "implementation",
-      "lastVerifiedCommit": null,
-      "lastVerifiedTimestamp": null,
-      "evidence": "none"
+      "status": "testnet_verified",
+      "lastVerifiedCommit": "pending",
+      "lastVerifiedTimestamp": "2026-10-15T18:40:40.109Z",
+      "evidence": "testnet-e2e"
     },
     {
       "product": "payroll",
@@ -3782,21 +3786,23 @@
       "supportedAssets": [
         "ETH"
       ],
-      "contracts": [],
+      "contracts": [
+        "0xff3bbac12cb2630bee9f0576ea2ea202a059edf7"
+      ],
       "verifier": null,
-      "provider": "evm-robinhood-testnet",
+      "provider": "evm-robinhood-testnet-organizational",
       "walletModel": "external-wallet",
-      "supportsExecution": false,
+      "supportsExecution": true,
       "supportsPrivateExecution": false,
       "supportsPrivateSettlement": false,
       "supportsProof": false,
-      "supportsReceipt": false,
-      "supportsReconciliation": false,
+      "supportsReceipt": true,
+      "supportsReconciliation": true,
       "supportsMainnet": false,
-      "status": "implementation",
-      "lastVerifiedCommit": null,
-      "lastVerifiedTimestamp": null,
-      "evidence": "none"
+      "status": "testnet_verified",
+      "lastVerifiedCommit": "pending",
+      "lastVerifiedTimestamp": "2026-10-15T18:40:40.109Z",
+      "evidence": "testnet-e2e"
     },
     {
       "product": "payroll",

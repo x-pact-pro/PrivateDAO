@@ -7,7 +7,7 @@ const liveAgents = entries.filter((entry) => entry.status === "mainnet_live" && 
 const verifiedPayroll = entries.filter((entry) => entry.status === "devnet_verified");
 
 assert.equal(entries.length, 238, "unexpected native capability matrix size");
-assert.equal(verified.length, 85, "only evidence-backed verification and organizational testnet rows should be verified");
+assert.equal(verified.length, 88, "only evidence-backed verification and organizational testnet rows should be verified");
 assert.equal(liveAgents.length, 2, "the two live Agent Exchange rows must be runtime-verified");
 assert.equal(verifiedPayroll.length, 3, "only the three Payroll Devnet evidence rows should be verified");
 for (const entry of verifiedPayroll) {
@@ -53,7 +53,8 @@ assert.equal(verified.filter((entry) => entry.provider === "evm-base-sepolia-org
 assert.equal(verified.filter((entry) => entry.provider === "evm-arbitrum-sepolia").length, 5, "Arbitrum Sepolia must have five verified verification rows including revocation controls");
 assert.equal(verified.filter((entry) => entry.provider === "evm-arbitrum-sepolia-organizational").length, 7, "Arbitrum organizational evidence must cover Treasury, Payroll, Governance, and Auction lanes");
 assert.equal(verified.filter((entry) => entry.provider === "evm-arbitrum-sepolia-organizational" && entry.product === "payroll").length, 3, "Arbitrum organizational evidence must cover the Payroll lanes");
-assert.equal(verified.filter((entry) => entry.provider === "evm-robinhood-testnet-organizational").length, 4, "Robinhood organizational evidence must cover treasury, governance, and auction lanes");
+assert.equal(verified.filter((entry) => entry.provider === "evm-robinhood-testnet-organizational").length, 7, "Robinhood organizational evidence must cover Treasury, Payroll, Governance, and Auction lanes");
+assert.equal(verified.filter((entry) => entry.provider === "evm-robinhood-testnet-organizational" && entry.product === "payroll").length, 3, "Robinhood organizational evidence must cover the Payroll lanes");
 assert.equal(verified.filter((entry) => entry.provider === "evm-robinhood-testnet").length, 5, "Robinhood Testnet must cover blind, record, and revocation verification lanes");
 assert.equal(verified.filter((entry) => entry.provider === "evm-bnb-testnet").length, 5, "BNB Testnet must have five verified verification rows including revocation controls");
 assert.equal(verified.filter((entry) => entry.provider === "evm-bnb-testnet-organizational").length, 7, "BNB organizational evidence must cover Treasury, Payroll, Governance, and Auction lanes");

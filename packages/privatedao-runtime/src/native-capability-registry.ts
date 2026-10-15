@@ -265,6 +265,13 @@ const ORGANIZATIONAL_PAYROLL_EVIDENCE = {
     commit: "6230580f1",
     timestamp: "2026-10-15T18:35:10.382Z",
   },
+  "robinhood-testnet": {
+    provider: "evm-robinhood-testnet-organizational",
+    contracts: ["0xff3bbac12cb2630bee9f0576ea2ea202a059edf7"],
+    assets: ["ETH"],
+    commit: "pending",
+    timestamp: "2026-10-15T18:40:40.109Z",
+  },
 } as const;
 
 function nativeAsset(network: NetworkDescriptor): string | null {

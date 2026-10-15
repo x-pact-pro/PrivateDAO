@@ -1,0 +1,42 @@
+{
+  "network": "robinhood-testnet",
+  "chainId": 46630,
+  "environment": "testnet",
+  "deployer": "0x1c3D6757651B617D7e5c08aE6F7a7F65eEafD75F",
+  "checker": "0xC33Faffdc904CA28DB248966c8D837615162f15F",
+  "createdAt": "2026-10-15T18:40:40.109Z",
+  "contracts": {
+    "treasury": {
+      "address": "0x8ea77a4b281c29d92bb6cb991687cc34462cd2a1",
+      "hash": "0x644db7c880cb0a816141411c2d994663881b3219fd83f312fbee27a119c3c5d4",
+      "blockNumber": "136034543"
+    },
+    "payroll": {
+      "address": "0xff3bbac12cb2630bee9f0576ea2ea202a059edf7",
+      "hash": "0x3374e828d96543295bdb270dab1da57aaf9696aa9ed9918ccf234e001fd6becd",
+      "blockNumber": "136034700"
+    }
+  },
+  "evidence": {
+    "treasury": {
+      "checkerFundingHash": "0x3612d042c104660875c3a2cbe427bb9852d645c64eb20fe8e301fe51717d9cdc",
+      "treasuryApprovalHash": null,
+      "treasuryFundingHash": "0x215beea1eac2df962f4f61c822f6067ef8c962750eef96e92f8d49fb36e94094",
+      "requestedHash": "0x6f1d2410b6c5e1f59046cce44ffc1225a3d3d8dbaba99e98d4a56fbd4610f1cc",
+      "approvedHash": "0xa7cdb5b33fa7180b93205b9d511553c71e78fc9fd9f81b2439a30e3735e67408",
+      "executedHash": "0xde0c2f1846adcd32ee20587be5bac3d461da6b023b84b6d39d11d4a03c9dbeea",
+      "paymentId": "0xd0a4edbdd4f387e64d6d2dda45eb646caa279ab1f095bdbef4652f53ac43c473",
+      "status": "executed"
+    },
+    "payroll": {
+      "payrollFundingHash": "0x91d41ea798bdff4e16a761f5d3cce273cf9665c27f9599d39aea6127ec3652bc",
+      "payrollCreateHash": "0x82c9e902ceb27384d0caed384f44fbe386602b34984f16eae81666ffa60e96af",
+      "payrollApproveHash": "0x3020b5fe2eaad3ac0e2ce57bacf4bd588be031f227a71bcb8e244ebe746fd89c",
+      "payrollSettleHash": "0x210ef9b82177d501ca24f0a184dedb737cd3c9c3582075f25368d911cf684193",
+      "payrollBatchId": "0xa4557840db56b6f62eb17146ebfe6f6144528ac5d6781d5d658f99ee8dafba85",
+      "payrollBatchCommitment": "0xf67af780d521e493c5a7b5f9a4db3d0eb4dfa5d363a5983f421b1d5295d88d97",
+      "status": "settled"
+    }
+  },
+  "schema": "privatedao.organizational-payroll-e2e.v1"
+}
