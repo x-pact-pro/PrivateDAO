@@ -39,6 +39,14 @@ import {
   type TxlineProviderMode,
   type TxlineSettlementProofPackage,
 } from "../apps/web/src/lib/txline-settlement";
+import { buildSealedAuctionProofPackage } from "../apps/web/src/lib/sealed-auction-proof";
+import {
+  AUCTION_OUTCOME_CIRCUIT,
+  assertReceiptBinding,
+  buildAuctionOutcomeProofInput,
+  type AuctionOutcomeMetadata,
+  type AuctionOutcomeBid,
+} from "../apps/web/src/lib/auction-outcome-proof";
 import { PayrollStore, type PayrollState, type SettlementState } from "./lib/payroll-domain.ts";
 
 const host = process.env.PRIVATE_DAO_READ_NODE_HOST || "127.0.0.1";
@@ -6569,6 +6577,68 @@ async function handle(req: http.IncomingMessage, res: http.ServerResponse) {
       }
       const result = await fetchZerionPortfolio(wallet);
       writeJson(res, result.ok ? 200 : 502, result);
+      return;
+    }
+
+    if (req.method === "POST" && (pathname === "/api/auctions/sealed/run" || pathname === "/api/v1/auctions/sealed/run")) {
+      const body = await readRequestJsonWithLimit(req, 96_000) as Record<string, unknown>;
+      try {
+        const proofPackage = buildSealedAuctionProofPackage({
+          config: body.config as Parameters<typeof buildSealedAuctionProofPackage>[0]["config"],
+          privateBids: body.privateBids as Parameters<typeof buildSealedAuctionProofPackage>[0]["privateBids"],
+          proofId: typeof body.proofId === "string" ? body.proofId : undefined,
+        });
+        writeJson(res, 200, {
+          ok: true,
+          source: "privatedao-sealed-auction",
+          status: "proof-issued",
+          publicOutcome: proofPackage.publicOutcome,
+          proofHash: proofPackage.originalProofHash,
+          publicProofPackage: proofPackage,
+          privateDataExcluded: proofPackage.valuesHiddenDuringAuction,
+          explanation: "Private bid values and salts are excluded from the public proof package.",
+        });
+      } catch {
+        writeJson(res, 422, {
+          ok: false,
+          source: "privatedao-sealed-auction",
+          status: "proof-not-issued",
+          publicOutcome: "proof-not-issued",
+          error: "Sealed auction proof was not issued.",
+        });
+      }
+      return;
+    }
+
+    if (req.method === "POST" && (pathname === "/api/auctions/sealed/outcome-proof" || pathname === "/api/v1/auctions/sealed/outcome-proof")) {
+      const body = await readRequestJsonWithLimit(req, 512_000) as { metadata?: AuctionOutcomeMetadata; bids?: AuctionOutcomeBid[] };
+      try {
+        if (!body.metadata || !Array.isArray(body.bids)) throw new Error("metadata and private bid witness are required");
+        assertReceiptBinding(body.metadata);
+        const input = buildAuctionOutcomeProofInput(body.metadata, body.bids);
+        const artifactRoot = process.env.PDAO_AUCTION_ZK_ARTIFACT_DIR || resolve("zk");
+        const wasm = join(artifactRoot, "build", `${AUCTION_OUTCOME_CIRCUIT}_js`, `${AUCTION_OUTCOME_CIRCUIT}.wasm`);
+        const zkey = join(artifactRoot, "setup", `${AUCTION_OUTCOME_CIRCUIT}_final.zkey`);
+        if (!existsSync(wasm) || !existsSync(zkey)) throw new Error("Auction proving artifacts are unavailable");
+        const { groth16 } = requireFromWebApp("snarkjs") as { groth16: { fullProve: (input: Record<string, unknown>, wasmPath: string, zkeyPath: string) => Promise<{ proof: unknown; publicSignals: string[] }> } };
+        const result = await groth16.fullProve(input as unknown as Record<string, unknown>, wasm, zkey);
+        writeJson(res, 200, {
+          ok: true,
+          proofType: "groth16-auction-outcome-v1",
+          circuit: AUCTION_OUTCOME_CIRCUIT,
+          publicSignals: result.publicSignals,
+          proof: result.proof,
+          privateDataExcluded: true,
+          binding: "finalized SettlementReceipt result_commitment and public outcome fields",
+        });
+      } catch (error) {
+        console.error("[read-node] auction outcome proof generation failed", error instanceof Error ? error.message : "unknown error");
+        writeJson(res, 422, {
+          ok: false,
+          proofType: "groth16-auction-outcome-v1",
+          error: "Auction outcome proof was not generated.",
+        });
+      }
       return;
     }
 
