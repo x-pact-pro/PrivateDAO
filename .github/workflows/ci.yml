@@ -57,11 +57,16 @@ jobs:
 
       - name: Install Anchor CLI
         run: |
-          # Anchor 1.0.1 supports direct installation from its immutable release tag.
-          # This avoids bootstrapping AVM and then compiling/downloading a second CLI
-          # during the same job, which can otherwise exhaust the CI time budget.
-          timeout --signal=TERM --kill-after=30s 15m \
-            cargo install --git https://github.com/coral-xyz/anchor --tag v1.0.1 anchor-cli --locked --force
+          # Use the official immutable Anchor 1.0.1 Linux release and verify its
+          # published digest instead of compiling the CLI during every CI run.
+          mkdir -p "$HOME/.local/bin"
+          curl --fail --location --retry 5 --retry-all-errors --retry-delay 2 \
+            --proto '=https' --tlsv1.2 \
+            https://github.com/otter-sec/anchor/releases/download/v1.0.1/anchor-1.0.1-x86_64-unknown-linux-gnu \
+            -o "$HOME/.local/bin/anchor"
+          echo "8427407220983e9847abcc1e1767dbc6654288957535a5d653f449860871a8df  $HOME/.local/bin/anchor" | sha256sum --check --strict
+          chmod 0755 "$HOME/.local/bin/anchor"
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
           anchor --version
 
       - name: Install dependencies
