@@ -81,12 +81,13 @@ export class ViemEvmTransport implements EvmTransport {
     return prepared as PreparedExecution<TUnsigned>;
   }
 
-  async submit<TUnsigned>(execution: PreparedExecution<TUnsigned>, _signedPayload: TUnsigned): Promise<{ executionId: string; signatures: string[] }> {
+  async submit<TUnsigned>(execution: PreparedExecution<TUnsigned>, signedPayload: TUnsigned): Promise<{ executionId: string; signatures: string[] }> {
     const record = this.executions.get(execution.executionId);
     if (!record) throw new Error("Unknown EVM execution.");
     if (record.signature) return { executionId: execution.executionId, signatures: [record.signature] };
     if (record.state !== "awaiting_signature" && record.state !== "prepared") throw new Error(`Cannot submit EVM execution from ${record.state}.`);
-    const payload = record.prepared.unsignedPayload;
+    const payload = parsePayload(signedPayload);
+    assertPayloadMatches(record.prepared.unsignedPayload, payload);
     const signature = await this.walletClient.writeContract({
       address: payload.address,
       abi: payload.abi,
@@ -141,6 +142,23 @@ export class ViemEvmTransport implements EvmTransport {
     const price = await this.publicClient.getGasPrice();
     return { network: this.network, atomicAmount: (gas * price).toString(), asset: this.nativeAsset };
   }
+}
+
+function assertPayloadMatches(expected: ViemContractWritePayload, actual: ViemContractWritePayload): void {
+  if (
+    expected.address.toLowerCase() !== actual.address.toLowerCase()
+    || expected.account.toLowerCase() !== actual.account.toLowerCase()
+    || expected.functionName !== actual.functionName
+    || canonicalize(expected.abi) !== canonicalize(actual.abi)
+    || canonicalize(expected.args) !== canonicalize(actual.args)
+    || canonicalize(expected.value) !== canonicalize(actual.value)
+  ) {
+    throw new Error("EVM signed payload does not match the prepared transaction intent.");
+  }
+}
+
+function canonicalize(value: unknown): string {
+  return JSON.stringify(value, (_key, candidate) => typeof candidate === "bigint" ? `${candidate}n` : candidate);
 }
 
 function parsePayload(value: unknown): ViemContractWritePayload {
