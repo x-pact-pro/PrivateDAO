@@ -15,7 +15,7 @@ const child = spawn(process.execPath, [path.resolve("node_modules/ts-node/dist/b
     PRIVATE_DAO_READ_NODE_HOST: "127.0.0.1",
     PRIVATE_DAO_READ_NODE_PORT: String(port),
     PRIVATE_DAO_RUNTIME_STATE_DIR: runtimeStateDir,
-    PRIVATE_DAO_READ_ALLOWED_ORIGIN: "*",
+    PRIVATE_DAO_READ_ALLOWED_ORIGIN: "https://privatedao.org",
     TS_NODE_TRANSPILE_ONLY: "1",
   },
   stdio: ["ignore", "pipe", "pipe"],
