@@ -1,4 +1,9 @@
-# PrivateDAO Enterprise Release Gate
+# PrivateDAO Enterprise Release Gate (historical snapshot)
+
+> Historical note: the dependency statements in this dated release record are
+> preserved for audit history. The root `circomlibjs -> ethers 5.x -> elliptic`
+> chain was removed and verified by the 2026-10-15 dependency audit. The
+> separate MagicBlock/TEE transitive boundary remains documented there.
 
 Date: 2026-09-19
 Branch: `rebrand/enterprise-white`
@@ -55,7 +60,9 @@ Latest audited commit: `c971b740f`
 - External MCP client interoperability has not been independently certified.
 - Historical remote Dependabot branches have not been fetched or made public.
 - `npm run verify:social-previews` checks the live source as Telegram, X, Discord, and LinkedIn crawlers across 13 commercial routes, including metadata, canonical URLs, OG images, and cache validators. Platform-internal cache refresh remains outside source verification and is not claimed.
-- The transitive `elliptic` advisory remains open because the available forced fix is breaking.
+- At the time of this 2026-09-19 review, the transitive `elliptic` advisory
+  remained open. Current status is recorded in
+  `docs/security-dependency-audit-20261015.md`.
 
 ## Production Safety Gate
 
