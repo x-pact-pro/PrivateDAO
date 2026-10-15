@@ -29,6 +29,7 @@ async function main() {
         requiresSignature: capability.requiresSignature,
         supportsAsync: capability.supportsAsync,
         receiptSchema: capability.receiptSchema,
+        customerFacing: capability.customerFacing !== false,
         applicationBindings: capability.networks.map((network) => {
             const binding = findApplicationBinding(product.id, capability.id, network);
             const evidence = nativeCapabilities.find(

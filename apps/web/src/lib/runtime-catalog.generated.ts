@@ -26,6 +26,7 @@ export const runtimeCatalog = {
           "requiresSignature": false,
           "supportsAsync": true,
           "receiptSchema": "privatedao.execution-receipt.v1",
+          "customerFacing": true,
           "applicationBindings": [
             {
               "network": "solana-devnet",
@@ -513,6 +514,7 @@ export const runtimeCatalog = {
           "requiresSignature": true,
           "supportsAsync": true,
           "receiptSchema": "privatedao.execution-receipt.v1",
+          "customerFacing": false,
           "applicationBindings": [
             {
               "network": "ethereum-sepolia",
@@ -968,6 +970,7 @@ export const runtimeCatalog = {
           "requiresSignature": false,
           "supportsAsync": true,
           "receiptSchema": "privatedao.execution-receipt.v1",
+          "customerFacing": true,
           "applicationBindings": [
             {
               "network": "solana-devnet",
@@ -1455,6 +1458,7 @@ export const runtimeCatalog = {
           "requiresSignature": false,
           "supportsAsync": true,
           "receiptSchema": "privatedao.execution-receipt.v1",
+          "customerFacing": true,
           "applicationBindings": [
             {
               "network": "solana-devnet",
@@ -1942,6 +1946,7 @@ export const runtimeCatalog = {
           "requiresSignature": true,
           "supportsAsync": true,
           "receiptSchema": "privatedao.execution-receipt.v1",
+          "customerFacing": false,
           "applicationBindings": [
             {
               "network": "ethereum-sepolia",
@@ -2396,6 +2401,7 @@ export const runtimeCatalog = {
           "requiresSignature": false,
           "supportsAsync": true,
           "receiptSchema": "privatedao.execution-receipt.v1",
+          "customerFacing": true,
           "applicationBindings": [
             {
               "network": "solana-devnet",
@@ -2866,6 +2872,7 @@ export const runtimeCatalog = {
           "requiresSignature": true,
           "supportsAsync": true,
           "receiptSchema": "privatedao.execution-receipt.v1",
+          "customerFacing": true,
           "applicationBindings": [
             {
               "network": "solana-devnet",
@@ -3336,6 +3343,7 @@ export const runtimeCatalog = {
           "requiresSignature": true,
           "supportsAsync": true,
           "receiptSchema": "privatedao.execution-receipt.v1",
+          "customerFacing": true,
           "applicationBindings": [
             {
               "network": "solana-devnet",
@@ -3825,6 +3833,7 @@ export const runtimeCatalog = {
           "requiresSignature": false,
           "supportsAsync": true,
           "receiptSchema": "privatedao.execution-receipt.v1",
+          "customerFacing": true,
           "applicationBindings": [
             {
               "network": "solana-devnet",
@@ -4331,6 +4340,7 @@ export const runtimeCatalog = {
           "requiresSignature": true,
           "supportsAsync": true,
           "receiptSchema": "privatedao.execution-receipt.v1",
+          "customerFacing": true,
           "applicationBindings": [
             {
               "network": "solana-devnet",
@@ -4837,6 +4847,7 @@ export const runtimeCatalog = {
           "requiresSignature": false,
           "supportsAsync": true,
           "receiptSchema": "privatedao.execution-receipt.v1",
+          "customerFacing": true,
           "applicationBindings": [
             {
               "network": "solana-devnet",
@@ -5324,6 +5335,7 @@ export const runtimeCatalog = {
           "requiresSignature": false,
           "supportsAsync": true,
           "receiptSchema": "privatedao.execution-receipt.v1",
+          "customerFacing": true,
           "applicationBindings": [
             {
               "network": "solana-devnet",
@@ -5822,6 +5834,7 @@ export const runtimeCatalog = {
           "requiresSignature": false,
           "supportsAsync": true,
           "receiptSchema": "privatedao.execution-receipt.v1",
+          "customerFacing": true,
           "applicationBindings": [
             {
               "network": "solana-devnet",
@@ -6173,6 +6186,7 @@ export const runtimeCatalog = {
           "requiresSignature": true,
           "supportsAsync": true,
           "receiptSchema": "privatedao.execution-receipt.v1",
+          "customerFacing": true,
           "applicationBindings": [
             {
               "network": "solana-devnet",

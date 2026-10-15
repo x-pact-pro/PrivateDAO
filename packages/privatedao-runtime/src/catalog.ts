@@ -32,6 +32,7 @@ function capability(
   requiresSignature: boolean,
   supportsAsync = true,
   networks: readonly NetworkId[] = [solanaDevnet],
+  customerFacing = true,
 ): ProtocolCapability {
   return {
     id,
@@ -41,6 +42,7 @@ function capability(
     requiresSignature,
     supportsAsync,
     receiptSchema: "privatedao.execution-receipt.v1",
+    customerFacing,
   };
 }
 
@@ -53,7 +55,7 @@ export const PRODUCT_CATALOG: readonly ProductDescriptor[] = [
     networks: [solanaDevnet, ethereumSepolia, arbitrumSepolia, tempoTestnet, baseSepolia, bnbTestnet, robinhoodTestnet, hyperliquidTestnet, stellarTestnet, zcashTestnet],
     capabilities: [
       capability("verification.blind.prove", "blind-verification", false, true, [solanaDevnet, ethereumSepolia, arbitrumSepolia, tempoTestnet, baseSepolia, bnbTestnet, robinhoodTestnet, hyperliquidTestnet, stellarTestnet, zcashTestnet]),
-      capability("verification.blind.revoke", "blind-verification", true, true, evmContractControlNetworks),
+      capability("verification.blind.revoke", "blind-verification", true, true, evmContractControlNetworks, false),
     ],
   },
   {
@@ -65,7 +67,7 @@ export const PRODUCT_CATALOG: readonly ProductDescriptor[] = [
     capabilities: [
       capability("verification.record.create", "record-verification", false, true, [solanaDevnet, ethereumSepolia, arbitrumSepolia, tempoTestnet, baseSepolia, bnbTestnet, robinhoodTestnet, hyperliquidTestnet, stellarTestnet, zcashTestnet]),
       capability("verification.record.verify", "record-verification", false, true, [solanaDevnet, ethereumSepolia, arbitrumSepolia, tempoTestnet, baseSepolia, bnbTestnet, robinhoodTestnet, hyperliquidTestnet, stellarTestnet, zcashTestnet]),
-      capability("verification.record.revoke", "record-verification", true, true, evmContractControlNetworks),
+      capability("verification.record.revoke", "record-verification", true, true, evmContractControlNetworks, false),
     ],
   },
   {

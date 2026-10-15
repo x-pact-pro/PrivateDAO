@@ -115,6 +115,8 @@ export interface ProtocolCapability {
   requiresSignature: boolean;
   supportsAsync: boolean;
   receiptSchema: string;
+  /** Internal control capabilities do not determine customer-facing product availability. */
+  customerFacing?: boolean;
 }
 
 export interface ProtocolAction<TInput = unknown, TOutput = unknown> {
