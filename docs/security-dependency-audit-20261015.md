@@ -14,8 +14,8 @@
 - Production npm dependencies: `0` vulnerabilities.
 - Full npm graph after the Poseidon migration: `0` critical, `0` high, `0` moderate, `2` low.
 - Rust graph: `0` reported vulnerabilities; `cargo audit` still reports upstream maintenance/yanked-version warnings documented below.
-- CI `agent-exchange-verify`: PASS on the last reviewed commit.
-- CI for the current gateway/catalog commits: pending in GitHub Actions.
+- CI `agent-exchange-verify`: PASS on commit `9b746ded9`.
+- CI `ci-verify`: PASS on commit `9b746ded9`.
 
 ## Remaining Low Findings
 
