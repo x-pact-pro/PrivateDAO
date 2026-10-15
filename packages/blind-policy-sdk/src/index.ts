@@ -1,3 +1,5 @@
+import { randomUUID } from "node:crypto";
+
 export type BlindPolicyPrivateInputs = {
   organizationId: string;
   subjectId: string;
@@ -320,7 +322,7 @@ export class BlindPolicyClient {
     return this.post<BlindPolicyOnchainReceiptResult>("/txline/onchain-receipt", { publicProofPackage });
   }
 
-  async verifyRecord(input: RecordVerificationInput, idempotencyKey = `record_${Date.now()}_${Math.random().toString(36).slice(2)}`): Promise<RecordVerificationResult> {
+  async verifyRecord(input: RecordVerificationInput, idempotencyKey = `record_${randomUUID()}`): Promise<RecordVerificationResult> {
     return this.post<RecordVerificationResult>("/records/verify", input, { "Idempotency-Key": idempotencyKey });
   }
 
