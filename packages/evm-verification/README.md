@@ -13,7 +13,11 @@ This package contains the Phase 2 Sepolia/Base Sepolia verification contracts.
   maker/checker approval and native-asset settlement receipt. A network remains
   unverified until its organizational E2E artifact contains and independently
   verifies the payroll receipts.
-- `scripts/run-e2e.mjs` is a real deployment and E2E runner. It requires funded
+- `scripts/run-e2e.mjs` is a real deployment and E2E runner. Product writes
+  (record anchoring and blind-proof anchoring) go through the PrivateDAO
+  `ProductExecutionGateway` and the registered EVM provider. Disposable
+  revocation calls remain explicit contract-control checks until revocation is
+  promoted to a catalog capability and application binding. It requires funded
   testnet credentials and fails closed when they are absent.
 
 ## Real testnet E2E
