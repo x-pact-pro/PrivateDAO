@@ -64,7 +64,7 @@ const MARKETPLACE_POLICY_ID = "platform_settings_marketplace";
 const SELLER_TERMS_VERSION = "seller-marketplace-v1";
 const COMMERCIAL_HOLDER_OFFER = "If you or your agent hold at least $25 worth of PDAO token 9isGuumtaqvJeJeyLF44fvfskk2cv5mYsopexMBfpump in your wallet, you enjoy all verification services for one month without usage limits. Buy PDAO and save payments for one month.";
 const DEFAULT_MARKETPLACE_POLICY = {
-  version: 6,
+  version: 7,
   listing_fee_usd: 10,
   platform_fee_bps: 1000,
   processing_fee_bps: 0,
@@ -103,7 +103,7 @@ function normalizeMarketplacePolicy(value = {}) {
   const pdaoPricing = source.pdao_pricing && typeof source.pdao_pricing === "object" ? source.pdao_pricing : {};
   const policy = {
     ...DEFAULT_MARKETPLACE_POLICY,
-    version: 6,
+    version: 7,
     listing_fee_usd: boundedNumber(source.listing_fee_usd, 10, 0, 10000),
     platform_fee_bps: Math.floor(boundedNumber(source.platform_fee_bps, 1000, 0, 10000)),
     processing_fee_bps: Math.floor(boundedNumber(source.processing_fee_bps, 0, 0, 10000)),
@@ -183,10 +183,10 @@ async function marketplacePriceQuote(policy, amountUsd, paymentAsset = "USDC", h
 }
 async function marketplacePolicy() {
   const saved = await (await store()).get("Registry", MARKETPLACE_POLICY_ID);
-  if (saved?.policy && Number(saved.policy.version || 0) < 6) {
+  if (saved?.policy && Number(saved.policy.version || 0) < 7) {
     const migrated = normalizeMarketplacePolicy({
       ...saved.policy,
-      version: 6,
+      version: 7,
       additional_service_fee_usd: 0,
       max_services_per_seller: 5,
       included_services: 5,
