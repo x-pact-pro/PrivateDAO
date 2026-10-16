@@ -274,7 +274,7 @@ const ORGANIZATIONAL_PAYROLL_EVIDENCE = {
     provider: "evm-tempo-testnet-organizational",
     contracts: ["0xf70e48d8bb75757420c7ea231aaaff3e5df2aba0"],
     assets: ["AlphaUSD"],
-    commit: "pending",
+    commit: "8be1f6ae1",
     timestamp: "2026-10-16T00:29:36.276Z",
   },
 } as const;
