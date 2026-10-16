@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { reviewSellerSubmission } from "../src/seller-review.mjs";
+import { reviewSellerSubmission, verifyCommunityBacklink } from "../src/seller-review.mjs";
 
 const discovery = {
   protocolVersion: "2025-06-18",
@@ -33,4 +33,10 @@ test("automated seller review does not treat a score as a security audit", async
   assert.equal(result.status, "blocked");
   assert.match(result.disclaimer, /not a security audit/i);
   assert.ok(result.findings.some((item) => item.code === "website_unsafe_url"));
+});
+
+test("community backlink verification fails closed for unsafe URLs", async () => {
+  const result = await verifyCommunityBacklink("http://localhost:3000");
+  assert.equal(result.verified, false);
+  assert.equal(result.reason, "website_unsafe_url");
 });
