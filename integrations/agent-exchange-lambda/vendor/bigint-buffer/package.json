@@ -1,6 +1,6 @@
 {
   "name": "bigint-buffer",
-  "version": "1.1.6-privatedao.1",
+  "version": "1.1.6",
   "description": "Safe pure-JS BigInt and Buffer conversion used by PrivateDAO's Solana runtime",
   "main": "dist/node.js",
   "browser": {
