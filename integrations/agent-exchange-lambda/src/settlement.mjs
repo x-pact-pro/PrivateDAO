@@ -125,7 +125,6 @@ async function recordPayout(storage, settlement, signature, fee) {
     settled_at: settledAt,
     claim_expires_at: null,
   };
-  await storage.put("Registry", settlement.id, next);
   const revenue = await storage.get("Revenue", `rev_${settlement.job_id}`);
   if (revenue) {
     await storage.put("Revenue", revenue.id, {
@@ -146,6 +145,10 @@ async function recordPayout(storage, settlement, signature, fee) {
       seller_settlement: { ...receipt.seller_settlement, payout_network_fee_lamports: fee, payout_network_fee_policy: "platform_borne_automatic_settlement", status: "settled", payout_signature: signature, settled_at: settledAt },
     });
   }
+  // Commit the registry status last. If the process crashes after the chain
+  // confirms but before this write, the deterministic memo lets the next
+  // sweep discover the finalized payout and complete all ledger updates.
+  await storage.put("Registry", settlement.id, next);
   return next;
 }
 

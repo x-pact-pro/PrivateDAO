@@ -51,6 +51,7 @@ test("automatic settlement claims atomically and records verified payout fee sep
   const storage = new MemoryStore();
   await storage.put("Registry", "seller_settlement_job_1", { id: "seller_settlement_job_1", kind: "seller_settlement", job_id: "job_1", status: "payable_pending_scheduled_settlement", seller_net_amount: 1, payout: { address: seller.publicKey.toBase58(), network: "solana-mainnet-beta", asset: "USDC" } });
   await storage.put("Revenue", "rev_job_1", { id: "rev_job_1", settlementStatus: "payable_pending_scheduled_settlement" });
+  await storage.put("Receipts", "receipt_job_1", { receipt_id: "receipt_job_1", job_id: "job_1", seller_settlement: { id: "seller_settlement_job_1", status: "payable_pending_scheduled_settlement" } });
   const outcome = await settleCandidate({ ...baseConfig, treasury: signer.publicKey.toBase58() }, storage, connection, signer, await storage.get("Registry", "seller_settlement_job_1"));
   assert.equal(outcome.status, "settled");
   const settled = await storage.get("Registry", "seller_settlement_job_1");
@@ -59,6 +60,8 @@ test("automatic settlement claims atomically and records verified payout fee sep
   assert.equal(settled.payout_network_fee_policy, "platform_borne_automatic_settlement");
   assert.equal((await storage.get("Revenue", "rev_job_1")).payoutNetworkFeeLamports, 5000);
   assert.equal((await storage.get("Revenue", "rev_job_1")).settlementStatus, "settled");
+  assert.equal((await storage.get("Receipts", "receipt_job_1")).payout_network_fee_lamports, 5000);
+  assert.equal((await storage.get("Receipts", "receipt_job_1")).seller_settlement.status, "settled");
 });
 
 test("expired claim cannot be reused for a settlement whose status changed", async () => {
