@@ -15,7 +15,7 @@ import {
   toBytes,
 } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
-import { createClient as createTempoClient } from "viem/tempo";
+import { Account as TempoAccount, createClient as createTempoClient } from "viem/tempo";
 import { tempoModerato } from "viem/chains";
 import { EVM_NETWORK_CONFIGS, EvmNetworkAdapter, InMemoryProviderRegistry, ViemEvmTransport, createPrivateDaoRuntime } from "../../privatedao-runtime/src/index.ts";
 
@@ -23,7 +23,7 @@ const { groth16 } = snarkjs;
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../..");
 const PACKAGE = path.join(ROOT, "packages/evm-verification");
 const CIRCUIT = "private_dao_blind_policy_overlay";
-const TEMPO_FEE_TOKEN = "0x20c0000000000000000000000000000000000001";
+const TEMPO_FEE_TOKEN = "0x20c0000000000000000000000000000000000000";
 const RECEIPT_TIMEOUT_MS = Number(process.env.PRIVATEDAO_EVM_RECEIPT_TIMEOUT_MS || 120_000);
 const FIELD = 21888242871839275222246405745257275088548364400416034343698204186575808495617n;
 const PRODUCT_ID = keccak256(toBytes("blind-verification"));
@@ -184,7 +184,6 @@ async function useOrDeploy(existing, key, wallet, publicClient, abi, bytecode, a
 }
 
 async function main() {
-  const account = privateKeyToAccount(DEPLOYER_KEY);
   const runId = `${Date.now()}-${process.pid}`;
   const results = [];
   const deployed = {};
@@ -194,11 +193,14 @@ async function main() {
     if (!rpcUrl || !/^https:\/\//.test(rpcUrl)) throw new Error(`${network.rpcEnv} must be an explicit HTTPS RPC URL.`);
     const chain = chainFor(network);
     const transport = http(rpcUrl, { timeout: 30_000 });
-    const tempoClient = network.id === "tempo-testnet"
-      ? createTempoClient({ account, chain: chain.extend({ feeToken: TEMPO_FEE_TOKEN }), transport })
-      : null;
-    const publicClient = tempoClient ?? createPublicClient({ chain, transport });
-    const wallet = tempoClient ?? createWalletClient({ account, chain, transport });
+    const executionChain = network.id === "tempo-testnet"
+      ? tempoModerato.extend({ feeToken: TEMPO_FEE_TOKEN })
+      : chain;
+    const publicClient = createPublicClient({ chain: executionChain, transport });
+    const account = network.id === "tempo-testnet" ? TempoAccount.fromSecp256k1(DEPLOYER_KEY) : privateKeyToAccount(DEPLOYER_KEY);
+    const wallet = network.id === "tempo-testnet"
+      ? createTempoClient({ account, chain: tempoModerato, transport, feeToken: TEMPO_FEE_TOKEN })
+      : createWalletClient({ account, chain: executionChain, transport });
     const observedChainId = await publicClient.getChainId();
     expect(observedChainId === network.chainId, `${network.id} RPC chain mismatch: ${observedChainId}`);
     const config = EVM_NETWORK_CONFIGS.find((entry) => entry.network === network.id);

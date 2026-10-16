@@ -1,0 +1,44 @@
+{
+  "network": "tempo-testnet",
+  "chainId": 42431,
+  "environment": "testnet",
+  "deployer": "0x1c3D6757651B617D7e5c08aE6F7a7F65eEafD75F",
+  "checker": "0x43CF02Cbe087580B311b7C4f0798e65e989759A8",
+  "createdAt": "2026-10-16T00:29:36.276Z",
+  "contracts": {
+    "treasury": {
+      "address": "0x7801916f5bfadc99a0e14735a8f49d21d85eb61f",
+      "hash": "0xcce68dd4ecbb4ee99667033cfc57fb4aa870d7a6cd71285c6a05456fc7c7a103",
+      "blockNumber": "39764772"
+    },
+    "payroll": {
+      "address": "0xf70e48d8bb75757420c7ea231aaaff3e5df2aba0",
+      "hash": "0x041c296b52566e99fa772e281b7ef8293c0c80ce4e40e3314419f9ac7604fa51",
+      "blockNumber": "39764791"
+    }
+  },
+  "evidence": {
+    "treasury": {
+      "checkerFundingHash": "0x96589146b36e3892c05403c6fe8166062d263749ababedd0cba8802d6b14d07f",
+      "treasuryApprovalHash": "0x5efce3b89763a4598ab44e782f78e00b4f751b45036c64902d86e5921ea235ee",
+      "treasuryFundingHash": "0x5e074da98f8f47d81e1e2f6242ae1724311950737a0bb846aecc589ac012091c",
+      "requestedHash": "0xb676cee6e245f1f4aafb1e396336317981aa48a68c5ed232bb07f3973d6e7505",
+      "approvedHash": "0x2bfd88810c22f46a1cd531b5b6e820844ab646cd0236497be374e42dc79b99bb",
+      "executedHash": "0x1fd7ec5309a745c72b58f83ded11412c3c18344be266bfc3b51e7b5dff0f8eba",
+      "paymentId": "0x053c217b1b5d3f4cbcc3cad12839f74b258f110113a98515706dadd74ae367ec",
+      "status": "executed"
+    },
+    "payroll": {
+      "payrollFundingHash": "0x13450369b0a2428873236ab8871ec6150f528148ffd04a875ecc5028bd1009f3",
+      "payrollDepositHash": "0x234ff1dc84aeeae967d948602104d16090677dd1c902f58676c1145856c91ad2",
+      "payrollCreateHash": "0xfe5942c3f6bb5b78f458e2aa8287e659e901757a21c153001645fad5ec83902a",
+      "payrollApproveHash": "0x43c4ceecf178b17590c658c91fe5746935f3b49d4c5f4592180aa349f9d92c10",
+      "payrollSettleHash": "0x43e5928a53f6d5c9fa0dae6977c5d7bc49f876de4745514cb55db4b78cd3c9f7",
+      "payrollBatchId": "0x9e1272df7505efa04b03909e9e2ccb3d8a4621c4e712217b1871b430213312dc",
+      "payrollBatchCommitment": "0x704650d4a0a335c8a36466cea52ebfa04f6913ef910fe4cf6a32acad205d1a97",
+      "status": "settled",
+      "asset": "0x20c0000000000000000000000000000000000001"
+    }
+  },
+  "schema": "privatedao.organizational-payroll-e2e.v1"
+}

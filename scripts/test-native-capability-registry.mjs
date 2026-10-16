@@ -10,7 +10,7 @@ const verifiedPayrollLanes = verifiedPayroll.filter((entry) => entry.product ===
 const solanaPayrollEntries = entries.filter((entry) => entry.product === "payroll" && entry.network === "solana-devnet");
 
 assert.equal(entries.length, 238, "unexpected native capability matrix size");
-assert.equal(verified.length, 88, "only evidence-backed verification and organizational testnet rows should be verified");
+assert.equal(verified.length, 91, "only evidence-backed verification and organizational testnet rows should be verified");
 assert.equal(liveAgents.length, 2, "the two live Agent Exchange rows must be runtime-verified");
 assert.equal(verifiedBlind.length, 1, "the Solana blind-verification Devnet evidence row must remain verified");
 assert.equal(verifiedPayrollLanes.length, 0, "legacy Umbra payroll evidence must not be promoted to verified");
@@ -46,7 +46,8 @@ for (const entry of verified.filter((candidate) => candidate.network === "tempo-
 }
 assert.equal(verified.filter((entry) => entry.network === "tempo-testnet" && entry.provider === "evm-tempo-testnet").length, 5, "Tempo must have five verified verification rows including revocation controls");
 assert.equal(verified.filter((entry) => entry.provider === "evm-ethereum-sepolia-organizational").length, 7, "Ethereum organizational evidence must cover treasury, payroll, governance, and auction lanes");
-assert.equal(verified.filter((entry) => entry.provider === "evm-tempo-testnet-organizational").length, 4, "Tempo organizational evidence must cover treasury, governance, and auction lanes");
+assert.equal(verified.filter((entry) => entry.provider === "evm-tempo-testnet-organizational").length, 7, "Tempo organizational evidence must cover treasury, payroll, governance, and auction lanes");
+assert.equal(verified.filter((entry) => entry.provider === "evm-tempo-testnet-organizational" && entry.product === "payroll").length, 3, "Tempo organizational evidence must cover the Payroll lanes");
 assert.equal(verified.filter((entry) => entry.provider === "evm-base-sepolia").length, 5, "Base Sepolia must have five verified verification rows including revocation controls");
 assert.equal(verified.filter((entry) => entry.provider === "evm-base-sepolia").every((entry) => entry.chainId === "84532"), true);
 assert.equal(verified.filter((entry) => entry.provider === "evm-base-sepolia-organizational").length, 7, "Base organizational evidence must cover Treasury, Payroll, Governance, and Auction lanes");

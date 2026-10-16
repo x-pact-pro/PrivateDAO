@@ -6,6 +6,7 @@ import type {
 } from "./index.js";
 import type { FeeEstimate } from "./protocol.js";
 import type { EvmTransport } from "./evm-network.js";
+import { encodeFunctionData } from "viem";
 
 export type ViemContractWritePayload = {
   kind: "contract-write";
@@ -28,6 +29,7 @@ const RECEIPT_TIMEOUT_MS = Number(process.env.PRIVATEDAO_EVM_RECEIPT_TIMEOUT_MS 
 
 type ViemWalletClient = {
   account?: { address: `0x${string}` };
+  sendTransaction?(input: Record<string, unknown>): Promise<`0x${string}`>;
   writeContract(input: Record<string, unknown>): Promise<`0x${string}`>;
 };
 
@@ -94,16 +96,26 @@ export class ViemEvmTransport implements EvmTransport {
     if (configuredAccount && configuredAccount.address.toLowerCase() !== payload.account.toLowerCase()) {
       throw new Error("EVM wallet signer does not match the prepared payer account.");
     }
-    const signature = await this.walletClient.writeContract({
-      address: payload.address,
-      abi: payload.abi,
-      functionName: payload.functionName,
-      args: payload.args,
-      // Preserve viem's local Account object so signing happens locally. Passing
-      // only an address makes viem fall back to eth_sendTransaction on the RPC.
-      account: configuredAccount ?? payload.account,
-      ...(payload.value === undefined ? {} : { value: payload.value }),
-    });
+    const account = configuredAccount ?? payload.account;
+    const signature = this.walletClient.sendTransaction
+      ? await this.walletClient.sendTransaction({
+          to: payload.address,
+          data: encodeFunctionData({
+            abi: payload.abi as any,
+            functionName: payload.functionName,
+            args: payload.args as any,
+          }),
+          account,
+          ...(payload.value === undefined ? {} : { value: payload.value }),
+        })
+      : await this.walletClient.writeContract({
+          address: payload.address,
+          abi: payload.abi,
+          functionName: payload.functionName,
+          args: payload.args,
+          account,
+          ...(payload.value === undefined ? {} : { value: payload.value }),
+        });
     record.signature = signature;
     record.state = "submitted";
     return { executionId: execution.executionId, signatures: [signature] };

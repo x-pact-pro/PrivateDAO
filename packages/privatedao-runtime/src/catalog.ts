@@ -75,11 +75,11 @@ export const PRODUCT_CATALOG: readonly ProductDescriptor[] = [
     name: "Confidential Payroll",
     domain: "enterprise",
     availability: "available",
-    networks: [solanaDevnet, ethereumSepolia, arbitrumSepolia, baseSepolia, robinhoodTestnet, bnbTestnet, hyperliquidTestnet, stellarTestnet, zcashTestnet],
+    networks: [solanaDevnet, ethereumSepolia, arbitrumSepolia, tempoTestnet, baseSepolia, robinhoodTestnet, bnbTestnet, hyperliquidTestnet, stellarTestnet, zcashTestnet],
     capabilities: [
-      capability("payroll.calculate", "payroll", false, true, [solanaDevnet, ethereumSepolia, arbitrumSepolia, baseSepolia, robinhoodTestnet, bnbTestnet, hyperliquidTestnet, stellarTestnet, zcashTestnet]),
-      capability("payroll.approve", "payroll", true, true, [solanaDevnet, ethereumSepolia, arbitrumSepolia, baseSepolia, robinhoodTestnet, bnbTestnet, hyperliquidTestnet, stellarTestnet, zcashTestnet]),
-      capability("payroll.settle", "payroll", true, true, [solanaDevnet, ethereumSepolia, arbitrumSepolia, baseSepolia, robinhoodTestnet, bnbTestnet, hyperliquidTestnet, stellarTestnet, zcashTestnet]),
+      capability("payroll.calculate", "payroll", false, true, [solanaDevnet, ethereumSepolia, arbitrumSepolia, tempoTestnet, baseSepolia, robinhoodTestnet, bnbTestnet, hyperliquidTestnet, stellarTestnet, zcashTestnet]),
+      capability("payroll.approve", "payroll", true, true, [solanaDevnet, ethereumSepolia, arbitrumSepolia, tempoTestnet, baseSepolia, robinhoodTestnet, bnbTestnet, hyperliquidTestnet, stellarTestnet, zcashTestnet]),
+      capability("payroll.settle", "payroll", true, true, [solanaDevnet, ethereumSepolia, arbitrumSepolia, tempoTestnet, baseSepolia, robinhoodTestnet, bnbTestnet, hyperliquidTestnet, stellarTestnet, zcashTestnet]),
     ],
   },
   {

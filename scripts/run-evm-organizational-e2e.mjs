@@ -7,6 +7,7 @@ import {
   createWalletClient,
   defineChain,
   encodeAbiParameters,
+  encodeFunctionData,
   http,
   keccak256,
   formatUnits,
@@ -16,13 +17,14 @@ import {
   zeroHash,
 } from "viem";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
-import { createClient as createTempoClient } from "viem/tempo";
+import { Account as TempoAccount, createClient as createTempoClient } from "viem/tempo";
 import { tempoModerato } from "viem/chains";
 import { EVM_NETWORK_CONFIGS, EvmNetworkAdapter, InMemoryProviderRegistry, ViemEvmTransport, createPrivateDaoRuntime } from "../packages/privatedao-runtime/src/index.ts";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const PACKAGE = path.join(ROOT, "packages/evm-verification");
-const TEMPO_FEE_TOKEN = "0x20c0000000000000000000000000000000000001";
+const TEMPO_FEE_TOKEN = "0x20c0000000000000000000000000000000000000";
+const TEMPO_ASSET_TOKEN = "0x20c0000000000000000000000000000000000001";
 const TEMPO_TOKEN_DECIMALS = 6;
 const NETWORK = process.env.PDAO_EVM_NETWORK?.trim() || "ethereum-sepolia";
 const PRODUCT_MODE = process.env.PDAO_EVM_PRODUCT?.trim() || "all";
@@ -43,6 +45,7 @@ if (!providerConfig) throw new Error(`No registered EVM provider configuration f
 if (providerConfig.environment !== "testnet" || providerConfig.mainnetEnabled) throw new Error(`Organizational E2E is testnet-only: ${NETWORK}.`);
 const CHAIN_ID = networkConfig.chainId;
 const RPC_ENV = networkConfig.rpcEnv;
+const tempoTokenMode = NETWORK === "tempo-testnet";
 const rawKey = process.env.PDAO_EVM_DEPLOYER_PRIVATE_KEY?.trim();
 const deployerKey = rawKey && /^[0-9a-fA-F]{64}$/.test(rawKey) ? `0x${rawKey}` : rawKey;
 if (!deployerKey || !/^0x[0-9a-fA-F]{64}$/.test(deployerKey)) throw new Error("PDAO_EVM_DEPLOYER_PRIVATE_KEY is required for Testnet execution.");
@@ -55,7 +58,7 @@ const chain = defineChain({
   nativeCurrency: networkConfig.currency,
   rpcUrls: { default: { http: [rpcUrl] } },
 });
-const deployer = privateKeyToAccount(deployerKey);
+const deployer = tempoTokenMode ? TempoAccount.fromSecp256k1(deployerKey) : privateKeyToAccount(deployerKey);
 const rpcTimeoutMs = Number(process.env.PDAO_EVM_RPC_TIMEOUT_MS || 120_000);
 if (!Number.isInteger(rpcTimeoutMs) || rpcTimeoutMs < 10_000 || rpcTimeoutMs > 300_000) {
   throw new Error("PDAO_EVM_RPC_TIMEOUT_MS must be an integer between 10000 and 300000.");
@@ -73,14 +76,17 @@ const transport = http(rpcUrl, {
 });
 const writeGasLimit = BigInt(process.env.PDAO_EVM_WRITE_GAS_LIMIT || "200000");
 if (writeGasLimit < 50_000n || writeGasLimit > 2_000_000n) throw new Error("PDAO_EVM_WRITE_GAS_LIMIT must be between 50000 and 2000000.");
-const deployerTempoClient = NETWORK === "tempo-testnet"
-  ? createTempoClient({ account: deployer, chain: tempoModerato.extend({ feeToken: TEMPO_FEE_TOKEN }), transport })
-  : null;
-const publicClient = deployerTempoClient ?? createPublicClient({ chain, transport });
-const deployerWallet = deployerTempoClient ?? createWalletClient({ account: deployer, chain, transport });
+const tempoChain = tempoModerato.extend({ feeToken: TEMPO_FEE_TOKEN });
+const executionChain = NETWORK === "tempo-testnet" ? tempoChain : chain;
+const publicClient = createPublicClient({ chain: executionChain, transport });
+const deployerWallet = tempoTokenMode
+  ? createTempoClient({ account: deployer, chain: tempoModerato, transport, feeToken: TEMPO_FEE_TOKEN })
+  : createWalletClient({ account: deployer, chain: executionChain, transport });
 let checker;
 for (let attempt = 0; attempt < 8; attempt += 1) {
-  const candidate = privateKeyToAccount(generatePrivateKey());
+  const candidate = tempoTokenMode
+    ? TempoAccount.fromSecp256k1(generatePrivateKey())
+    : privateKeyToAccount(generatePrivateKey());
   const code = await publicClient.getBytecode({ address: candidate.address });
   if (!code || code === "0x") {
     checker = candidate;
@@ -88,12 +94,9 @@ for (let attempt = 0; attempt < 8; attempt += 1) {
   }
 }
 if (!checker) throw new Error("Could not allocate a fresh checker EOA without deployed code.");
-const checkerTempoClient = NETWORK === "tempo-testnet"
-  ? createTempoClient({ account: checker, chain: tempoModerato.extend({ feeToken: TEMPO_FEE_TOKEN }), transport })
-  : null;
-const checkerWallet = checkerTempoClient ?? createWalletClient({ account: checker, chain, transport });
-const tempoTokenMode = NETWORK === "tempo-testnet";
-if (PRODUCT_MODE === "payroll" && tempoTokenMode) throw new Error("Tempo payroll-only E2E is disabled until the token payroll lane is independently evidenced.");
+const checkerWallet = tempoTokenMode
+  ? createTempoClient({ account: checker, chain: tempoModerato, transport, feeToken: TEMPO_FEE_TOKEN })
+  : createWalletClient({ account: checker, chain: executionChain, transport });
 const ownerProviderId = `evm-${NETWORK}-organizational-owner`;
 const checkerProviderId = `evm-${NETWORK}-organizational-checker`;
 const organizationalCapabilities = ["treasury.policy.check", "payroll.calculate", "payroll.approve", "payroll.settle", "governance.proposal.execute", "auction.bid.commit", "auction.settle"];
@@ -122,6 +125,8 @@ const treasuryAbi = JSON.parse(await readFile(path.join(PACKAGE, `artifacts/${te
 const treasuryBytecode = `0x${(await readFile(path.join(PACKAGE, `artifacts/${tempoTokenMode ? "PrivateDaoTokenTreasury" : "PrivateDaoTreasury"}.bin`), "utf8")).trim()}`;
 const payrollAbi = JSON.parse(await readFile(path.join(PACKAGE, "artifacts/PrivateDaoPayroll.abi"), "utf8"));
 const payrollBytecode = `0x${(await readFile(path.join(PACKAGE, "artifacts/PrivateDaoPayroll.bin"), "utf8")).trim()}`;
+const tokenPayrollAbi = JSON.parse(await readFile(path.join(PACKAGE, "artifacts/PrivateDaoTokenPayroll.abi"), "utf8"));
+const tokenPayrollBytecode = `0x${(await readFile(path.join(PACKAGE, "artifacts/PrivateDaoTokenPayroll.bin"), "utf8")).trim()}`;
 const governanceAbi = JSON.parse(await readFile(path.join(PACKAGE, "artifacts/PrivateDaoGovernance.abi"), "utf8"));
 const governanceBytecode = `0x${(await readFile(path.join(PACKAGE, "artifacts/PrivateDaoGovernance.bin"), "utf8")).trim()}`;
 const auctionAbi = JSON.parse(await readFile(path.join(PACKAGE, `artifacts/${tempoTokenMode ? "PrivateDaoTokenSealedAuction" : "PrivateDaoSealedAuction"}.abi`), "utf8"));
@@ -159,11 +164,11 @@ async function waitForPaymentState(address, paymentId, minimumState, label) {
   }
   throw new Error(`${label} did not become visible after the confirmed transaction${lastError ? `: ${lastError.message}` : ""}`);
 }
-async function waitForBatchState(address, batchId, minimumState, label) {
+async function waitForBatchState(address, abi, batchId, minimumState, label) {
   let lastError;
   for (let attempt = 0; attempt < 60; attempt += 1) {
     try {
-      const batch = await publicClient.readContract({ address, abi: payrollAbi, functionName: "batches", args: [batchId] });
+      const batch = await publicClient.readContract({ address, abi, functionName: "batches", args: [batchId] });
       if (Number(batch[3]) >= minimumState) return batch;
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
@@ -206,12 +211,24 @@ const tx = async (hash) => {
   return receipt;
 };
 const write = async (wallet, address, abi, functionName, args = [], value) => {
-  const hash = await wallet.writeContract({ address, abi, functionName, args, gas: writeGasLimit, nonce: await takeNonce(wallet.account), ...(value === undefined ? {} : { value }), ...(await feeOverrides()) });
+  const request = {
+    to: address,
+    data: encodeFunctionData({ abi, functionName, args }),
+    account: wallet.account,
+    ...(value === undefined ? {} : { value }),
+    ...(tempoTokenMode ? {} : { gas: writeGasLimit, nonce: await takeNonce(wallet.account), ...(await feeOverrides()) }),
+  };
+  const hash = await wallet.sendTransaction(request);
   await tx(hash);
   return hash;
 };
 const deploy = async (wallet, abi, bytecode, args) => {
-  const hash = await wallet.deployContract({ abi, bytecode, args, nonce: await takeNonce(wallet.account), ...(await feeOverrides()) });
+  const hash = await wallet.deployContract({
+    abi,
+    bytecode,
+    args,
+    ...(tempoTokenMode ? {} : { nonce: await takeNonce(wallet.account), ...(await feeOverrides()) }),
+  });
   const receipt = await tx(hash);
   assert.ok(receipt.contractAddress, `deployment has no contract address: ${hash}`);
   return { address: receipt.contractAddress, hash, blockNumber: receipt.blockNumber.toString() };
@@ -254,12 +271,12 @@ const deployments = {
 const checkerFundingHash = tempoTokenMode
   ? await write(deployerWallet, TEMPO_FEE_TOKEN, erc20Abi, "transfer", [checker.address, parseUnits("10", TEMPO_TOKEN_DECIMALS)])
   : await deployerWallet.sendTransaction({ to: checker.address, value: parseEther("0.002"), nonce: await takeNonce(deployerWallet.account), ...(await feeOverrides()) });
-if (!tempoTokenMode) await tx(checkerFundingHash);
+await tx(checkerFundingHash);
 
-const treasury = await deploy(deployerWallet, treasuryAbi, treasuryBytecode, tempoTokenMode ? [checker.address, TEMPO_FEE_TOKEN] : [checker.address]);
+const treasury = await deploy(deployerWallet, treasuryAbi, treasuryBytecode, tempoTokenMode ? [checker.address, TEMPO_ASSET_TOKEN] : [checker.address]);
 deployments.contracts.treasury = treasury;
 const treasuryAmount = tempoTokenMode ? parseUnits("1", TEMPO_TOKEN_DECIMALS) : parseEther("0.001");
-const treasuryApprovalHash = tempoTokenMode ? await write(deployerWallet, TEMPO_FEE_TOKEN, erc20Abi, "approve", [treasury.address, treasuryAmount]) : null;
+const treasuryApprovalHash = tempoTokenMode ? await write(deployerWallet, TEMPO_ASSET_TOKEN, erc20Abi, "approve", [treasury.address, treasuryAmount]) : null;
 const treasuryFundingHash = tempoTokenMode
   ? await write(deployerWallet, treasury.address, treasuryAbi, "deposit", [treasuryAmount])
   : await deployerWallet.sendTransaction({ to: treasury.address, value: treasuryAmount, gas: 100_000n, nonce: await takeNonce(deployerWallet.account), ...(await feeOverrides()) });
@@ -291,26 +308,34 @@ for (let attempt = 0; attempt < 90; attempt += 1) {
 assert.equal(Number(payment[3]), 3, "treasury payment was not executed after receipt confirmation");
 deployments.evidence.treasury = { checkerFundingHash, treasuryApprovalHash, treasuryFundingHash, requestedHash, approvedHash, executedHash, paymentId, status: "executed" };
 
-// Payroll binds only a commitment and the approved payout on-chain. Tempo's
-// token-denominated lane remains disabled until a token payroll contract is
-// independently evidenced; this branch is native-asset EVM only.
-if (!tempoTokenMode) {
-  const payroll = await deploy(deployerWallet, payrollAbi, payrollBytecode, [checker.address]);
-  deployments.contracts.payroll = payroll;
-  const payrollBatchId = keccak256(`0x${Buffer.from(`payroll-batch:${runId}`).toString("hex")}`);
-  const payrollBatchCommitment = keccak256(`0x${Buffer.from(`payroll-commitment:${runId}`).toString("hex")}`);
-  const payrollAmount = parseEther("0.0001");
-  const payrollFundingHash = await deployerWallet.sendTransaction({ to: payroll.address, value: payrollAmount, gas: 100_000n, nonce: await takeNonce(deployerWallet.account), ...(await feeOverrides()) });
-  await tx(payrollFundingHash);
-  const payrollCreateHash = await gatewayWrite(ownerProviderId, deployerWallet, "payroll", "payroll.approve", "create-payroll", payroll.address, payrollAbi, "createPayroll", [payrollBatchId, payrollBatchCommitment, recipient, payrollAmount]);
-  await waitForBatchState(payroll.address, payrollBatchId, 1, "created payroll batch");
-  const payrollApproveHash = await gatewayWrite(checkerProviderId, checkerWallet, "payroll", "payroll.approve", "approve-payroll", payroll.address, payrollAbi, "approvePayroll", [payrollBatchId]);
-  await waitForBatchState(payroll.address, payrollBatchId, 2, "approved payroll batch");
-  const payrollSettleHash = await gatewayWrite(ownerProviderId, deployerWallet, "payroll", "payroll.settle", "settle-payroll", payroll.address, payrollAbi, "settlePayroll", [payrollBatchId]);
-  const payrollBatch = await waitForBatchState(payroll.address, payrollBatchId, 3, "settled payroll batch");
-  assert.equal(Number(payrollBatch[3]), 3, "payroll batch was not settled");
-  deployments.evidence.payroll = { payrollFundingHash, payrollCreateHash, payrollApproveHash, payrollSettleHash, payrollBatchId, payrollBatchCommitment, status: "settled" };
-}
+// Payroll binds only a commitment and the approved payout on-chain. Tempo uses
+// the same policy flow with a token-denominated, separately compiled contract.
+const payroll = await deploy(
+  deployerWallet,
+  tempoTokenMode ? tokenPayrollAbi : payrollAbi,
+  tempoTokenMode ? tokenPayrollBytecode : payrollBytecode,
+  tempoTokenMode ? [checker.address, TEMPO_ASSET_TOKEN] : [checker.address],
+);
+deployments.contracts.payroll = payroll;
+const payrollBatchId = keccak256(`0x${Buffer.from(`payroll-batch:${runId}`).toString("hex")}`);
+const payrollBatchCommitment = keccak256(`0x${Buffer.from(`payroll-commitment:${runId}`).toString("hex")}`);
+const payrollAmount = tempoTokenMode ? parseUnits("0.1", TEMPO_TOKEN_DECIMALS) : parseEther("0.0001");
+const payrollFundingHash = tempoTokenMode
+  ? await write(deployerWallet, TEMPO_ASSET_TOKEN, erc20Abi, "approve", [payroll.address, payrollAmount])
+  : await deployerWallet.sendTransaction({ to: payroll.address, value: payrollAmount, gas: 100_000n, nonce: await takeNonce(deployerWallet.account), ...(await feeOverrides()) });
+if (!tempoTokenMode) await tx(payrollFundingHash);
+const payrollDepositHash = tempoTokenMode
+  ? await gatewayWrite(ownerProviderId, deployerWallet, "payroll", "payroll.approve", "deposit-payroll-treasury", payroll.address, tokenPayrollAbi, "deposit", [payrollAmount])
+  : null;
+const payrollCreateHash = await gatewayWrite(ownerProviderId, deployerWallet, "payroll", "payroll.approve", "create-payroll", payroll.address, tempoTokenMode ? tokenPayrollAbi : payrollAbi, "createPayroll", [payrollBatchId, payrollBatchCommitment, recipient, payrollAmount]);
+const activePayrollAbi = tempoTokenMode ? tokenPayrollAbi : payrollAbi;
+await waitForBatchState(payroll.address, activePayrollAbi, payrollBatchId, 1, "created payroll batch");
+const payrollApproveHash = await gatewayWrite(checkerProviderId, checkerWallet, "payroll", "payroll.approve", "approve-payroll", payroll.address, tempoTokenMode ? tokenPayrollAbi : payrollAbi, "approvePayroll", [payrollBatchId]);
+await waitForBatchState(payroll.address, activePayrollAbi, payrollBatchId, 2, "approved payroll batch");
+const payrollSettleHash = await gatewayWrite(ownerProviderId, deployerWallet, "payroll", "payroll.settle", "settle-payroll", payroll.address, tempoTokenMode ? tokenPayrollAbi : payrollAbi, "settlePayroll", [payrollBatchId]);
+const payrollBatch = await waitForBatchState(payroll.address, activePayrollAbi, payrollBatchId, 3, "settled payroll batch");
+assert.equal(Number(payrollBatch[3]), 3, "payroll batch was not settled");
+deployments.evidence.payroll = { payrollFundingHash, payrollDepositHash, payrollCreateHash, payrollApproveHash, payrollSettleHash, payrollBatchId, payrollBatchCommitment, status: "settled", asset: tempoTokenMode ? TEMPO_ASSET_TOKEN : networkConfig.currency.symbol };
 
 if (PRODUCT_MODE === "payroll") {
   await mkdir(path.join(PACKAGE, "deployments"), { recursive: true });
@@ -350,7 +375,7 @@ for (let attempt = 0; attempt < 90; attempt += 1) {
 assert.equal(Number(proposal[7]), 2, "governance proposal did not pass");
 deployments.evidence.governance = { proposalHash, voteCommitHash, voteRevealHash, proposalFinalizeHash, proposalId, status: "passed" };
 
-const auction = await deploy(deployerWallet, auctionAbi, auctionBytecode, tempoTokenMode ? [TEMPO_FEE_TOKEN] : []);
+const auction = await deploy(deployerWallet, auctionAbi, auctionBytecode, tempoTokenMode ? [TEMPO_ASSET_TOKEN] : []);
 deployments.contracts.auction = auction;
 const auctionId = keccak256(`0x${Buffer.from(`auction:${runId}`).toString("hex")}`);
 const bidAmount = tempoTokenMode ? parseUnits("0.2", TEMPO_TOKEN_DECIMALS) : parseEther("0.0002");
@@ -361,7 +386,7 @@ const auctionRevealEnd = auctionNow + BigInt(governanceRevealSeconds) + windowSa
 const auctionCreateHash = await gatewayWrite(ownerProviderId, deployerWallet, "auction", "auction.bid.commit", "create-auction", auction.address, auctionAbi, "createAuction", [auctionId, deployer.address, biddingEnd, auctionRevealEnd]);
 const bidSalt = keccak256(`0x${Buffer.from(`bid-salt:${runId}`).toString("hex")}`);
 const bidCommitment = keccak256(encodeAbiParameters([{ type: "bytes32" }, { type: "address" }, { type: "uint256" }, { type: "bytes32" }], [auctionId, checker.address, bidAmount, bidSalt]));
-const bidApprovalHash = tempoTokenMode ? await write(checkerWallet, TEMPO_FEE_TOKEN, erc20Abi, "approve", [auction.address, escrow]) : null;
+const bidApprovalHash = tempoTokenMode ? await write(checkerWallet, TEMPO_ASSET_TOKEN, erc20Abi, "approve", [auction.address, escrow]) : null;
 const bidCommitHash = await gatewayWrite(
   checkerProviderId,
   checkerWallet,
