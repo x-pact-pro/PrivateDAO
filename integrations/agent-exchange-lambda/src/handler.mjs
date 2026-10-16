@@ -34,6 +34,7 @@ import { githubProviderStatus, repositoryEvidence } from "./github.mjs";
 import { applyGithubMarketplacePurchase, githubAppConfigured, githubGetInstallation, githubInstallationRepositories, githubRepositoryContext, mergeGithubInstallationRepositories, publicGithubInstallationRecord, verifyGithubWebhook } from "./github-app.mjs";
 import { mongoProviderStatus, persistEvidence } from "./mongodb.mjs";
 import { assertPublicHttps, fetchPublicHttps } from "./url-safety.mjs";
+import { reviewSellerSubmission } from "./seller-review.mjs";
 import { integrationDirectory, serviceDetails, serviceRecommendation, SERVICE_CATEGORIES } from "./exchange-metadata.mjs";
 
 const config = getConfig();
@@ -699,6 +700,7 @@ function openapi() {
     "/api/registry/agents/{agentId}/services": { patch: { operationId: "updateSellerServices" } },
     "/api/registry/agents/{agentId}/seller-readiness": { get: { operationId: "sellerReadiness" } },
     "/api/seller/dashboard/{agentId}": { get: { operationId: "sellerDashboard" } },
+    "/api/seller/security-review": { post: { operationId: "automatedSellerSecurityReview" } },
     "/api/seller/metadata/preview": { post: { operationId: "previewSellerMetadata" } },
     "/api/registry/agents/{agentId}/publish": { post: { operationId: "publishSeller" } },
     "/api/registry/agents/{agentId}/unpublish": { post: { operationId: "unpublishSeller" } },
@@ -1300,6 +1302,9 @@ function publicReceiptPage(receipt, verified = false) {
 }
 async function marketplacePage() {
   const policy = await marketplacePolicy();
+  const autoPublish = body.auto_publish === true || body.autoPublish === true;
+  if (autoPublish && agent.automated_review?.status !== "passed")
+    throw Object.assign(new Error("automated security screening must pass before auto-publication"), { statusCode: 409 });
   const grouped = SERVICE_CATEGORIES.map((category) => ({ ...category, services: SERVICES.filter((service) => serviceDetails(service).category === category.id) })).filter((category) => category.services.length);
   const cards = grouped.map((category) => {
     const serviceCards = category.services.map((service) => {
@@ -1888,7 +1893,7 @@ async function sellerListingQuote(body) {
   const listing = {
     ...(existing || {}), id: listingId, agentId: agent.id, seller_agent_id: agent.id, provider: agent.name, type: "seller_listing",
     tier: tierId, service_ids: existing?.payment_status === "paid" ? existing.service_ids || [] : quote.seller_service_ids, pending_service_ids: quote.seller_service_ids, listing_fee_status: existing?.payment_status === "paid" ? "paid" : "awaiting_payment", payment_status: existing?.payment_status === "paid" ? "paid" : "pending",
-    status: existing?.payment_status === "paid" ? existing.status : "pending", commercial_publication_status: existing?.commercial_publication_status || "draft", quote_id: quote.quote_id, commercial_services_hash: quote.commercial_services_hash, terms_version: quote.terms_version, terms_accepted_at: quote.terms_accepted_at, created_at: existing?.created_at || now(), updated_at: now(),
+    status: existing?.payment_status === "paid" ? existing.status : "pending", commercial_publication_status: existing?.commercial_publication_status || "draft", auto_publish_requested: autoPublish || existing?.auto_publish_requested === true, quote_id: quote.quote_id, commercial_services_hash: quote.commercial_services_hash, terms_version: quote.terms_version, terms_accepted_at: quote.terms_accepted_at, created_at: existing?.created_at || now(), updated_at: now(),
   };
   await storage.put("Listings", listingId, listing);
   return { listing, quote, policy, tier, fee_plan: plan, status: "awaiting_payment" };
@@ -1944,10 +1949,11 @@ async function submitSellerListingPayment(id, body) {
   await storage.put("Revenue", `rev_${id}_${quote.quote_id}`, { id: `rev_${id}_${quote.quote_id}`, feeType, listingId: id, seller_agent_id: agent.id, seller_service_ids: quote.seller_service_ids, grossAmount: quote.amount, providerAmount: 0, protocolFee: quote.amount, platformFeeAmount: quote.amount, feeBps: 10000, asset: quote.currency, paymentSignature: body.signature, settlementStatus: "platform_collected", timestamp: now() });
   const paidServiceIds = [...new Set([...(listing.service_ids || []), ...quote.seller_service_ids])];
   const isAdditional = quote.payment_type === "seller_additional_service_fee";
-  const nextListing = { ...listing, payment_status: "paid", listing_fee_status: "paid", service_ids: paidServiceIds, pending_service_ids: [], commercial_publication_status: isAdditional ? listing.commercial_publication_status : "eligible", status: isAdditional ? listing.status : "eligible", payment_signature: body.signature, receipt_id: receipt.receipt_id, settlement_id: settlementId, paid_at: now(), updated_at: now() };
+  const autoPublished = !isAdditional && listing.auto_publish_requested === true && agent.automated_review?.status === "passed";
+  const nextListing = { ...listing, payment_status: "paid", listing_fee_status: "paid", service_ids: paidServiceIds, pending_service_ids: [], commercial_publication_status: isAdditional ? listing.commercial_publication_status : (autoPublished ? "published" : "eligible"), status: isAdditional ? listing.status : (autoPublished ? "active" : "eligible"), payment_signature: body.signature, receipt_id: receipt.receipt_id, settlement_id: settlementId, paid_at: now(), updated_at: now() };
   await storage.put("Listings", id, nextListing);
-  await storage.put("Registry", agent.id, { ...agent, commercial_publication_status: isAdditional ? agent.commercial_publication_status : "eligible", listing_fee_status: "paid", listing_fee_ledger: nextLedger, seller_tier: listing.tier, listing_fee_quote_id: quote.quote_id, listing_fee_payment_signature: body.signature, listing_fee_paid_at: now(), updated_at: now() });
-  return { status: "paid", listing: nextListing, receipt, settlement };
+  await storage.put("Registry", agent.id, { ...agent, commercial_publication_status: isAdditional ? agent.commercial_publication_status : (autoPublished ? "published" : "eligible"), listing_fee_status: "paid", listing_fee_ledger: nextLedger, seller_tier: listing.tier, listing_fee_quote_id: quote.quote_id, listing_fee_payment_signature: body.signature, listing_fee_paid_at: now(), updated_at: now() });
+  return { status: "paid", publication: autoPublished ? "published" : "eligible", listing: nextListing, receipt, settlement };
 }
 async function sellerListingPaymentIntent(id) {
   const listing = await (await store()).get("Listings", id);
@@ -3099,6 +3105,14 @@ async function previewSellerMetadata(body) {
   const acceptedAssets = sellerAcceptedAssets(body.accepted_assets || body.acceptedAssets);
   if (!acceptedAssets.length) errors.push({ field: "accepted_assets", message: "at least one accepted asset is required before publication" });
   if (!payout) errors.push({ field: "payout", message: "payout address, network, and asset are required before publication" });
+  const review = await reviewSellerSubmission({
+    endpoint: discovery.url,
+    websiteUrl: body.website_url || body.websiteUrl,
+    githubUrl: body.github_url || body.githubUrl,
+    docsUrl: body.docs_url || body.docsUrl,
+    discovery,
+    services,
+  });
   return {
     status: errors.length ? "action_required" : "ready_for_registration",
     endpoint: discovery.url,
@@ -3107,8 +3121,26 @@ async function previewSellerMetadata(body) {
     commercial_services: services,
     accepted_assets: acceptedAssets,
     payout,
+    automated_review: review,
     errors,
   };
+}
+
+async function automatedSellerReview(body) {
+  const endpoint = body.mcp_url || body.mcpUrl || body.endpoint;
+  if (!endpoint) throw Object.assign(new Error("mcp_url is required"), { statusCode: 400 });
+  const discovery = await discoverMcp(endpoint);
+  let services;
+  try { services = normalizeCommercialServices(body.commercial_services || body.commercialServices || []); }
+  catch (error) { throw Object.assign(new Error(`invalid commercial metadata: ${error.message}`), { statusCode: 400 }); }
+  return reviewSellerSubmission({
+    endpoint: discovery.url,
+    websiteUrl: body.website_url || body.websiteUrl,
+    githubUrl: body.github_url || body.githubUrl,
+    docsUrl: body.docs_url || body.docsUrl,
+    discovery,
+    services,
+  });
 }
 
 async function registerMcp(body) {
@@ -3119,6 +3151,10 @@ async function registerMcp(body) {
     allowedTools: body.allowedTools ?? body.allowed_tools,
     forceRefresh: body.forceRefresh ?? body.force_refresh,
     persistUnavailable: body.persistUnavailable ?? body.persist_unavailable,
+    autoPublish: body.autoPublish ?? body.auto_publish,
+    websiteUrl: body.websiteUrl ?? body.website_url,
+    githubUrl: body.githubUrl ?? body.github_url,
+    docsUrl: body.docsUrl ?? body.docs_url,
     commercialServices: body.commercialServices ?? body.commercial_services,
     acceptedAssets: body.acceptedAssets ?? body.accepted_assets,
   };
@@ -3134,7 +3170,7 @@ async function registerMcp(body) {
   const suppliedOwnerToken = body.ownerToken || body.owner_token || "";
   const hasSellerMutation = [
     "name", "allowedTools", "allowed_tools", "tags", "networks", "commercialServices", "commercial_services",
-    "acceptedAssets", "accepted_assets", "payout", "forceRefresh", "force_refresh", "persistUnavailable", "persist_unavailable",
+    "acceptedAssets", "accepted_assets", "payout", "forceRefresh", "force_refresh", "persistUnavailable", "persist_unavailable", "autoPublish", "auto_publish", "websiteUrl", "website_url", "githubUrl", "github_url", "docsUrl", "docs_url",
   ].some((key) => body[key] !== undefined);
   if (existing?.owner_token_hash && suppliedOwnerToken && !secretMatches(suppliedOwnerToken, existing.owner_token_hash))
     throw Object.assign(new Error("seller ownership token is invalid"), { statusCode: 403 });
@@ -3191,6 +3227,14 @@ async function registerMcp(body) {
   const discoveredNames = new Set(discovery.tools.map((tool) => tool.name));
   const safeByName = new Map(discovery.tools.map((tool) => [tool.name, tool]));
   validateMcpCommercialServices(discovery, commercialServices);
+  const automatedReview = await reviewSellerSubmission({
+    endpoint: discovery.url,
+    websiteUrl: body.websiteUrl || body.website_url || existing?.website_url,
+    githubUrl: body.githubUrl || body.github_url || existing?.github_url,
+    docsUrl: body.docsUrl || body.docs_url || existing?.docs_url,
+    discovery,
+    services: commercialServices,
+  });
   const allowedTools = (requested || existing?.allowed_tools || defaultMcpAllowlist(discovery.tools)).filter((name) => discoveredNames.has(name) && safeMcpTool(safeByName.get(name)));
   const agent = {
     id,
@@ -3226,6 +3270,11 @@ async function registerMcp(body) {
     owner_token_hash: existing?.owner_token_hash || hashSecret(ownerToken),
     networks: Array.isArray(body.networks) ? body.networks.map(normalizeNetworkId).filter(Boolean) : (existing?.networks || []),
     tags: body.tags || ["external", "mcp"],
+    website_url: body.websiteUrl || body.website_url || existing?.website_url || null,
+    github_url: body.githubUrl || body.github_url || existing?.github_url || null,
+    docs_url: body.docsUrl || body.docs_url || existing?.docs_url || null,
+    automated_review: automatedReview,
+    auto_publish_requested: body.autoPublish === true || body.auto_publish === true || existing?.auto_publish_requested === true,
     status: "connected",
     health: "connected",
     last_successful_connection: now(),
@@ -3888,6 +3937,8 @@ async function handle(e) {
     );
   if (method === "POST" && path === "/api/registry/register")
     return json(await register(body), 201);
+  if (method === "POST" && path === "/api/seller/security-review")
+    return json(await automatedSellerReview(body));
   if (method === "POST" && path === "/api/seller/metadata/preview")
     return json(await previewSellerMetadata(body));
   const sellerTokenRotation = path.match(/^\/api\/registry\/agents\/([^/]+)\/owner-token\/rotate$/);
@@ -4116,6 +4167,14 @@ async function mcp(request) {
         commercial_services: { type: "array", maxItems: 64, items: { type: "object" }, description: "Snake-case compatibility alias for commercialServices." },
         acceptedAssets: { type: "array", maxItems: 20, items: { type: "string", maxLength: 20 } },
         accepted_assets: { type: "array", maxItems: 20, items: { type: "string", maxLength: 20 }, description: "Snake-case compatibility alias for acceptedAssets." },
+        websiteUrl: { type: "string", format: "uri", description: "Optional public HTTPS website used for automated screening." },
+        website_url: { type: "string", format: "uri", description: "Snake-case compatibility alias for websiteUrl." },
+        githubUrl: { type: "string", format: "uri", description: "Optional public GitHub repository used for automated screening." },
+        github_url: { type: "string", format: "uri", description: "Snake-case compatibility alias for githubUrl." },
+        docsUrl: { type: "string", format: "uri", description: "Optional public HTTPS documentation URL used for automated screening." },
+        docs_url: { type: "string", format: "uri", description: "Snake-case compatibility alias for docsUrl." },
+        autoPublish: { type: "boolean", description: "Request publication immediately after finalized listing payment if automated screening passes." },
+        auto_publish: { type: "boolean", description: "Snake-case compatibility alias for autoPublish." },
         payout: { type: "object", properties: { address: { type: "string" }, network: { type: "string" }, asset: { type: "string" } }, additionalProperties: false },
       },
       anyOf: [{ required: ["mcpUrl"] }, { required: ["mcp_url"] }, { required: ["endpoint"] }],
