@@ -70,7 +70,7 @@ test("human root is HTML while machine surfaces remain available", async () => {
   assert.match(sellerPortal.body, /Retry verification \(do not pay again\)/);
   assert.match(sellerPortal.body, /retry\.dataset\.retryBound/);
   assert.match(sellerPortal.body, /new MutationObserver\(bindPaymentRetry\)/);
-  for (const asset of ["ibm-watsonx.svg", "openvino.svg", "mongodb.svg", "github.svg"]) {
+  for (const asset of ["ibm-watsonx.svg", "openvino.svg", "mongodb.svg", "github.svg", "digitalocean.svg"]) {
     assert.match(root.body, new RegExp(`/assets/ecosystem/${asset}`), asset);
     assert.match(marketplace.body, new RegExp(`/assets/ecosystem/${asset}`), asset);
     assert.match(integrationPage.body, new RegExp(`/assets/ecosystem/${asset}`), asset);
@@ -78,6 +78,13 @@ test("human root is HTML while machine surfaces remain available", async () => {
     assert.equal(response.statusCode, 200, asset);
     assert.match(response.body, /<svg\b/, asset);
   }
+  assert.match(root.body, /\/assets\/ecosystem\/amd-official\.png/);
+  assert.match(marketplace.body, /\/assets\/ecosystem\/amd-official\.png/);
+  assert.match(integrationPage.body, /\/assets\/ecosystem\/amd-official\.png/);
+  const amdLogo = await request("/assets/ecosystem/amd-official.png");
+  assert.equal(amdLogo.statusCode, 200, "amd-official.png");
+  assert.equal(amdLogo.headers["content-type"], "image/png", "amd-official.png");
+  assert.equal(amdLogo.isBase64Encoded, true, "amd-official.png");
   for (const surface of [root.body, marketplace.body, integrationPage.body])
     assert.match(surface, /\/assets\/brand\/privatedao-official-logo\.jpg/);
   assert.match(integrationPage.body, /\/assets\/brand\/privatedao-official-banner\.jpg/);
