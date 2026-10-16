@@ -79,6 +79,14 @@ if (writeGasLimit < 50_000n || writeGasLimit > 2_000_000n) throw new Error("PDAO
 const tempoChain = tempoModerato.extend({ feeToken: TEMPO_FEE_TOKEN });
 const executionChain = NETWORK === "tempo-testnet" ? tempoChain : chain;
 const publicClient = createPublicClient({ chain: executionChain, transport });
+const minimumStartingBalanceWei = BigInt(process.env.PDAO_EVM_MIN_STARTING_BALANCE_WEI || "5000000000000000");
+if (minimumStartingBalanceWei < 0n) throw new Error("PDAO_EVM_MIN_STARTING_BALANCE_WEI must not be negative.");
+const startingBalanceWei = await publicClient.getBalance({ address: deployer.address });
+if (startingBalanceWei < minimumStartingBalanceWei) {
+  throw new Error(
+    `Insufficient starting balance for ${NETWORK} organizational E2E: ${startingBalanceWei} wei < ${minimumStartingBalanceWei} wei. No transaction was submitted.`,
+  );
+}
 const deployerWallet = tempoTokenMode
   ? createTempoClient({ account: deployer, chain: tempoModerato, transport, feeToken: TEMPO_FEE_TOKEN })
   : createWalletClient({ account: deployer, chain: executionChain, transport });
