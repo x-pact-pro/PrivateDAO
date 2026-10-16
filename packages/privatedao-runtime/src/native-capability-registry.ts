@@ -88,6 +88,12 @@ const BLIND_SOLANA_DEVNET_EVIDENCE = {
   timestamp: "2026-10-15T19:54:13.841Z",
 } as const;
 
+const RECORD_SOLANA_DEVNET_EVIDENCE = {
+  provider: "privatedao-record-verification",
+  commit: "pending",
+  timestamp: "2026-10-16T00:00:00.000Z",
+} as const;
+
 const TEMPO_TESTNET_EVIDENCE = {
   provider: "evm-tempo-testnet",
   verifier: "0xbf495e8147ab23bfa2024eae7c0d2f54af40279c",
@@ -406,6 +412,26 @@ function applyBlindSolanaDevnetEvidence(entry: NativeCapabilityEntry): NativeCap
   };
 }
 
+function applyRecordSolanaDevnetEvidence(entry: NativeCapabilityEntry): NativeCapabilityEntry {
+  const supported = ["verification.record.create", "verification.record.verify"].includes(entry.capability);
+  if (entry.product !== "record-verification" || !supported || entry.network !== "solana-devnet") return entry;
+  return {
+    ...entry,
+    provider: RECORD_SOLANA_DEVNET_EVIDENCE.provider,
+    walletModel: "none",
+    supportsExecution: true,
+    supportsPrivateExecution: false,
+    supportsPrivateSettlement: false,
+    supportsProof: false,
+    supportsReceipt: true,
+    supportsReconciliation: true,
+    status: "devnet_verified",
+    lastVerifiedCommit: RECORD_SOLANA_DEVNET_EVIDENCE.commit,
+    lastVerifiedTimestamp: RECORD_SOLANA_DEVNET_EVIDENCE.timestamp,
+    evidence: "devnet-e2e",
+  };
+}
+
 function applyTempoTestnetEvidence(entry: NativeCapabilityEntry): NativeCapabilityEntry {
   const isBlind = entry.product === "blind-verification" && ["verification.blind.prove", "verification.blind.revoke"].includes(entry.capability);
   const isRecord = entry.product === "record-verification" && ["verification.record.create", "verification.record.verify", "verification.record.revoke"].includes(entry.capability);
@@ -573,7 +599,7 @@ function applyOrganizationalPayrollEvidence(entry: NativeCapabilityEntry): Nativ
 export function buildNativeCapabilityRegistry(): readonly NativeCapabilityEntry[] {
   return PRODUCT_CATALOG.flatMap((product) =>
     product.capabilities.flatMap((capability) =>
-      NETWORK_MATRIX.map((network) => applyOrganizationalEvidence(applyOrganizationalPayrollEvidence(applyStellarTestnetEvidence(applyRobinhoodTestnetEvidence(applyHyperliquidTestnetEvidence(applyBnbTestnetEvidence(applyTempoTestnetEvidence(applyBlindSolanaDevnetEvidence(applyPayrollDevnetEvidence(applyAgentMainnetEvidence(applyArbitrumSepoliaEvidence(applyBaseSepoliaEvidence(applyEthereumSepoliaEvidence({
+      NETWORK_MATRIX.map((network) => applyOrganizationalEvidence(applyOrganizationalPayrollEvidence(applyStellarTestnetEvidence(applyRobinhoodTestnetEvidence(applyHyperliquidTestnetEvidence(applyBnbTestnetEvidence(applyTempoTestnetEvidence(applyRecordSolanaDevnetEvidence(applyBlindSolanaDevnetEvidence(applyPayrollDevnetEvidence(applyAgentMainnetEvidence(applyArbitrumSepoliaEvidence(applyBaseSepoliaEvidence(applyEthereumSepoliaEvidence({
         product: product.id,
         capability: capability.id,
         network: network.id,
@@ -600,5 +626,5 @@ export function buildNativeCapabilityRegistry(): readonly NativeCapabilityEntry[
         evidence: "none",
       })))))))))))))) ,
     ),
-  );
+  ));
 }

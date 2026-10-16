@@ -4,15 +4,17 @@ import { buildNativeCapabilityRegistry } from "../packages/privatedao-runtime/sr
 const entries = buildNativeCapabilityRegistry();
 const verified = entries.filter((entry) => entry.status === "testnet_verified");
 const liveAgents = entries.filter((entry) => entry.status === "mainnet_live" && entry.product === "agent");
-const verifiedPayroll = entries.filter((entry) => entry.status === "devnet_verified");
-const verifiedBlind = verifiedPayroll.filter((entry) => entry.product === "blind-verification");
-const verifiedPayrollLanes = verifiedPayroll.filter((entry) => entry.product === "payroll");
+const verifiedDevnet = entries.filter((entry) => entry.status === "devnet_verified");
+const verifiedBlind = verifiedDevnet.filter((entry) => entry.product === "blind-verification");
+const verifiedRecord = verifiedDevnet.filter((entry) => entry.product === "record-verification" && entry.network === "solana-devnet");
+const verifiedPayrollLanes = verifiedDevnet.filter((entry) => entry.product === "payroll");
 const solanaPayrollEntries = entries.filter((entry) => entry.product === "payroll" && entry.network === "solana-devnet");
 
 assert.equal(entries.length, 238, "unexpected native capability matrix size");
 assert.equal(verified.length, 91, "only evidence-backed verification and organizational testnet rows should be verified");
 assert.equal(liveAgents.length, 2, "the two live Agent Exchange rows must be runtime-verified");
 assert.equal(verifiedBlind.length, 1, "the Solana blind-verification Devnet evidence row must remain verified");
+assert.equal(verifiedRecord.length, 2, "the Solana record-verification Devnet evidence must cover create and verify");
 assert.equal(verifiedPayrollLanes.length, 0, "legacy Umbra payroll evidence must not be promoted to verified");
 assert.equal(solanaPayrollEntries.every((entry) => entry.status === "implementation" && entry.supportsExecution === false), true, "legacy Umbra payroll evidence must not masquerade as Kernel E2E");
 assert.equal(verifiedBlind[0]?.network, "solana-devnet");
@@ -20,6 +22,9 @@ assert.equal(verifiedBlind[0]?.capability, "verification.blind.prove");
 assert.equal(verifiedBlind[0]?.evidence, "devnet-e2e");
 assert.equal(verifiedBlind[0]?.supportsExecution, true);
 assert.equal(verifiedBlind[0]?.supportsReceipt, true);
+assert.equal(verifiedRecord.every((entry) => entry.provider === "privatedao-record-verification"), true);
+assert.equal(verifiedRecord.every((entry) => entry.evidence === "devnet-e2e"), true);
+assert.equal(verifiedRecord.every((entry) => entry.supportsExecution === true && entry.supportsReceipt === true && entry.supportsReconciliation === true), true);
 for (const entry of liveAgents) {
   assert.equal(entry.product, "agent");
   assert.equal(entry.network, "solana-mainnet-beta");
