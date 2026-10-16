@@ -96,6 +96,27 @@ actions remain subject to the client confirmation and PrivateDAO payment gates.
 
 ## Deployment boundary
 
+### Seller settlement safety boundary
+
+Seller execution accounting remains automatic: finalized paid execution, gross,
+platform fee, processing/network fee attribution, seller net, receipts, and
+duplicate prevention are recorded before settlement. Payout broadcasting is not
+automatic. The weekly EventBridge invocation only creates a time-bounded,
+immutable settlement report and a non-sensitive `batch_ready` audit alert.
+
+An owner opens `/owner/settlements`, connects the configured Treasury wallet,
+reviews the exact recipients and USDC amounts, approves the batch, and asks the
+backend to prepare an unsigned Solana transaction. The browser wallet signs it;
+the backend accepts only a transaction whose fee payer, blockhash, programs,
+mint, recipients, amounts, and decimals match the immutable snapshot. The
+backend broadcasts only after that signed submission, verifies finalized
+on-chain instructions, and marks ledger entries settled only after reconciliation.
+No private key, seed phrase, backend signer, or signer secret is used by this
+flow. Dedicated `SettlementBatches`, `SettlementChallenges`, and `AuditLog`
+tables may be supplied by environment variables; otherwise the encrypted
+Registry table is used for these logical collections so the existing stack does
+not require an immediate schema migration.
+
 Deploy this integration independently. Do not package or replace the main
 PrivateDAO website, `/game/`, or the game host when updating this Lambda.
 

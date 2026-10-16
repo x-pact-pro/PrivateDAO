@@ -21,6 +21,7 @@ env:
   AWS_REGION: ${{ vars.AGENT_EXCHANGE_AWS_REGION || 'eu-north-1' }}
   FUNCTION_NAME: ${{ vars.AGENT_EXCHANGE_FUNCTION_NAME || 'PrivateDAOAgentExchange-Function-N2zgpQmMN41S' }}
   PUBLIC_BASE_URL: ${{ vars.AGENT_EXCHANGE_PUBLIC_BASE_URL || 'https://agents.privatedao.org' }}
+  AGENT_EXCHANGE_SETTLEMENT_SCHEDULE: ${{ vars.AGENT_EXCHANGE_SETTLEMENT_SCHEDULE || 'rate(7 days)' }}
 
 jobs:
   gate:
@@ -282,23 +283,6 @@ jobs:
 
           echo "Production smoke gate passed."
 
-      - name: Reconcile payout runtime configuration
-        id: payout_runtime
-        if: steps.deploy_code.outcome == 'success'
-        run: |
-          set -euo pipefail
-
-          config="$(aws lambda get-function-configuration --function-name "$FUNCTION_NAME" --output json)"
-          revision="$(jq -r '.RevisionId' <<< "$config")"
-          environment="$(jq -c '.Environment.Variables + {AGENT_EXCHANGE_PAYOUT_SECRET_ID: "pdao/agent-exchange/payout-signer", AGENT_EXCHANGE_PAYOUT_BATCH_LIMIT: "20"} | {Variables: .}' <<< "$config")"
-
-          aws lambda update-function-configuration \
-            --function-name "$FUNCTION_NAME" \
-            --revision-id "$revision" \
-            --environment "$environment" >/dev/null
-          aws lambda wait function-updated-v2 --function-name "$FUNCTION_NAME"
-          echo "Payout runtime configuration reconciled."
-
       - name: Reconcile scheduled seller settlement trigger
         id: settlement_schedule
         if: steps.deploy_code.outcome == 'success'
@@ -308,7 +292,8 @@ jobs:
           RULE_NAME="PrivateDAOAgentExchangeSettlementSchedule"
           STATEMENT_ID="agent-exchange-settlement-schedule"
           FUNCTION_ARN="$(aws lambda get-function --function-name "$FUNCTION_NAME" --query 'Configuration.FunctionArn' --output text)"
-          RULE_ARN="$(aws events put-rule --name "$RULE_NAME" --schedule-expression 'rate(5 minutes)' --state ENABLED --description 'PrivateDAO Agent Exchange seller settlement sweep' --query 'RuleArn' --output text)"
+          SCHEDULE_EXPRESSION="${AGENT_EXCHANGE_SETTLEMENT_SCHEDULE:-rate(7 days)}"
+          RULE_ARN="$(aws events put-rule --name "$RULE_NAME" --schedule-expression "$SCHEDULE_EXPRESSION" --state ENABLED --description 'PrivateDAO Agent Exchange owner settlement report generation only' --query 'RuleArn' --output text)"
 
           aws events put-targets --rule "$RULE_NAME" --targets "Id=agent-exchange-settlement,Arn=$FUNCTION_ARN" >/dev/null
 
@@ -332,7 +317,6 @@ jobs:
           (
             steps.deploy_code.outcome == 'failure' ||
             steps.smoke.outcome == 'failure' ||
-            steps.payout_runtime.outcome == 'failure' ||
             steps.settlement_schedule.outcome == 'failure'
           )
         continue-on-error: true
@@ -379,7 +363,6 @@ jobs:
           (
             steps.deploy_code.outcome == 'failure' ||
             steps.smoke.outcome == 'failure' ||
-            steps.payout_runtime.outcome == 'failure' ||
             steps.settlement_schedule.outcome == 'failure'
           )
         run: |
@@ -394,7 +377,6 @@ jobs:
         if: >-
           steps.deploy_code.outcome == 'success' &&
           steps.smoke.outcome == 'success' &&
-          steps.payout_runtime.outcome == 'success' &&
           steps.settlement_schedule.outcome == 'success'
         run: |
           {
