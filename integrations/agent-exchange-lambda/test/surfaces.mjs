@@ -572,7 +572,7 @@ test("MCP lifecycle, schemas, errors, and network aliases are protocol-safe", as
   assert.equal(cancelled.body, "");
 
   const listed = JSON.parse((await request("/mcp", "POST", { jsonrpc: "2.0", id: 2, method: "tools/list", params: {} })).body).result.tools;
-  assert.equal(listed.length, 20);
+  assert.equal(listed.length, 21);
   for (const tool of listed) {
     assert.equal(tool.inputSchema.type, "object", tool.name);
     assert.ok(tool.inputSchema.properties, tool.name);
@@ -583,6 +583,8 @@ test("MCP lifecycle, schemas, errors, and network aliases are protocol-safe", as
   assert.deepEqual(byName.submit_payment.required, ["job_id", "signature"]);
   assert.deepEqual(byName.register_agent.anyOf, [{ required: ["mcpUrl"] }, { required: ["mcp_url"] }, { required: ["endpoint"] }]);
   assert.deepEqual(byName.logistics_request.required, ["capability"]);
+  assert.deepEqual(byName.receipt_verify.required, ["receipt"]);
+  assert.equal(byName.receipt_verify.properties.receipt.type, "object");
   for (const toolName of ["exchange_overview", "service_recommendation", "provider_integrations", "payment_guide", "execution_guide"])
     assert.ok(byName[toolName], `${toolName} discovery tool`);
 
@@ -593,6 +595,10 @@ test("MCP lifecycle, schemas, errors, and network aliases are protocol-safe", as
   const safe = JSON.parse((await request("/mcp", "POST", { jsonrpc: "2.0", id: 3, method: "tools/call", params: { name: "verify_basic", arguments: { record: { test: "mcp" } } } })).body);
   assert.equal(safe.result.isError, undefined);
   assert.match(safe.result.content[0].text, /VERIFIED/);
+
+  const receiptCheck = JSON.parse((await request("/mcp", "POST", { jsonrpc: "2.0", id: 9, method: "tools/call", params: { name: "receipt_verify", arguments: { receipt: { receipt_id: "rvr_fixture", status: "VERIFIED" } } } })).body);
+  assert.equal(receiptCheck.result.isError, undefined);
+  assert.equal(receiptCheck.result.structuredContent.verification_status, "VERIFIED");
 
   const failed = JSON.parse((await request("/mcp", "POST", { jsonrpc: "2.0", id: 4, method: "tools/call", params: { name: "verify_basic", arguments: {} } })).body);
   assert.equal(failed.result.isError, true);
@@ -606,6 +612,9 @@ test("MCP lifecycle, schemas, errors, and network aliases are protocol-safe", as
 
   const match = JSON.parse((await request("/mcp", "POST", { jsonrpc: "2.0", id: 5, method: "tools/call", params: { name: "agent_match", arguments: { capabilities: ["chains"], network: "solana:mainnet-beta" } } })).body);
   assert.equal(match.result.isError, undefined);
+  const stats = JSON.parse((await request("/mcp", "POST", { jsonrpc: "2.0", id: 8, method: "tools/call", params: { name: "network_stats", arguments: {} } })).body);
+  assert.ok(stats.result.structuredContent.networks["solana-mainnet-beta"]);
+  assert.ok(stats.result.structuredContent.networks["base-mainnet"]);
 });
 
 test("agent invocation rejects malformed identifiers without leaking storage errors", async () => {
@@ -1119,6 +1128,10 @@ test("public seller metadata removes secret-shaped fields including camelCase va
   assert.equal(safe.result_hash, "public-proof-2");
   assert.deepEqual(safe.nested, { metadata: [{ label: "safe" }] });
   assert.equal(safe.display_name, "Synthetic Seller");
+  assert.equal(safe.relationship_status, "registry_provider");
+  assert.equal(safe.official_partner, false);
+  assert.equal(safe.sponsored_placement, false);
+  assert.equal(safe.directory, "public_agent_registry");
 });
 
 test("payment finality responses are non-success until activation is complete", () => {

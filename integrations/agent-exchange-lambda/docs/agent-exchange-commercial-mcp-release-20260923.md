@@ -83,15 +83,16 @@ treasury movement, or unrelated product deployment was performed.
   entries.
 - MCP `tools/list` returned 20 tools, including seller discovery and seller
   lifecycle tools.
-- Live Singularity refresh returned 22 advertised tools with 20 read-only
+- Historical pilot refresh for Singularity returned 22 advertised tools with 20 read-only
   allowlisted tools, including
   `mint_audit`, `verify_burn`, `inspect_exit`, `inspect_payment`,
   `prove_payment`, and `mesh`; `build_transfer` and `build_burn` remained
   blocked by the side-effect policy.
-- Live registry search returned only the current Singularity identity
-  `agent_3884f6355724a1e850d31f45`; the stale endpoint was retired from active
-  search during the current refresh.
-- Live `/api/services` retained 24 first-party services and reported zero
+- Historical registry search returned only the then-current Singularity identity
+- `agent_3884f6355724a1e850d31f45`; this was a registry/pilot record, not an
+  official PrivateDAO partnership or sponsored placement. The record is not
+  evidence of an active commercial relationship.
+- The historical `/api/services` snapshot retained 24 first-party services and reported zero
   external services until Brian supplies explicit commercial metadata.
 - MCP `service_recommendation` mapped “analyze a wallet for risk” to
   `wallet.intelligence`, `research.wallet`, `anomaly.detect`, `risk.score`, and

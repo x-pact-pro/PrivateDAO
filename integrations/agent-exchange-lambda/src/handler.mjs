@@ -179,7 +179,14 @@ function redactPublicValue(value) {
   return safe;
 }
 export function publicRegistryAgent(agent) {
-  return agent == null ? agent : redactPublicValue(agent);
+  if (agent == null) return agent;
+  return {
+    ...redactPublicValue(agent),
+    relationship_status: "registry_provider",
+    official_partner: false,
+    sponsored_placement: false,
+    directory: "public_agent_registry",
+  };
 }
 function activeRegistryAgent(agent) {
   return agent && !agent.kind && !agent.retired_at && ["connected", "verified"].includes(agent.status);
@@ -2133,6 +2140,25 @@ async function requestLogistics(body) {
     })
     .sort((a, b) => Number(a.price) - Number(b.price))
     .slice(0, 10);
+  const listedAgentIds = new Set(candidates.map((candidate) => candidate.agentId || candidate.id).filter(Boolean));
+  const freeRegistryCandidates = registryMatches.matches
+    .filter((match) => Number(match.match_score || 0) > 0)
+    .filter((match) => !listedAgentIds.has(match.id))
+    .filter((match) => body.maxPrice == null || Number(body.maxPrice) >= 0)
+    .map((match) => ({
+      provider: match.name,
+      agentId: match.id,
+      service: body.capability,
+      price: 0,
+      asset: null,
+      chains: match.networks || [],
+      verified: match.status === "verified",
+      execution: "read_only",
+      eligibility: "registry_capability_match",
+      network_match: match.network_match,
+      match_score: match.match_score,
+      disclosure: "Registry provider; not an official PrivateDAO partner or sponsored placement",
+    }));
   const firstParty = serviceById(body.capability)
     ? [
         {
@@ -2153,13 +2179,32 @@ async function requestLogistics(body) {
     asset: body.asset || "USDC",
     deadline: body.deadline || null,
     preferredProtocols: body.preferredProtocols || [],
-    candidates: [...firstParty, ...candidates],
+    candidates: [...firstParty, ...freeRegistryCandidates, ...candidates],
     ...(network ? { network } : { network: "solana-mainnet-beta" }),
     status: "quoted",
     createdAt: now(),
   };
   await (await store()).put("Logistics", request.id, request, true);
   return request;
+}
+
+async function networkStatsSummary() {
+  const networks = ["ethereum-mainnet", "base-mainnet", "arbitrum-mainnet"];
+  const evm = await Promise.all(networks.map(async (network) => {
+    try {
+      return { network, ...(await evmHealth(config, network)) };
+    } catch (error) {
+      return { network, status: "rpc_unhealthy", reason: String(error.message || error).slice(0, 200) };
+    }
+  }));
+  return {
+    networks: {
+      "solana-mainnet-beta": await networkStats(config),
+      ...Object.fromEntries(evm.map((item) => [item.network, item])),
+    },
+    read_only: true,
+    observed_at: now(),
+  };
 }
 async function createAgreement(body) {
   for (const field of ["buyerAgent", "providerAgent", "service", "price"])
@@ -2542,13 +2587,28 @@ async function matchRegisteredAgents(input = {}) {
     matches: all
       .filter((x) => ["verified", "connected"].includes(x.status))
       .filter((x) => !requestedNetwork || !(x.networks || []).length || x.networks.map(normalizeNetworkId).includes(requestedNetwork))
-      .map((x) => ({
-        ...publicRegistryAgent(x),
-        network_match: requestedNetwork ? ((x.networks || []).length ? x.networks.map(normalizeNetworkId).includes(requestedNetwork) : "capability-declared") : null,
-        match_score:
-          (x.capabilities || []).filter((c) => wanted.has(c)).length /
-          Math.max(wanted.size, 1),
-      }))
+      .map((x) => {
+        const capabilities = x.capabilities || [];
+        const exact = capabilities.filter((capability) => wanted.has(capability));
+        const inferred = [...wanted].filter((wantedCapability) => {
+          const normalized = String(wantedCapability).toLowerCase();
+          if (normalized.includes("verif")) return capabilities.some((capability) => /verify|receipt|prove|inspect/i.test(capability));
+          if (normalized.includes("intelligence") || normalized.includes("blockchain")) return capabilities.some((capability) => /balance|portfolio|transaction|history|fees|contract|mint|token|chain/i.test(capability));
+          return false;
+        }).filter((capability) => !exact.includes(capability));
+        const matched = [...exact, ...inferred];
+        const score = matched.length / Math.max(wanted.size, 1);
+        return {
+          ...publicRegistryAgent(x),
+          network_match: requestedNetwork ? ((x.networks || []).length ? x.networks.map(normalizeNetworkId).includes(requestedNetwork) : "capability-declared") : null,
+          match_score: score,
+          matched_capabilities: exact,
+          inferred_from: inferred.length ? capabilities.filter((capability) => /verify|receipt|prove|inspect|balance|portfolio|transaction|history|fees|contract|mint|token|chain/i.test(capability)) : [],
+          missing_capabilities: [...wanted].filter((capability) => !matched.includes(capability)),
+          disclosure: "Registry provider; not an official PrivateDAO partner or sponsored placement",
+        };
+      })
+      .filter((match) => match.match_score > 0)
       .sort((a, b) => b.match_score - a.match_score)
       .slice(0, 20),
   };
@@ -4110,7 +4170,7 @@ async function handle(e) {
   if (method === "POST" && paymentTransaction)
     return json(await buildPaymentTransaction(paymentTransaction[1], body.payer, body.sourceTokenAccount));
   if (method === "GET" && path === "/api/network/stats")
-    return json(await networkStats(config));
+    return json(await networkStatsSummary());
   if (method === "GET" && path === "/api/network/health") {
     const requested = String(e.queryStringParameters?.network || "").trim();
     const networks = requested ? [requested] : ["solana-mainnet-beta", "ethereum-mainnet", "base-mainnet", "arbitrum-mainnet"];
@@ -4444,6 +4504,16 @@ async function mcp(request) {
       anyOf: [{ required: ["mint"] }, { required: ["asset"] }, { required: ["record"] }],
       additionalProperties: false,
     },
+    receipt_verify: {
+      type: "object",
+      properties: {
+        network: { type: "string", description: "Optional target network identifier." },
+        receipt: { type: "object", description: "A PrivateDAO receipt returned by a completed job." },
+        expected_hash: { type: "string", description: "Optional expected receipt digest or result hash." },
+      },
+      required: ["receipt"],
+      additionalProperties: false,
+    },
     create_paid_job: {
       type: "object",
       properties: {
@@ -4547,6 +4617,7 @@ async function mcp(request) {
     payment_guide: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     execution_guide: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     verify_basic: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+    receipt_verify: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     create_paid_job: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
     submit_payment: { readOnlyHint: false, destructiveHint: true, idempotentHint: false, openWorldHint: false },
     job_status: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
@@ -4569,6 +4640,7 @@ async function mcp(request) {
     "payment_guide",
     "execution_guide",
     "verify_basic",
+    "receipt_verify",
     "create_paid_job",
     "submit_payment",
     "job_status",
@@ -4593,6 +4665,7 @@ async function mcp(request) {
       payment_guide: "Explain the quote-first Solana Mainnet USDC payment flow. Never infer an amount, never pay before a payment_intent, and never request a private key.",
       execution_guide: "Explain how to create a free or paid job, interpret 402 payment_intent, submit finalized payment proof, poll status, retrieve a receipt and verify it.",
       agent_match: "Free registry discovery and capability matching. Use create_paid_job for the paid agent.match service.",
+      receipt_verify: "Verify a PrivateDAO receipt digest and return a machine-readable verification result. This is free and read-only.",
     }[name] || `PrivateDAO ${name}`),
     inputSchema: schemas[name] || { type: "object", additionalProperties: false },
     annotations: annotations[name],
@@ -4636,6 +4709,8 @@ async function mcp(request) {
       };
       else if (name === "verify_basic")
         result = await executeService("verify.basic", a);
+      else if (name === "receipt_verify")
+        result = await executeService("receipt.verify", a);
       else if (name === "create_paid_job") {
         try {
           result = await createJob(a.service_id, a.input || {}, false, "USDC", {}, a.pdao_access || null);
@@ -4671,7 +4746,7 @@ async function mcp(request) {
       else if (name === "agent_match")
         result = await matchRegisteredAgents(a);
       else if (name === "logistics_request") result = await requestLogistics(a);
-      else if (name === "network_stats") result = await networkStats(config);
+      else if (name === "network_stats") result = await networkStatsSummary();
       else if (name === "register_agent") result = await register(a);
       else if (name === "seller_update_services") result = await updateSellerServices(a.agent_id, a);
       else if (name === "seller_replace_endpoint") result = await replaceSellerEndpoint(a.agent_id, a);
