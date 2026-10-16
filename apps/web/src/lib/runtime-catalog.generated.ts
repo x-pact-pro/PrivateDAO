@@ -978,16 +978,16 @@ export const runtimeCatalog = {
               "entrypoint": "kernel://verification.record.create",
               "method": null,
               "note": "Kernel-native digest and selective disclosure artifact; no public URL or on-chain anchor is created.",
-              "evidenceStatus": "implementation",
-              "evidence": "none",
-              "supportsExecution": false,
+              "evidenceStatus": "devnet_verified",
+              "evidence": "devnet-e2e",
+              "supportsExecution": true,
               "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "SOL"
               ],
-              "provider": "solana-devnet"
+              "provider": "privatedao-record-verification"
             },
             {
               "network": "ethereum-sepolia",
@@ -1151,16 +1151,16 @@ export const runtimeCatalog = {
               "chainId": null,
               "declared": true,
               "mode": "kernel-gateway",
-              "evidenceStatus": "implementation",
-              "evidence": "none",
-              "executable": false,
+              "evidenceStatus": "devnet_verified",
+              "evidence": "devnet-e2e",
+              "executable": true,
               "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "SOL"
               ],
-              "provider": "solana-devnet"
+              "provider": "privatedao-record-verification"
             },
             {
               "network": "solana-mainnet-beta",
@@ -1466,16 +1466,16 @@ export const runtimeCatalog = {
               "entrypoint": "kernel://verification.record.verify",
               "method": null,
               "note": "Kernel-native digest verification; no source payload is returned and no on-chain anchor is claimed.",
-              "evidenceStatus": "implementation",
-              "evidence": "none",
-              "supportsExecution": false,
+              "evidenceStatus": "devnet_verified",
+              "evidence": "devnet-e2e",
+              "supportsExecution": true,
               "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "SOL"
               ],
-              "provider": "solana-devnet"
+              "provider": "privatedao-record-verification"
             },
             {
               "network": "ethereum-sepolia",
@@ -1639,16 +1639,16 @@ export const runtimeCatalog = {
               "chainId": null,
               "declared": true,
               "mode": "kernel-gateway",
-              "evidenceStatus": "implementation",
-              "evidence": "none",
-              "executable": false,
+              "evidenceStatus": "devnet_verified",
+              "evidence": "devnet-e2e",
+              "executable": true,
               "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "SOL"
               ],
-              "provider": "solana-devnet"
+              "provider": "privatedao-record-verification"
             },
             {
               "network": "solana-mainnet-beta",
