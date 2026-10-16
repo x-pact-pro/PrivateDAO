@@ -14,6 +14,7 @@ import {
   swapQuote,
   simulateSolanaTransaction,
   treasuryTokenAccount,
+  derivedTokenAccount,
   verifyPayment,
 } from "./solana.mjs";
 import { evmNetwork, evmHealth, executeEvmService, evmRuntimeStats, isEvmServiceSupported } from "./evm.mjs";
@@ -36,6 +37,7 @@ import { mongoProviderStatus, persistEvidence } from "./mongodb.mjs";
 import { assertPublicHttps, fetchPublicHttps } from "./url-safety.mjs";
 import { reviewSellerSubmission, verifyCommunityBacklink } from "./seller-review.mjs";
 import { integrationDirectory, serviceDetails, serviceRecommendation, SERVICE_CATEGORIES } from "./exchange-metadata.mjs";
+import { marketData } from "./market.mjs";
 import { PRODUCTS, productById, publicProduct } from "./products.mjs";
 import { issuePdaoChallenge, verifyPdaoHolderAccess } from "./pdao-entitlement.mjs";
 import { runScheduledSellerSettlements } from "./settlement.mjs";
@@ -77,6 +79,17 @@ const DEFAULT_MARKETPLACE_POLICY = {
   promotion_packages: {
     featured_listing: { label: "Featured Listing", price_usd: 75, duration_days: 30, deliverables: ["Paid featured listing", "Sponsored placement inside Agent Exchange", "Partners spotlight"], channels: ["PrivateDAO Agent Exchange"], availability: "subject_to_capacity", capacity: 10, approval_required: false, third_party_controlled: false },
     ecosystem_campaign: { label: "Ecosystem Campaign", price_usd: 250, duration_days: 30, deliverables: ["Launch campaign", "PrivateDAO social announcement", "Partners spotlight", "Co-marketing campaign planning"], channels: ["PrivateDAO-owned surfaces"], availability: "application_required", capacity: 3, approval_required: true, third_party_controlled: true },
+    premium_promotion: { label: "Premium Promotion", price_usd: 250, duration_days: 30, deliverables: ["Launch campaign", "PrivateDAO-owned surface promotion", "Partners spotlight", "Co-marketing campaign planning"], channels: ["PrivateDAO-owned surfaces"], availability: "application_required", capacity: 3, approval_required: true, third_party_controlled: true },
+  },
+  pdao_pricing: {
+    enabled: true,
+    payment_discount_bps: 2000,
+    holder_tiers: [
+      { id: "standard", minimum_tokens: 0, discount_bps: 0, label: "Standard" },
+      { id: "holder_100k", minimum_tokens: 100000, discount_bps: 500, label: "100K PDAO holder" },
+      { id: "holder_1m", minimum_tokens: 1000000, discount_bps: 1000, label: "1M PDAO holder" },
+      { id: "holder_5m", minimum_tokens: 5000000, discount_bps: 1500, label: "5M PDAO holder" },
+    ],
   },
 };
 function boundedNumber(value, fallback, min, max) {
@@ -87,6 +100,7 @@ function normalizeMarketplacePolicy(value = {}) {
   const source = value && typeof value === "object" ? value : {};
   const tiers = source.seller_tiers && typeof source.seller_tiers === "object" ? source.seller_tiers : {};
   const packages = source.promotion_packages && typeof source.promotion_packages === "object" ? source.promotion_packages : {};
+  const pdaoPricing = source.pdao_pricing && typeof source.pdao_pricing === "object" ? source.pdao_pricing : {};
   const policy = {
     ...DEFAULT_MARKETPLACE_POLICY,
     version: 5,
@@ -100,6 +114,15 @@ function normalizeMarketplacePolicy(value = {}) {
     max_services_per_seller: Math.floor(boundedNumber(source.max_services_per_seller, 5, 1, 1000)),
     seller_tiers: {},
     promotion_packages: {},
+    pdao_pricing: {
+      ...DEFAULT_MARKETPLACE_POLICY.pdao_pricing,
+      enabled: pdaoPricing.enabled === undefined ? true : Boolean(pdaoPricing.enabled),
+      payment_discount_bps: Math.floor(boundedNumber(pdaoPricing.payment_discount_bps, 2000, 0, 10000)),
+      holder_tiers: DEFAULT_MARKETPLACE_POLICY.pdao_pricing.holder_tiers.map((defaults) => {
+        const item = Array.isArray(pdaoPricing.holder_tiers) ? pdaoPricing.holder_tiers.find((tier) => tier?.id === defaults.id) || {} : {};
+        return { ...defaults, minimum_tokens: boundedNumber(item.minimum_tokens, defaults.minimum_tokens, 0, 1e15), discount_bps: Math.floor(boundedNumber(item.discount_bps, defaults.discount_bps, 0, 10000)), label: String(item.label || defaults.label).slice(0, 80) };
+      }),
+    },
   };
   for (const [id, defaults] of Object.entries(DEFAULT_MARKETPLACE_POLICY.seller_tiers)) {
     const item = tiers[id] && typeof tiers[id] === "object" ? tiers[id] : {};
@@ -128,6 +151,35 @@ function normalizeMarketplacePolicy(value = {}) {
     };
   }
   return policy;
+}
+async function pdaoHolderTier(policy, wallet) {
+  const tiers = [...(policy.pdao_pricing?.holder_tiers || [])].sort((a, b) => Number(b.minimum_tokens) - Number(a.minimum_tokens));
+  if (!wallet) return { tier: tiers.at(-1) || { id: "standard", minimum_tokens: 0, discount_bps: 0, label: "Standard" }, balance: null, verified: false };
+  try {
+    const owner = new PublicKey(String(wallet));
+    const accounts = await readRpc(config, "getTokenAccountsByOwner", [owner.toBase58(), { mint: config.pdaoMint }, { encoding: "jsonParsed" }]);
+    const balance = (accounts.result?.value || []).reduce((sum, item) => sum + Number(item.account?.data?.parsed?.info?.tokenAmount?.uiAmount || 0), 0);
+    return { tier: tiers.find((tier) => balance >= Number(tier.minimum_tokens)) || tiers.at(-1), balance, verified: true, wallet: owner.toBase58() };
+  } catch {
+    throw Object.assign(new Error("PDAO holder balance could not be verified"), { statusCode: 503 });
+  }
+}
+async function marketplacePriceQuote(policy, amountUsd, paymentAsset = "USDC", holderWallet = "") {
+  const asset = String(paymentAsset || "USDC").toUpperCase();
+  const base = Number(amountUsd);
+  if (!Number.isFinite(base) || base < 0) throw Object.assign(new Error("invalid marketplace amount"), { statusCode: 400 });
+  if (asset === "USDC") return { amount: Number(base.toFixed(6)), currency: "USDC", mint: config.usdcMint, discount_bps: 0, holder_tier: null, price_source: "fixed_usd" };
+  if (asset !== "PDAO" || policy.pdao_pricing?.enabled !== true) throw Object.assign(new Error("PDAO payment is not enabled for this marketplace quote"), { statusCode: 400 });
+  const holder = await pdaoHolderTier(policy, holderWallet);
+  const discountBps = Math.max(Number(policy.pdao_pricing.payment_discount_bps || 0), Number(holder.tier.discount_bps || 0));
+  const market = await marketData(config, "solana-mainnet-beta", config.pdaoMint);
+  const priceUsd = Number(market.price_usd);
+  if (market.status !== "source_confirmed" || !Number.isFinite(priceUsd) || priceUsd <= 0) throw Object.assign(new Error("PDAO market price is unavailable; retry with USDC"), { statusCode: 503 });
+  const supply = await readRpc(config, "getTokenSupply", [config.pdaoMint]);
+  const decimals = Number(supply.result?.value?.decimals);
+  if (!Number.isInteger(decimals) || decimals < 0 || decimals > 18) throw Object.assign(new Error("PDAO mint decimals could not be verified"), { statusCode: 503 });
+  const amount = Number((base * (1 - discountBps / 10000) / priceUsd).toFixed(Math.min(decimals, 9)));
+  return { amount, currency: "PDAO", mint: config.pdaoMint, discount_bps: discountBps, holder_tier: holder.tier.id, holder_label: holder.tier.label, holder_balance: holder.balance, holder_wallet: holder.wallet || null, holder_verified: holder.verified, usd_reference: Number(base.toFixed(6)), market_price_usd: priceUsd, market_source: market.source, market_observed_at: market.observed_at, decimals, price_source: "live_market_reference" };
 }
 async function marketplacePolicy() {
   const saved = await (await store()).get("Registry", MARKETPLACE_POLICY_ID);
@@ -415,6 +467,9 @@ function sellerPortalPageAutomated() {
 }
 function listingPackagesSection() {
   return `<section class="listing-packages" aria-labelledby="listing-packages-title"><div class="packages-heading"><p class="eyebrow">SELLER PACKAGES</p><h2 id="listing-packages-title">Choose how your agent enters the Exchange</h2><p class="muted">Automated MCP screening is required for every package. Promotion is optional and never changes verification status.</p></div><div class="package-grid"><label class="package-card package-card-featured"><input type="radio" name="listingTier" value="free" checked><span class="package-body"><span class="package-kicker">COMMUNITY</span><strong>$0 <small>conditional</small></strong><span>Permanent standard listing after screening</span><span>Up to 3 read-only services</span><span>Requires the public badge and backlink</span></span></label><label class="package-card"><input type="radio" name="listingTier" value="basic"><span class="package-body"><span class="package-kicker">BASIC</span><strong>$10 <small>one-time</small></strong><span>Up to 5 read-only services</span><span>Standard marketplace placement</span><span>No backlink requirement</span></span></label><label class="package-card"><input type="radio" name="listingTier" value="pro"><span class="package-body"><span class="package-kicker">GROWTH</span><strong>$49 <small>one-time</small></strong><span>Up to 5 read-only services</span><span>Priority seller presentation</span><span>Includes standard listing review</span></span></label><div class="package-card sponsored-package"><div class="package-body"><span class="package-kicker">OPTIONAL PROMOTION</span><strong>Featured</strong><span>Paid sponsored placement with a separate campaign window</span><span>Does not create a partnership or security certification</span><a href="/partners">Review promotion packages</a></div></div></div><div class="community-badge"><strong>Community listing condition</strong><p class="muted">Add this public badge to the website submitted for review. PrivateDAO checks the live page before waiving the listing fee.</p><code>&lt;a href="https://agents.privatedao.org/" rel="nofollow" data-privatedao-agent-exchange="community-listing"&gt;Listed on PrivateDAO Agent Exchange&lt;/a&gt;</code><button id="copyCommunityBadge" class="secondary" type="button">Copy badge code</button><label><input id="communityBadgeAcknowledged" type="checkbox" required style="width:auto"> I understand the free listing remains conditional on the badge and backlink staying publicly available.</label></div></section><style>.listing-packages{margin:18px 0 28px}.packages-heading{margin-bottom:14px}.package-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.package-card{position:relative;display:block;border:1px solid #d9e3ef;border-radius:14px;background:#fff;cursor:pointer;min-height:220px}.package-card input{position:absolute;opacity:0}.package-card:has(input:checked){border-color:#1769e0;box-shadow:0 0 0 3px #1769e022}.package-body{display:flex;flex-direction:column;gap:9px;padding:18px;height:100%;box-sizing:border-box}.package-kicker{font-size:11px;font-weight:800;letter-spacing:.12em;color:#1769e0}.package-body strong{font-size:25px;color:#071a32}.package-body small{font-size:12px;font-weight:500;color:#52657c}.package-body span:not(.package-kicker){color:#52657c;font-size:14px}.sponsored-package{background:#f7faff}.sponsored-package a{margin-top:auto;color:#1769e0;font-weight:700}.community-badge{margin-top:14px;padding:16px;border:1px dashed #9db5d0;border-radius:12px;background:#f8fbff}.community-badge code{display:block;overflow:auto;padding:10px;background:#071a32;color:#fff;border-radius:8px;font-size:12px}.community-badge button{max-width:180px}.community-badge label{font-weight:500;margin-top:12px}@media(max-width:900px){.package-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:560px){.package-grid{grid-template-columns:1fr}}</style><script>document.querySelectorAll('input[name="listingTier"]').forEach((input)=>input.addEventListener('change',()=>{const free=input.value==='free';const box=document.querySelector('#communityBadgeAcknowledged');if(box)box.required=free}));const badgeCopy=document.querySelector('#copyCommunityBadge');if(badgeCopy)badgeCopy.onclick=()=>navigator.clipboard?.writeText('<a href="https://agents.privatedao.org/" rel="nofollow" data-privatedao-agent-exchange="community-listing">Listed on PrivateDAO Agent Exchange</a>').then(()=>{badgeCopy.textContent='Copied'});</script>`;
+}
+function pdaoBenefitsSection() {
+  return `<section class="pdao-benefits" aria-labelledby="pdao-benefits-title"><p class="eyebrow">PDAO BENEFITS</p><h2 id="pdao-benefits-title">Pay with PDAO or verify holder pricing</h2><div class="benefits-grid"><article><strong>Basic</strong><span>$10 USDC or $8 PDAO*</span></article><article><strong>Growth</strong><span>$49 USDC or $39.20 PDAO*</span></article><article><strong>Featured</strong><span>$75 USDC or live PDAO quote</span></article><article><strong>Premium</strong><span>$250 USDC or live PDAO quote</span></article></div><p class="muted">PDAO payment pricing receives a 20% base discount. Verified holder tiers use the greater of the payment discount or the holder discount: 100K = 5%, 1M = 10%, 5M = 15%. Discounts do not stack.</p><small>*The PDAO amount is calculated by the server from a live market reference, bound to the payment quote, and may change before payment. Holding PDAO is not a guarantee of a fixed USD value.</small></section><style>.pdao-benefits{margin:18px 0;padding:20px;border:1px solid #d9e3ef;border-radius:14px;background:#071a32;color:#fff}.pdao-benefits .muted,.pdao-benefits small{color:#c6d3e2}.benefits-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:14px 0}.benefits-grid article{padding:14px;border:1px solid #39516d;border-radius:10px;background:#102842}.benefits-grid strong,.benefits-grid span{display:block}.benefits-grid span{margin-top:6px;color:#c6d3e2}@media(max-width:800px){.benefits-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:520px){.benefits-grid{grid-template-columns:1fr}}</style>`;
 }
 async function githubWebhook(body, rawBody, signature, eventName) {
   if (!config.githubWebhookSecret) throw Object.assign(new Error("GitHub webhook secret is not configured"), { statusCode: 503 });
@@ -780,6 +835,8 @@ function openapi() {
     "/api/referrals": { post: { operationId: "createReferral" } },
     "/api/marketplace/listings": { get: { operationId: "searchListings" }, post: { operationId: "publishListing" } },
     "/api/marketplace/policy": { get: { operationId: "marketplacePolicy" } },
+    "/api/marketplace/pdao-benefits": { get: { operationId: "pdaoBenefits" } },
+    "/api/marketplace/pricing/quote": { post: { operationId: "marketplacePricingQuote" } },
     "/api/marketplace/seller-listings/quote": { post: { operationId: "sellerListingQuote" } },
     "/api/marketplace/seller-listings/{listingId}/payment": { post: { operationId: "sellerListingPayment" } },
     "/api/marketplace/seller-listings/{listingId}/payment-intent": { get: { operationId: "sellerListingPaymentIntent" } },
@@ -1758,6 +1815,8 @@ async function createPartnership(body) {
     agentId,
     agentName: agent.name,
     price_usd: price,
+    payment_asset: String(body.paymentAsset || body.payment_asset || "USDC").toUpperCase(),
+    holder_wallet: String(body.holderWallet || body.holder_wallet || "").trim() || null,
     payment_status: paymentStatus,
     campaign_status: "draft",
     start_at: startAt.toISOString(),
@@ -1811,23 +1870,27 @@ async function partnershipQuote(campaign) {
   const existing = (await storage.list("Quotes")).find((quote) => quote.partnership_id === campaign.id && Date.parse(quote.expires_at) > Date.now());
   if (existing) return existing;
   const expiresAt = new Date(Date.now() + 30 * 60 * 1000);
+  const policy = await marketplacePolicy();
+  const pricing = await marketplacePriceQuote(policy, Number(campaign.price_usd), campaign.payment_asset || "USDC", campaign.holder_wallet || "");
   const quote = {
     quote_id: `pq_${randomUUID()}`,
     payment_type: "featured_partnership",
     promotion_package: campaign.package_id || "featured_listing",
     deliverables: campaign.deliverables || [],
     partnership_id: campaign.id,
-    amount: Number(campaign.price_usd),
-    amountAtomic: Math.round(Number(campaign.price_usd) * 1e6),
-    currency: "USDC",
+    amount: pricing.amount,
+    amount_usd: Number(campaign.price_usd),
+    amountAtomic: Math.round(pricing.amount * (10 ** (pricing.decimals ?? 6))),
+    currency: pricing.currency,
     network: "solana-mainnet-beta",
     target_network: "agent-marketplace",
-    mint: config.usdcMint,
+    mint: pricing.mint,
     treasuryOwner: config.treasury,
-    treasuryTokenAccount: await treasuryTokenAccount(config),
+    treasuryTokenAccount: await derivedTokenAccount(config, pricing.mint),
     recipient: config.treasury,
     paymentReference: `PDAO_PARTNER:${campaign.id}`,
     expires_at: expiresAt.toISOString(),
+    pricing,
     created_at: now(),
   };
   await storage.put("Quotes", quote.quote_id, quote, true);
@@ -1858,7 +1921,7 @@ async function createSellerPromotionQuote(body) {
   if (!packageInfo) throw Object.assign(new Error("promotion package is not supported"), { statusCode: 400 });
   const start = new Date(body.start_at || body.startAt || Date.now());
   const end = new Date(body.end_at || body.endAt || start.getTime() + packageInfo.duration_days * 86400000);
-  const campaign = await createPartnership({ agentId, packageId, startAt: start.toISOString(), endAt: end.toISOString() });
+  const campaign = await createPartnership({ agentId, packageId, startAt: start.toISOString(), endAt: end.toISOString(), paymentAsset: body.payment_asset || body.paymentAsset || "USDC", holderWallet: body.holder_wallet || body.holderWallet || body.payer_wallet || body.payerWallet || "" });
   const quote = await partnershipQuote(campaign);
   return { campaign, quote, package: packageInfo, status: "awaiting_payment" };
 }
@@ -2103,7 +2166,9 @@ async function sellerListingQuote(body) {
     return { listing: nextListing, status: "paid", policy, tier, fee_plan: { ...plan, amount: 0, items: plan.newServices.map((service) => ({ service_id: service.id, fee_amount: 0, included: true })) } };
   }
   if (["paid", "waived"].includes(existing?.payment_status) && !plan.newServices.length) return { listing: existing, status: existing.payment_status, policy, tier, fee_plan: plan };
-  const amount = Number((["paid", "waived"].includes(existing?.payment_status) ? plan.amount : Number(tier.listing_fee_usd) + plan.items.reduce((sum, item) => sum + Number(item.fee_amount), 0)).toFixed(6));
+  const amountUsd = Number((["paid", "waived"].includes(existing?.payment_status) ? plan.amount : Number(tier.listing_fee_usd) + plan.items.reduce((sum, item) => sum + Number(item.fee_amount), 0)).toFixed(6));
+  const priceQuote = await marketplacePriceQuote(policy, amountUsd, body.payment_asset || body.paymentAsset || "USDC", body.holder_wallet || body.holderWallet || body.payer_wallet || body.payerWallet || "");
+  const paymentDecimals = priceQuote.decimals ?? 6;
   const quotedServices = ["paid", "waived"].includes(existing?.payment_status) ? plan.newServices : services;
   const feeItems = ["paid", "waived"].includes(existing?.payment_status)
     ? plan.items
@@ -2112,11 +2177,12 @@ async function sellerListingQuote(body) {
   const quote = {
     quote_id: quoteId, payment_type: "seller_listing_fee", listing_id: listingId,
     seller_agent_id: agent.id, seller_service_ids: quotedServices.map((service) => service.id), commercial_services_hash: digest(quotedServices), fee_items: feeItems, tier: tierId,
-    amount, amountAtomic: Math.round(amount * 1e6), currency: "USDC", network: "solana-mainnet-beta",
-    target_network: "agent-marketplace", mint: config.usdcMint, treasuryOwner: config.treasury,
-    treasuryTokenAccount: await treasuryTokenAccount(config), recipient: config.treasury,
+    amount: priceQuote.amount, amount_usd: amountUsd, amountAtomic: Math.round(priceQuote.amount * (10 ** paymentDecimals)), currency: priceQuote.currency, network: "solana-mainnet-beta",
+    target_network: "agent-marketplace", mint: priceQuote.mint, treasuryOwner: config.treasury,
+    treasuryTokenAccount: await derivedTokenAccount(config, priceQuote.mint), recipient: config.treasury,
     paymentReference: `PDAO_LISTING:${listingId}:${quoteId}`, expires_at: new Date(Date.now() + 1800000).toISOString(),
-    gross_amount: amount, platform_fee_amount: amount, platform_fee_bps: 10000, seller_net_amount: 0,
+    gross_amount: priceQuote.amount, gross_amount_usd: amountUsd, platform_fee_amount: priceQuote.amount, platform_fee_bps: 10000, seller_net_amount: 0,
+    pricing: priceQuote,
     terms_version: SELLER_TERMS_VERSION, terms_accepted_at: now(), billing_separation_disclosure: "PrivateDAO listing fees are separate from GitHub Marketplace billing.",
     settlement_status: "platform_collected", included_services: policy.included_services, additional_service_fee_usd: policy.additional_service_fee_usd, created_at: now(),
   };
@@ -4163,12 +4229,14 @@ async function handle(e) {
   if (method === "GET" && (path === "/sellers" || path === "/list-your-agent")) {
     trackFunnel("seller_portal_view");
     const sellerPortal = sellerPortalPageAutomated()
-      .replace('<section class="hero">', `${listingPackagesSection()}<section class="hero">`)
+      .replace('<section class="hero">', `${pdaoBenefitsSection()}${listingPackagesSection()}<section class="hero">`)
       .replace('<section class="hero">', `${commercialOfferBanner()}<section class="hero">`)
       .replace("</style>", "@media(max-width:650px){.shell{padding:10px}}</style>")
+      .replace('<div class="notice">Payout is separate from customer payment.', '<label class="field" for="listingPaymentAsset">Listing payment asset<select id="listingPaymentAsset"><option value="USDC">USDC · standard price</option><option value="PDAO">PDAO · discounted live quote</option></select></label><div class="notice">Payout is separate from customer payment.')
       .replace('<input id="metadataFile" type="file" accept="application/json" hidden>', '<div class="actions" style="margin-top:12px"><button id="chooseMetadata" class="secondary" type="button">Import metadata JSON</button><input id="metadataFile" type="file" accept="application/json" hidden></div>')
       .replace("</script></body></html>", 'const metadataFile=document.querySelector("#metadataFile"),chooseMetadata=document.querySelector("#chooseMetadata");if(metadataFile&&chooseMetadata){chooseMetadata.onclick=()=>metadataFile.click();metadataFile.onchange=async()=>{const file=metadataFile.files&&metadataFile.files[0];if(!file)return;try{$("metadataImport").value=await file.text();notice("Metadata imported and ready for validation.","success")}catch(error){notice("Metadata import failed: "+(error.message||String(error)),"error")}}}function bindPaymentRetry(){const retry=$("retryPayment");if(!retry||retry.dataset.retryBound==="1")return;retry.dataset.retryBound="1";retry.onclick=()=>verifySellerPayment().catch(error=>{$("paymentResult").innerHTML=`<div class="notice error">${escapeHtml(error.message)}<br><button id="retryPayment" class="secondary" type="button">Retry verification (do not pay again)</button></div>`;bindPaymentRetry()})}const paymentResult=$("paymentResult");if(paymentResult){new MutationObserver(bindPaymentRetry).observe(paymentResult,{childList:true,subtree:true});bindPaymentRetry()}</script></body></html>')
       .replace('tier:"basic",accept_terms:true,terms_version:"seller-marketplace-v1"', 'tier:document.querySelector(\'input[name="listingTier"]:checked\')?.value||"basic",free_listing_requested:document.querySelector(\'input[name="listingTier"]:checked\')?.value==="free",community_badge_acknowledged:document.querySelector("#communityBadgeAcknowledged")?.checked===true,accept_terms:true,terms_version:"seller-marketplace-v1"')
+      .replace('free_listing_requested:document.querySelector(\'input[name="listingTier"]:checked\')?.value==="free",', 'payment_asset:document.querySelector("#listingPaymentAsset")?.value||"USDC",free_listing_requested:document.querySelector(\'input[name="listingTier"]:checked\')?.value==="free",')
       .replace('state.listing=q.listing;state.quote=q.quote;$("paymentSummary").innerHTML=', 'state.listing=q.listing;state.quote=q.quote;if(q.payment==="waived")$("paymentSummary").innerHTML=\'<div class="notice success">Community listing verified and published. No payment is required while the badge and backlink remain live.</div>\';else $("paymentSummary").innerHTML=')
       .replace('$("pay").disabled=false;step(5)', '$("pay").disabled=q.payment==="waived";$("publish").disabled=q.payment==="waived";step(5)')
     return { statusCode: 200, headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store", "content-security-policy": "default-src 'self'; base-uri 'none'; object-src 'none'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; connect-src 'self' https://agents.privatedao.org https://api.mainnet-beta.solana.com; frame-ancestors 'none'", "x-content-type-options": "nosniff", "referrer-policy": "no-referrer", "permissions-policy": "camera=(), microphone=(), geolocation=()" }, body: sellerPortal };
@@ -4428,6 +4496,14 @@ async function handle(e) {
     });
   if (method === "GET" && path === "/api/marketplace/policy")
     return json(await marketplacePolicy());
+  if (method === "GET" && path === "/api/marketplace/pdao-benefits") {
+    const policy = await marketplacePolicy();
+    return json({ token: config.pdaoMint, payment_discount_bps: policy.pdao_pricing.payment_discount_bps, holder_tiers: policy.pdao_pricing.holder_tiers, note: "PDAO payment pricing uses a live market reference at quote time. Holder discounts are verified from the connected Solana wallet and are not additive to the payment discount." });
+  }
+  if (method === "POST" && path === "/api/marketplace/pricing/quote") {
+    const policy = await marketplacePolicy();
+    return json({ quote: await marketplacePriceQuote(policy, body.amount_usd ?? body.amountUsd, body.payment_asset || body.paymentAsset || "USDC", body.holder_wallet || body.holderWallet || ""), expires_at: new Date(Date.now() + 5 * 60 * 1000).toISOString(), disclaimer: "This quote is authoritative only when bound to a listing or promotion payment quote. PDAO conversion uses a live market reference and may change before payment." }, 201);
+  }
   if (method === "GET" && path === "/api/admin/marketplace/policy") {
     if (!adminTokenAuthorized(e)) return json({ error: "not_found" }, 404);
     return json(await marketplacePolicy());
