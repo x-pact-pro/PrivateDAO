@@ -62,7 +62,7 @@ const MARKETPLACE_POLICY_ID = "platform_settings_marketplace";
 const SELLER_TERMS_VERSION = "seller-marketplace-v1";
 const COMMERCIAL_HOLDER_OFFER = "If you or your agent hold at least $25 worth of PDAO token 9isGuumtaqvJeJeyLF44fvfskk2cv5mYsopexMBfpump in your wallet, you enjoy all verification services for one month without usage limits. Buy PDAO and save payments for one month.";
 const DEFAULT_MARKETPLACE_POLICY = {
-  version: 3,
+  version: 4,
   listing_fee_usd: 10,
   platform_fee_bps: 1000,
   processing_fee_bps: 0,
@@ -89,7 +89,7 @@ function normalizeMarketplacePolicy(value = {}) {
   const packages = source.promotion_packages && typeof source.promotion_packages === "object" ? source.promotion_packages : {};
   const policy = {
     ...DEFAULT_MARKETPLACE_POLICY,
-    version: 3,
+    version: 4,
     listing_fee_usd: boundedNumber(source.listing_fee_usd, 10, 0, 10000),
     platform_fee_bps: Math.floor(boundedNumber(source.platform_fee_bps, 1000, 0, 10000)),
     processing_fee_bps: Math.floor(boundedNumber(source.processing_fee_bps, 0, 0, 10000)),
@@ -131,18 +131,18 @@ function normalizeMarketplacePolicy(value = {}) {
 }
 async function marketplacePolicy() {
   const saved = await (await store()).get("Registry", MARKETPLACE_POLICY_ID);
-  if (saved?.policy && Number(saved.policy.version || 0) < 3) {
+  if (saved?.policy && Number(saved.policy.version || 0) < 4) {
     const migrated = normalizeMarketplacePolicy({
       ...saved.policy,
-      version: 3,
+      version: 4,
       additional_service_fee_usd: 0,
       max_services_per_seller: 5,
       included_services: 5,
       seller_tiers: {
         ...(saved.policy.seller_tiers || {}),
-        free: { ...(saved.policy.seller_tiers?.free || {}), label: "Community Listing", max_services: 3, listing_fee_usd: 0, requires_backlink: true },
-        basic: { ...(saved.policy.seller_tiers?.basic || {}), label: "Basic Listing", max_services: 5, listing_fee_usd: 10 },
-        pro: { ...(saved.policy.seller_tiers?.pro || {}), label: "Growth Listing", max_services: 5, listing_fee_usd: 49 },
+        free: { label: "Community Listing", max_services: 3, listing_fee_usd: 0, monthly_fee_usd: 0, requires_backlink: true },
+        basic: { label: "Basic Listing", max_services: 5, listing_fee_usd: 10, monthly_fee_usd: 0 },
+        pro: { label: "Growth Listing", max_services: 5, listing_fee_usd: 49, monthly_fee_usd: 0 },
       },
     });
     await (await store()).put("Registry", MARKETPLACE_POLICY_ID, { ...saved, policy: migrated, updated_at: now() });
