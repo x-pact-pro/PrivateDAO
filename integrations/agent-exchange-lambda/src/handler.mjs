@@ -701,6 +701,7 @@ function openapi() {
     "/api/services": { get: { operationId: "services" } },
     "/api/pricing": { get: { operationId: "pricing" } },
     "/api/jobs": { post: { operationId: "createJob", requestBody: { required: true, content: { "application/json": { schema: { $ref: "#/components/schemas/CreateJobRequest" } } } } } },
+    "/api/checkout/batch": { post: { operationId: "createBatchCheckout", description: "Create one quote for up to ten first-party services; payment remains finalized USDC on Solana Mainnet.", requestBody: { required: true, content: { "application/json": { schema: { type: "object", required: ["items"], properties: { items: { type: "array", minItems: 1, maxItems: 10, items: { type: "object", required: ["service_id", "input"], properties: { service_id: { type: "string" }, input: { type: "object" } }, additionalProperties: false } } }, additionalProperties: false } } } } } },
     "/api/jobs/{jobId}": { get: { operationId: "jobStatus", parameters: [{ $ref: "#/components/parameters/JobId" }], responses: { "200": { description: "Current job status" }, "409": { description: "Job requires non-replaying recovery" } } } },
     "/api/jobs/{jobId}/payment": { post: { operationId: "submitPayment", parameters: [{ $ref: "#/components/parameters/JobId" }], responses: { "200": { description: "Payment accepted or job completed" }, "202": { description: "Payment verification or processing is still in progress" }, "409": { description: "Payment was accepted but execution requires non-replaying recovery" } }, requestBody: { required: true, content: { "application/json": { schema: { $ref: "#/components/schemas/PaymentRequest" } } } } } },
     "/api/receipts/{receiptId}": { get: { operationId: "getReceipt", parameters: [{ $ref: "#/components/parameters/ReceiptId" }] } },
@@ -1412,6 +1413,18 @@ function publicReceiptPage(receipt, verified = false) {
   const details = rows.map(([label, value]) => `<div class="row"><dt>${escapeHtml(label)}</dt><dd>${escapeHtml(value)}</dd></div>`).join("");
   return injectLanguageWidget(`<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${verified ? "Verified receipt" : "Receipt"} | PrivateDAO Agents</title><meta name="description" content="Publicly inspectable PrivateDAO Agent Exchange receipt."><link rel="canonical" href="https://${config.domain}/verify/receipt/${encodeURIComponent(receipt.receipt_id)}"><style>:root{--ink:#071a32;--muted:#52657b;--line:#dbe5ef;--blue:#1769e0;--pale:#f5f9ff;--green:#087f5b}*{box-sizing:border-box}body{margin:0;background:#fff;color:var(--ink);font-family:Inter,system-ui,sans-serif;line-height:1.55}main{max-width:860px;margin:auto;padding:28px 24px 72px}header{display:flex;justify-content:space-between;padding-bottom:76px}.brand{color:var(--ink);font-weight:850;text-decoration:none}.nav{display:flex;gap:18px}.nav a,a{color:var(--blue);font-weight:750;text-decoration:none}.eyebrow{color:var(--blue);font-size:.72rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase}h1{font-size:clamp(2.7rem,7vw,5.5rem);line-height:.95;letter-spacing:-.06em;margin:14px 0}.verified{display:inline-flex;border:1px solid #a9decf;border-radius:999px;background:#effbf7;color:var(--green);padding:8px 13px;font-weight:800}.panel{margin-top:32px;border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:0 10px 25px rgba(14,42,78,.05)}dl{margin:0}.row{display:grid;grid-template-columns:180px 1fr;gap:20px;border-bottom:1px solid var(--line);padding:13px 0}.row:last-child{border-bottom:0}.row dt{font-weight:750;color:var(--muted)}.row dd{margin:0;overflow-wrap:anywhere;font-family:ui-monospace,monospace;font-size:.84rem}.actions{display:flex;gap:14px;flex-wrap:wrap;margin-top:22px}.button{display:inline-flex;background:var(--ink);color:#fff;border-radius:999px;padding:12px 18px}.muted{color:var(--muted)}@media(max-width:650px){main{padding:20px 16px 56px}header{padding-bottom:45px}.nav{gap:10px;font-size:.8rem}.row{grid-template-columns:1fr;gap:4px}}</style></head><body><main><header><a class="brand" href="/">PrivateDAO Agents</a><nav class="nav"><a href="/marketplace">Marketplace</a><a href="/connect">Build</a></nav></header><p class="eyebrow">Public evidence</p><h1>${verified ? "Receipt verified." : "Job receipt."}</h1><span class="verified">✓ ${escapeHtml(receipt.status || "VERIFIED")}</span><section class="panel"><dl>${details}</dl></section><p class="muted">This page exposes receipt metadata and hashes only. It does not expose submitted inputs, private witnesses, secrets or confidential workflow data.</p><div class="actions"><a class="button" href="/verify/receipt/${encodeURIComponent(receipt.receipt_id)}">Verify receipt</a><a href="/api/receipts/${encodeURIComponent(receipt.receipt_id)}">View machine receipt</a></div></main></body></html>`);
 }
+function batchCheckoutPage() {
+  return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>PrivateDAO Batch Checkout</title><style>body{font-family:system-ui,sans-serif;max-width:1100px;margin:0 auto;padding:28px 18px;color:#081b33}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}.item{border:1px solid #dbe5f0;border-radius:12px;padding:16px}.item textarea{width:100%;box-sizing:border-box;margin-top:10px;min-height:100px;font:12px ui-monospace,monospace}.actions{display:flex;gap:10px;flex-wrap:wrap;margin:18px 0}.button{border:0;border-radius:10px;background:#1769e0;color:white;padding:11px 15px;font-weight:750;cursor:pointer}.button.secondary{background:#eef4fb;color:#081b33}.button:disabled{opacity:.5}.panel{margin-top:18px;padding:16px;border:1px solid #dbe5f0;border-radius:12px;background:#fbfdff}pre{white-space:pre-wrap;overflow-wrap:anywhere}.muted{color:#52657c}</style></head><body><p><a href="/marketplace">PrivateDAO Agent Exchange</a></p><h1>Batch checkout</h1><p class="muted">Select up to ten first-party services. One exact quote, one wallet approval, and one ordered receipt. Payment is USDC on Solana Mainnet; target networks remain service-specific.</p><main><div id="services" class="grid">Loading services...</div><div class="actions"><button id="quote" class="button" type="button">Calculate exact total</button><button id="connect" class="button secondary" type="button">Connect payment wallet</button><button id="pay" class="button" type="button" disabled>Review and pay exact total</button></div><section class="panel"><b>Payment wallet</b><p id="wallet" class="muted">No wallet connected. No transaction has been signed.</p><pre id="status" aria-live="polite">Choose services to begin.</pre></section></main><script type="module">
+const root=document.querySelector("#services"),status=document.querySelector("#status"),walletLabel=document.querySelector("#wallet"),quoteButton=document.querySelector("#quote"),connectButton=document.querySelector("#connect"),payButton=document.querySelector("#pay");let catalog=[],quote=null,provider=null,payer="";
+const show=value=>status.textContent=typeof value==="string"?value:JSON.stringify(value,null,2);
+const selected=()=>[...document.querySelectorAll("[data-service]:checked")].map(box=>{const service=catalog.find(item=>item.id===box.dataset.service);return {service_id:service.id,input:JSON.parse(document.querySelector("#input-"+service.id).value||"{}")};});
+async function load(){const response=await fetch("/api/services"),payload=await response.json();catalog=(payload.services||[]).filter(service=>service.payment?.required&&!service.seller_agent_id);root.innerHTML=catalog.map(service=>{const example=JSON.stringify(service.example||{},null,2).replaceAll("&","&amp;").replaceAll("<","&lt;");return \`<article class="item"><label><input type="checkbox" data-service="\${service.id}"> <b>\${service.id}</b> · $\${service.payment.price} USDC</label><p class="muted">Target networks: \${(service.supported_target_networks||[]).join(", ")}</p><textarea id="input-\${service.id}">\${example}</textarea></article>\`;}).join("");}
+quoteButton.onclick=async()=>{try{const items=selected();if(!items.length)throw Error("Select at least one paid service");const response=await fetch("/api/checkout/batch",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({items})}),payload=await response.json();if(response.status!==402)throw Error(payload.message||payload.error||"quote unavailable");quote=payload.payment_intent;payButton.disabled=!payer;show({status:"quote_ready",payment_intent:quote,action:"Review the exact amount and recipient in your wallet before approving."});}catch(error){show("QUOTE ERROR: "+(error.message||String(error)));}};
+connectButton.onclick=async()=>{connectButton.disabled=true;try{provider=window.phantom?.solana||window.solana||window.solflare?.solana||window.solflare;if(!provider)throw Error("No Solana wallet detected. Use a supported Solana wallet extension or mobile wallet.");const result=await provider.connect();payer=result?.publicKey?.toString?.()||provider.publicKey?.toString?.();if(!payer)throw Error("wallet did not return a public address");walletLabel.textContent="Connected: "+payer;payButton.disabled=!quote;show("Wallet connected. Review the quote before signing.");}catch(error){show("WALLET ERROR: "+(error.message||String(error)));}finally{connectButton.disabled=false;}};
+payButton.onclick=async()=>{payButton.disabled=true;try{if(!quote||!payer)throw Error("Connect a wallet and calculate a quote first");const builtResponse=await fetch("/api/jobs/"+encodeURIComponent(quote.jobId)+"/payment-transaction",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({payer})}),built=await builtResponse.json();if(!builtResponse.ok||!built.recentBlockhash)throw Error(built.message||"payment transaction unavailable");const web3=await import("/assets/browser/solana-web3.mjs"),spl=await import("/assets/browser/spl-token.mjs"),payerKey=new web3.PublicKey(payer),mint=new web3.PublicKey(built.mint),source=new web3.PublicKey(built.sourceTokenAccount),destination=new web3.PublicKey(built.treasuryTokenAccount),owner=new web3.PublicKey(built.treasuryOwner),tx=new web3.Transaction();tx.add(spl.createAssociatedTokenAccountIdempotentInstruction(payerKey,destination,owner,mint,spl.TOKEN_PROGRAM_ID,spl.ASSOCIATED_TOKEN_PROGRAM_ID),spl.createTransferCheckedInstruction(source,mint,destination,payerKey,BigInt(built.amountBaseUnits),6,[],spl.TOKEN_PROGRAM_ID),new web3.TransactionInstruction({programId:new web3.PublicKey("MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr"),keys:[{pubkey:payerKey,isSigner:true,isWritable:false}],data:new TextEncoder().encode(built.paymentReference)}));tx.feePayer=payerKey;tx.recentBlockhash=built.recentBlockhash;show({status:"transaction_ready",network:"solana-mainnet-beta",amount:quote.amount,currency:"USDC",recipient:built.treasuryOwner,message:"Review and approve only if the wallet details match."});const sent=await provider.signAndSendTransaction(tx);show({status:"payment_submitted",signature:sent.signature,message:"Waiting for finalized verification. Do not submit a second payment."});let result;for(let i=0;i<20;i++){const response=await fetch("/api/jobs/"+encodeURIComponent(quote.jobId)+"/payment",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({signature:sent.signature})});result=await response.json();if(response.ok&&result.receipt)break;if(response.status===409){show(result);return;}if(!response.ok&&response.status!==202)throw Error(result.message||result.error||"payment verification failed");await new Promise(resolve=>setTimeout(resolve,3000));}show(result);}catch(error){show("PAYMENT ERROR: "+(error.message||String(error)));}finally{payButton.disabled=false;}};
+load().catch(error=>show("CATALOG ERROR: "+(error.message||String(error))));</script></body></html>`;
+}
+
 async function marketplacePage() {
   const policy = await marketplacePolicy();
   const grouped = SERVICE_CATEGORIES.map((category) => ({ ...category, services: SERVICES.filter((service) => serviceDetails(service).category === category.id) })).filter((category) => category.services.length);
@@ -2922,6 +2935,117 @@ async function createJob(serviceId, input, admin = false, currency = "USDC", met
   return await completeJob(job, execution.result, null, execution.telemetry);
 }
 
+function normalizeBatchItems(items) {
+  if (!Array.isArray(items) || items.length < 1 || items.length > 10)
+    throw Object.assign(new Error("batch must contain between 1 and 10 services"), { statusCode: 400 });
+  return items.map((item, index) => {
+    const serviceId = String(item?.service_id || item?.serviceId || "").trim();
+    const input = item?.input && typeof item.input === "object" && !Array.isArray(item.input) ? item.input : {};
+    const service = serviceById(serviceId);
+    if (!service) throw Object.assign(new Error(`unknown service at batch item ${index + 1}`), { statusCode: 400 });
+    validateServiceInput(serviceId, input);
+    return { index, service_id: serviceId, input, input_hash: digest(input), price: Number(service.price || 0), currency: service.currency || "USDC" };
+  });
+}
+
+async function createBatchJob(items) {
+  const normalized = normalizeBatchItems(items);
+  const paidItems = normalized.filter((item) => item.price > 0);
+  const total = Number(paidItems.reduce((sum, item) => sum + item.price, 0).toFixed(6));
+  const id = `batch_${randomUUID()}`;
+  const job = {
+    id,
+    kind: "batch",
+    service_id: "batch",
+    input_hash: digest(normalized.map(({ service_id, input_hash }) => ({ service_id, input_hash }))),
+    execution_input: { items: normalized.map(({ service_id, input }) => ({ service_id, input })) },
+    status: total > 0 ? "awaiting_payment" : "running",
+    created_at: now(),
+    expires_at: new Date(Date.now() + 1800000).toISOString(),
+    batch_items: normalized.map(({ service_id, input_hash, price }) => ({ service_id, input_hash, price })),
+  };
+  const storage = await store();
+  await storage.put("Jobs", id, job, true);
+  if (!total) return completeBatchJob(job, await executeBatchItems(job), null);
+  const quote = await makeBatchQuote(job, normalized, total);
+  job.quote_id = quote.quote_id;
+  await storage.put("Jobs", id, job);
+  const paymentIntent = {
+    jobId: id,
+    status: "awaiting_payment",
+    kind: "batch",
+    items: quote.items,
+    network: quote.network,
+    asset: quote.currency,
+    mint: quote.mint,
+    amount: quote.amount.toFixed(6),
+    amountBaseUnits: String(quote.amountAtomic),
+    decimals: 6,
+    treasuryOwner: quote.treasuryOwner,
+    treasuryTokenAccount: quote.treasuryTokenAccount,
+    paymentReference: quote.paymentReference,
+    expiresAt: quote.expires_at,
+    quoteId: quote.quote_id,
+  };
+  const error = Object.assign(new Error("payment required"), { statusCode: 402, payment_intent: paymentIntent });
+  throw error;
+}
+
+async function makeBatchQuote(job, items, total) {
+  const ata = await treasuryTokenAccount(config);
+  const account = await readRpc(config, "getAccountInfo", [ata, { commitment: "finalized", encoding: "base64" }]);
+  const expiresAt = new Date(Date.now() + 1800000);
+  const quote = {
+    created_at: now(),
+    quote_id: `q_${randomUUID()}`,
+    job_id: job.id,
+    service_id: "batch",
+    kind: "batch",
+    items: items.map(({ service_id, price, input_hash }) => ({ service_id, price, input_hash })),
+    amount: total,
+    gross_amount: total,
+    amountAtomic: Math.round(total * 1e6),
+    currency: "USDC",
+    network: "solana-mainnet-beta",
+    target_network: "multi",
+    mint: config.usdcMint,
+    treasuryOwner: config.treasury,
+    treasuryTokenAccount: ata,
+    recipient: config.treasury,
+    distribution: [{ destination: ata, amountAtomic: Math.round(total * 1e6), role: "batch_total" }],
+    paymentReference: `PDAOBATCH:${job.id}`,
+    expires_at: expiresAt.toISOString(),
+    expires_at_utc: expiresAt.toISOString(),
+    expires_at_epoch_ms: expiresAt.getTime(),
+    payment_required: true,
+    ata_required: !account.result?.value,
+  };
+  await (await store()).put("Quotes", quote.quote_id, quote, true);
+  return quote;
+}
+
+async function executeBatchItems(job) {
+  const items = job.execution_input?.items || [];
+  const results = [];
+  let providerCalls = 0;
+  let cacheHits = 0;
+  let cacheMisses = 0;
+  for (const item of items) {
+    const execution = await executeMeasuredService(item.service_id, item.input);
+    results.push({ index: results.length, service_id: item.service_id, input_hash: digest(item.input), result: execution.result });
+    providerCalls += execution.telemetry.providerCalls;
+    cacheHits += execution.telemetry.cacheHits;
+    cacheMisses += execution.telemetry.cacheMisses;
+  }
+  return { batch: true, item_count: results.length, items: results, telemetry: { providerCalls, cacheHits, cacheMisses } };
+}
+
+async function completeBatchJob(job, execution, payment) {
+  const telemetry = execution?.telemetry || {};
+  const result = { batch: true, item_count: execution.item_count, items: execution.items };
+  return completeJob(job, result, payment, telemetry);
+}
+
 async function completeJob(job, result, payment, telemetry = {}) {
   if (job.status === "completed" && job.receipt_id) {
     const existingReceipt = await (await store()).get(
@@ -3127,8 +3251,33 @@ async function submitPayment(jobId, body) {
   job.execution_started_at = now();
   await storage.put("Jobs", job.id, job);
   const executionInput = job.execution_input || body.input || {};
-  if (digest(executionInput) !== job.input_hash)
+  if (job.kind !== "batch" && digest(executionInput) !== job.input_hash)
     throw Object.assign(new Error("quoted job input is unavailable or changed"), { statusCode: 400 });
+  if (job.kind === "batch") {
+    try {
+      const execution = await executeBatchItems(job);
+      return completeBatchJob(job, execution, {
+        signature: body.signature,
+        currency: quote.currency,
+        amount: quote.amount,
+      });
+    } catch (error) {
+      await storage.put("Jobs", job.id, {
+        ...job,
+        status: "recovery_required",
+        recovery_required_at: now(),
+        recovery_reason: "batch_execution_failed_after_payment_claim",
+        recovery_error: String(error.message || error).slice(0, 240),
+      });
+      return {
+        job_id: job.id,
+        status: "recovery_required",
+        recovery_required: true,
+        message: "payment was accepted but one or more batch services require manual recovery; no automatic replay will occur",
+        retryAfterSeconds: 30,
+      };
+    }
+  }
   const execution = await executeMeasuredService(job.service_id, executionInput);
   return completeJob(job, execution.result, {
     signature: body.signature,
@@ -3788,6 +3937,8 @@ async function handle(e) {
     const page = await marketplacePage();
     return { statusCode: 200, headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store" }, body: page.replace("<footer>", `${featured}<footer>`) };
   }
+  if (method === "GET" && path === "/checkout")
+    return { statusCode: 200, headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store" }, body: batchCheckoutPage() };
   if (method === "GET" && (path === "/partners" || path === "/marketplace/partners"))
     return { statusCode: 200, headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store" }, body: await partnersPage() };
   const partnershipPayPage = path.match(/^\/partners\/([^/]+)\/pay$/);
@@ -4108,6 +4259,8 @@ async function handle(e) {
   }
   if (method === "POST" && path === "/api/jobs")
     return json(await createJob(body.service_id, body.input || {}, false, "USDC", requestMetadata(e), body.pdao_access || body.token_holder_access || null));
+  if (method === "POST" && path === "/api/checkout/batch")
+    return json(await createBatchJob(body.items));
   if (method === "POST" && path === "/api/external/jobs")
     return json(await createExternalJob(body.service_id, body.input || {}, body.pdao_access || body.token_holder_access || null), 201);
   const externalPayment = path.match(/^\/api\/external\/jobs\/([^/]+)\/payment$/);

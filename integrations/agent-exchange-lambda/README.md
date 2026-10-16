@@ -8,6 +8,9 @@ Product boundaries, the internal-only Sealkeeper rule, and the controlled paid
 E2E release procedure are defined in
 [`docs/agent-exchange-scope-and-release-boundaries.md`](docs/agent-exchange-scope-and-release-boundaries.md).
 
+The human batch checkout and the automation contract are documented in
+[`docs/agent-exchange-listing-and-checkout-agent-spec.md`](../../docs/agent-exchange-listing-and-checkout-agent-spec.md).
+
 ## Runtime
 
 - Function: `PrivateDAOAgentExchange-Function-N2zgpQmMN41S`

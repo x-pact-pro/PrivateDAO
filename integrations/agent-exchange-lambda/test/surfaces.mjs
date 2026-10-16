@@ -345,6 +345,39 @@ test("paid jobs validate before quoting and separate payment from target network
   assert.match(unsupportedEvm.body, /payment_intent/);
 });
 
+test("batch checkout creates one exact quote and keeps child inputs private", async () => {
+  resetForTests();
+  const response = await request("/checkout");
+  assert.equal(response.statusCode, 200);
+  assert.match(response.body, /Batch checkout/);
+  assert.match(response.body, /\/api\/checkout\/batch/);
+  assert.match(response.body, /Review and pay exact total/);
+
+  const batch = await request("/api/checkout/batch", "POST", {
+    items: [
+      { service_id: "forensics.trace", input: { network: "solana-mainnet-beta", wallet: "11111111111111111111111111111111", limit: 2 } },
+      { service_id: "agent.research.report", input: { network: "ethereum-mainnet", asset: "0x0000000000000000000000000000000000000001" } },
+    ],
+  });
+  assert.equal(batch.statusCode, 402);
+  const body = JSON.parse(batch.body);
+  assert.equal(body.payment_intent.kind, "batch");
+  assert.equal(body.payment_intent.network, "solana-mainnet-beta");
+  assert.equal(body.payment_intent.asset, "USDC");
+  assert.match(body.payment_intent.paymentReference, /^PDAOBATCH:batch_/);
+  assert.equal(body.payment_intent.items.length, 2);
+  const persisted = await request(`/api/jobs/${body.payment_intent.jobId}`);
+  assert.equal(persisted.statusCode, 200);
+  const publicStatus = JSON.parse(persisted.body);
+  assert.equal(publicStatus.execution_input, undefined);
+  assert.equal(publicStatus.kind, "batch");
+
+  const tooMany = await request("/api/checkout/batch", "POST", {
+    items: Array.from({ length: 11 }, () => ({ service_id: "forensics.trace", input: { network: "solana-mainnet-beta", wallet: "11111111111111111111111111111111", limit: 1 } })),
+  });
+  assert.equal(tooMany.statusCode, 400);
+});
+
 test("transaction simulation rejects a transaction hash before payment", async () => {
   resetForTests();
   const response = await request("/api/jobs", "POST", {
