@@ -197,6 +197,9 @@ async function marketplacePolicy() {
         pro: { label: "Growth Listing", max_services: 5, listing_fee_usd: 49, monthly_fee_usd: 0 },
       },
     });
+    migrated.seller_tiers.free.listing_fee_usd = 0;
+    migrated.seller_tiers.basic.listing_fee_usd = 10;
+    migrated.seller_tiers.pro.listing_fee_usd = 49;
     await (await store()).put("Registry", MARKETPLACE_POLICY_ID, { ...saved, policy: migrated, updated_at: now() });
     return migrated;
   }
