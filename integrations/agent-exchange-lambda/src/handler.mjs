@@ -376,6 +376,37 @@ async function loadPromotions(){try{const p=await json(await fetch("/api/marketp
 $("refreshDash").onclick=()=>loadDashboard().catch(e=>notice(e.message,"error"));$("rotate").onclick=async()=>{try{const r=await json(await fetch("/api/registry/agents/"+encodeURIComponent(state.agent.id)+"/owner-token/rotate",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({owner_token:state.token})}));state.token=r.owner_token;$("rotateResult").innerHTML='<div class="notice success">New credential (save now; shown once):<pre class="json">'+escapeHtml(r.owner_token)+'</pre></div>'}catch(e){$("rotateResult").innerHTML='<div class="notice error">'+escapeHtml(e.message)+'</div>'}};policy().catch(()=>{});
 </script></body></html>`.replace('<strong id="heroFee">', '<strong id="listingFee"><span id="heroFee">').replace('</strong><p>per agent', '</span></strong><p>per agent').replace('first five commercial services', 'first <span id="serviceLimit">five</span> commercial services').replace('<b id="heroCommission">', '<b id="platformFee"><span id="heroCommission">').replace('</b> PrivateDAO fee', '</span></b> PrivateDAO fee').replace('<b id="heroNet">', '<b id="sellerNet"><span id="heroNet">').replace('%.</b>', '%.</span></b>').replace('Only discovered read-only tools can be selected.', 'Select read-only commercial tools. Only discovered read-only tools can be selected.').replace('<div id="tools" class="grid">', '<div id="toolPicker" class="hidden">Select read-only commercial tools</div><input id="metadataFile" type="file" accept="application/json" hidden><div id="tools" class="grid">').replace('Connect wallet and pay', 'Pay listing fee with wallet').replace('<h3>Security</h3>', '<h3>Security</h3><span id="rotateCredential" class="hidden"></span>').replace('async function policy()', 'async function loadMarketplacePolicy()').replace('policy().catch', 'loadMarketplacePolicy().catch').replace('<h2>Verify your agent connection</h2>', '<h2>Verify MCP and preview services</h2>');
 }
+function sellerPortalPageAutomated() {
+  return sellerPortalPageV5()
+    .replace(
+      '<div class="field"><label for="endpoint">Public MCP endpoint</label><input id="endpoint" type="url" required placeholder="https://your-domain.example/mcp"></div>',
+      '<div class="field"><label for="endpoint">Public MCP endpoint</label><input id="endpoint" type="url" required placeholder="https://your-domain.example/mcp"></div><div class="grid"><div class="field"><label for="websiteUrl">Public website</label><input id="websiteUrl" type="url" placeholder="https://example.com"></div><div class="field"><label for="githubUrl">Public GitHub repository</label><input id="githubUrl" type="url" placeholder="https://github.com/org/repo"></div><div class="field"><label for="docsUrl">Public documentation</label><input id="docsUrl" type="url" placeholder="https://docs.example.com"></div></div>',
+    )
+    .replace(
+      '<label class="field"><input id="terms" type="checkbox"',
+      '<div id="reviewScore" class="notice hidden"></div><label class="field"><input id="autoPublish" type="checkbox" style="width:auto"> Automatically publish after finalized payment if automated screening passes.</label><label class="field"><input id="terms" type="checkbox"',
+    )
+    .replace(
+      'state.tools=r.discovered_tools||[];',
+      'state.tools=r.discovered_tools||[];state.review=r.automated_review||null;',
+    )
+    .replace(
+      'renderTools();renderServiceEditor();step(2)',
+      'renderTools();renderServiceEditor();if(state.review){$("connectionResult").textContent+=" Automated quality score: "+String(state.review.quality_score)+" · security gate: "+String(state.review.security_gate)}step(2)',
+    )
+    .replace(
+      'accepted_assets:$("acceptedAssets").value.split(",").map(x=>x.trim()).filter(Boolean),payout:',
+      'accepted_assets:$("acceptedAssets").value.split(",").map(x=>x.trim()).filter(Boolean),website_url:$("websiteUrl").value.trim()||undefined,github_url:$("githubUrl").value.trim()||undefined,docs_url:$("docsUrl").value.trim()||undefined,auto_publish:$("autoPublish").checked,payout:',
+    )
+    .replace(
+      'accept_terms:true,terms_version:"seller-marketplace-v1"',
+      'accept_terms:true,terms_version:"seller-marketplace-v1",auto_publish:$("autoPublish").checked',
+    )
+    .replace(
+      `$("paymentResult").innerHTML='<div class="success notice">Payment independently verified. Publication is eligible; click Publish to make selected services public.</div>';$("publish").disabled=false`,
+      `$("paymentResult").innerHTML=state.listing.publication==="published"?'<div class="success notice">Payment verified and the listing was published automatically.</div>':'<div class="success notice">Payment verified. Publication is eligible; click Publish to make selected services public.</div>';$("publish").disabled=state.listing.publication!=="published"`,
+    );
+}
 async function githubWebhook(body, rawBody, signature, eventName) {
   if (!config.githubWebhookSecret) throw Object.assign(new Error("GitHub webhook secret is not configured"), { statusCode: 503 });
   if (!verifyGithubWebhook(rawBody, signature, config.githubWebhookSecret)) throw Object.assign(new Error("invalid GitHub webhook signature"), { statusCode: 401 });
@@ -4095,7 +4126,7 @@ async function handle(e) {
   }
   if (method === "GET" && (path === "/sellers" || path === "/list-your-agent")) {
     trackFunnel("seller_portal_view");
-    const sellerPortal = sellerPortalPageV5()
+    const sellerPortal = sellerPortalPageAutomated()
       .replace('<section class="hero">', `${commercialOfferBanner()}<section class="hero">`)
       .replace("</style>", "@media(max-width:650px){.shell{padding:10px}}</style>")
       .replace('<input id="metadataFile" type="file" accept="application/json" hidden>', '<div class="actions" style="margin-top:12px"><button id="chooseMetadata" class="secondary" type="button">Import metadata JSON</button><input id="metadataFile" type="file" accept="application/json" hidden></div>')
