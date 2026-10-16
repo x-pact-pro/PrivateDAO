@@ -1,0 +1,46 @@
+{
+  "schema": "privatedao.zcash-testnet-network-e2e.v1",
+  "generatedAt": "2026-10-10T15:42:21+03:00",
+  "network": "zcash-testnet",
+  "environment": "testnet",
+  "asset": "TAZ",
+  "evidenceClass": "adapter-network-e2e",
+  "productLanesProven": false,
+  "state": "finalized",
+  "executionId": "zcash-testnet-e2e-c14158dad7761c5d",
+  "signature": "c14158dad7761c5d3c497cf27b2a80ffa909156ba2306e18f3731e608d1521df",
+  "blockNumber": "4485265",
+  "blockHash": "000006c4b32a9b6902b70956a815f5da02d2af4b7ab85a3f20cc4a853dffd97a",
+  "confirmations": 3,
+  "explorerUrl": "https://explorer.testnet.z.cash/tx/c14158dad7761c5d3c497cf27b2a80ffa909156ba2306e18f3731e608d1521df",
+  "funding": {
+    "signature": "b0be9658c4c5604176627a917b0964cb0306ddc2c6295c96269db701bd5268af",
+    "walletRecognized": true,
+    "confirmed": true
+  },
+  "receipt": {
+    "network": "zcash-testnet",
+    "environment": "testnet",
+    "asset": "TAZ",
+    "state": "finalized",
+    "confirmationVerified": true,
+    "walletObserved": true
+  },
+  "proof": {
+    "broadcast": true,
+    "onchain": true,
+    "walletSpendCount": 1,
+    "walletOutputCount": 5,
+    "privacyPool": "ironwood",
+    "feeTAZ": 0.00025
+  },
+  "reconciliation": {
+    "expectedRecipients": 1,
+    "settledRecipients": 1,
+    "failedRecipients": 0,
+    "duplicateRecipients": 0,
+    "atomicAmount": "10000",
+    "status": "reconciled"
+  },
+  "scopeNote": "This artifact proves the Testnet adapter/network path only. It does not prove independent E2E receipts for the six enterprise product lanes."
+}

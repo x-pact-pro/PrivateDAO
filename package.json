@@ -118,6 +118,7 @@
     "wait:zcash:testnet-ready": "node scripts/wait-zcash-testnet-ready.mjs",
     "test:zcash:testnet:e2e": "node --import tsx scripts/run-zcash-testnet-e2e.mjs",
     "test:zcash:products:e2e": "node --import tsx scripts/run-zcash-products-testnet-e2e.mjs",
+    "verify:zcash:network-evidence": "node scripts/verify-zcash-network-evidence.mjs",
     "compile:evm-verification": "bash scripts/compile-evm-verification.sh",
     "test:evm:phase2": "node --import tsx packages/evm-verification/scripts/run-e2e.mjs",
     "test:evm:organizational": "node --import tsx scripts/run-evm-organizational-e2e.mjs",
