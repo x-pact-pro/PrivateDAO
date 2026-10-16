@@ -35,31 +35,36 @@ The remaining `mocha` finding cannot be fixed by the currently compatible `ts-mo
 ## Web Dependency Graph
 
 The web application has a separate `apps/web/package-lock.json` and must be
-audited independently. On 2026-10-16, the current audit reports 12 findings
-when dev dependencies are omitted (9 high and 3 low). The findings are not
-the removed Poseidon chain.
+audited independently. On 2026-10-16, the lockfile-only production audit
+reports 3 low findings and 0 high, moderate, or critical findings when dev
+dependencies are omitted. The web install path uses
+`npm ci --legacy-peer-deps` in Pages CI; the regenerated lockfile removes the
+peer-only mobile-wallet/framework resolution that previously produced the
+high findings. This is a dependency-resolution correction, not a runtime
+code change.
 
 - `elliptic` is pulled by `@phala/dcap-qvl@0.3.9`, which is pulled by
   `@magicblock-labs/ephemeral-rollups-sdk@0.17.3`. The current MagicBlock
   release still declares that dependency. MagicBlock is exact-pinned in
   `apps/web/package.json`; a lockfile override would change an attestation
   dependency without an upstream compatibility guarantee.
-- `react-native`/Metro and `braces`/`micromatch` are transitive mobile-wallet
-  and framework paths. They require a coordinated upstream upgrade and a full
-  web build/browser regression run, not a selective lockfile substitution.
-- `eslint-config-next` and its `fast-glob` path are development tooling
-  findings and are not shipped by the web production dependency set.
-- `brace-expansion` has vulnerable nested ranges in older `minimatch` paths;
-  the existing compatible overrides are retained and no unsafe downgrade was
-  added.
+- The remaining `elliptic` finding is pulled by
+  `@phala/dcap-qvl@0.3.9`, which is pulled by
+  `@magicblock-labs/ephemeral-rollups-sdk@0.17.3`. It is confined to the
+  MagicBlock/Phala TEE-attestation boundary and is not used by the web
+  Poseidon or proof providers.
+- `react-native`/Metro and `braces`/`micromatch` remain present only where
+  required by the wallet ecosystem, but the current lockfile resolves them
+  without an npm advisory in the production audit. They were not removed by
+  an unsafe package substitution.
 
-The web audit is therefore **not clean**. The production claim is limited to
-the root runtime graph; it must not be generalized to the web graph until the
-upstream fixes are released and validated.
+The web production audit is therefore clean at high severity and above, but
+not advisory-free. The remaining low finding is explicitly tracked as an
+upstream TEE dependency boundary.
 
-`npm audit fix --prefix apps/web --package-lock-only --dry-run --json` proposed
-no safe lockfile changes for the current graph. The available
-automated Next fix is a major downgrade to `eslint-config-next@14.2.35`, and
+The previous `npm audit fix --prefix apps/web --package-lock-only --dry-run --json`
+proposed no safe lockfile changes for the old graph. The available automated
+Next fix was a major downgrade to `eslint-config-next@14.2.35`, and
 the available MagicBlock fix is a major move to
 `@magicblock-labs/ephemeral-rollups-sdk@0.8.5`.
 Neither is an acceptable security migration without a coordinated framework,
