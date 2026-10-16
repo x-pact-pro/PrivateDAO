@@ -1,6 +1,6 @@
 {
   "schema": "privatedao.solana-devnet.record-verification-e2e.v1",
-  "generatedAt": "2026-10-16T00:52:52.252Z",
+  "generatedAt": "2026-10-16T00:58:15.368Z",
   "network": "solana-devnet",
   "product": "record-verification",
   "capabilities": [
@@ -15,10 +15,10 @@
     "verify": "privatedao-record-verification"
   },
   "create": {
-    "executionId": "record-create-record-solana-kernel-e2e-1792111972159-create",
-    "requestId": "record-solana-kernel-e2e-1792111972159-create",
+    "executionId": "record-create-record-solana-kernel-e2e-1792112295265-create",
+    "requestId": "record-solana-kernel-e2e-1792112295265-create",
     "state": "reconciled",
-    "canonicalDigest": "4a43053223a9e22c0ee48af3e469dcc7c3d1059418300bd2545757bacf3dbb92",
+    "canonicalDigest": "8b49ac9ed53f802e1bc0e1fd013e550490bd4c9ced851c28182360c5e8fec273",
     "disclosure": "selective",
     "publicFields": {
       "decision": "approved",
@@ -28,11 +28,11 @@
     "signatures": []
   },
   "verify": {
-    "executionId": "record-verify-record-solana-kernel-e2e-1792111972159-verify",
-    "requestId": "record-solana-kernel-e2e-1792111972159-verify",
+    "executionId": "record-verify-record-solana-kernel-e2e-1792112295265-verify",
+    "requestId": "record-solana-kernel-e2e-1792112295265-verify",
     "state": "reconciled",
     "valid": true,
-    "canonicalDigest": "4a43053223a9e22c0ee48af3e469dcc7c3d1059418300bd2545757bacf3dbb92",
+    "canonicalDigest": "8b49ac9ed53f802e1bc0e1fd013e550490bd4c9ced851c28182360c5e8fec273",
     "signatures": []
   },
   "sourcePayloadRecorded": false
