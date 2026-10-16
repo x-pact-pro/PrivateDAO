@@ -1,4 +1,4 @@
-import { createHash, createPublicKey, verify as verifySignature } from "node:crypto";
+import { createHash, createPublicKey, randomBytes, verify as verifySignature } from "node:crypto";
 
 export const SEALKEEPER_API_ORIGIN = "https://api.sealkeeper.run";
 export const SEALKEEPER_KEYS_URL = "https://sealkeeper.run/.well-known/seal.json";
@@ -49,10 +49,14 @@ function sealUrlForAgent(agentId) {
   return `${SEALKEEPER_API_ORIGIN}/v1/agents/${encodeURIComponent(raw)}/seal`;
 }
 
-function taskUrlForAgent(agentId) {
+function taskUrlForAgent(agentId, cursor) {
   const raw = String(agentId || "").trim();
   if (!/^[A-Za-z0-9_-]{20,120}$/.test(raw)) throw new SealkeeperError("invalid_agent_id", "invalid Sealkeeper agent id");
-  return `${SEALKEEPER_API_ORIGIN}/v1/agents/${encodeURIComponent(raw)}/tasks?role=claimant&limit=100`;
+  const url = new URL(`${SEALKEEPER_API_ORIGIN}/v1/agents/${encodeURIComponent(raw)}/tasks`);
+  url.searchParams.set("role", "claimant");
+  url.searchParams.set("limit", "100");
+  if (cursor) url.searchParams.set("cursor", String(cursor));
+  return url.toString();
 }
 
 async function readJson(url, { fetchImpl = fetch, signal, maxBytes = MAX_RESPONSE_BYTES } = {}) {
@@ -96,6 +100,35 @@ export class PublicKeyCache {
     if (!found) throw new SealkeeperError("unknown_kid");
     return found;
   }
+}
+
+export class HandshakeReplayCache {
+  constructor({ now = () => Date.now(), ttlMs = 5 * 60 * 1000, maxEntries = 10_000 } = {}) {
+    this.now = now;
+    this.ttlMs = Math.max(1, Number(ttlMs) || 5 * 60 * 1000);
+    this.maxEntries = Math.max(100, Number(maxEntries) || 10_000);
+    this.seen = new Map();
+  }
+
+  consume(handshake) {
+    const key = createHash("sha256").update(String(handshake), "utf8").digest("hex");
+    const now = this.now();
+    for (const [entry, expiresAt] of this.seen) if (expiresAt <= now) this.seen.delete(entry);
+    if (this.seen.has(key)) return false;
+    if (this.seen.size >= this.maxEntries) {
+      const oldest = this.seen.keys().next().value;
+      if (oldest) this.seen.delete(oldest);
+    }
+    this.seen.set(key, now + this.ttlMs);
+    return true;
+  }
+}
+
+export function createHandshakeChallenge({ verifier, now = () => Date.now(), ttlMs = 5 * 60 * 1000 } = {}) {
+  const audience = String(verifier || "");
+  if (!/^[\x21-\x7e]{1,64}$/.test(audience)) throw new SealkeeperError("invalid_verifier");
+  const ttl = Math.max(1_000, Math.min(Number(ttlMs) || 5 * 60 * 1000, 5 * 60 * 1000));
+  return { nonce: randomBytes(24).toString("base64url"), aud: audience, expiresAt: new Date(now() + ttl).toISOString() };
 }
 
 function publicKeyFromJwk(key) {
@@ -146,13 +179,13 @@ export function verifyHandshake(handshake, { expectedAgentId, expectedNonce, exp
   return { requested: true, valid: true, result: payload.fingerprint === expectedFingerprint ? "matches" : "changed", proof: "verifier" };
 }
 
-function validatePayload(payload, { expectedAgentId, nowSeconds }) {
+function validatePayload(payload, { expectedAgentId, nowSeconds, maxClockSkewSeconds }) {
   assertObject(payload, "payload");
   if (payload.iss !== "sealkeeper.run") throw new SealkeeperError("wrong_issuer");
   if (!ALLOWED_VERSIONS.has(payload.ver)) throw new SealkeeperError("unsupported_version");
   if (!Number.isFinite(payload.iat) || !Number.isFinite(payload.exp)) throw new SealkeeperError("malformed");
   if (payload.exp <= nowSeconds) throw new SealkeeperError("expired");
-  if (payload.iat > nowSeconds + 300) throw new SealkeeperError("not_yet_valid");
+  if (payload.iat > nowSeconds + maxClockSkewSeconds) throw new SealkeeperError("not_yet_valid");
   if (String(payload.sub || "") !== String(expectedAgentId)) throw new SealkeeperError("wrong_subject");
   return payload;
 }
@@ -171,7 +204,7 @@ export async function verifySeal(seal, { expectedAgentId, keyCache = new PublicK
   if (!verifySignature(null, Buffer.from(`${parts[0]}.${parts[1]}`, "ascii"), publicKey, signature))
     throw new SealkeeperError("bad_signature");
   const payload = jsonSegment(parts[1], "payload");
-  validatePayload(payload, { expectedAgentId, nowSeconds: now() / 1000, maxClockSkewSeconds });
+  validatePayload(payload, { expectedAgentId, nowSeconds: now() / 1000, maxClockSkewSeconds: Math.max(0, Number(maxClockSkewSeconds) || 300) });
   return { valid: true, seal: String(seal), header: { alg: header.alg, kid: header.kid }, payload, expiresIn: Math.max(0, Math.floor(payload.exp - now() / 1000)) };
 }
 
@@ -210,9 +243,10 @@ function normalizeTaskEvidence(tasks) {
   }));
 }
 
-export async function readSealReputation({ agentId, sealUrl, handshake, nonce, aud, fetchImpl = fetch, keyCache, now, includeTasks = true } = {}) {
+export async function readSealReputation({ agentId, sealUrl, handshake, nonce, aud, fetchImpl = fetch, keyCache, replayCache, now, includeTasks = true, maxTaskPages = 10 } = {}) {
   const expectedAgentId = String(agentId || "").trim();
   if (!expectedAgentId) throw new SealkeeperError("invalid_agent_id");
+  if (handshake && nonce && replayCache && !replayCache.consume(handshake)) throw new SealkeeperError("replay_detected");
   const url = sealUrl ? assertTrustedHttpsUrl(sealUrl, SEALKEEPER_API_ORIGIN, "seal URL") : new URL(sealUrlForAgent(expectedAgentId));
   if (url.search || url.pathname !== `/v1/agents/${encodeURIComponent(expectedAgentId)}/seal` && !/^\/v1\/agents\/[A-Za-z0-9._-]+\/[A-Za-z0-9._-]+\/seal$/.test(url.pathname))
     throw new SealkeeperError("ssrf_blocked", "seal URL is not a canonical Sealkeeper agent route");
@@ -231,7 +265,15 @@ export async function readSealReputation({ agentId, sealUrl, handshake, nonce, a
   let tasks = [];
   let taskError = null;
   if (includeTasks) {
-    try { tasks = normalizeTaskEvidence((await readJson(taskUrlForAgent(expectedAgentId), { fetchImpl }))?.tasks); }
+    try {
+      let cursor = null;
+      for (let page = 0; page < Math.max(1, Math.min(Number(maxTaskPages) || 10, 10)); page += 1) {
+        const result = await readJson(taskUrlForAgent(expectedAgentId, cursor), { fetchImpl });
+        tasks.push(...normalizeTaskEvidence(result?.tasks));
+        cursor = result?.nextCursor || null;
+        if (!cursor) break;
+      }
+    }
     catch (error) { taskError = error instanceof SealkeeperError ? error.code : "task_read_failed"; }
   }
   return {

@@ -6,7 +6,7 @@ This is an isolated technical adapter for reading Sealkeeper credentials as an o
 
 - Module: `src/sealkeeper.mjs`
 - Feature flag: `SEAL_REPUTATION_ENABLED=false`
-- Internal endpoint when explicitly enabled: `POST /api/internal/sealkeeper/verify`
+- Internal endpoint when explicitly enabled: `POST /api/internal/sealkeeper/verify` with the existing `x-pdao-admin-smoke` internal header
 - Required input: `{ "agent_id": "<raw Sealkeeper agent id>" }`
 - Optional input: `seal_url`, `handshake`, `nonce`, `aud`, and `include_tasks`
 - No public badge is emitted and no seller permission depends on SEAL validity.
@@ -22,7 +22,8 @@ The adapter follows the official reader guidance:
 3. Verify the exact ASCII `header.payload` bytes before reading the signed payload.
 4. Require `iss=sealkeeper.run`, `ver` 1 through 5, an unexpired `exp`, an `iat` no more than 300 seconds ahead, and the expected `sub`.
 5. Read task evidence separately from credential validity. `level=none`, zero trust counts, and `countsForTrust=false` are valid test-agent outcomes and are not converted into a positive reputation claim.
-6. When a live nonce handshake is supplied, the adapter delegates the handshake comparison to Sealkeeper's documented `/v1/seal/verify` endpoint with the verifier audience. The handshake result remains separate from credential validity.
+6. When a live nonce handshake is supplied, the adapter delegates the handshake comparison to Sealkeeper's documented `/v1/seal/verify` endpoint with the verifier audience. A one-time handshake digest cache rejects reuse within the Lambda runtime; callers must issue a fresh nonce after a retry or a cold-start boundary. The handshake result remains separate from credential validity.
+7. Verified tasks are read page-by-page using the documented cursor, with a bounded page count, and never expose private task submissions.
 
 ## Result fields
 

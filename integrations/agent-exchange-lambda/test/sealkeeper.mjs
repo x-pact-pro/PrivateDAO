@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { generateKeyPairSync, sign } from "node:crypto";
 import test from "node:test";
 import { getConfig } from "../src/config.mjs";
-import { PublicKeyCache, SealkeeperError, readSealReputation, sealkeeperFailure, verifyHandshake, verifySeal } from "../src/sealkeeper.mjs";
+import { HandshakeReplayCache, PublicKeyCache, SealkeeperError, readSealReputation, sealkeeperFailure, verifyHandshake, verifySeal } from "../src/sealkeeper.mjs";
 
 const agentId = "gTl3Dqh9F19Wo1Rmw0x-zMuNipG07jeiXfYPW4_Js5Q";
 const now = () => Date.parse("2026-10-01T12:00:00Z");
@@ -76,6 +76,28 @@ test("blocks non-Sealkeeper URLs and degrades to an optional signal", async () =
   const result = sealkeeperFailure(new SealkeeperError("not_found"));
   assert.equal(result.accepted, false);
   assert.equal(result.error, "not_found");
+});
+
+test("rejects a reused nonce handshake in the same runtime", async () => {
+  const { pair, jwk } = fixtureKey();
+  const payload = { iss: "sealkeeper.run", sub: agentId, ver: 1, iat: now() / 1000, exp: now() / 1000 + 3600 };
+  const seal = makeSeal(pair.privateKey, payload);
+  const replayCache = new HandshakeReplayCache({ now, ttlMs: 300_000 });
+  const handshakeHeader = { alg: "EdDSA", kid: agentId };
+  const encode = (value) => Buffer.from(JSON.stringify(value)).toString("base64url");
+  const handshakePayload = { sub: agentId, nonce: "fresh-nonce", aud: "pdao-test", iat: now() / 1000 };
+  const input = `${encode(handshakeHeader)}.${encode(handshakePayload)}`;
+  const handshake = `${input}.${sign(null, Buffer.from(input, "ascii"), pair.privateKey).toString("base64url")}`;
+  const fetchImpl = async (url) => String(url).endsWith("/seal") ? response({ seal, did: "did:key:z6Mki7p8m4j8qHqH4kz6Kf1w1D6mM1hYVhX7V6fXc3vQw4V8" }) : response({ keys: [jwk] });
+  const options = { agentId, handshake, nonce: "fresh-nonce", aud: "pdao-test", fetchImpl, keyCache: cacheFor(jwk, fetchImpl), replayCache, includeTasks: false, now };
+  await readSealReputation(options);
+  await assert.rejects(() => readSealReputation(options), (error) => error.code === "replay_detected");
+});
+
+test("honors the configured SEAL clock-skew bound", async () => {
+  const { pair, jwk } = fixtureKey();
+  const seal = makeSeal(pair.privateKey, { iss: "sealkeeper.run", sub: agentId, ver: 1, iat: now() / 1000 + 10, exp: now() / 1000 + 3600 });
+  await assert.rejects(() => verifySeal(seal, { expectedAgentId: agentId, keyCache: cacheFor(jwk, async () => response({ keys: [jwk] })), now, maxClockSkewSeconds: 1 }), (error) => error.code === "not_yet_valid");
 });
 
 test("official fixtures pass when explicitly enabled", { skip: !process.env.SEALKEEPER_RUN_LIVE_TESTS }, async (t) => {
