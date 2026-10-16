@@ -2387,6 +2387,7 @@ export const runtimeCatalog = {
         "solana-devnet",
         "ethereum-sepolia",
         "arbitrum-sepolia",
+        "tempo-testnet",
         "base-sepolia",
         "robinhood-testnet",
         "bnb-testnet",
@@ -2453,6 +2454,23 @@ export const runtimeCatalog = {
                 "ETH"
               ],
               "provider": "evm-arbitrum-sepolia-organizational"
+            },
+            {
+              "network": "tempo-testnet",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://payroll.calculate",
+              "method": null,
+              "note": "Tempo Testnet token Payroll binds the off-chain batch commitment to the Kernel-routed Maker/Checker settlement receipt.",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "supportsExecution": true,
+              "supportsProof": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "AlphaUSD"
+              ],
+              "provider": "evm-tempo-testnet-organizational"
             },
             {
               "network": "base-sepolia",
@@ -2779,18 +2797,18 @@ export const runtimeCatalog = {
               "stage": "available",
               "environment": "testnet",
               "chainId": "42431",
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
-              "executable": false,
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "executable": true,
               "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
-                "USD"
+                "AlphaUSD"
               ],
-              "provider": "evm-tempo-testnet"
+              "provider": "evm-tempo-testnet-organizational"
             },
             {
               "network": "tempo-mainnet",
@@ -2924,6 +2942,23 @@ export const runtimeCatalog = {
                 "ETH"
               ],
               "provider": "evm-arbitrum-sepolia-organizational"
+            },
+            {
+              "network": "tempo-testnet",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://payroll.approve",
+              "method": null,
+              "note": "Tempo Testnet token Payroll approval is enforced by the independently compiled token payroll contract and checker role.",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "supportsExecution": true,
+              "supportsProof": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "AlphaUSD"
+              ],
+              "provider": "evm-tempo-testnet-organizational"
             },
             {
               "network": "base-sepolia",
@@ -3250,18 +3285,18 @@ export const runtimeCatalog = {
               "stage": "available",
               "environment": "testnet",
               "chainId": "42431",
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
-              "executable": false,
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "executable": true,
               "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
-                "USD"
+                "AlphaUSD"
               ],
-              "provider": "evm-tempo-testnet"
+              "provider": "evm-tempo-testnet-organizational"
             },
             {
               "network": "tempo-mainnet",
@@ -3395,6 +3430,23 @@ export const runtimeCatalog = {
                 "ETH"
               ],
               "provider": "evm-arbitrum-sepolia-organizational"
+            },
+            {
+              "network": "tempo-testnet",
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://payroll.settle",
+              "method": null,
+              "note": "Tempo Testnet token Payroll settlement is receipt-bound and transfers only the approved token amount to the committed recipient.",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "supportsExecution": true,
+              "supportsProof": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
+              "supportedAssets": [
+                "AlphaUSD"
+              ],
+              "provider": "evm-tempo-testnet-organizational"
             },
             {
               "network": "base-sepolia",
@@ -3721,18 +3773,18 @@ export const runtimeCatalog = {
               "stage": "available",
               "environment": "testnet",
               "chainId": "42431",
-              "declared": false,
-              "mode": "unbound",
-              "evidenceStatus": "planned",
-              "evidence": "none",
-              "executable": false,
+              "declared": true,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "executable": true,
               "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
-                "USD"
+                "AlphaUSD"
               ],
-              "provider": "evm-tempo-testnet"
+              "provider": "evm-tempo-testnet-organizational"
             },
             {
               "network": "tempo-mainnet",
