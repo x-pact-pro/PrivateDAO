@@ -107,7 +107,7 @@ export function getConfig(env = process.env) {
 }
 
 export async function hydrateConfig(config, env = process.env) {
-  if (!env.AGENT_EXCHANGE_SOLANA_RPC_SECRET_ID && !config.alchemySecretId) return config;
+  if (!env.AGENT_EXCHANGE_SOLANA_RPC_SECRET_ID && !config.alchemySecretId && !config.mongoSecretId && !config.ibmSecretId && !config.githubSecretId && !config.payoutSecretId && !env.AGENT_EXCHANGE_ADMIN_SECRET_ID) return config;
   const [{ SecretsManagerClient, GetSecretValueCommand }] = await Promise.all([
     import("@aws-sdk/client-secrets-manager"),
   ]);
@@ -176,8 +176,15 @@ export async function hydrateConfig(config, env = process.env) {
   ];
   for (const [secretId, apply] of optionalSecrets) {
     if (!secretId) continue;
-    const optional = await client.send(new GetSecretValueCommand({ SecretId: secretId }));
-    apply(parseOptional(optional.SecretString), optional.SecretString || "");
+    try {
+      const optional = await client.send(new GetSecretValueCommand({ SecretId: secretId }));
+      apply(parseOptional(optional.SecretString), optional.SecretString || "");
+    } catch (error) {
+      // Settlement is deliberately inert until the operator provisions the
+      // signer. A missing payout secret must not take down buyer-facing APIs.
+      if (secretId === config.payoutSecretId && error?.name === "ResourceNotFoundException") continue;
+      throw error;
+    }
   }
   return config;
 }
