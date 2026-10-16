@@ -334,10 +334,28 @@ assert.throws(
   () => gateway.receipt(forgedExecutionContext, "maker"),
   (error) => error?.code === "INVALID_INTENT",
 );
-assert.throws(
-  () => policyRuntime.gateway.prepare({ ...intent, context: { ...intent.context, product: "payroll", capability: "payroll.settle", requestId: "payroll-legacy-settle", idempotencyKey: "payroll-legacy-settle-key" } }, "maker"),
-  (error) => error?.code === "APPLICATION_BOUNDARY_VIOLATION",
+const payrollSettlementPrepared = await policyRuntime.gateway.prepare(
+  {
+    ...intent,
+    context: {
+      ...intent.context,
+      product: "payroll",
+      capability: "payroll.settle",
+      network: "solana-devnet",
+      requestId: "payroll-kernel-settle",
+      idempotencyKey: "payroll-kernel-settle-key",
+    },
+    payload: {
+      batchId: "batch-runtime-test",
+      policyHash: "a".repeat(64),
+      approved: true,
+      recipients: [{ commitment: "b".repeat(64), netCents: 1000 }],
+    },
+  },
+  "maker",
 );
+assert.equal(payrollSettlementPrepared.executionId, "payroll-settle-payroll-kernel-settle");
+assert.equal(payrollSettlementPrepared.intent.context.network, "solana-devnet");
 assert.throws(
   () => discoveryRuntime.gateway.prepare({ ...discoveryIntent, context: { ...discoveryIntent.context, capability: "agent.invoke", requestId: "agent-invoke-unbound", idempotencyKey: "agent-invoke-unbound-key" } }, "agent"),
   (error) => error?.code === "APPLICATION_BOUNDARY_VIOLATION",

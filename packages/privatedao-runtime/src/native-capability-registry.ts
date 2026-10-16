@@ -109,7 +109,7 @@ const SOLANA_DEVNET_GOVERNANCE_EVIDENCE = {
 } as const;
 
 const SOLANA_DEVNET_PAYROLL_EVIDENCE = {
-  commit: "pending",
+  commit: "333ec49a6",
   timestamp: "2026-10-16T02:11:11.152Z",
   providers: {
     calculate: "privatedao-payroll-calculation",
