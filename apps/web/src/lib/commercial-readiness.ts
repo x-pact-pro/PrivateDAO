@@ -391,7 +391,10 @@ export function buildCommercialSignedLicense(input: {
   const plan = getCommercialPlan(input.licenseType);
   const features = plan.includes;
   const licenseId = stableId([input.organizationId, input.licenseType, input.licenseStart, input.licenseEnd].join(":")).slice(0, 32);
-  const signingSecret = process.env.PD_LICENSE_SIGNING_SECRET || "privatedao-public-review-license-boundary";
+  const signingSecret = process.env.PD_LICENSE_SIGNING_SECRET?.trim() || "";
+  if (!signingSecret) {
+    throw new Error("Commercial license signing is not configured.");
+  }
   const payload = JSON.stringify({
     licenseId,
     organizationId: input.organizationId,

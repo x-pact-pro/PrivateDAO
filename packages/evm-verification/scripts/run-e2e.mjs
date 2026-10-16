@@ -1,7 +1,7 @@
 import { readFile, writeFile, mkdir } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { buildPoseidon } from "circomlibjs";
+import { Poseidon } from "@iden3/js-crypto";
 import * as snarkjs from "snarkjs";
 import {
   createPublicClient,
@@ -15,15 +15,15 @@ import {
   toBytes,
 } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
-import { createClient as createTempoClient } from "viem/tempo";
+import { Account as TempoAccount, createClient as createTempoClient } from "viem/tempo";
 import { tempoModerato } from "viem/chains";
-import { EVM_NETWORK_CONFIGS, EvmNetworkAdapter, InMemoryProtocolRegistry, ViemEvmTransport } from "../../privatedao-runtime/src/index.ts";
+import { EVM_NETWORK_CONFIGS, EvmNetworkAdapter, InMemoryProviderRegistry, ViemEvmTransport, createPrivateDaoRuntime } from "../../privatedao-runtime/src/index.ts";
 
 const { groth16 } = snarkjs;
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../..");
 const PACKAGE = path.join(ROOT, "packages/evm-verification");
 const CIRCUIT = "private_dao_blind_policy_overlay";
-const TEMPO_FEE_TOKEN = "0x20c0000000000000000000000000000000000001";
+const TEMPO_FEE_TOKEN = "0x20c0000000000000000000000000000000000000";
 const RECEIPT_TIMEOUT_MS = Number(process.env.PRIVATEDAO_EVM_RECEIPT_TIMEOUT_MS || 120_000);
 const FIELD = 21888242871839275222246405745257275088548364400416034343698204186575808495617n;
 const PRODUCT_ID = keccak256(toBytes("blind-verification"));
@@ -60,8 +60,7 @@ const verifierBytecode = `0x${(await readFile(path.join(PACKAGE, "artifacts/Grot
 const blindBytecode = `0x${(await readFile(path.join(PACKAGE, "artifacts/BlindVerificationRegistry.bin"), "utf8")).trim()}`;
 const recordBytecode = `0x${(await readFile(path.join(PACKAGE, "artifacts/RecordVerificationRegistry.bin"), "utf8")).trim()}`;
 
-const poseidon = await buildPoseidon();
-const poseidonField = (values) => BigInt(poseidon.F.toString(poseidon(values.map((value) => BigInt(value)))));
+const poseidonField = (values) => Poseidon.hash(values.map((value) => BigInt(value)));
 
 const domainTypes = [
   { type: "string" }, { type: "uint256" }, { type: "address" },
@@ -73,36 +72,24 @@ const revokeFunctionAbi = parseAbi(["function revoke(bytes32)"]);
 const verifyRecordAbi = parseAbi(["function verifyRecord(bytes32,bytes32) view returns (bool)", "function isValid(bytes32) view returns (bool)"]);
 const verifyBlindAbi = parseAbi(["function isValid(bytes32) view returns (bool)"]);
 
-function createCapabilityRegistry(networkId) {
-  const registry = new InMemoryProtocolRegistry();
-  for (const [product, capability, action] of [
-    ["blind-verification", "verification.blind.prove", "verify-and-anchor"],
-    ["record-verification", "verification.record.create", "anchor-record"],
-    ["record-verification", "verification.record.verify", "verify-record"],
-    ["record-verification", "verification.record.revoke", "revoke-record"],
-    ["blind-verification", "verification.blind.revoke", "revoke-blind"],
-  ]) {
-    registry.register({
-      capability: { id: capability, version: "1.0.0", product, networks: [networkId], requiresSignature: true, supportsAsync: false, receiptSchema: "privatedao.evm.v1" },
-      product,
-      action,
-      policy: { roles: ["maker", "auditor"], permissions: ["execution.prepare", "execution.submit", "receipt.read", "proof.verify"] },
-    });
-  }
-  return registry;
-}
-
-async function executeViaKernel(adapter, registry, { network, product, capability, requestId, payload }) {
-  const registration = registry.resolve(capability);
-  expect(registration.product === product && registry.authorize(capability, "execution.submit", "maker"), `capability registry rejected ${capability}`);
+async function executeViaKernel(runtime, { network, provider, product, capability, requestId, payload }) {
   const intent = {
-    context: { requestId, idempotencyKey: `${network}:${requestId}`, product, capability, network },
+    context: {
+      requestId,
+      idempotencyKey: `${network}:${requestId}`,
+      product,
+      capability,
+      network,
+      provider,
+      organizationId: "privatedao-evm-e2e",
+      actorId: payload.account,
+    },
     payload,
     accounts: [{ role: "payer", address: payload.account, network }],
   };
-  const prepared = await adapter.prepare(intent);
-  await adapter.submit(prepared, prepared.unsignedPayload);
-  return adapter.receipt(prepared.executionId);
+  const prepared = await runtime.gateway.prepare(intent, "maker");
+  await runtime.gateway.submit(prepared, prepared.unsignedPayload, "maker");
+  return runtime.gateway.receipt({ executionId: prepared.executionId, intent: prepared.intent }, "maker");
 }
 
 function chainFor(network) {
@@ -197,7 +184,6 @@ async function useOrDeploy(existing, key, wallet, publicClient, abi, bytecode, a
 }
 
 async function main() {
-  const account = privateKeyToAccount(DEPLOYER_KEY);
   const runId = `${Date.now()}-${process.pid}`;
   const results = [];
   const deployed = {};
@@ -207,22 +193,28 @@ async function main() {
     if (!rpcUrl || !/^https:\/\//.test(rpcUrl)) throw new Error(`${network.rpcEnv} must be an explicit HTTPS RPC URL.`);
     const chain = chainFor(network);
     const transport = http(rpcUrl, { timeout: 30_000 });
-    const tempoClient = network.id === "tempo-testnet"
-      ? createTempoClient({ account, chain: chain.extend({ feeToken: TEMPO_FEE_TOKEN }), transport })
-      : null;
-    const publicClient = tempoClient ?? createPublicClient({ chain, transport });
-    const wallet = tempoClient ?? createWalletClient({ account, chain, transport });
+    const executionChain = network.id === "tempo-testnet"
+      ? tempoModerato.extend({ feeToken: TEMPO_FEE_TOKEN })
+      : chain;
+    const publicClient = createPublicClient({ chain: executionChain, transport });
+    const account = network.id === "tempo-testnet" ? TempoAccount.fromSecp256k1(DEPLOYER_KEY) : privateKeyToAccount(DEPLOYER_KEY);
+    const wallet = network.id === "tempo-testnet"
+      ? createTempoClient({ account, chain: tempoModerato, transport, feeToken: TEMPO_FEE_TOKEN })
+      : createWalletClient({ account, chain: executionChain, transport });
     const observedChainId = await publicClient.getChainId();
     expect(observedChainId === network.chainId, `${network.id} RPC chain mismatch: ${observedChainId}`);
     const config = EVM_NETWORK_CONFIGS.find((entry) => entry.network === network.id);
     expect(config, `${network.id} is missing from the Kernel EVM configuration`);
-    const capabilityRegistry = createCapabilityRegistry(network.id);
+    const providerId = `privatedao-evm-${network.id}`;
     const adapter = new EvmNetworkAdapter({
-      id: `privatedao-evm-${network.id}`,
+      id: providerId,
       config,
       capabilities: ["verification.blind.prove", "verification.record.create", "verification.record.verify", "verification.record.revoke", "verification.blind.revoke"],
       transport: new ViemEvmTransport(publicClient, wallet, network.id, String(network.chainId), "testnet", network.explorer, network.nativeAsset),
     });
+    const providers = new InMemoryProviderRegistry();
+    providers.register(adapter);
+    const runtime = createPrivateDaoRuntime(providers);
     const health = await adapter.health();
     expect(health.ok && health.chainId === String(network.chainId), `${network.id} Kernel adapter health failed`);
     const balance = await publicClient.getBalance({ address: account.address });
@@ -239,7 +231,7 @@ async function main() {
     const recordId = keccak256(toBytes(`${network.id}:record-${runId}`));
     const expiresAt = BigInt(Math.floor(Date.now() / 1000) + 86400);
     const digest = keccak256(toBytes(JSON.stringify({ schema: "private-dao-record-v1", recordId, claim: "verified" })));
-    const recordReceipt = await executeViaKernel(adapter, capabilityRegistry, { network: network.id, product: "record-verification", capability: "verification.record.create", requestId: `${network.id}-record-anchor-${runId}`, payload: { kind: "contract-write", address: record.address, abi: recordFunctionAbi, functionName: "anchorRecord", args: [PRODUCT_ID, SCHEMA_ID, recordId, digest, BigInt(network.chainId), expiresAt], account: account.address } });
+    const recordReceipt = await executeViaKernel(runtime, { network: network.id, provider: providerId, product: "record-verification", capability: "verification.record.create", requestId: `${network.id}-record-anchor-${runId}`, payload: { kind: "contract-write", address: record.address, abi: recordFunctionAbi, functionName: "anchorRecord", args: [PRODUCT_ID, SCHEMA_ID, recordId, digest, BigInt(network.chainId), expiresAt], account: account.address } });
     const recordHash = recordReceipt.signatures[0];
     const recordEvent = await eventArgsFromReceipt(publicClient, recordHash, recordAbi, "RecordAnchored");
     const recordVerificationId = recordEvent.verificationId;
@@ -264,7 +256,7 @@ async function main() {
     };
     const fullProof = await groth16.fullProve(inputs, path.join(ROOT, `zk/build/${CIRCUIT}_js/${CIRCUIT}.wasm`), path.join(ROOT, `zk/setup/${CIRCUIT}_final.zkey`));
     const [a, b, c, publicSignals] = proofArgs({ ...fullProof.proof, publicSignals: fullProof.publicSignals });
-    const blindReceipt = await executeViaKernel(adapter, capabilityRegistry, { network: network.id, product: "blind-verification", capability: "verification.blind.prove", requestId: `${network.id}-blind-anchor-${runId}`, payload: { kind: "contract-write", address: blind.address, abi: blindFunctionAbi, functionName: "verifyAndAnchor", args: [PRODUCT_ID, SCHEMA_ID, recordId, BigInt(network.chainId), expiresAt, a, b, c, publicSignals], account: account.address } });
+    const blindReceipt = await executeViaKernel(runtime, { network: network.id, provider: providerId, product: "blind-verification", capability: "verification.blind.prove", requestId: `${network.id}-blind-anchor-${runId}`, payload: { kind: "contract-write", address: blind.address, abi: blindFunctionAbi, functionName: "verifyAndAnchor", args: [PRODUCT_ID, SCHEMA_ID, recordId, BigInt(network.chainId), expiresAt, a, b, c, publicSignals], account: account.address } });
     const blindHash = blindReceipt.signatures[0];
     const blindEvent = await eventArgsFromReceipt(publicClient, blindHash, blindAbi, "BlindProofVerified");
     const blindVerificationId = blindEvent.verificationId;
@@ -289,12 +281,12 @@ async function main() {
 
     const revokeRecordId = keccak256(toBytes(`${network.id}:revoke-record-${runId}`));
     const revokeDigest = keccak256(toBytes(JSON.stringify({ schema: "private-dao-record-v1", recordId: revokeRecordId, claim: "revocation-test" })));
-    const revokeRecordReceipt = await executeViaKernel(adapter, capabilityRegistry, { network: network.id, product: "record-verification", capability: "verification.record.create", requestId: `${network.id}-record-revoke-anchor-${runId}`, payload: { kind: "contract-write", address: record.address, abi: recordFunctionAbi, functionName: "anchorRecord", args: [PRODUCT_ID, SCHEMA_ID, revokeRecordId, revokeDigest, BigInt(network.chainId), expiresAt], account: account.address } });
+    const revokeRecordReceipt = await executeViaKernel(runtime, { network: network.id, provider: providerId, product: "record-verification", capability: "verification.record.create", requestId: `${network.id}-record-revoke-anchor-${runId}`, payload: { kind: "contract-write", address: record.address, abi: recordFunctionAbi, functionName: "anchorRecord", args: [PRODUCT_ID, SCHEMA_ID, revokeRecordId, revokeDigest, BigInt(network.chainId), expiresAt], account: account.address } });
     const revokeRecordHash = revokeRecordReceipt.signatures[0];
     const revokeRecordEvent = await eventArgsFromReceipt(publicClient, revokeRecordHash, recordAbi, "RecordAnchored");
     const revokeRecordVerificationId = revokeRecordEvent.verificationId;
     await readLatestUntilTrue(publicClient, { address: record.address, abi: verifyRecordAbi, functionName: "isValid", args: [revokeRecordVerificationId] }, `${network.id} disposable record`);
-    const recordRevokeReceipt = await executeViaKernel(adapter, capabilityRegistry, { network: network.id, product: "record-verification", capability: "verification.record.revoke", requestId: `${network.id}-record-revoke-${runId}`, payload: { kind: "contract-write", address: record.address, abi: revokeFunctionAbi, functionName: "revoke", args: [revokeRecordVerificationId], account: account.address } });
+    const recordRevokeReceipt = await executeViaKernel(runtime, { network: network.id, provider: providerId, product: "record-verification", capability: "verification.record.revoke", requestId: `${network.id}-record-revoke-${runId}`, payload: { kind: "contract-write", address: record.address, abi: revokeFunctionAbi, functionName: "revoke", args: [revokeRecordVerificationId], account: account.address } });
     let recordRevoked = false;
     for (let attempt = 0; attempt < 12 && !recordRevoked; attempt += 1) {
       recordRevoked = !(await publicClient.readContract({ address: record.address, abi: verifyRecordAbi, functionName: "isValid", args: [revokeRecordVerificationId] }));
@@ -310,12 +302,12 @@ async function main() {
     };
     const revokeProof = await groth16.fullProve(revokeInputs, path.join(ROOT, `zk/build/${CIRCUIT}_js/${CIRCUIT}.wasm`), path.join(ROOT, `zk/setup/${CIRCUIT}_final.zkey`));
     const [revokeA, revokeB, revokeC, revokeSignals] = proofArgs({ ...revokeProof.proof, publicSignals: revokeProof.publicSignals });
-    const revokeBlindReceipt = await executeViaKernel(adapter, capabilityRegistry, { network: network.id, product: "blind-verification", capability: "verification.blind.prove", requestId: `${network.id}-blind-revoke-anchor-${runId}`, payload: { kind: "contract-write", address: blind.address, abi: blindFunctionAbi, functionName: "verifyAndAnchor", args: [PRODUCT_ID, SCHEMA_ID, revokeRecordId, BigInt(network.chainId), expiresAt, revokeA, revokeB, revokeC, revokeSignals], account: account.address } });
+    const revokeBlindReceipt = await executeViaKernel(runtime, { network: network.id, provider: providerId, product: "blind-verification", capability: "verification.blind.prove", requestId: `${network.id}-blind-revoke-anchor-${runId}`, payload: { kind: "contract-write", address: blind.address, abi: blindFunctionAbi, functionName: "verifyAndAnchor", args: [PRODUCT_ID, SCHEMA_ID, revokeRecordId, BigInt(network.chainId), expiresAt, revokeA, revokeB, revokeC, revokeSignals], account: account.address } });
     const revokeBlindHash = revokeBlindReceipt.signatures[0];
     const revokeBlindEvent = await eventArgsFromReceipt(publicClient, revokeBlindHash, blindAbi, "BlindProofVerified");
     const revokeBlindVerificationId = revokeBlindEvent.verificationId;
     await readLatestUntilTrue(publicClient, { address: blind.address, abi: verifyBlindAbi, functionName: "isValid", args: [revokeBlindVerificationId] }, `${network.id} disposable blind proof`);
-    const blindRevokeReceipt = await executeViaKernel(adapter, capabilityRegistry, { network: network.id, product: "blind-verification", capability: "verification.blind.revoke", requestId: `${network.id}-blind-revoke-${runId}`, payload: { kind: "contract-write", address: blind.address, abi: revokeFunctionAbi, functionName: "revoke", args: [revokeBlindVerificationId], account: account.address } });
+    const blindRevokeReceipt = await executeViaKernel(runtime, { network: network.id, provider: providerId, product: "blind-verification", capability: "verification.blind.revoke", requestId: `${network.id}-blind-revoke-${runId}`, payload: { kind: "contract-write", address: blind.address, abi: revokeFunctionAbi, functionName: "revoke", args: [revokeBlindVerificationId], account: account.address } });
     let blindRevoked = false;
     for (let attempt = 0; attempt < 12 && !blindRevoked; attempt += 1) {
       blindRevoked = !(await publicClient.readContract({ address: blind.address, abi: verifyBlindAbi, functionName: "isValid", args: [revokeBlindVerificationId] }));

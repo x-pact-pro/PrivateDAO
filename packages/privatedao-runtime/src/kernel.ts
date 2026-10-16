@@ -111,6 +111,7 @@ export class InMemoryProviderRegistry implements ProviderRegistry {
 type ExecutionRecord<TUnsigned> = {
   provider: KernelProvider;
   prepared: PreparedExecution<TUnsigned>;
+  intentFingerprint: string;
   state: ExecutionState;
   submission?: { executionId: string; signatures: string[] };
   receipt?: ExecutionReceipt;
@@ -118,8 +119,8 @@ type ExecutionRecord<TUnsigned> = {
 
 export class PrivateDaoKernel {
   private readonly executions = new Map<string, ExecutionRecord<unknown>>();
-  private readonly idempotency = new Map<string, string>();
-  private readonly inFlightPrepares = new Map<string, Promise<PreparedExecution<unknown>>>();
+  private readonly idempotency = new Map<string, { executionId: string; intentFingerprint: string }>();
+  private readonly inFlightPrepares = new Map<string, { intentFingerprint: string; promise: Promise<PreparedExecution<unknown>> }>();
   private readonly inFlightSubmissions = new Map<string, Promise<{ executionId: string; signatures: string[] }>>();
 
   private readonly telemetry?: KernelTelemetry;
@@ -141,20 +142,33 @@ export class PrivateDaoKernel {
       provider: intent.context.provider,
     });
     const prepareKey = this.idempotencyKey(intent);
-    const existingId = this.idempotency.get(prepareKey);
-    if (existingId) {
-      const existing = this.executions.get(existingId);
-      if (existing) return existing.prepared as PreparedExecution<TUnsigned>;
+    const intentFingerprint = fingerprintIntent(intent);
+    const existing = this.idempotency.get(prepareKey);
+    if (existing) {
+      if (existing.intentFingerprint !== intentFingerprint) {
+        throw new KernelError("DUPLICATE_IDEMPOTENCY_KEY", "The idempotency key is already bound to a different execution intent.", {
+          idempotencyKey: intent.context.idempotencyKey,
+        });
+      }
+      const existingRecord = this.executions.get(existing.executionId);
+      if (existingRecord) return existingRecord.prepared as PreparedExecution<TUnsigned>;
     }
     const inFlight = this.inFlightPrepares.get(prepareKey);
-    if (inFlight) return (await inFlight) as PreparedExecution<TUnsigned>;
+    if (inFlight) {
+      if (inFlight.intentFingerprint !== intentFingerprint) {
+        throw new KernelError("DUPLICATE_IDEMPOTENCY_KEY", "The idempotency key is already being prepared for a different execution intent.", {
+          idempotencyKey: intent.context.idempotencyKey,
+        });
+      }
+      return (await inFlight.promise) as PreparedExecution<TUnsigned>;
+    }
 
     const provider = this.registry.resolve(intent.context.network, intent.context.capability, intent.context.provider);
     const preparation = (async (): Promise<PreparedExecution<unknown>> => {
       try {
         const prepared = await provider.prepare<TPayload, TUnsigned>(intent);
-        this.executions.set(prepared.executionId, { provider, prepared, state: prepared.state });
-        this.idempotency.set(prepareKey, prepared.executionId);
+        this.executions.set(prepared.executionId, { provider, prepared, intentFingerprint, state: prepared.state });
+        this.idempotency.set(prepareKey, { executionId: prepared.executionId, intentFingerprint });
         this.emit({
           name: "execution.prepare.completed",
           executionId: prepared.executionId,
@@ -179,11 +193,11 @@ export class PrivateDaoKernel {
         throw this.providerError("Provider preparation failed.", error);
       }
     })();
-    this.inFlightPrepares.set(prepareKey, preparation);
+    this.inFlightPrepares.set(prepareKey, { intentFingerprint, promise: preparation });
     try {
       return (await preparation) as PreparedExecution<TUnsigned>;
     } finally {
-      if (this.inFlightPrepares.get(prepareKey) === preparation) this.inFlightPrepares.delete(prepareKey);
+      if (this.inFlightPrepares.get(prepareKey)?.promise === preparation) this.inFlightPrepares.delete(prepareKey);
     }
   }
 
@@ -260,7 +274,16 @@ export class PrivateDaoKernel {
     const record = this.getRecord(executionId);
     try {
       const receipt = await record.provider.receipt<TResult>(executionId);
-      if (receipt.executionId !== executionId) throw new Error("Provider returned a receipt for a different execution.");
+      const expectedContext = record.prepared.intent.context;
+      if (
+        receipt.executionId !== executionId ||
+        receipt.requestId !== expectedContext.requestId ||
+        receipt.capability !== expectedContext.capability ||
+        receipt.network !== expectedContext.network ||
+        (receipt.provider !== undefined && receipt.provider !== record.provider.id)
+      ) {
+        throw new Error("Provider returned a receipt that does not match the prepared execution context.");
+      }
       record.receipt = receipt;
       record.state = receipt.state;
       this.emit({
@@ -312,6 +335,22 @@ export class PrivateDaoKernel {
       cause: error instanceof Error ? error.message : String(error),
     });
   }
+}
+
+function fingerprintIntent(intent: ExecutionIntent<unknown>): string {
+  return JSON.stringify(canonicalize(intent));
+}
+
+function canonicalize(value: unknown): unknown {
+  if (typeof value === "bigint") return { __bigint: value.toString() };
+  if (value instanceof Uint8Array) return { __bytes: Array.from(value) };
+  if (Array.isArray(value)) return value.map((entry) => canonicalize(entry));
+  if (value && typeof value === "object") {
+    return Object.fromEntries(Object.entries(value as Record<string, unknown>)
+      .sort(([left], [right]) => left.localeCompare(right))
+      .map(([key, entry]) => [key, canonicalize(entry)]));
+  }
+  return value;
 }
 
 export interface ReconciliationLine {

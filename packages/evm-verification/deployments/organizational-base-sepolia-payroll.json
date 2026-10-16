@@ -1,0 +1,42 @@
+{
+  "network": "base-sepolia",
+  "chainId": 84532,
+  "environment": "testnet",
+  "deployer": "0x1c3D6757651B617D7e5c08aE6F7a7F65eEafD75F",
+  "checker": "0x06048975e0Cd7F5D7CC485cdB200401936a7CA3b",
+  "createdAt": "2026-10-15T18:08:23.902Z",
+  "contracts": {
+    "treasury": {
+      "address": "0x79a054efe2d80260eb419ffb81f7bdb1dacc50de",
+      "hash": "0x7221e0ecc4f47a84904cbd0420e9d4172f35508589287075411f73afb9db5b17",
+      "blockNumber": "48159710"
+    },
+    "payroll": {
+      "address": "0x07236df28d60ef7cde8a8a3fe5e62ceade706837",
+      "hash": "0x750406d387e400dab68db54e8db93af4ddcf2a0ba0d4beeca5cd6febc606b6d1",
+      "blockNumber": "48159720"
+    }
+  },
+  "evidence": {
+    "treasury": {
+      "checkerFundingHash": "0x674e14babd6fb165653701ae349a3dc14fe4484fd22c448d39dbb38173ece58a",
+      "treasuryApprovalHash": null,
+      "treasuryFundingHash": "0x4d991e17d36f14dec01a8fa3d7617354748155000349fae021da7b8e59f12e25",
+      "requestedHash": "0x71d1bbdfc66b00def6111595014b956e7980264a332fdcbc7bf97a3f1175cb04",
+      "approvedHash": "0x0b2fefa12659d51982ca8ed8053ffb56f3631f8a3686549441d304d26f85f4a1",
+      "executedHash": "0x35f6fc283a8720021c3738925e2efb1455e7db112f2bb81cce7720926f105fbc",
+      "paymentId": "0x400006602b64b9192cb9f7d244c8809fd580adf8e15cdc90e8323cde33820dc3",
+      "status": "executed"
+    },
+    "payroll": {
+      "payrollFundingHash": "0xfe354612fcae208f14c6873c8176820fe838aa7a1b3d2a4d6ea8c9622d9e4bd4",
+      "payrollCreateHash": "0x08dcde7fe9da8caa925f7e8629f1c5a51509a14e1bd986ce53d0abd6c462e36e",
+      "payrollApproveHash": "0x5028628ffcf58fa4880025f1a0c3f0c0b03bb3bf2e1450e23c5761410d43a7ab",
+      "payrollSettleHash": "0x00b750b2587b052b06d1ac71dda2e3bfdc3a55217c80cab34f2eb1096ad8decc",
+      "payrollBatchId": "0xcd9865493dc8ceef3723c31613ffe3614e0ed80a66b753e3c38a4d509b708c64",
+      "payrollBatchCommitment": "0x4a040be9439ce7e82a069215355c323a0ada4ede8eeca4049ef1cad7290b36b5",
+      "status": "settled"
+    }
+  },
+  "schema": "privatedao.organizational-payroll-e2e.v1"
+}

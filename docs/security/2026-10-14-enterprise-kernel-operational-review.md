@@ -1,12 +1,12 @@
 # Enterprise Kernel Operational Security Review
 
-Date: 2026-10-14
+Date: 2026-10-15
 
 ## Scope
 
 This review covers the provider-neutral runtime, product/application boundary,
-the Agent Exchange separation, the Zcash Testnet foundation path, and the Rust
-dependency graph used by the Zcash provider.
+the Agent Exchange separation, BNB and HyperEVM Testnet evidence, the Zcash
+Testnet runner, and the Rust dependency graph used by the Zcash provider.
 
 ## Results
 
@@ -18,29 +18,50 @@ dependency graph used by the Zcash provider.
   with the context recorded at preparation time, preventing execution-ID
   context substitution across products, capabilities, or networks.
 - Zcash remains Testnet-only in the adapter and Mainnet construction is
-  rejected. Foundation tests must not be presented as product-specific E2E.
+  rejected. The product runner now has explicit product/capability selection,
+  balance-readiness gating, dry-run output, stale-wallet-tip checks, and a
+  default broadcast-off path. Foundation tests must not be presented as
+  product-specific E2E.
+- BNB Testnet and HyperEVM Testnet receipts are independently rechecked against
+  chain IDs 97 and 998. HyperEVM evidence is not used for HyperCore claims.
 - The actionable Rustls advisories were remediated by updating `rustls` from
   `0.23.45` to `0.23.46` in the lockfile.
-- `npm audit --omit=dev` reports no production vulnerabilities when the Node
-  dependency tree is installed.
+- The `rkyv 0.7.46` vulnerability was remediated by a narrowly scoped local
+  compatibility patch for `magicblock-delegation-program-api 3.1.0`. The
+  patch changes only its `AlignedVec` dependency to `rkyv 0.8.18`; the
+  MagicBlock public API and the ephemeral-rollups SDK version remain fixed.
+- The patched auction crate passes `cargo check -p privatedao-auction --lib`.
+  `cargo audit` reports no Rust vulnerabilities, with maintenance and
+  unsoundness warnings recorded below.
+- Root `npm audit --omit=dev` reports zero production vulnerabilities. The full
+  root audit has only low-severity development findings after the Mocha and
+  brace-expansion lockfile refresh. The separate `apps/web` production
+  lockfile reports 12 transitive findings (9 high and 3 low) in the React
+  Native/Metro/MagicBlock graph; those findings are not claimed as resolved.
 
 ## Remaining dependency findings
 
-`cargo audit` still reports one vulnerability and maintenance warnings in
-transitive Solana/MagicBlock dependencies:
+`cargo audit` now reports no vulnerabilities, but still reports maintenance
+and unsoundness warnings in transitive Solana/MagicBlock dependencies:
 
-- `rkyv 0.7.46` is pulled through `magicblock-delegation-program-api` and
-  `ephemeral-rollups-sdk` by `programs/privatedao-auction`.
 - `libsecp256k1 0.6.0` and `rand 0.7.3` are pulled through
   `solana-secp256k1-recover` and `solana-program` on the same path.
 - `atomic-polyfill`, `bincode`, `js-sys`, and `wasm-bindgen` have maintenance
   or yanked-release warnings in the transitive graph.
 
-These cannot be safely replaced with an arbitrary direct dependency without
-validating the Anchor and MagicBlock ABI compatibility. The next remediation
-must upgrade the upstream Solana/MagicBlock stack as a compatibility change,
-then rerun the full program build and tests. No keypairs were generated and no
-deployment was performed during this review.
+The local MagicBlock patch is intentionally limited to the vulnerable archive
+container dependency. Replacing the remaining Solana cryptography or wire
+format dependencies requires an upstream SDK compatibility change and must be
+validated with the full Anchor and MagicBlock test suite. No keypairs were
+generated and no deployment was performed during this review.
+
+The web residuals are isolated to transitive packages pulled by the Solana
+wallet adapter and MagicBlock SDK: React Native/Metro, `micromatch`/`braces`,
+`@phala/dcap-qvl`, and `elliptic`. `next` and `eslint-config-next` are pinned
+to the current compatible 16.4.1 release. The remaining ESLint and React
+Native/Metro advisories have no compatible non-vulnerable upgrade identified
+in this review; the suggested downgrade to Next 14 is not compatible with the
+current application and was not applied.
 
 ## Release gate
 

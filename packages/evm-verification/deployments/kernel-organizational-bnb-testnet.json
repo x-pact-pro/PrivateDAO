@@ -1,0 +1,35 @@
+{
+  "schema": "privatedao.kernel-organizational-e2e.v1",
+  "network": "bnb-testnet",
+  "chainId": 97,
+  "environment": "testnet",
+  "provider": "evm-bnb-testnet-organizational",
+  "gateway": "ProductExecutionGateway",
+  "verifiedAt": "2026-10-15T03:05:58.245Z",
+  "results": [
+    {
+      "product": "treasury",
+      "capability": "treasury.policy.check",
+      "executionId": "evm-treasury-23c80e13-9504-4e3c-bbc5-891764f97afd",
+      "txHash": "0x0ce89d4e1711e148d1ef918c0f69959dc4fee4644154ca21c0a557f6dad3aef7",
+      "blockNumber": "136859014",
+      "explorerUrl": "https://testnet.bscscan.com/tx/0x0ce89d4e1711e148d1ef918c0f69959dc4fee4644154ca21c0a557f6dad3aef7"
+    },
+    {
+      "product": "governance",
+      "capability": "governance.proposal.execute",
+      "executionId": "evm-governance-8db787b9-8858-4bce-83ae-697038d7ad95",
+      "txHash": "0x3a47f884f4c8c0c168ef8de42f2817c68c6608088a6e7a4fb8e16e1870eb51e6",
+      "blockNumber": "136859026",
+      "explorerUrl": "https://testnet.bscscan.com/tx/0x3a47f884f4c8c0c168ef8de42f2817c68c6608088a6e7a4fb8e16e1870eb51e6"
+    },
+    {
+      "product": "auction",
+      "capability": "auction.bid.commit",
+      "executionId": "evm-auction-c4f9c85a-0190-4c22-94a9-731fa26ec9a7",
+      "txHash": "0xa3ceaa7f6549649076e79e9eb38aa477e0d68aec1d9388285b33c2ebe44dd9d4",
+      "blockNumber": "136859040",
+      "explorerUrl": "https://testnet.bscscan.com/tx/0xa3ceaa7f6549649076e79e9eb38aa477e0d68aec1d9388285b33c2ebe44dd9d4"
+    }
+  ]
+}

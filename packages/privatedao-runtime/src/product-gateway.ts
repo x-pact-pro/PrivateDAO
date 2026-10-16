@@ -68,8 +68,14 @@ export class ProductExecutionGateway {
   private authorize(context: ExecutionContext, permission: ProtocolPermission, role: ProtocolRole): void {
     this.assertApplicationBinding(context);
     const registration = this.protocols.resolve(context.capability);
-    if (registration.product !== context.product) {
+    if (registration.product !== context.product || registration.capability.product !== context.product) {
       throw new KernelError("INVALID_INTENT", "The protocol capability does not belong to the requested product.");
+    }
+    if (!registration.capability.networks.includes(context.network)) {
+      throw new KernelError("UNSUPPORTED_NETWORK", "The protocol capability is not declared for the requested network.", {
+        capability: context.capability,
+        network: context.network,
+      });
     }
     if (!this.protocols.authorize(context.capability, permission, role, registration.capability.version)) {
       throw new KernelError("INVALID_INTENT", `Role ${role} is not authorized for ${permission}.`, {

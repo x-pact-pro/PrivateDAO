@@ -1,4 +1,9 @@
-# Dependency Security Audit — 2026-09-10
+# Dependency Security Audit — 2026-09-10 (historical snapshot)
+
+> Historical note: this audit predates the 2026-10-15 Poseidon dependency
+> migration. The legacy `circomlibjs -> ethers 5.x -> elliptic` path described
+> below has since been removed and is covered by the current audit and vector
+> tests in `docs/security-dependency-audit-20261015.md`.
 
 ## Scope
 
@@ -34,7 +39,7 @@ surface is upgraded or isolated and retested.
 | --- | --- | --- |
 | `toml` | `@coral-xyz/anchor` | Deferred; audit reports no compatible fix. Requires a controlled Anchor migration. |
 | `bigint-buffer` | `@solana/spl-token` and `@sqds/multisig` | Deferred; the available forced fix changes the Solana dependency line. |
-| `elliptic` | legacy `ethers` 5.x through `circomlibjs` and MagicBlock transitive packages | Deferred; requires proof/toolchain compatibility tests before replacement. |
+| `elliptic` | legacy `ethers` 5.x through `circomlibjs` and MagicBlock transitive packages | Historical finding. The root ZK path was migrated and vector-tested on 2026-10-15; the separate MagicBlock/TEE path remains upstream-owned. |
 | `fast-uri`, `ajv`, `js-yaml`, `brace-expansion` | mixed tooling and validation paths | Candidate for a dedicated lockfile migration with full CI and runtime regression tests. |
 
 ## Change Decision

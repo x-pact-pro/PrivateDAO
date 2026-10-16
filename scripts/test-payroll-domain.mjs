@@ -57,9 +57,8 @@ try {
   assert.deepEqual(store.reconcile(batch.batchId, checker), { expectedCount: 3, confirmedCount: 3, failedCount: 0, duplicateSignatures: 0, allConfirmed: true });
   const settlementRoot = sha256(JSON.stringify(storedItems.map((item, index) => ({ payoutId: item.payout_id, netCents: item.net_cents, recipientCommitment: item.recipient_commitment, txSignature: signatures[index] }))));
   const field = (value) => (BigInt(`0x${value.slice(0, 62)}`) % 21888242871839275222246405745257275088548364400416034343698204186575808495617n).toString();
-  const { buildPoseidon } = await import("../node_modules/circomlibjs/build/main.cjs");
-  const poseidon = await buildPoseidon();
-  const hash = (...values) => poseidon.F.toString(poseidon(values.map(BigInt)));
+  const { Poseidon } = await import("@iden3/js-crypto");
+  const hash = (...values) => Poseidon.hash(values.map(BigInt)).toString();
   const payrollKey = field(digest);
   const batchKey = field(settlementRoot);
   const salt = field(policy.policyHash);

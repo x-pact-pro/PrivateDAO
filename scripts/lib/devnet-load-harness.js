@@ -55,7 +55,7 @@ const anchor = __importStar(require("@coral-xyz/anchor"));
 const anchor_1 = require("@coral-xyz/anchor");
 const web3_js_1 = require("@solana/web3.js");
 const spl_token_1 = require("@solana/spl-token");
-const circomlibjs_1 = require("circomlibjs");
+const js_crypto_1 = require("@iden3/js-crypto");
 const crypto_1 = __importDefault(require("crypto"));
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
@@ -1478,9 +1478,7 @@ function runLocal(command, args, cwd) {
     }
 }
 async function poseidonHash(...items) {
-    const poseidon = await (0, circomlibjs_1.buildPoseidon)();
-    const F = poseidon.F;
-    return BigInt(F.toString(poseidon(items)));
+    return js_crypto_1.Poseidon.hash(items);
 }
 async function generateVoteProof(state, wallet, weightRaw) {
     const bootstrap = ensureBootstrap(state);

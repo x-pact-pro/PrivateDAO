@@ -7,7 +7,17 @@ if (generated.scope.agentExchangeExcluded !== true) throw new Error("coverage re
 if (generated.scope.products.length !== 6) throw new Error(`expected six enterprise products, found ${generated.scope.products.length}`);
 if (generated.scope.ecosystems.length !== 10) throw new Error(`expected ten ecosystems, found ${generated.scope.ecosystems.length}`);
 if (generated.rows.length !== 60) throw new Error(`expected 60 product/ecosystem rows, found ${generated.rows.length}`);
+const expectedProducts = new Set(generated.scope.products);
+const expectedEcosystems = new Set(generated.scope.ecosystems);
+const rowKeys = new Set();
 for (const row of generated.rows) {
+  if (row.product === "agent" || !expectedProducts.has(row.product)) {
+    throw new Error(`Agent Exchange or unknown product leaked into enterprise coverage: ${row.product}`);
+  }
+  if (!expectedEcosystems.has(row.ecosystem)) throw new Error(`unknown ecosystem in enterprise coverage: ${row.ecosystem}`);
+  const rowKey = `${row.product}/${row.ecosystem}`;
+  if (rowKeys.has(rowKey)) throw new Error(`duplicate enterprise coverage row: ${rowKey}`);
+  rowKeys.add(rowKey);
   if (row.status === "verified" && row.executableLaneCount !== row.declaredLaneCount) {
     throw new Error(`verified row is incomplete: ${row.product}/${row.ecosystem}`);
   }
@@ -18,6 +28,9 @@ for (const row of generated.rows) {
       }
     }
   }
+}
+if (rowKeys.size !== generated.scope.products.length * generated.scope.ecosystems.length) {
+  throw new Error(`enterprise coverage matrix is incomplete: expected ${generated.scope.products.length * generated.scope.ecosystems.length} unique rows, found ${rowKeys.size}`);
 }
 
 const result = spawnSync(process.execPath, ["--import", "tsx", "scripts/build-enterprise-coverage-report.mjs"], { encoding: "utf8" });

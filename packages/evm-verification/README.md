@@ -9,7 +9,18 @@ This package contains the Phase 2 Sepolia/Base Sepolia verification contracts.
   verifier address.
 - `RecordVerificationRegistry.sol` anchors a selective-disclosure record digest
   with chain and contract domain separation, expiry, and owner revocation.
-- `scripts/run-e2e.mjs` is a real deployment and E2E runner. It requires funded
+- `PrivateDaoPayroll.sol` binds an off-chain payroll batch commitment to a
+  maker/checker approval and native-asset settlement receipt. A network remains
+  unverified until its organizational E2E artifact contains and independently
+  verifies the payroll receipts.
+- `PrivateDaoTokenPayroll.sol` provides the equivalent Maker/Checker payroll
+  boundary for token-denominated networks such as Tempo. It is independently
+  funded, settled, and receipt-verified by the organizational E2E runner.
+- `scripts/run-e2e.mjs` is a real deployment and E2E runner. Product writes
+  (record anchoring and blind-proof anchoring) go through the PrivateDAO
+  `ProductExecutionGateway` and the registered EVM provider. Disposable
+  revocation calls remain explicit contract-control checks until revocation is
+  promoted to a catalog capability and application binding. It requires funded
   testnet credentials and fails closed when they are absent.
 
 ## Real testnet E2E
@@ -48,7 +59,7 @@ token, not the standard EVM gas-balance path. Tempo Testnet is only promoted
 after the same contract-write, receipt, proof, expiry, wrong-chain, altered-
 proof, and revocation checks pass on the Tempo chain itself.
 
-The organizational Treasury, Governance, and Sealed Auction E2E runner uses
+The organizational Treasury, Payroll, Governance, and Sealed Auction E2E runner uses
 `PDAO_EVM_NETWORK` for one standard-EVM testnet at a time:
 
 ```bash
@@ -61,7 +72,7 @@ Supported values are `ethereum-sepolia`, `arbitrum-sepolia`, `bnb-testnet`,
 `base-sepolia`, `robinhood-testnet`, `hyperliquid-testnet`, and
 `tempo-testnet`. Hyperliquid uses HYPE as the native gas asset on chain 998.
 Tempo uses the
-AlphaUSD TIP-20 token and the tokenized Treasury/Auction contracts because
+AlphaUSD TIP-20 token and the tokenized Treasury/Auction/Payroll contracts because
 Tempo rejects native `msg.value` transfers. The runner requires a funded
 testnet deployer, writes a network-specific evidence file only after all
 receipts and state assertions pass, and rejects unsupported or Mainnet
@@ -88,10 +99,18 @@ verification ID, and validity state. The JSON manifest under
 expected to be the application shell because the verification check runs in
 the browser. No source record or private inputs are returned.
 
-Ethereum Sepolia and Base Sepolia are application-bound for the two verified
-verification products. Hyperliquid HyperEVM and Robinhood remain unverified
-until funded real deployments and independent E2E evidence are available. No
-capability is upgraded from documentation alone.
+Ethereum Sepolia, Base Sepolia, and Robinhood Testnet are application-bound for
+the two verified verification products. Base Sepolia and Robinhood Testnet also
+have committed organizational E2E evidence for Treasury, Governance, and Sealed
+Auction execution. Hyperliquid HyperEVM remains unverified for verification
+products until independent verification evidence is available. No capability is
+upgraded from documentation alone.
+
+Robinhood Testnet has a committed `testnet_verified` artifact at
+`deployments/phase-2-e2e-robinhood-testnet.json`. It records real Kernel-routed
+record anchoring and blind proof transactions on chain 46630, plus confirmed
+wrong-chain, altered-proof, expiry, and revocation checks. The corresponding
+public verification links are application-bound and remain Testnet-only.
 
 Tempo Testnet has a committed `testnet_verified` artifact at
 `deployments/phase-2-e2e-tempo-testnet.json`. The run deployed independent

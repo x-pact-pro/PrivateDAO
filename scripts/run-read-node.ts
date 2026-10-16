@@ -39,11 +39,19 @@ import {
   type TxlineProviderMode,
   type TxlineSettlementProofPackage,
 } from "../apps/web/src/lib/txline-settlement";
+import { buildSealedAuctionProofPackage } from "../apps/web/src/lib/sealed-auction-proof";
+import {
+  AUCTION_OUTCOME_CIRCUIT,
+  assertReceiptBinding,
+  buildAuctionOutcomeProofInput,
+  type AuctionOutcomeMetadata,
+  type AuctionOutcomeBid,
+} from "../apps/web/src/lib/auction-outcome-proof";
 import { PayrollStore, type PayrollState, type SettlementState } from "./lib/payroll-domain.ts";
 
 const host = process.env.PRIVATE_DAO_READ_NODE_HOST || "127.0.0.1";
 const port = Number(process.env.PRIVATE_DAO_READ_NODE_PORT || 8787);
-const allowedOrigin = process.env.PRIVATE_DAO_READ_ALLOWED_ORIGIN || "*";
+const allowedOrigin = process.env.PRIVATE_DAO_READ_ALLOWED_ORIGIN?.trim() || "https://privatedao.org";
 const rateWindowMs = Number(process.env.PRIVATE_DAO_READ_RATE_WINDOW_MS || 60_000);
 const rateLimit = Number(process.env.PRIVATE_DAO_READ_RATE_LIMIT || 180);
 const readNode = new PrivateDaoReadNode();
@@ -1086,14 +1094,10 @@ function toFieldString(value: bigint) {
 }
 
 async function poseidonHash(...items: bigint[]) {
-  const { buildPoseidon } = requireFromRoot("circomlibjs") as {
-    buildPoseidon: () => Promise<{
-      F: { toString: (value: unknown) => string };
-      (items: bigint[]): unknown;
-    }>;
+  const { Poseidon } = requireFromRoot("@iden3/js-crypto") as {
+    Poseidon: { hash: (items: bigint[]) => bigint };
   };
-  const poseidon = await buildPoseidon();
-  return BigInt(poseidon.F.toString(poseidon(items)));
+  return Poseidon.hash(items);
 }
 
 function normalizeBlindPolicyInputs(value: unknown): BlindPolicyPrivateInputs {
@@ -2981,7 +2985,7 @@ async function handleIntegrationMatrixAnchor(body: Record<string, unknown>) {
 }
 
 async function handleVisitorPing(body: Record<string, unknown>, req: http.IncomingMessage) {
-  const sessionIdRaw = stringField(body, "sessionId", createHash("sha256").update(`${Date.now()}:${Math.random()}`).digest("hex"));
+  const sessionIdRaw = stringField(body, "sessionId", randomUUID());
   const page = stringField(body, "page", "/").slice(0, 180);
   const countryHint = stringField(body, "countryHint", "unknown").slice(0, 80);
   const row: VisitorPingRow = {
@@ -3115,7 +3119,7 @@ async function executionEventStats() {
 async function handleOperationExecutionEvent(body: Record<string, unknown>, req: http.IncomingMessage) {
   const operationId = normalizeOperationId(stringField(body, "operationId", "unknown-operation"));
   const operationLabel = stringField(body, "operationLabel", operationId).slice(0, 140);
-  const sessionIdRaw = stringField(body, "sessionId", createHash("sha256").update(`${Date.now()}:${Math.random()}`).digest("hex"));
+  const sessionIdRaw = stringField(body, "sessionId", randomUUID());
   const statusRaw = stringField(body, "status", "success").toLowerCase();
   const status = statusRaw === "success" ? "success" : "review";
   const receiptHash = stringField(body, "receiptHash").slice(0, 160) || null;
@@ -3857,7 +3861,9 @@ function signedCommercialLicense(input: {
     expiresAt: input.licenseEnd,
     capacity: input.capacity,
   });
-  const signature = createHmac("sha256", process.env.PD_LICENSE_SIGNING_SECRET || "privatedao-public-review-license-boundary")
+  const signingSecret = process.env.PD_LICENSE_SIGNING_SECRET?.trim() || "";
+  if (!signingSecret) throw new Error("Commercial license signing is not configured.");
+  const signature = createHmac("sha256", signingSecret)
     .update(payload)
     .digest("hex");
   return {
@@ -6573,6 +6579,69 @@ async function handle(req: http.IncomingMessage, res: http.ServerResponse) {
       }
       const result = await fetchZerionPortfolio(wallet);
       writeJson(res, result.ok ? 200 : 502, result);
+      return;
+    }
+
+    if (req.method === "POST" && (pathname === "/api/auctions/sealed/run" || pathname === "/api/v1/auctions/sealed/run")) {
+      const body = await readRequestJsonWithLimit(req, 96_000) as Record<string, unknown>;
+      try {
+        const proofPackage = buildSealedAuctionProofPackage({
+          config: body.config as Parameters<typeof buildSealedAuctionProofPackage>[0]["config"],
+          privateBids: body.privateBids as Parameters<typeof buildSealedAuctionProofPackage>[0]["privateBids"],
+          proofId: typeof body.proofId === "string" ? body.proofId : undefined,
+        });
+        writeJson(res, 200, {
+          ok: true,
+          source: "privatedao-sealed-auction",
+          status: "proof-issued",
+          publicOutcome: proofPackage.publicOutcome,
+          proofHash: proofPackage.originalProofHash,
+          publicProofPackage: proofPackage,
+          privateDataExcluded: true,
+          hiddenFields: [...proofPackage.valuesHiddenDuringAuction],
+          explanation: "Private bid values and salts are excluded from the public proof package.",
+        });
+      } catch {
+        writeJson(res, 422, {
+          ok: false,
+          source: "privatedao-sealed-auction",
+          status: "proof-not-issued",
+          publicOutcome: "proof-not-issued",
+          error: "Sealed auction proof was not issued.",
+        });
+      }
+      return;
+    }
+
+    if (req.method === "POST" && (pathname === "/api/auctions/sealed/outcome-proof" || pathname === "/api/v1/auctions/sealed/outcome-proof")) {
+      const body = await readRequestJsonWithLimit(req, 512_000) as { metadata?: AuctionOutcomeMetadata; bids?: AuctionOutcomeBid[] };
+      try {
+        if (!body.metadata || !Array.isArray(body.bids)) throw new Error("metadata and private bid witness are required");
+        assertReceiptBinding(body.metadata);
+        const input = buildAuctionOutcomeProofInput(body.metadata, body.bids);
+        const artifactRoot = process.env.PDAO_AUCTION_ZK_ARTIFACT_DIR || resolve("zk");
+        const wasm = join(artifactRoot, "build", `${AUCTION_OUTCOME_CIRCUIT}_js`, `${AUCTION_OUTCOME_CIRCUIT}.wasm`);
+        const zkey = join(artifactRoot, "setup", `${AUCTION_OUTCOME_CIRCUIT}_final.zkey`);
+        if (!existsSync(wasm) || !existsSync(zkey)) throw new Error("Auction proving artifacts are unavailable");
+        const { groth16 } = requireFromWebApp("snarkjs") as { groth16: { fullProve: (input: Record<string, unknown>, wasmPath: string, zkeyPath: string) => Promise<{ proof: unknown; publicSignals: string[] }> } };
+        const result = await groth16.fullProve(input as unknown as Record<string, unknown>, wasm, zkey);
+        writeJson(res, 200, {
+          ok: true,
+          proofType: "groth16-auction-outcome-v1",
+          circuit: AUCTION_OUTCOME_CIRCUIT,
+          publicSignals: result.publicSignals,
+          proof: result.proof,
+          privateDataExcluded: true,
+          binding: "finalized SettlementReceipt result_commitment and public outcome fields",
+        });
+      } catch (error) {
+        console.error("[read-node] auction outcome proof generation failed", error instanceof Error ? error.message : "unknown error");
+        writeJson(res, 422, {
+          ok: false,
+          proofType: "groth16-auction-outcome-v1",
+          error: "Auction outcome proof was not generated.",
+        });
+      }
       return;
     }
 

@@ -4,6 +4,7 @@ import {
   EVM_NETWORK_CONFIGS,
   EvmAdapterError,
   EvmNetworkAdapter,
+  ViemEvmTransport,
   getNetwork,
 } from "../packages/privatedao-runtime/src/index.ts";
 
@@ -77,6 +78,60 @@ const deployments = new DeploymentRegistry();
 deployments.register({ product: "record-verification", network: "ethereum-sepolia", environment: "testnet", chainId: "11155111", explorerVerified: false, buildReference: "test", status: "testnet" });
 assert.throws(() => deployments.register({ product: "record-verification", network: "ethereum-mainnet", environment: "mainnet", chainId: "1", explorerVerified: false, buildReference: "test", status: "mainnet_live" }), /explicit release gate/);
 assert.throws(() => deployments.register({ product: "record-verification", network: "ethereum-sepolia", environment: "testnet", chainId: "11155111", explorerVerified: false, buildReference: "test", status: "testnet" }), /already registered/);
+
+let submittedPayload;
+const viemTransport = new ViemEvmTransport(
+  {
+    async getChainId() { return 11155111; },
+    async waitForTransactionReceipt() { return { status: "success", blockNumber: 42n }; },
+    async estimateContractGas() { return 50_000n; },
+    async getGasPrice() { return 2n; },
+  },
+  {
+    account: { address: "0x0000000000000000000000000000000000000002" },
+    async writeContract(payload) { submittedPayload = payload; return "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"; },
+  },
+  "ethereum-sepolia",
+  "11155111",
+  "testnet",
+  "https://sepolia.etherscan.io/",
+  "ETH",
+);
+const contractWriteIntent = {
+  context: { requestId: "evm-payload-binding", idempotencyKey: "evm-payload-binding", product: "record-verification", capability: "verification.record.create", network: "ethereum-sepolia" },
+  payload: {
+    kind: "contract-write",
+    address: "0x0000000000000000000000000000000000000001",
+    abi: [{ type: "function", name: "anchorRecord", inputs: [] }],
+    functionName: "anchorRecord",
+    args: [7n],
+    account: "0x0000000000000000000000000000000000000002",
+    value: 0n,
+  },
+  accounts: [{ role: "payer", address: "0x0000000000000000000000000000000000000002", network: "ethereum-sepolia" }],
+};
+const contractWritePrepared = await viemTransport.prepare(contractWriteIntent);
+await assert.rejects(
+  () => viemTransport.prepare({ ...contractWriteIntent, idempotencyKey: "evm-payer-mismatch", payload: { ...contractWriteIntent.payload, account: "0x0000000000000000000000000000000000000003" } }),
+  /payer account does not match/,
+);
+await assert.rejects(
+  () => viemTransport.submit(contractWritePrepared, { ...contractWritePrepared.unsignedPayload, functionName: "drain" }),
+  /does not match the prepared transaction intent/,
+);
+await viemTransport.submit(contractWritePrepared, contractWritePrepared.unsignedPayload);
+assert.equal(submittedPayload.functionName, "anchorRecord");
+assert.equal(submittedPayload.account.address, contractWriteIntent.payload.account);
+const viemAdapter = new EvmNetworkAdapter({
+  id: "evm-ethereum-sepolia-viem-test",
+  config,
+  capabilities: ["verification.record.create"],
+  transport: viemTransport,
+});
+const viemAdapterPrepared = await viemAdapter.prepare(contractWriteIntent);
+await viemAdapter.submit(viemAdapterPrepared, viemAdapterPrepared.unsignedPayload);
+const viemAdapterReceipt = await viemAdapter.receipt(viemAdapterPrepared.executionId);
+assert.equal(viemAdapterReceipt.provider, "evm-ethereum-sepolia-viem-test", "EVM adapter must bind transport receipts to its provider identity");
 
 // Every configured testnet must pass the same lifecycle contract. This is a
 // local adapter test only; it does not imply deployed contracts or on-chain

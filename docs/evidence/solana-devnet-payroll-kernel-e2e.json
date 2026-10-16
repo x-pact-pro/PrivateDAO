@@ -1,0 +1,25 @@
+{
+  "schema": "privatedao.solana-devnet.payroll-kernel-e2e.v1",
+  "generatedAt": "2026-10-16T02:12:50.542Z",
+  "network": "solana-devnet",
+  "gateway": "ProductExecutionGateway",
+  "state": "reconciled",
+  "product": "payroll",
+  "providers": [
+    "privatedao-payroll-calculation",
+    "privatedao-payroll-approval",
+    "privatedao-payroll-settlement"
+  ],
+  "capabilities": [
+    "payroll.calculate",
+    "payroll.approve",
+    "payroll.settle"
+  ],
+  "calculationReceipt": "reconciled",
+  "approvalReceipt": "reconciled",
+  "settlementReceipt": "reconciled",
+  "settlementDigest": "3cc0ca55fa9b3587c73ba51145f4543651b3e70338ed29784fa8813f600ce0db",
+  "evidenceClass": "kernel-provider-e2e",
+  "onchainAnchor": false,
+  "broadcastAttempted": false
+}

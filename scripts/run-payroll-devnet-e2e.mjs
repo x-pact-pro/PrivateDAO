@@ -9,7 +9,7 @@ const { createSyncNativeInstruction } = requireWeb("@solana/spl-token");
 const { createSignerFromPrivateKeyBytes, getUmbraClient } = requireWeb("@umbra-privacy/sdk");
 const depositOps = requireWeb("@umbra-privacy/sdk/deposit");
 const registration = requireWeb("@umbra-privacy/sdk/registration");
-const { buildPoseidon } = requireWeb("circomlibjs");
+const { Poseidon } = requireWeb("@iden3/js-crypto");
 const { groth16 } = requireWeb("snarkjs");
 
 const API = (process.env.PDAO_PAYROLL_API_BASE_URL || "https://api.privatedao.org/api/v1").replace(/\/+$/, "");
@@ -131,8 +131,7 @@ async function prove(manifestCommitment, settlementRoot, policyHash) {
   ]);
   const field = BigInt("21888242871839275222246405745257275088548364400416034343698204186575808495617");
   const fieldFrom = (value) => (BigInt(`0x${value.slice(0, 62)}`) % field).toString();
-  const poseidon = await buildPoseidon();
-  const hash = (...values) => poseidon.F.toString(poseidon(values.map((value) => BigInt(value))));
+  const hash = (...values) => Poseidon.hash(values.map((value) => BigInt(value))).toString();
   const payrollKey = fieldFrom(manifestCommitment);
   const batchKey = fieldFrom(settlementRoot);
   const salt = fieldFrom(policyHash);

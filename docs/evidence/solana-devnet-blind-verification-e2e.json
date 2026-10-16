@@ -1,0 +1,28 @@
+{
+  "schema": "privatedao.solana-devnet.blind-verification-e2e.v1",
+  "generatedAt": "2026-10-15T19:54:13.841Z",
+  "network": "solana-devnet",
+  "product": "blind-verification",
+  "capability": "verification.blind.prove",
+  "gateway": "ProductExecutionGateway",
+  "provider": "privatedao-blind-policy-proof",
+  "executionId": "blind-policy-prove-enterprise-blind-solana-devnet-1792094047970",
+  "requestId": "enterprise-blind-solana-devnet-1792094047970",
+  "workflowId": "enterprise-blind-solana-devnet-1792094047970",
+  "state": "reconciled",
+  "proofHash": "28ba278f3192605fbf68ec64a971412ed800f2b9e9556f24f93cf53a3d2569e9",
+  "proofStatus": "proof-issued",
+  "proofVerification": {
+    "ok": true,
+    "status": "verified",
+    "match": true,
+    "originalHash": "28ba278f3192605fbf68ec64a971412ed800f2b9e9556f24f93cf53a3d2569e9",
+    "recomputedHash": "28ba278f3192605fbf68ec64a971412ed800f2b9e9556f24f93cf53a3d2569e9",
+    "message": "Verified. Groth16 and the public proof hash both match."
+  },
+  "publicProofId": "blind-policy-76dfe223b51474bf",
+  "circuitId": "private_dao_blind_policy_overlay",
+  "circuitVersion": "groth16-v1",
+  "privateInputsRecorded": false,
+  "source": "https://api.privatedao.org/api/v1/proof-workflows/blind-policy/prove"
+}

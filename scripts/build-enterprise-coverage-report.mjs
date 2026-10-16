@@ -28,20 +28,21 @@ function summarize(product, ecosystem) {
       const evidence = native.find(
         (entry) => entry.product === product.id && entry.capability === capability.id && entry.network === network.id,
       );
+      const kernelEvidence = binding?.mode === "kernel-gateway" ? evidence : undefined;
       const executable = Boolean(
-        declared && binding?.mode === "kernel-gateway" && evidence?.supportsExecution && VERIFIED_EVIDENCE.has(evidence.status),
+        declared && kernelEvidence?.supportsExecution && VERIFIED_EVIDENCE.has(kernelEvidence.status),
       );
       return {
         network: network.id,
         environment: network.environment,
         declared,
         mode: binding?.mode ?? "unbound",
-        status: evidence?.status ?? "missing",
-        evidence: evidence?.evidence ?? "none",
-        provider: evidence?.provider ?? null,
-        supportsExecution: evidence?.supportsExecution ?? false,
-        supportsReceipt: evidence?.supportsReceipt ?? false,
-        supportsReconciliation: evidence?.supportsReconciliation ?? false,
+        status: kernelEvidence?.status ?? "missing",
+        evidence: kernelEvidence?.evidence ?? "none",
+        provider: kernelEvidence?.provider ?? null,
+        supportsExecution: kernelEvidence?.supportsExecution ?? false,
+        supportsReceipt: kernelEvidence?.supportsReceipt ?? false,
+        supportsReconciliation: kernelEvidence?.supportsReconciliation ?? false,
         executable,
         entrypoint: binding?.entrypoint ?? null,
         note: binding?.note ?? "Missing application binding.",

@@ -1,0 +1,22 @@
+{
+  "network": "bnb-testnet",
+  "chainId": 97,
+  "environment": "testnet",
+  "contracts": {
+    "verifier": {
+      "address": "0x26e3515d02bb3d8122fad109d159f43e81e8beeb",
+      "hash": "0x479ede1f27016968253ab5c45186ab4e4c71cd3aa077ac5a82ba191e41ed1ccd",
+      "blockNumber": "136188324"
+    },
+    "blind": {
+      "address": "0xdd01da1b53ba46bf1ce8c71bc1c5e86e8784694b",
+      "hash": "0xf2f08f73cd9e1387bd30bece105278fb181b95c3277847f8ecd7dab3949905de",
+      "blockNumber": "136188331"
+    },
+    "record": {
+      "address": "0x6f813e1221cb5f760bb5c467983c014bbe4b3b5c",
+      "hash": "0x2143457034e99b656f299ed7f3c04fb97a89d2f999a3867430207ec11a0c687f",
+      "blockNumber": "136188339"
+    }
+  }
+}

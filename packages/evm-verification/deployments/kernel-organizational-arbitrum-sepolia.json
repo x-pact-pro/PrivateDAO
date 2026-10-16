@@ -1,0 +1,35 @@
+{
+  "schema": "privatedao.kernel-organizational-e2e.v1",
+  "network": "arbitrum-sepolia",
+  "chainId": 421614,
+  "environment": "testnet",
+  "provider": "evm-arbitrum-sepolia-organizational",
+  "gateway": "ProductExecutionGateway",
+  "verifiedAt": "2026-10-15T03:04:12.535Z",
+  "results": [
+    {
+      "product": "treasury",
+      "capability": "treasury.policy.check",
+      "executionId": "evm-treasury-a90427dc-2777-4851-bb6d-05c4a34b3149",
+      "txHash": "0xba0e181aa0daa6f10e4f93330fb738b27e4e7323229c4967750fa4a4fe4dde51",
+      "blockNumber": "319287786",
+      "explorerUrl": "https://sepolia.arbiscan.io/tx/0xba0e181aa0daa6f10e4f93330fb738b27e4e7323229c4967750fa4a4fe4dde51"
+    },
+    {
+      "product": "governance",
+      "capability": "governance.proposal.execute",
+      "executionId": "evm-governance-470c383c-fb5c-4e98-b2f5-6330492ab77a",
+      "txHash": "0x3fbc8bb8dad6ccd00aa1fb4afde9266f9c0fff75725b244cd3640cba39c1ba47",
+      "blockNumber": "319287796",
+      "explorerUrl": "https://sepolia.arbiscan.io/tx/0x3fbc8bb8dad6ccd00aa1fb4afde9266f9c0fff75725b244cd3640cba39c1ba47"
+    },
+    {
+      "product": "auction",
+      "capability": "auction.bid.commit",
+      "executionId": "evm-auction-9cd4d89e-bb93-4772-80ca-c66cb7879770",
+      "txHash": "0x55aee2021c49e40af814faa4e2042312327425a84fe88c82037998116665b8b5",
+      "blockNumber": "319287806",
+      "explorerUrl": "https://sepolia.arbiscan.io/tx/0x55aee2021c49e40af814faa4e2042312327425a84fe88c82037998116665b8b5"
+    }
+  ]
+}

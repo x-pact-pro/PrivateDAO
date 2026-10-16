@@ -1,0 +1,35 @@
+{
+  "schema": "privatedao.kernel-organizational-e2e.v1",
+  "network": "tempo-testnet",
+  "chainId": 42431,
+  "environment": "testnet",
+  "provider": "evm-tempo-testnet-organizational",
+  "gateway": "ProductExecutionGateway",
+  "verifiedAt": "2026-10-15T03:06:25.892Z",
+  "results": [
+    {
+      "product": "treasury",
+      "capability": "treasury.policy.check",
+      "executionId": "evm-treasury-f8781b1d-cdef-4fdf-a85f-e099be7494d1",
+      "txHash": "0x76a968e90a1c86540d8b081a10ae80d2e367b1aa3b8010113cd9fda5da1622c0",
+      "blockNumber": "39639616",
+      "explorerUrl": "https://explore.testnet.tempo.xyz/tx/0x76a968e90a1c86540d8b081a10ae80d2e367b1aa3b8010113cd9fda5da1622c0"
+    },
+    {
+      "product": "governance",
+      "capability": "governance.proposal.execute",
+      "executionId": "evm-governance-90f54dd3-0670-43cf-b8b2-33137b4bd976",
+      "txHash": "0x6113407d46ae7e74c437b47664f91306b15b8623f09a612691b7cd85661e112c",
+      "blockNumber": "39639618",
+      "explorerUrl": "https://explore.testnet.tempo.xyz/tx/0x6113407d46ae7e74c437b47664f91306b15b8623f09a612691b7cd85661e112c"
+    },
+    {
+      "product": "auction",
+      "capability": "auction.bid.commit",
+      "executionId": "evm-auction-e3a9acbe-bb10-46a8-91d7-b8b6e10b8b90",
+      "txHash": "0x1784f4eb72c1138658598e7b25bd79c6cf5bc55d117bc25a0c3516811994e78e",
+      "blockNumber": "39639620",
+      "explorerUrl": "https://explore.testnet.tempo.xyz/tx/0x1784f4eb72c1138658598e7b25bd79c6cf5bc55d117bc25a0c3516811994e78e"
+    }
+  ]
+}

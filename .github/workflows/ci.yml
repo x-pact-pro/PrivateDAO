@@ -38,23 +38,36 @@ jobs:
 
       - name: Install Solana CLI
         run: |
-          sh -c "$(curl -sSfL https://release.anza.xyz/stable/install)"
+          for attempt in 1 2 3; do
+            rm -f "$RUNNER_TEMP/solana-install.sh"
+            if curl --fail --location --retry 5 --retry-all-errors --retry-delay 2 --proto '=https' --tlsv1.2 \
+              https://release.anza.xyz/stable/install -o "$RUNNER_TEMP/solana-install.sh" \
+              && timeout --signal=TERM --kill-after=30s 5m sh "$RUNNER_TEMP/solana-install.sh" \
+              && "$HOME/.local/share/solana/install/active_release/bin/solana" --version; then
+              break
+            fi
+            if [ "$attempt" -eq 3 ]; then
+              echo "Solana CLI installation failed after ${attempt} attempts" >&2
+              exit 1
+            fi
+            echo "Solana CLI installation failed on attempt ${attempt}; retrying" >&2
+            sleep $((attempt * 10))
+          done
           echo "$HOME/.local/share/solana/install/active_release/bin" >> $GITHUB_PATH
 
       - name: Install Anchor CLI
         run: |
-          timeout --signal=TERM --kill-after=30s 10m cargo install --git https://github.com/coral-xyz/anchor avm --locked --force
-          for attempt in 1 2 3; do
-            if timeout --signal=TERM --kill-after=30s 3m avm install 1.0.1; then
-              avm use 1.0.1
-              anchor --version
-              exit 0
-            fi
-            echo "avm install 1.0.1 failed on attempt ${attempt}; retrying after backoff" >&2
-            sleep $((attempt * 10))
-          done
-          echo "Failed to install Anchor CLI 1.0.1 after retries" >&2
-          exit 1
+          # Use the official immutable Anchor 1.0.1 Linux release and verify its
+          # published digest instead of compiling the CLI during every CI run.
+          mkdir -p "$HOME/.local/bin"
+          curl --fail --location --retry 5 --retry-all-errors --retry-delay 2 \
+            --proto '=https' --tlsv1.2 \
+            https://github.com/otter-sec/anchor/releases/download/v1.0.1/anchor-1.0.1-x86_64-unknown-linux-gnu \
+            -o "$HOME/.local/bin/anchor"
+          echo "8427407220983e9847abcc1e1767dbc6654288957535a5d653f449860871a8df  $HOME/.local/bin/anchor" | sha256sum --check --strict
+          chmod 0755 "$HOME/.local/bin/anchor"
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+          anchor --version
 
       - name: Install dependencies
         run: |
@@ -99,6 +112,9 @@ jobs:
 
       - name: Runtime kernel typecheck
         run: npm run typecheck:runtime
+
+      - name: Verify enterprise and Agent Exchange boundary
+        run: npm run test:enterprise-boundary
 
       - name: EVM foundation tests
         run: npm run test:runtime:evm-foundation

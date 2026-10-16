@@ -1,0 +1,62 @@
+{
+  "generatedAt": "2026-10-15T17:12:47.533Z",
+  "status": "testnet_verified",
+  "scope": [
+    "bnb-testnet"
+  ],
+  "networks": [
+    {
+      "network": "bnb-testnet",
+      "chainId": 97,
+      "contracts": {
+        "verifier": {
+          "address": "0x26e3515d02bb3d8122fad109d159f43e81e8beeb",
+          "hash": "0x479ede1f27016968253ab5c45186ab4e4c71cd3aa077ac5a82ba191e41ed1ccd",
+          "blockNumber": "136188324"
+        },
+        "blind": {
+          "address": "0xdd01da1b53ba46bf1ce8c71bc1c5e86e8784694b",
+          "hash": "0xf2f08f73cd9e1387bd30bece105278fb181b95c3277847f8ecd7dab3949905de",
+          "blockNumber": "136188331"
+        },
+        "record": {
+          "address": "0x6f813e1221cb5f760bb5c467983c014bbe4b3b5c",
+          "hash": "0x2143457034e99b656f299ed7f3c04fb97a89d2f999a3867430207ec11a0c687f",
+          "blockNumber": "136188339"
+        }
+      },
+      "record": {
+        "txHash": "0x61094a68118a917ad51d7577c5630a7d0754cc02433bbb79a1697c1b905de8bc",
+        "blockNumber": "136971841",
+        "verificationId": "0x23e06e39285c555eda6944967ba6ac29b658954f90abe8715ff2d31c0c160ad6",
+        "explorerUrl": "https://testnet.bscscan.com/tx/0x61094a68118a917ad51d7577c5630a7d0754cc02433bbb79a1697c1b905de8bc"
+      },
+      "blind": {
+        "txHash": "0x2704cac3e7875d44e608e048fb9df57146ff0310f8c6957b7f859e6f4009cf3a",
+        "blockNumber": "136971864",
+        "verificationId": "0xdd32ca19ab644988073c4a0957c4dc637f1d3bb287a136b950fb389903980612",
+        "explorerUrl": "https://testnet.bscscan.com/tx/0x2704cac3e7875d44e608e048fb9df57146ff0310f8c6957b7f859e6f4009cf3a"
+      },
+      "revocation": {
+        "recordTxHash": "0xb1da7ff972a3baaf56e79ad25801cc17e3e66b15ee6ec53054b1c8597fc62cf0",
+        "blindTxHash": "0x0ebff0ea77c089fca6ab63a2753df14c5d900c1c4c9baee37a1191eaef9d71f9",
+        "disposableRecordVerificationId": "0x2a6e8643c529b377eb5d138e524d1f1029f3d1169652481994749b9ac2655d62",
+        "disposableBlindVerificationId": "0xc6e32d85f2cb24e5f527ac123e41ffae4f970af79ae37c9f5ecaf89990b4e391"
+      },
+      "checks": {
+        "recordVerified": true,
+        "blindProofVerified": true,
+        "wrongChainRejected": true,
+        "alteredProofRejected": true,
+        "expiredRecordRejected": true,
+        "expiredBlindRejected": true,
+        "recordRevoked": true,
+        "blindProofRevoked": true
+      },
+      "links": {
+        "record": "https://privatedao.org/verify/evm?network=bnb-testnet&type=record&id=0x23e06e39285c555eda6944967ba6ac29b658954f90abe8715ff2d31c0c160ad6",
+        "blind": "https://privatedao.org/verify/evm?network=bnb-testnet&type=blind&id=0xdd32ca19ab644988073c4a0957c4dc637f1d3bb287a136b950fb389903980612"
+      }
+    }
+  ]
+}

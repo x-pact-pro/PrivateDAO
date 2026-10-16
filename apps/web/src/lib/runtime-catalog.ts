@@ -48,7 +48,9 @@ export function isRuntimeProductAvailable(productId: RuntimeProductId): boolean 
   // capability can remain visible as roadmap/context, but must not create a
   // misleading "Available now" claim in the commercial surface.
   return product.capabilities.every((capability) =>
-    capability.applicationBindings.some((binding) => binding.mode === "kernel-gateway" && binding.supportsExecution && VERIFIED_EVIDENCE.has(binding.evidenceStatus)),
+    capability.customerFacing !== false
+      ? capability.applicationBindings.some((binding) => binding.mode === "kernel-gateway" && binding.supportsExecution && VERIFIED_EVIDENCE.has(binding.evidenceStatus))
+      : true,
   );
 }
 

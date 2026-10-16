@@ -192,7 +192,9 @@ export const NETWORK_MATRIX: readonly NetworkDescriptor[] = [
     id: "zcash-testnet",
     label: "Zcash Testnet",
     family: "utxo",
-    stage: "planned",
+    // The Kernel adapter and Gateway route are available; product E2E evidence
+    // remains tracked independently in the capability registry.
+    stage: "available",
     environment: "testnet",
     finalityModel: "shielded transaction confirmation",
   },
@@ -212,10 +214,12 @@ export const NETWORK_MATRIX: readonly NetworkDescriptor[] = [
     id: "stellar-testnet",
     label: "Stellar Testnet",
     family: "stellar",
-    stage: "planned",
+    stage: "available",
     environment: "testnet",
+    chainId: "Test SDF Network ; September 2015",
     finalityModel: "Stellar ledger finality",
-    explorerBaseUrl: "https://stellar.expert/explorer/testnet/",
+    explorerBaseUrl: "https://stellar.expert/explorer/testnet/tx/",
+    adapterId: "stellar-testnet-horizon",
   },
 ];
 
@@ -235,7 +239,7 @@ export const PRIMARY_ECOSYSTEMS: readonly EcosystemDescriptor[] = [
   { id: "tempo", label: "Tempo", networks: ["tempo-testnet", "tempo-mainnet"], status: "configured" },
   { id: "zcash", label: "Zcash", networks: ["zcash-testnet"], status: "configured" },
   { id: "hyperliquid", label: "Hyperliquid", networks: ["hyperliquid-testnet"], status: "configured" },
-  { id: "stellar", label: "Stellar", networks: ["stellar-testnet"], status: "planned" },
+  { id: "stellar", label: "Stellar", networks: ["stellar-testnet"], status: "configured" },
 ];
 
 export function validatePrimaryEcosystems(): string[] {

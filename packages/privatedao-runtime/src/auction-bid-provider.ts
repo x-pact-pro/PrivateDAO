@@ -33,7 +33,7 @@ type BidExecution = {
 
 type FetchLike = (input: string, init?: RequestInit) => Promise<Response>;
 
-const DEFAULT_ENDPOINT = "https://privatedao.org/api/auctions/sealed/run";
+const DEFAULT_ENDPOINT = "https://api.privatedao.org/api/v1/auctions/sealed/run";
 
 /** Kernel adapter for the real sealed-bid commitment/proof endpoint. */
 export class AuctionBidCommitProvider implements KernelProvider {

@@ -110,9 +110,8 @@ async function main() {
 
     const storedBatch = store.getBatch(batch.batchId);
     const settlementRoot = sha256(JSON.stringify(storedItems.map((item, index) => ({ payoutId: item.payout_id, netCents: item.net_cents, recipientCommitment: item.recipient_commitment, txSignature: chainEvidence[index].signature }))));
-    const { buildPoseidon } = await import("../node_modules/circomlibjs/build/main.cjs");
-    const poseidon = await buildPoseidon();
-    const hash = (...values) => poseidon.F.toString(poseidon(values.map(BigInt)));
+    const { Poseidon } = await import("@iden3/js-crypto");
+    const hash = (...values) => Poseidon.hash(values.map(BigInt)).toString();
     const payrollKey = field(String(storedBatch.batch.manifest_commitment));
     const batchKey = field(settlementRoot);
     const salt = field(policy.policyHash);

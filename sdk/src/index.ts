@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 import { PublicKey } from "@solana/web3.js";
 import { createHash, randomBytes } from "crypto";
-import { buildPoseidon } from "circomlibjs";
+import { Poseidon } from "@iden3/js-crypto";
 
 export type VoteChoice = "yes" | "no";
 export type ZkCircuitName =
@@ -303,9 +303,9 @@ export async function createAnonymousVoteEnvelope(input: {
 
 async function getPoseidonRuntime() {
   if (!poseidonPromise) {
-    poseidonPromise = buildPoseidon().then((poseidon: any) => ({
-      hash: (...items: bigint[]) => BigInt(poseidon.F.toString(poseidon(items))),
-    }));
+    poseidonPromise = Promise.resolve({
+      hash: (...items: bigint[]) => Poseidon.hash(items),
+    });
   }
   return poseidonPromise;
 }

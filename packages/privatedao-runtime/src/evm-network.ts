@@ -113,7 +113,7 @@ export class EvmNetworkAdapter implements KernelProvider {
     ) {
       throw new EvmAdapterError("MALFORMED_RECEIPT", "EVM receipt is missing the configured network, chain ID, environment, asset, or timestamp.");
     }
-    return receipt;
+    return { ...receipt, provider: this.id };
   }
 
   estimateFee<TPayload>(intent: ExecutionIntent<TPayload>): Promise<FeeEstimate> { this.assertIntent(intent); return this.call(() => this.transport.estimateFee(intent)); }

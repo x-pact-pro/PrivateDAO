@@ -1,6 +1,6 @@
 const { mkdirSync, writeFileSync } = require("fs");
 const path = require("path");
-const { buildPoseidon } = require("circomlibjs");
+const { Poseidon } = require("@iden3/js-crypto");
 
 function toFieldString(value) {
   return value.toString();
@@ -11,9 +11,7 @@ async function main() {
   const circuit = process.argv[2] || "private_dao_vote_overlay";
   const outputPath = process.argv[3] || path.join(repoRoot, "zk", "inputs", `${circuit}.sample.json`);
 
-  const poseidon = await buildPoseidon();
-  const F = poseidon.F;
-  const hash = (...items) => BigInt(F.toString(poseidon(items)));
+  const hash = (...items) => Poseidon.hash(items);
 
   const proposalId = 1001n;
   const daoKey = 500000000000000001n;

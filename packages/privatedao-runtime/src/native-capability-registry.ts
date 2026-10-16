@@ -49,8 +49,8 @@ const ETHEREUM_SEPOLIA_EVIDENCE = {
     "0x6f813E1221cB5f760BbC5b467983c014bbE4B3B5c",
   ],
   provider: "evm-ethereum-sepolia",
-  commit: "7b4d430",
-  timestamp: "2026-09-16T21:53:12.853Z",
+  commit: "1c2afa0bb",
+  timestamp: "2026-10-15T17:01:28.735Z",
 } as const;
 
 const BASE_SEPOLIA_EVIDENCE = {
@@ -61,8 +61,8 @@ const BASE_SEPOLIA_EVIDENCE = {
     "0xa0cbe18d8b8b54befda83f33288347466f2c88b9",
   ],
   provider: "evm-base-sepolia",
-  commit: "7dcfce7",
-  timestamp: "2026-09-17T00:39:48.896Z",
+  commit: "a3859799d",
+  timestamp: "2026-10-15T17:06:54.672Z",
 } as const;
 
 const ARBITRUM_SEPOLIA_EVIDENCE = {
@@ -73,8 +73,8 @@ const ARBITRUM_SEPOLIA_EVIDENCE = {
     "0x88ef958407ee3929cc23b1737e89f0e8acdf7a57",
   ],
   provider: "evm-arbitrum-sepolia",
-  commit: "bf23f95",
-  timestamp: "2026-09-17T07:28:40.938Z",
+  commit: "d0becd2b4",
+  timestamp: "2026-10-15T17:09:30.581Z",
 } as const;
 
 const AGENT_MAINNET_EVIDENCE = {
@@ -82,12 +82,40 @@ const AGENT_MAINNET_EVIDENCE = {
   timestamp: "2026-09-11T01:18:16Z",
 } as const;
 
-const PAYROLL_SOLANA_DEVNET_EVIDENCE = {
-  provider: "umbra-solana-devnet",
-  program: "DSuKkyqGVGgo4QtPABfxKJKygUDACbUhirnuv63mEpAJ",
-  asset: "WSOL",
-  commit: "adcb3ae",
-  timestamp: "2026-09-11T21:36:18.740Z",
+const BLIND_SOLANA_DEVNET_EVIDENCE = {
+  provider: "privatedao-blind-policy-proof",
+  commit: "6be6daf6a",
+  timestamp: "2026-10-15T19:54:13.841Z",
+} as const;
+
+const RECORD_SOLANA_DEVNET_EVIDENCE = {
+  provider: "privatedao-record-verification",
+  commit: "fd6deebc2",
+  timestamp: "2026-10-16T00:58:15.368Z",
+} as const;
+
+const SOLANA_DEVNET_POLICY_AUCTION_EVIDENCE = {
+  commit: "b7133360e",
+  timestamp: "2026-10-15T21:52:24.921Z",
+  treasuryProvider: "privatedao-treasury-policy",
+  auctionBidProvider: "privatedao-auction-bid-commit",
+  auctionSettleProvider: "privatedao-auction-outcome-proof",
+} as const;
+
+const SOLANA_DEVNET_GOVERNANCE_EVIDENCE = {
+  commit: "06a3e5ceb",
+  timestamp: "2026-10-16T02:06:20.238Z",
+  provider: "privatedao-governance-proposal",
+} as const;
+
+const SOLANA_DEVNET_PAYROLL_EVIDENCE = {
+  commit: "333ec49a6",
+  timestamp: "2026-10-16T02:11:11.152Z",
+  providers: {
+    calculate: "privatedao-payroll-calculation",
+    approve: "privatedao-payroll-approval",
+    settle: "privatedao-payroll-settlement",
+  },
 } as const;
 
 const TEMPO_TESTNET_EVIDENCE = {
@@ -97,8 +125,62 @@ const TEMPO_TESTNET_EVIDENCE = {
     "0xffe6e9a78dafd35f230ad51c7bd96ba469d53405",
     "0x9570769a1a4980d199845ccb276706face805cb4",
   ],
-  commit: "7b4d430",
-  timestamp: "2026-09-16T21:53:12.853Z",
+  commit: "a2dc61d2a",
+  timestamp: "2026-10-15T17:59:13.787Z",
+} as const;
+
+const BNB_TESTNET_EVIDENCE = {
+  provider: "evm-bnb-testnet",
+  verifier: "0x26e3515d02bb3d8122fad109d159f43e81e8beeb",
+  contracts: [
+    "0xdd01da1b53ba46bf1ce8c71bc1c5e86e8784694b",
+    "0x6f813e1221cb5f760bb5c467983c014bbe4b3b5c",
+  ],
+  commit: "77b83fe42",
+  timestamp: "2026-10-15T17:12:47.533Z",
+} as const;
+
+const HYPERLIQUID_TESTNET_EVIDENCE = {
+  provider: "evm-hyperliquid-testnet",
+  contracts: [
+    "0x26e3515d02bb3d8122fad109d159f43e81e8beeb",
+    "0xdd01da1b53ba46bf1ce8c71bc1c5e86e8784694b",
+    "0x6f813e1221cb5f760bb5c467983c014bbe4b3b5c",
+  ],
+  commit: "66d0c2825",
+  timestamp: "2026-10-15T17:15:50.077Z",
+} as const;
+
+const ROBINHOOD_TESTNET_EVIDENCE = {
+  provider: "evm-robinhood-testnet",
+  verifier: "0xccfd62e867475fd70137d065792e72919357ce44",
+  contracts: [
+    "0xccfd62e867475fd70137d065792e72919357ce44",
+    "0x3fc47618e59c5bf8a19fe6a5298938fc9b8c3bdc",
+    "0x672899b8ad719468b20ee0b662bc30a8a22e6585",
+  ],
+  commit: "3ff8d9e79",
+  timestamp: "2026-10-15T17:18:44.919Z",
+} as const;
+
+const STELLAR_TESTNET_EVIDENCE = {
+  provider: "stellar-testnet-horizon",
+  commit: "7aeff6d4b",
+  timestamp: "2026-10-12T08:11:43.186Z",
+  transaction: "8220fea632c55e3dca415b8b46ec82ea9d333cc2461947ef194592e5410a4e1b",
+  ledger: "5153823",
+  capabilities: [
+    "verification.blind.prove",
+    "verification.record.create",
+    "verification.record.verify",
+    "payroll.calculate",
+    "payroll.approve",
+    "payroll.settle",
+    "treasury.policy.check",
+    "governance.proposal.execute",
+    "auction.bid.commit",
+    "auction.settle",
+  ],
 } as const;
 
 const ORGANIZATIONAL_EVIDENCE = {
@@ -135,6 +217,17 @@ const ORGANIZATIONAL_EVIDENCE = {
     commit: "bf23f95",
     timestamp: "2026-09-17T07:23:24.600Z",
   },
+  "base-sepolia": {
+    provider: "evm-base-sepolia-organizational",
+    contracts: [
+      "0xf053303014cbf6233d8b9bf38679a30706069216",
+      "0x9887bcfe7daad364202d5d3102de180c389ecb20",
+      "0xcfb3e7af09f206614cf7a3cf8a93f92379c1c374",
+    ],
+    assets: ["ETH"],
+    commit: "7dcfce7",
+    timestamp: "2026-09-19T13:20:48.792Z",
+  },
   "robinhood-testnet": {
     provider: "evm-robinhood-testnet-organizational",
     contracts: [
@@ -145,6 +238,74 @@ const ORGANIZATIONAL_EVIDENCE = {
     assets: ["ETH"],
     commit: "65fe6957e",
     timestamp: "2026-09-19T14:01:22.656Z",
+  },
+  "bnb-testnet": {
+    provider: "evm-bnb-testnet-organizational",
+    contracts: [
+      "0x5011c9c68006c2857eaea0f67401e9d58ff39770",
+      "0x62f8f7ffc4235a1dde58ba811fa9c448c56f7620",
+      "0x57d5d75f81db5459d541891f4c1a20f51abe32fc",
+      "0x4dbe25b21607cf04bbf06b9b88927af3e381d373",
+    ],
+    assets: ["BNB"],
+    commit: "ef862608a",
+    timestamp: "2026-10-11T17:04:22.062Z",
+  },
+  "hyperliquid-testnet": {
+    provider: "evm-hyperliquid-testnet-organizational",
+    contracts: [
+      "0x6376b8909dba5d61d3267eb092fdd51718cfc524",
+      "0x987457e59339e8e291db1cb58a71a19af82e81ff",
+      "0x672899b8ad719468b20ee0b662bc30a8a22e6585",
+    ],
+    assets: ["HYPE"],
+    commit: "25ed8bb4b",
+    timestamp: "2026-10-15T02:42:28.053Z",
+  },
+} as const;
+
+const ORGANIZATIONAL_PAYROLL_EVIDENCE = {
+  "ethereum-sepolia": {
+    provider: "evm-ethereum-sepolia-organizational",
+    contracts: ["0xcd6709c1bc73a746e1ba094c6d04f9f3442ba1fc"],
+    assets: ["ETH"],
+    commit: "39e969024",
+    timestamp: "2026-10-15T08:11:09.510Z",
+  },
+  "bnb-testnet": {
+    provider: "evm-bnb-testnet-organizational",
+    contracts: ["0x0a1a6467fdcc858899692c0f7d15beca2483d069"],
+    assets: ["BNB"],
+    commit: "ef862608a",
+    timestamp: "2026-10-12T00:18:34.179Z",
+  },
+  "base-sepolia": {
+    provider: "evm-base-sepolia-organizational",
+    contracts: ["0x07236df28d60ef7cde8a8a3fe5e62ceade706837"],
+    assets: ["ETH"],
+    commit: "ea2d39fc2",
+    timestamp: "2026-10-15T18:08:23.902Z",
+  },
+  "arbitrum-sepolia": {
+    provider: "evm-arbitrum-sepolia-organizational",
+    contracts: ["0xe41496546cd1ad97b7c92b6d4de5220e2d261c72"],
+    assets: ["ETH"],
+    commit: "6230580f1",
+    timestamp: "2026-10-15T18:35:10.382Z",
+  },
+  "robinhood-testnet": {
+    provider: "evm-robinhood-testnet-organizational",
+    contracts: ["0xff3bbac12cb2630bee9f0576ea2ea202a059edf7"],
+    assets: ["ETH"],
+    commit: "619c65f03",
+    timestamp: "2026-10-15T18:40:40.109Z",
+  },
+  "tempo-testnet": {
+    provider: "evm-tempo-testnet-organizational",
+    contracts: ["0xf70e48d8bb75757420c7ea231aaaff3e5df2aba0"],
+    assets: ["AlphaUSD"],
+    commit: "8be1f6ae1",
+    timestamp: "2026-10-16T00:29:36.276Z",
   },
 } as const;
 
@@ -168,8 +329,8 @@ function defaultStatus(declared: boolean, network: NetworkDescriptor): NativeCap
 }
 
 function applyEthereumSepoliaEvidence(entry: NativeCapabilityEntry): NativeCapabilityEntry {
-  const isBlind = entry.product === "blind-verification" && entry.capability === "verification.blind.prove";
-  const isRecord = entry.product === "record-verification" && ["verification.record.create", "verification.record.verify"].includes(entry.capability);
+  const isBlind = entry.product === "blind-verification" && ["verification.blind.prove", "verification.blind.revoke"].includes(entry.capability);
+  const isRecord = entry.product === "record-verification" && ["verification.record.create", "verification.record.verify", "verification.record.revoke"].includes(entry.capability);
   if (entry.network !== "ethereum-sepolia" || (!isBlind && !isRecord)) return entry;
   return {
     ...entry,
@@ -189,8 +350,8 @@ function applyEthereumSepoliaEvidence(entry: NativeCapabilityEntry): NativeCapab
 }
 
 function applyBaseSepoliaEvidence(entry: NativeCapabilityEntry): NativeCapabilityEntry {
-  const isBlind = entry.product === "blind-verification" && entry.capability === "verification.blind.prove";
-  const isRecord = entry.product === "record-verification" && ["verification.record.create", "verification.record.verify"].includes(entry.capability);
+  const isBlind = entry.product === "blind-verification" && ["verification.blind.prove", "verification.blind.revoke"].includes(entry.capability);
+  const isRecord = entry.product === "record-verification" && ["verification.record.create", "verification.record.verify", "verification.record.revoke"].includes(entry.capability);
   if (entry.network !== "base-sepolia" || (!isBlind && !isRecord)) return entry;
   return {
     ...entry,
@@ -210,8 +371,8 @@ function applyBaseSepoliaEvidence(entry: NativeCapabilityEntry): NativeCapabilit
 }
 
 function applyArbitrumSepoliaEvidence(entry: NativeCapabilityEntry): NativeCapabilityEntry {
-  const isBlind = entry.product === "blind-verification" && entry.capability === "verification.blind.prove";
-  const isRecord = entry.product === "record-verification" && ["verification.record.create", "verification.record.verify"].includes(entry.capability);
+  const isBlind = entry.product === "blind-verification" && ["verification.blind.prove", "verification.blind.revoke"].includes(entry.capability);
+  const isRecord = entry.product === "record-verification" && ["verification.record.create", "verification.record.verify", "verification.record.revoke"].includes(entry.capability);
   if (entry.network !== "arbitrum-sepolia" || (!isBlind && !isRecord)) return entry;
   return {
     ...entry,
@@ -250,31 +411,126 @@ function applyAgentMainnetEvidence(entry: NativeCapabilityEntry): NativeCapabili
 }
 
 function applyPayrollDevnetEvidence(entry: NativeCapabilityEntry): NativeCapabilityEntry {
-  if (entry.product !== "payroll" || entry.network !== "solana-devnet") return entry;
-  if (!["payroll.calculate", "payroll.approve", "payroll.settle"].includes(entry.capability)) return entry;
-  const isSettlement = entry.capability === "payroll.settle";
+  // The Umbra/PayrollStore packet is a legacy wallet-side path. It is
+  // deliberately excluded until the same flow runs through the Kernel
+  // ProductExecutionGateway with an independent receipt.
+  return entry;
+}
+
+function applyBlindSolanaDevnetEvidence(entry: NativeCapabilityEntry): NativeCapabilityEntry {
+  if (entry.product !== "blind-verification" || entry.capability !== "verification.blind.prove" || entry.network !== "solana-devnet") return entry;
   return {
     ...entry,
-    provider: PAYROLL_SOLANA_DEVNET_EVIDENCE.provider,
-    supportedAssets: [PAYROLL_SOLANA_DEVNET_EVIDENCE.asset],
-    contracts: [PAYROLL_SOLANA_DEVNET_EVIDENCE.program],
-    walletModel: "external-wallet",
+    provider: BLIND_SOLANA_DEVNET_EVIDENCE.provider,
+    walletModel: "none",
     supportsExecution: true,
-    supportsPrivateExecution: isSettlement,
-    supportsPrivateSettlement: isSettlement,
-    supportsProof: isSettlement,
+    supportsPrivateExecution: true,
+    supportsPrivateSettlement: false,
+    supportsProof: true,
     supportsReceipt: true,
-    supportsReconciliation: isSettlement,
+    supportsReconciliation: true,
     status: "devnet_verified",
-    lastVerifiedCommit: PAYROLL_SOLANA_DEVNET_EVIDENCE.commit,
-    lastVerifiedTimestamp: PAYROLL_SOLANA_DEVNET_EVIDENCE.timestamp,
+    lastVerifiedCommit: BLIND_SOLANA_DEVNET_EVIDENCE.commit,
+    lastVerifiedTimestamp: BLIND_SOLANA_DEVNET_EVIDENCE.timestamp,
+    evidence: "devnet-e2e",
+  };
+}
+
+function applyRecordSolanaDevnetEvidence(entry: NativeCapabilityEntry): NativeCapabilityEntry {
+  const supported = ["verification.record.create", "verification.record.verify"].includes(entry.capability);
+  if (entry.product !== "record-verification" || !supported || entry.network !== "solana-devnet") return entry;
+  return {
+    ...entry,
+    provider: RECORD_SOLANA_DEVNET_EVIDENCE.provider,
+    walletModel: "none",
+    supportsExecution: true,
+    supportsPrivateExecution: false,
+    supportsPrivateSettlement: false,
+    supportsProof: false,
+    supportsReceipt: true,
+    supportsReconciliation: true,
+    status: "devnet_verified",
+    lastVerifiedCommit: RECORD_SOLANA_DEVNET_EVIDENCE.commit,
+    lastVerifiedTimestamp: RECORD_SOLANA_DEVNET_EVIDENCE.timestamp,
+    evidence: "devnet-e2e",
+  };
+}
+
+function applySolanaDevnetPolicyAuctionEvidence(entry: NativeCapabilityEntry): NativeCapabilityEntry {
+  const isTreasury = entry.product === "treasury" && entry.capability === "treasury.policy.check";
+  const isAuction = entry.product === "auction" && ["auction.bid.commit", "auction.settle"].includes(entry.capability);
+  if (entry.network !== "solana-devnet" || (!isTreasury && !isAuction)) return entry;
+  const provider = isTreasury
+    ? SOLANA_DEVNET_POLICY_AUCTION_EVIDENCE.treasuryProvider
+    : entry.capability === "auction.bid.commit"
+      ? SOLANA_DEVNET_POLICY_AUCTION_EVIDENCE.auctionBidProvider
+      : SOLANA_DEVNET_POLICY_AUCTION_EVIDENCE.auctionSettleProvider;
+  return {
+    ...entry,
+    provider,
+    walletModel: "none",
+    supportsExecution: true,
+    supportsPrivateExecution: false,
+    supportsPrivateSettlement: false,
+    supportsProof: isAuction,
+    supportsReceipt: true,
+    supportsReconciliation: true,
+    status: "devnet_verified",
+    lastVerifiedCommit: SOLANA_DEVNET_POLICY_AUCTION_EVIDENCE.commit,
+    lastVerifiedTimestamp: SOLANA_DEVNET_POLICY_AUCTION_EVIDENCE.timestamp,
+    evidence: "devnet-e2e",
+  };
+}
+
+function applySolanaDevnetGovernanceEvidence(entry: NativeCapabilityEntry): NativeCapabilityEntry {
+  if (entry.network !== "solana-devnet" || entry.product !== "governance" || entry.capability !== "governance.proposal.execute") return entry;
+  return {
+    ...entry,
+    provider: SOLANA_DEVNET_GOVERNANCE_EVIDENCE.provider,
+    walletModel: "none",
+    supportsExecution: true,
+    supportsPrivateExecution: true,
+    supportsPrivateSettlement: false,
+    supportsProof: true,
+    supportsReceipt: true,
+    supportsReconciliation: true,
+    status: "devnet_verified",
+    lastVerifiedCommit: SOLANA_DEVNET_GOVERNANCE_EVIDENCE.commit,
+    lastVerifiedTimestamp: SOLANA_DEVNET_GOVERNANCE_EVIDENCE.timestamp,
+    evidence: "devnet-e2e",
+  };
+}
+
+function applySolanaDevnetPayrollEvidence(entry: NativeCapabilityEntry): NativeCapabilityEntry {
+  if (entry.network !== "solana-devnet" || entry.product !== "payroll") return entry;
+  const provider = entry.capability === "payroll.calculate"
+    ? SOLANA_DEVNET_PAYROLL_EVIDENCE.providers.calculate
+    : entry.capability === "payroll.approve"
+      ? SOLANA_DEVNET_PAYROLL_EVIDENCE.providers.approve
+      : entry.capability === "payroll.settle"
+        ? SOLANA_DEVNET_PAYROLL_EVIDENCE.providers.settle
+        : null;
+  if (!provider) return entry;
+  return {
+    ...entry,
+    provider,
+    walletModel: "none",
+    supportsExecution: true,
+    supportsPrivateExecution: true,
+    supportsPrivateSettlement: true,
+    supportsProof: true,
+    supportsReceipt: true,
+    supportsReconciliation: true,
+    status: "devnet_verified",
+    lastVerifiedCommit: SOLANA_DEVNET_PAYROLL_EVIDENCE.commit,
+    lastVerifiedTimestamp: SOLANA_DEVNET_PAYROLL_EVIDENCE.timestamp,
     evidence: "devnet-e2e",
   };
 }
 
 function applyTempoTestnetEvidence(entry: NativeCapabilityEntry): NativeCapabilityEntry {
-  const isBlind = entry.product === "blind-verification" && entry.capability === "verification.blind.prove";
-  const isRecord = entry.product === "record-verification" && ["verification.record.create", "verification.record.verify"].includes(entry.capability);
+  const isBlind = entry.product === "blind-verification" && ["verification.blind.prove", "verification.blind.revoke"].includes(entry.capability);
+  const isRecord = entry.product === "record-verification" && ["verification.record.create", "verification.record.verify", "verification.record.revoke"].includes(entry.capability);
   if (entry.network !== "tempo-testnet" || (!isBlind && !isRecord)) return entry;
   return {
     ...entry,
@@ -291,6 +547,94 @@ function applyTempoTestnetEvidence(entry: NativeCapabilityEntry): NativeCapabili
     lastVerifiedCommit: TEMPO_TESTNET_EVIDENCE.commit,
     lastVerifiedTimestamp: TEMPO_TESTNET_EVIDENCE.timestamp,
     evidence: "testnet-e2e",
+  };
+}
+
+function applyBnbTestnetEvidence(entry: NativeCapabilityEntry): NativeCapabilityEntry {
+  const isBlind = entry.product === "blind-verification" && ["verification.blind.prove", "verification.blind.revoke"].includes(entry.capability);
+  const isRecord = entry.product === "record-verification" && ["verification.record.create", "verification.record.verify", "verification.record.revoke"].includes(entry.capability);
+  if (entry.network !== "bnb-testnet" || (!isBlind && !isRecord)) return entry;
+  return {
+    ...entry,
+    provider: BNB_TESTNET_EVIDENCE.provider,
+    supportedAssets: ["BNB"],
+    contracts: BNB_TESTNET_EVIDENCE.contracts,
+    verifier: BNB_TESTNET_EVIDENCE.verifier,
+    walletModel: "provider-wallet",
+    supportsExecution: true,
+    supportsPrivateExecution: false,
+    supportsPrivateSettlement: false,
+    supportsProof: isBlind,
+    supportsReceipt: true,
+    supportsReconciliation: true,
+    status: "testnet_verified",
+    lastVerifiedCommit: BNB_TESTNET_EVIDENCE.commit,
+    lastVerifiedTimestamp: BNB_TESTNET_EVIDENCE.timestamp,
+    evidence: "testnet-e2e",
+  };
+}
+
+function applyHyperliquidTestnetEvidence(entry: NativeCapabilityEntry): NativeCapabilityEntry {
+  const isBlind = entry.product === "blind-verification" && ["verification.blind.prove", "verification.blind.revoke"].includes(entry.capability);
+  const isRecord = entry.product === "record-verification" && ["verification.record.create", "verification.record.verify", "verification.record.revoke"].includes(entry.capability);
+  if (entry.network !== "hyperliquid-testnet" || (!isBlind && !isRecord)) return entry;
+  return {
+    ...entry,
+    provider: HYPERLIQUID_TESTNET_EVIDENCE.provider,
+    contracts: HYPERLIQUID_TESTNET_EVIDENCE.contracts,
+    walletModel: "provider-wallet",
+    supportsExecution: true,
+    supportsPrivateExecution: false,
+    supportsPrivateSettlement: false,
+    supportsProof: isBlind,
+    supportsReceipt: true,
+    supportsReconciliation: true,
+    status: "testnet_verified",
+    lastVerifiedCommit: HYPERLIQUID_TESTNET_EVIDENCE.commit,
+    lastVerifiedTimestamp: HYPERLIQUID_TESTNET_EVIDENCE.timestamp,
+    evidence: "testnet-e2e",
+  };
+}
+
+function applyRobinhoodTestnetEvidence(entry: NativeCapabilityEntry): NativeCapabilityEntry {
+  const isBlind = entry.product === "blind-verification" && ["verification.blind.prove", "verification.blind.revoke"].includes(entry.capability);
+  const isRecord = entry.product === "record-verification" && ["verification.record.create", "verification.record.verify", "verification.record.revoke"].includes(entry.capability);
+  if (entry.network !== "robinhood-testnet" || (!isBlind && !isRecord)) return entry;
+  return {
+    ...entry,
+    provider: ROBINHOOD_TESTNET_EVIDENCE.provider,
+    contracts: ROBINHOOD_TESTNET_EVIDENCE.contracts,
+    verifier: ROBINHOOD_TESTNET_EVIDENCE.verifier,
+    walletModel: "provider-wallet",
+    supportsExecution: true,
+    supportsProof: isBlind,
+    supportsReceipt: true,
+    supportsReconciliation: true,
+    status: "testnet_verified",
+    lastVerifiedCommit: ROBINHOOD_TESTNET_EVIDENCE.commit,
+    lastVerifiedTimestamp: ROBINHOOD_TESTNET_EVIDENCE.timestamp,
+    evidence: "testnet-e2e",
+  };
+}
+
+function applyStellarTestnetEvidence(entry: NativeCapabilityEntry): NativeCapabilityEntry {
+  if (entry.network !== "stellar-testnet" || entry.product === "agent" || !entry.declared) return entry;
+  const verified = (STELLAR_TESTNET_EVIDENCE.capabilities as readonly string[]).includes(entry.capability);
+  return {
+    ...entry,
+    provider: STELLAR_TESTNET_EVIDENCE.provider,
+    supportedAssets: ["XLM"],
+    walletModel: "external-wallet",
+    supportsExecution: true,
+    supportsPrivateExecution: false,
+    supportsPrivateSettlement: false,
+    supportsProof: ["verification.blind.prove", "verification.record.create", "verification.record.verify", "auction.bid.commit", "auction.settle"].includes(entry.capability),
+    supportsReceipt: true,
+    supportsReconciliation: true,
+    status: verified ? "testnet_verified" : "testnet_ready",
+    lastVerifiedCommit: verified ? STELLAR_TESTNET_EVIDENCE.commit : null,
+    lastVerifiedTimestamp: STELLAR_TESTNET_EVIDENCE.timestamp,
+    evidence: verified ? "testnet-e2e" : "runtime-only",
   };
 }
 
@@ -320,40 +664,88 @@ function applyOrganizationalEvidence(entry: NativeCapabilityEntry): NativeCapabi
   };
 }
 
+function applyOrganizationalPayrollEvidence(entry: NativeCapabilityEntry): NativeCapabilityEntry {
+  const evidence = ORGANIZATIONAL_PAYROLL_EVIDENCE[entry.network as keyof typeof ORGANIZATIONAL_PAYROLL_EVIDENCE];
+  if (entry.product !== "payroll" || !evidence) return entry;
+  if (!["payroll.calculate", "payroll.approve", "payroll.settle"].includes(entry.capability)) return entry;
+  return {
+    ...entry,
+    provider: evidence.provider,
+    supportedAssets: evidence.assets,
+    contracts: evidence.contracts,
+    walletModel: "external-wallet",
+    supportsExecution: true,
+    supportsPrivateExecution: false,
+    supportsPrivateSettlement: false,
+    supportsProof: false,
+    supportsReceipt: true,
+    supportsReconciliation: true,
+    status: "testnet_verified",
+    lastVerifiedCommit: evidence.commit,
+    lastVerifiedTimestamp: evidence.timestamp,
+    evidence: "testnet-e2e",
+  };
+}
+
 /**
  * Conservative native capability registry. Planned entries are emitted so
  * discovery can explain the roadmap, but only evidence-backed entries are
  * executable or presented as verified support.
  */
 export function buildNativeCapabilityRegistry(): readonly NativeCapabilityEntry[] {
+  const evidenceTransforms = [
+    applyEthereumSepoliaEvidence,
+    applyBaseSepoliaEvidence,
+    applyArbitrumSepoliaEvidence,
+    applyAgentMainnetEvidence,
+    applyPayrollDevnetEvidence,
+    applyBlindSolanaDevnetEvidence,
+    applyRecordSolanaDevnetEvidence,
+    applySolanaDevnetPolicyAuctionEvidence,
+    applySolanaDevnetGovernanceEvidence,
+    applySolanaDevnetPayrollEvidence,
+    applyTempoTestnetEvidence,
+    applyBnbTestnetEvidence,
+    applyHyperliquidTestnetEvidence,
+    applyRobinhoodTestnetEvidence,
+    applyStellarTestnetEvidence,
+    applyOrganizationalPayrollEvidence,
+    applyOrganizationalEvidence,
+  ] as const;
+
   return PRODUCT_CATALOG.flatMap((product) =>
     product.capabilities.flatMap((capability) =>
-      NETWORK_MATRIX.map((network) => applyOrganizationalEvidence(applyTempoTestnetEvidence(applyPayrollDevnetEvidence(applyAgentMainnetEvidence(applyArbitrumSepoliaEvidence(applyBaseSepoliaEvidence(applyEthereumSepoliaEvidence({
-        product: product.id,
-        capability: capability.id,
-        network: network.id,
-        networkFamily: network.family,
-        declared: product.networks.includes(network.id) && capability.networks.includes(network.id),
-        environment: network.environment,
-        chainId: network.chainId ?? null,
-        nativeAsset: nativeAsset(network),
-        supportedAssets: nativeAsset(network) ? [nativeAsset(network) as string] : [],
-        contracts: [],
-        verifier: null,
-        provider: network.adapterId ?? null,
-        walletModel: network.family === "solana" || network.family === "evm" ? "external-wallet" : "none",
-        supportsExecution: false,
-        supportsPrivateExecution: false,
-        supportsPrivateSettlement: false,
-        supportsProof: false,
-        supportsReceipt: false,
-        supportsReconciliation: false,
-        supportsMainnet: false,
-        status: defaultStatus(product.networks.includes(network.id) && capability.networks.includes(network.id), network),
-        lastVerifiedCommit: null,
-        lastVerifiedTimestamp: null,
-        evidence: "none",
-      })))))))) ,
+      NETWORK_MATRIX.map((network) => {
+        const declared = product.networks.includes(network.id) && capability.networks.includes(network.id);
+        const asset = nativeAsset(network);
+        const entry: NativeCapabilityEntry = {
+          product: product.id,
+          capability: capability.id,
+          network: network.id,
+          networkFamily: network.family,
+          declared,
+          environment: network.environment,
+          chainId: network.chainId ?? null,
+          nativeAsset: asset,
+          supportedAssets: asset ? [asset] : [],
+          contracts: [],
+          verifier: null,
+          provider: network.adapterId ?? null,
+          walletModel: network.family === "solana" || network.family === "evm" ? "external-wallet" : "none",
+          supportsExecution: false,
+          supportsPrivateExecution: false,
+          supportsPrivateSettlement: false,
+          supportsProof: false,
+          supportsReceipt: false,
+          supportsReconciliation: false,
+          supportsMainnet: false,
+          status: defaultStatus(declared, network),
+          lastVerifiedCommit: null,
+          lastVerifiedTimestamp: null,
+          evidence: "none",
+        };
+        return evidenceTransforms.reduce((current, transform) => transform(current), entry);
+      }),
     ),
   );
 }

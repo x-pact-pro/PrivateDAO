@@ -6,6 +6,7 @@ import type {
 } from "./index.js";
 import type { FeeEstimate } from "./protocol.js";
 import type { EvmTransport } from "./evm-network.js";
+import { encodeFunctionData } from "viem";
 
 export type ViemContractWritePayload = {
   kind: "contract-write";
@@ -27,6 +28,8 @@ type ViemPublicClient = {
 const RECEIPT_TIMEOUT_MS = Number(process.env.PRIVATEDAO_EVM_RECEIPT_TIMEOUT_MS || 120_000);
 
 type ViemWalletClient = {
+  account?: { address: `0x${string}` };
+  sendTransaction?(input: Record<string, unknown>): Promise<`0x${string}`>;
   writeContract(input: Record<string, unknown>): Promise<`0x${string}`>;
 };
 
@@ -61,6 +64,7 @@ export class ViemEvmTransport implements EvmTransport {
 
   async prepare<TPayload, TUnsigned>(intent: ExecutionIntent<TPayload>): Promise<PreparedExecution<TUnsigned>> {
     const payload = parsePayload(intent.payload);
+    assertPayerMatches(intent, payload, this.network);
     const previous = this.idempotency.get(intent.context.idempotencyKey);
     if (previous) {
       const record = this.executions.get(previous);
@@ -81,19 +85,37 @@ export class ViemEvmTransport implements EvmTransport {
     return prepared as PreparedExecution<TUnsigned>;
   }
 
-  async submit<TUnsigned>(execution: PreparedExecution<TUnsigned>, _signedPayload: TUnsigned): Promise<{ executionId: string; signatures: string[] }> {
+  async submit<TUnsigned>(execution: PreparedExecution<TUnsigned>, signedPayload: TUnsigned): Promise<{ executionId: string; signatures: string[] }> {
     const record = this.executions.get(execution.executionId);
     if (!record) throw new Error("Unknown EVM execution.");
     if (record.signature) return { executionId: execution.executionId, signatures: [record.signature] };
     if (record.state !== "awaiting_signature" && record.state !== "prepared") throw new Error(`Cannot submit EVM execution from ${record.state}.`);
-    const payload = record.prepared.unsignedPayload;
-    const signature = await this.walletClient.writeContract({
-      address: payload.address,
-      abi: payload.abi,
-      functionName: payload.functionName,
-      args: payload.args,
-      ...(payload.value === undefined ? {} : { value: payload.value }),
-    });
+    const payload = parsePayload(signedPayload);
+    assertPayloadMatches(record.prepared.unsignedPayload, payload);
+    const configuredAccount = this.walletClient.account;
+    if (configuredAccount && configuredAccount.address.toLowerCase() !== payload.account.toLowerCase()) {
+      throw new Error("EVM wallet signer does not match the prepared payer account.");
+    }
+    const account = configuredAccount ?? payload.account;
+    const signature = this.walletClient.sendTransaction
+      ? await this.walletClient.sendTransaction({
+          to: payload.address,
+          data: encodeFunctionData({
+            abi: payload.abi as any,
+            functionName: payload.functionName,
+            args: payload.args as any,
+          }),
+          account,
+          ...(payload.value === undefined ? {} : { value: payload.value }),
+        })
+      : await this.walletClient.writeContract({
+          address: payload.address,
+          abi: payload.abi,
+          functionName: payload.functionName,
+          args: payload.args,
+          account,
+          ...(payload.value === undefined ? {} : { value: payload.value }),
+        });
     record.signature = signature;
     record.state = "submitted";
     return { executionId: execution.executionId, signatures: [signature] };
@@ -121,7 +143,6 @@ export class ViemEvmTransport implements EvmTransport {
       requestId: record.intent.context.requestId,
       capability: record.intent.context.capability,
       network: this.network,
-      provider: "privatedao-viem-evm",
       state: "confirmed",
       signatures: [record.signature],
       createdAt: new Date().toISOString(),
@@ -137,10 +158,35 @@ export class ViemEvmTransport implements EvmTransport {
 
   async estimateFee<TPayload>(intent: ExecutionIntent<TPayload>): Promise<FeeEstimate> {
     const payload = parsePayload(intent.payload);
+    assertPayerMatches(intent, payload, this.network);
     const gas = await this.publicClient.estimateContractGas({ address: payload.address, abi: payload.abi, functionName: payload.functionName, args: payload.args, account: payload.account });
     const price = await this.publicClient.getGasPrice();
     return { network: this.network, atomicAmount: (gas * price).toString(), asset: this.nativeAsset };
   }
+}
+
+function assertPayerMatches(intent: ExecutionIntent<unknown>, payload: ViemContractWritePayload, network: string): void {
+  const payers = intent.accounts.filter((account) => account.role === "payer");
+  if (payers.length !== 1 || payers[0].network !== network || payers[0].address.toLowerCase() !== payload.account.toLowerCase()) {
+    throw new Error("EVM payer account does not match the contract-write account or network.");
+  }
+}
+
+function assertPayloadMatches(expected: ViemContractWritePayload, actual: ViemContractWritePayload): void {
+  if (
+    expected.address.toLowerCase() !== actual.address.toLowerCase()
+    || expected.account.toLowerCase() !== actual.account.toLowerCase()
+    || expected.functionName !== actual.functionName
+    || canonicalize(expected.abi) !== canonicalize(actual.abi)
+    || canonicalize(expected.args) !== canonicalize(actual.args)
+    || canonicalize(expected.value) !== canonicalize(actual.value)
+  ) {
+    throw new Error("EVM signed payload does not match the prepared transaction intent.");
+  }
+}
+
+function canonicalize(value: unknown): string {
+  return JSON.stringify(value, (_key, candidate) => typeof candidate === "bigint" ? `${candidate}n` : candidate);
 }
 
 function parsePayload(value: unknown): ViemContractWritePayload {

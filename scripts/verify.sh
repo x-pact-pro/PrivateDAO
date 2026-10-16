@@ -81,6 +81,7 @@ verify_scan() {
       --glob '!apps/web/out/**' \
       --glob '!apps/web/.next/**' \
       --glob '!docs/assets/vendor/**' \
+      --glob '!vendor/magicblock-delegation-program-api/**' \
       --glob '!_archives/**' \
       --glob '!apps/web/public/**' \
       --glob '!assets/**' \
@@ -114,6 +115,7 @@ verify_scan() {
     ':(exclude)apps/web/out/**' \
     ':(exclude)apps/web/.next/**' \
     ':(exclude)docs/assets/vendor/**' \
+    ':(exclude)vendor/magicblock-delegation-program-api/**' \
     ':(exclude)_archives/**' \
     ':(exclude)apps/web/public/**' \
     ':(exclude)assets/**' \

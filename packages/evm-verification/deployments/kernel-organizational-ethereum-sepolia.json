@@ -1,0 +1,35 @@
+{
+  "schema": "privatedao.kernel-organizational-e2e.v1",
+  "network": "ethereum-sepolia",
+  "chainId": 11155111,
+  "environment": "testnet",
+  "provider": "evm-ethereum-sepolia-organizational",
+  "gateway": "ProductExecutionGateway",
+  "verifiedAt": "2026-10-15T03:02:14.321Z",
+  "results": [
+    {
+      "product": "treasury",
+      "capability": "treasury.policy.check",
+      "executionId": "evm-treasury-8099397a-65ee-4b85-93a7-f13c236d0783",
+      "txHash": "0x9ad2735050f511e1971d6a55e901f3bab5652c8faa90bdba665de1172072cbdd",
+      "blockNumber": "11917612",
+      "explorerUrl": "https://sepolia.etherscan.io/tx/0x9ad2735050f511e1971d6a55e901f3bab5652c8faa90bdba665de1172072cbdd"
+    },
+    {
+      "product": "governance",
+      "capability": "governance.proposal.execute",
+      "executionId": "evm-governance-d8a2e927-e0b1-4d6d-813c-a76163a0af4a",
+      "txHash": "0xe5f598c21b2bb7a8ba55930d399a003c15375cc83b1be8290ac953a39714db0d",
+      "blockNumber": "11917613",
+      "explorerUrl": "https://sepolia.etherscan.io/tx/0xe5f598c21b2bb7a8ba55930d399a003c15375cc83b1be8290ac953a39714db0d"
+    },
+    {
+      "product": "auction",
+      "capability": "auction.bid.commit",
+      "executionId": "evm-auction-1cdddb93-1706-4c55-aca5-2f58fe807497",
+      "txHash": "0xa53b9907496c6d5ce5597249ceb9ca4a5394069a743ca27e213f60b3a3ee865f",
+      "blockNumber": "11917614",
+      "explorerUrl": "https://sepolia.etherscan.io/tx/0xa53b9907496c6d5ce5597249ceb9ca4a5394069a743ca27e213f60b3a3ee865f"
+    }
+  ]
+}

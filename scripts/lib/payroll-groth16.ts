@@ -3,6 +3,7 @@ import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import { createRequire } from "node:module";
 import { resolve } from "node:path";
+import { Poseidon } from "@iden3/js-crypto";
 
 const loadRequire = createRequire(resolve(process.cwd(), "package.json"));
 function loadDependency(name: string) {
@@ -20,9 +21,7 @@ function sha256(value: unknown) {
 }
 
 export async function expectedPayrollPublicSignals(input: { manifestCommitment: string; settlementRoot: string; policyHash: string }) {
-  const { buildPoseidon } = loadDependency("circomlibjs");
-  const poseidon = await buildPoseidon();
-  const hash = (...values: string[]) => poseidon.F.toString(poseidon(values.map((value) => BigInt(value))));
+  const hash = (...values: string[]) => Poseidon.hash(values.map((value) => BigInt(value))).toString();
   const payrollKey = fieldFromSha256(input.manifestCommitment);
   const batchKey = fieldFromSha256(input.settlementRoot);
   const salt = fieldFromSha256(input.policyHash);

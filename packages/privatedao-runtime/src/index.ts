@@ -10,7 +10,9 @@ export type ProductId =
 export type CapabilityId =
   | "verification.record.create"
   | "verification.record.verify"
+  | "verification.record.revoke"
   | "verification.blind.prove"
+  | "verification.blind.revoke"
   | "payroll.calculate"
   | "payroll.approve"
   | "payroll.settle"
@@ -78,6 +80,7 @@ export interface ExecutionReceipt<TResult = unknown> {
   state: Extract<ExecutionState, "confirmed" | "finalized" | "reconciled">;
   signatures: string[];
   result?: TResult;
+  metadata?: Record<string, unknown>;
   reconciliationId?: string;
   proofId?: string;
   createdAt: string;
@@ -112,6 +115,8 @@ export interface ProtocolCapability {
   requiresSignature: boolean;
   supportsAsync: boolean;
   receiptSchema: string;
+  /** Internal control capabilities do not determine customer-facing product availability. */
+  customerFacing?: boolean;
 }
 
 export interface ProtocolAction<TInput = unknown, TOutput = unknown> {
@@ -188,6 +193,33 @@ export { ZcashNetworkAdapter, ZcashAdapterError, ZCASH_NETWORK_CONFIGS } from ".
 export type { ZcashEnvironment, ZcashNetworkConfig, ZcashTransport, ZcashWalletAdapter } from "./zcash-network.js";
 export { ZalletCliTransport } from "./zallet-cli-transport.js";
 export type { ZalletCliTransportOptions, ZcashRecipient, ZcashSendPayload } from "./zallet-cli-transport.js";
+export {
+  StellarNetworkAdapter,
+  StellarAdapterError,
+  StellarHorizonTransport,
+  STELLAR_NETWORK_CONFIGS,
+  STELLAR_TESTNET_NETWORK_PASSPHRASE,
+  STELLAR_KERNEL_CAPABILITIES,
+} from "./stellar-network.js";
+export { SolanaNetworkAdapter, SolanaAdapterError, SOLANA_NETWORK_CONFIGS } from "./solana-network.js";
+export type { SolanaEnvironment, SolanaNetworkConfig, SolanaTransport, SolanaWalletAdapter } from "./solana-network.js";
+export { GovernanceProposalProvider } from "./governance-proposal-provider.js";
+export type { GovernanceProposalPayload, GovernanceProposalResult } from "./governance-proposal-provider.js";
+export { PayrollSettlementProvider } from "./payroll-settlement-provider.js";
+export type { PayrollSettlementPayload, PayrollSettlementResult } from "./payroll-settlement-provider.js";
+export type {
+  StellarEnvironment,
+  StellarNetworkConfig,
+  StellarPaymentPayload,
+  StellarPayrollRecipient,
+  StellarPayrollSettlementPayload,
+  StellarRecoveredAccount,
+  StellarTransport,
+  StellarUnsignedPayload,
+  StellarSignedPayload,
+} from "./stellar-network.js";
+export { validateStellarProductWorkflow } from "./stellar-product-workflow.js";
+export type { StellarProductWorkflow } from "./stellar-product-workflow.js";
 export { DeploymentRegistry } from "./deployment-registry.js";
 export type { DeploymentRecord } from "./deployment-registry.js";
 export { createHttpBackedPrivateDaoRuntime } from "./http-runtime.js";

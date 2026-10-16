@@ -1,0 +1,22 @@
+{
+  "network": "hyperliquid-testnet",
+  "chainId": 998,
+  "environment": "testnet",
+  "contracts": {
+    "verifier": {
+      "address": "0x26e3515d02bb3d8122fad109d159f43e81e8beeb",
+      "hash": "0xcdaf672f45ab25a60d878181f3795aab675e25ada15e52183d0657e27475a2a1",
+      "blockNumber": "66624464"
+    },
+    "blind": {
+      "address": "0xdd01da1b53ba46bf1ce8c71bc1c5e86e8784694b",
+      "hash": "0x3ad66e9f72081122ce2f724931795d2de41b35171ff5e5612dad7b46b26a5d79",
+      "blockNumber": "66624469"
+    },
+    "record": {
+      "address": "0x6f813e1221cb5f760bb5c467983c014bbe4b3b5c",
+      "hash": "0xa7deaa52afce3b731ac7393f964b6daa29ffceafb83dc1d5cdf902bc089da9c1",
+      "blockNumber": "66624474"
+    }
+  }
+}

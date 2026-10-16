@@ -23,6 +23,7 @@ const network = "solana-devnet";
 const capability = "treasury.policy.check";
 let prepareCalls = 0;
 let submitCalls = 0;
+let receiptNetwork = network;
 
 const provider = {
   id: "runtime-test-provider",
@@ -52,7 +53,7 @@ const provider = {
       executionId,
       requestId: "runtime-test-request",
       capability,
-      network,
+      network: receiptNetwork,
       state: "finalized",
       signatures: ["runtime-test-signature"],
       createdAt: new Date(0).toISOString(),
@@ -78,6 +79,10 @@ const intent = {
 const [first, second] = await Promise.all([kernel.prepare(intent), kernel.prepare(intent)]);
 assert.equal(prepareCalls, 1);
 assert.equal(first.executionId, second.executionId);
+await assert.rejects(
+  () => kernel.prepare({ ...intent, payload: { policy: "different" } }),
+  (error) => error?.code === "DUPLICATE_IDEMPOTENCY_KEY",
+);
 
 const [submittedFirst, submittedSecond] = await Promise.all([
   kernel.submit(first.executionId, first.unsignedPayload),
@@ -85,18 +90,24 @@ const [submittedFirst, submittedSecond] = await Promise.all([
 ]);
 assert.equal(submitCalls, 1);
 assert.deepEqual(submittedFirst, submittedSecond);
+assert.equal((await kernel.receipt(first.executionId)).network, network);
+receiptNetwork = "ethereum-sepolia";
+await assert.rejects(
+  () => kernel.receipt(first.executionId),
+  (error) => error?.code === "PROVIDER_FAILURE" && /prepared execution context/.test(error.details?.cause || ""),
+);
 
 const products = listProducts();
 assert.equal(products.find((product) => product.id === "blind-verification")?.name, "Blind Verification");
 assert.equal(products.find((product) => product.id === "record-verification")?.name, "Record Verification");
 assert.equal(isRuntimeProductAvailable("blind-verification"), true);
 assert.equal(isRuntimeProductAvailable("record-verification"), true);
-assert.equal(isRuntimeProductAvailable("payroll"), false);
+assert.equal(isRuntimeProductAvailable("payroll"), true);
 assert.equal(isRuntimeProductAvailable("governance"), true);
   assert.equal(isRuntimeProductAvailable("agent"), false);
 assert.equal(isRuntimeCapabilityExecutable("payroll", "payroll.calculate", "solana-devnet"), true);
 assert.equal(isRuntimeCapabilityExecutable("payroll", "payroll.approve", "solana-devnet"), true);
-assert.equal(isRuntimeCapabilityExecutable("payroll", "payroll.settle", "solana-devnet"), false);
+assert.equal(isRuntimeCapabilityExecutable("payroll", "payroll.settle", "solana-devnet"), true);
 
 const runtime = createPrivateDaoRuntime(registry);
 const protocolRegistry = runtime.protocols;
@@ -323,10 +334,28 @@ assert.throws(
   () => gateway.receipt(forgedExecutionContext, "maker"),
   (error) => error?.code === "INVALID_INTENT",
 );
-assert.throws(
-  () => policyRuntime.gateway.prepare({ ...intent, context: { ...intent.context, product: "payroll", capability: "payroll.settle", requestId: "payroll-legacy-settle", idempotencyKey: "payroll-legacy-settle-key" } }, "maker"),
-  (error) => error?.code === "APPLICATION_BOUNDARY_VIOLATION",
+const payrollSettlementPrepared = await policyRuntime.gateway.prepare(
+  {
+    ...intent,
+    context: {
+      ...intent.context,
+      product: "payroll",
+      capability: "payroll.settle",
+      network: "solana-devnet",
+      requestId: "payroll-kernel-settle",
+      idempotencyKey: "payroll-kernel-settle-key",
+    },
+    payload: {
+      batchId: "batch-runtime-test",
+      policyHash: "a".repeat(64),
+      approved: true,
+      recipients: [{ commitment: "b".repeat(64), netCents: 1000 }],
+    },
+  },
+  "maker",
 );
+assert.equal(payrollSettlementPrepared.executionId, "payroll-settle-payroll-kernel-settle");
+assert.equal(payrollSettlementPrepared.intent.context.network, "solana-devnet");
 assert.throws(
   () => discoveryRuntime.gateway.prepare({ ...discoveryIntent, context: { ...discoveryIntent.context, capability: "agent.invoke", requestId: "agent-invoke-unbound", idempotencyKey: "agent-invoke-unbound-key" } }, "agent"),
   (error) => error?.code === "APPLICATION_BOUNDARY_VIOLATION",
@@ -368,7 +397,7 @@ assert.equal(isEnterpriseProduct("agent"), false);
 assert.equal(isEnterpriseProduct("treasury"), true);
 assert.equal(PRIMARY_ECOSYSTEMS.length, 10);
 assert.equal(validatePrimaryEcosystems().length, 0);
-assert.equal(PRIMARY_ECOSYSTEMS.find((ecosystem) => ecosystem.id === "stellar")?.status, "planned");
+assert.equal(PRIMARY_ECOSYSTEMS.find((ecosystem) => ecosystem.id === "stellar")?.status, "configured");
 assert.equal(
   listApplicationBindings().length,
   products.reduce((count, product) => count + product.capabilities.reduce((total, capability) => total + capability.networks.length, 0), 0),
@@ -381,6 +410,7 @@ assert.equal(listApplicationBindings().find((entry) => entry.capability === "age
 assert.equal(listApplicationBindings().find((entry) => entry.capability === "verification.blind.prove")?.mode, "kernel-gateway");
 assert.equal(listApplicationBindings().find((entry) => entry.capability === "auction.settle")?.mode, "kernel-gateway");
 assert.equal(listApplicationBindings().find((entry) => entry.capability === "auction.bid.commit")?.mode, "kernel-gateway");
+assert.equal(listApplicationBindings().find((entry) => entry.product === "governance" && entry.network === "solana-devnet")?.mode, "kernel-gateway");
 
 let currentTime = "2026-09-09T00:00:00.000Z";
 const expiredKernel = new PrivateDaoKernel(registry, { now: () => currentTime });

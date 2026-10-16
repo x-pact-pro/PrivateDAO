@@ -1,0 +1,35 @@
+{
+  "schema": "privatedao.kernel-organizational-e2e.v1",
+  "network": "robinhood-testnet",
+  "chainId": 46630,
+  "environment": "testnet",
+  "provider": "evm-robinhood-testnet-organizational",
+  "gateway": "ProductExecutionGateway",
+  "verifiedAt": "2026-10-15T03:05:17.738Z",
+  "results": [
+    {
+      "product": "treasury",
+      "capability": "treasury.policy.check",
+      "executionId": "evm-treasury-a79a11bb-41b9-40f3-bd95-2355e9250491",
+      "txHash": "0x9b0fd6a0573b3990921ac4664f836d9352f8836d84ffb912b0094ffb53e01c8f",
+      "blockNumber": "135508182",
+      "explorerUrl": "https://explorer.testnet.chain.robinhood.com/tx/0x9b0fd6a0573b3990921ac4664f836d9352f8836d84ffb912b0094ffb53e01c8f"
+    },
+    {
+      "product": "governance",
+      "capability": "governance.proposal.execute",
+      "executionId": "evm-governance-833587cd-1b48-4b3d-81e2-84b192509fb5",
+      "txHash": "0xc6719aded94f4376abf16db3e8a81cac1985c91059745f488af7902671d28555",
+      "blockNumber": "135508211",
+      "explorerUrl": "https://explorer.testnet.chain.robinhood.com/tx/0xc6719aded94f4376abf16db3e8a81cac1985c91059745f488af7902671d28555"
+    },
+    {
+      "product": "auction",
+      "capability": "auction.bid.commit",
+      "executionId": "evm-auction-05b613b5-6a4e-4f90-8772-dfbf933f39e8",
+      "txHash": "0xea38ec2e7ec73c42b3581b2818575c214392750544b148e126a669ebef668eea",
+      "blockNumber": "135508239",
+      "explorerUrl": "https://explorer.testnet.chain.robinhood.com/tx/0xea38ec2e7ec73c42b3581b2818575c214392750544b148e126a669ebef668eea"
+    }
+  ]
+}

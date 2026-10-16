@@ -78,11 +78,14 @@ closure is still missing. No item is marked complete from intent alone.
 | 62 | DONE | Production smoke checks pass for home, products, verification, Agents, runtime catalog, and game after r36. |
 | 63 | DONE | The live visitor-facing message is private organizational work with verifiable outcomes. |
 
-## Current External Boundaries
+## External Boundaries Recorded At This Review
 
-1. `elliptic` remains a transitive low-severity advisory through the current
-   MagicBlock dependency tree. The available forced fix is a breaking SDK
-   upgrade, so it was not applied without a compatibility migration.
+1. At the time of this 2026-09-19 review, `elliptic` remained a transitive
+   low-severity advisory through the MagicBlock dependency tree. The root ZK
+   `circomlibjs -> ethers 5.x -> elliptic` path was removed and vector-tested
+   on 2026-10-15. The separate MagicBlock/TEE boundary remains documented in
+   `docs/security-dependency-audit-20261015.md`; the available forced fix is a
+   breaking SDK upgrade and was not applied without a compatibility migration.
 2. Social crawler cache invalidation cannot be asserted from this host. The
    source metadata, image URLs, content types, and live HTML are verified.
 3. `PARTIAL` network and Agent items are intentionally not represented as

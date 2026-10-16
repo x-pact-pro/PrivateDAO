@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-17T07:28:40.940Z",
+  "generatedAt": "2026-10-15T17:09:30.581Z",
   "status": "testnet_verified",
   "scope": [
     "arbitrum-sepolia"
@@ -26,22 +26,22 @@
         }
       },
       "record": {
-        "txHash": "0xa17116f5e03eb09407b48c1e354e7b095fd6188c888e2a85389d14181ece0a1f",
-        "blockNumber": "309766891",
-        "verificationId": "0xd4ba43fdbac15eedd8e09c133aa7a122397997117125f0fc8122e12329ad6d8c",
-        "explorerUrl": "https://sepolia.arbiscan.io/tx/0xa17116f5e03eb09407b48c1e354e7b095fd6188c888e2a85389d14181ece0a1f"
+        "txHash": "0x5f8effbfbd696523c8ca67f0052b83078ec7838dda4ea14807ac6b3a6128ba6d",
+        "blockNumber": "319484860",
+        "verificationId": "0x1d807e64067fe56539471668e15ae86f6db4a0b111a61cc855b83e9d3bb3d12c",
+        "explorerUrl": "https://sepolia.arbiscan.io/tx/0x5f8effbfbd696523c8ca67f0052b83078ec7838dda4ea14807ac6b3a6128ba6d"
       },
       "blind": {
-        "txHash": "0x4337bf68c252e7247f299b069c7a2f5d25efbb5ee033ada75e48504d7babe0c5",
-        "blockNumber": "309766908",
-        "verificationId": "0x9b421a88489499989d05c2fcdf52d06f12ceb3bcdba8a4ca62954c6768855cde",
-        "explorerUrl": "https://sepolia.arbiscan.io/tx/0x4337bf68c252e7247f299b069c7a2f5d25efbb5ee033ada75e48504d7babe0c5"
+        "txHash": "0xf5983c992c101488f3b0b6ebe9da9b10d94d52367626f4fe87685a86e6d862c5",
+        "blockNumber": "319484895",
+        "verificationId": "0xa399dba951cceab68b4c79c0828715dce35180ff5aa6134d51d18c9d4d4e9b6e",
+        "explorerUrl": "https://sepolia.arbiscan.io/tx/0xf5983c992c101488f3b0b6ebe9da9b10d94d52367626f4fe87685a86e6d862c5"
       },
       "revocation": {
-        "recordTxHash": "0xbd0070729b66c676622a377d09e11556febd1e2268b71f75c58f8071aa5aaa17",
-        "blindTxHash": "0xfb24624d8ec6b65304d7895df50b4dc4574a4f8c9e30ee6b7e8db4a8341de65c",
-        "disposableRecordVerificationId": "0xae66afc888d42ff546879c2debed6bbf22b15984b77b072a9fa80c7c8d36c3c7",
-        "disposableBlindVerificationId": "0x9cc105fe51e64d2966d70ababc3b67ec82c805313331c96fad9554c5e15833ba"
+        "recordTxHash": "0x5c3e237785758a59579ff9fdf4f3394e72e2c1d25f38afb53ed775f65d12d719",
+        "blindTxHash": "0x1489def00833c1e9db6c02f401637c07401393cfb65b5092752b805280f4e7d9",
+        "disposableRecordVerificationId": "0xa67fcee326b837f905b5f4e63ba02efc5286f5c14fe5a432498343f3acfc5631",
+        "disposableBlindVerificationId": "0xd3dcdb751f00f4e3988d92c6b2d33353a9f1572ddc214515c1df387fb7c0176c"
       },
       "checks": {
         "recordVerified": true,
@@ -54,8 +54,8 @@
         "blindProofRevoked": true
       },
       "links": {
-        "record": "https://privatedao.org/verify/evm?network=arbitrum-sepolia&type=record&id=0xd4ba43fdbac15eedd8e09c133aa7a122397997117125f0fc8122e12329ad6d8c",
-        "blind": "https://privatedao.org/verify/evm?network=arbitrum-sepolia&type=blind&id=0x9b421a88489499989d05c2fcdf52d06f12ceb3bcdba8a4ca62954c6768855cde"
+        "record": "https://privatedao.org/verify/evm?network=arbitrum-sepolia&type=record&id=0x1d807e64067fe56539471668e15ae86f6db4a0b111a61cc855b83e9d3bb3d12c",
+        "blind": "https://privatedao.org/verify/evm?network=arbitrum-sepolia&type=blind&id=0xa399dba951cceab68b4c79c0828715dce35180ff5aa6134d51d18c9d4d4e9b6e"
       }
     }
   ]

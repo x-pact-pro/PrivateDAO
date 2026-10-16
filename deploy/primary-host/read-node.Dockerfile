@@ -12,6 +12,7 @@ ENV CYPRESS_INSTALL_BINARY=0
 COPY package.json package-lock.json tsconfig.json ./
 COPY tsconfig.runtime.json ./tsconfig.runtime.json
 COPY scripts ./scripts
+COPY packages/privatedao-runtime ./packages/privatedao-runtime
 COPY apps/web/src/lib ./apps/web/src/lib
 COPY docs ./docs
 COPY migrations ./migrations

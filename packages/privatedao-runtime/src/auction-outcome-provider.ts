@@ -31,7 +31,7 @@ type ProofExecution = {
 
 type FetchLike = (input: string, init?: RequestInit) => Promise<Response>;
 
-const DEFAULT_ENDPOINT = "https://privatedao.org/api/auctions/sealed/outcome-proof";
+const DEFAULT_ENDPOINT = "https://api.privatedao.org/api/v1/auctions/sealed/outcome-proof";
 
 /**
  * Kernel adapter for the real sealed-auction outcome-proof endpoint.
