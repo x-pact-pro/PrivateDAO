@@ -5,7 +5,7 @@ OUTPUT_PATH=${1:-/tmp/privatedao-agent-exchange.zip}
 PACKAGE_DIR=$(mktemp -d)
 trap 'rm -rf "$PACKAGE_DIR"' EXIT
 
-cp -R src assets package.json package-lock.json "$PACKAGE_DIR/"
+cp -R src assets vendor package.json package-lock.json "$PACKAGE_DIR/"
 cp -R scripts/browser "$PACKAGE_DIR/.browser"
 mkdir -p "$PACKAGE_DIR/assets/browser"
 test -f "$PACKAGE_DIR/assets/brand/privatedao-official-logo.jpg"

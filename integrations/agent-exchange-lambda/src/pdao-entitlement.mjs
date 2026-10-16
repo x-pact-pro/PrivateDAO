@@ -7,8 +7,6 @@ export const PDAO_HOLDER_PURPOSE = "pdao-token-holder-monthly-access";
 export const PDAO_TOKEN_MINT = "9isGuumtaqvJeJeyLF44fvfskk2cv5mYsopexMBfpump";
 export const PDAO_HOLDER_THRESHOLD_USD = 25;
 export const PDAO_HOLDER_WINDOW_MS = 30 * 24 * 60 * 60 * 1000;
-export const PDAO_HOLDER_OFFER_START_UTC = process.env.PDAO_HOLDER_OFFER_START_UTC || "2026-10-11T00:00:00.000Z";
-export const PDAO_HOLDER_OFFER_END_UTC = process.env.PDAO_HOLDER_OFFER_END_UTC || "2026-11-10T00:00:00.000Z";
 const challengeTtlMs = 5 * 60 * 1000;
 const base58Pattern = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/;
 
@@ -41,8 +39,6 @@ export function createPdaoChallengeMessage({ domain, wallet, serviceId, inputHas
 
 export async function issuePdaoChallenge({ config, storage, wallet, serviceId, input }) {
   if (config.pdaoMint !== PDAO_TOKEN_MINT) throw Object.assign(new Error("PDAO holder access token configuration mismatch"), { statusCode: 503 });
-  if (Date.now() < Date.parse(PDAO_HOLDER_OFFER_START_UTC) || Date.now() >= Date.parse(PDAO_HOLDER_OFFER_END_UTC))
-    throw Object.assign(new Error("the PDAO holder offer is not currently active"), { statusCode: 410 });
   const normalizedWallet = asWallet(wallet);
   const inputHash = hashInput(input);
   const expiresAt = new Date(Date.now() + challengeTtlMs).toISOString();
@@ -74,7 +70,6 @@ export async function issuePdaoChallenge({ config, storage, wallet, serviceId, i
     token_mint: config.pdaoMint,
     threshold_usd: PDAO_HOLDER_THRESHOLD_USD,
     duration_days: 30,
-    offer_expires_at: PDAO_HOLDER_OFFER_END_UTC,
   };
 }
 
