@@ -102,6 +102,12 @@ const SOLANA_DEVNET_POLICY_AUCTION_EVIDENCE = {
   auctionSettleProvider: "privatedao-auction-outcome-proof",
 } as const;
 
+const SOLANA_DEVNET_GOVERNANCE_EVIDENCE = {
+  commit: "pending",
+  timestamp: "2026-10-16T02:06:20.238Z",
+  provider: "privatedao-governance-proposal",
+} as const;
+
 const TEMPO_TESTNET_EVIDENCE = {
   provider: "evm-tempo-testnet",
   verifier: "0xbf495e8147ab23bfa2024eae7c0d2f54af40279c",
@@ -466,6 +472,25 @@ function applySolanaDevnetPolicyAuctionEvidence(entry: NativeCapabilityEntry): N
   };
 }
 
+function applySolanaDevnetGovernanceEvidence(entry: NativeCapabilityEntry): NativeCapabilityEntry {
+  if (entry.network !== "solana-devnet" || entry.product !== "governance" || entry.capability !== "governance.proposal.execute") return entry;
+  return {
+    ...entry,
+    provider: SOLANA_DEVNET_GOVERNANCE_EVIDENCE.provider,
+    walletModel: "none",
+    supportsExecution: true,
+    supportsPrivateExecution: true,
+    supportsPrivateSettlement: false,
+    supportsProof: true,
+    supportsReceipt: true,
+    supportsReconciliation: true,
+    status: "devnet_verified",
+    lastVerifiedCommit: SOLANA_DEVNET_GOVERNANCE_EVIDENCE.commit,
+    lastVerifiedTimestamp: SOLANA_DEVNET_GOVERNANCE_EVIDENCE.timestamp,
+    evidence: "devnet-e2e",
+  };
+}
+
 function applyTempoTestnetEvidence(entry: NativeCapabilityEntry): NativeCapabilityEntry {
   const isBlind = entry.product === "blind-verification" && ["verification.blind.prove", "verification.blind.revoke"].includes(entry.capability);
   const isRecord = entry.product === "record-verification" && ["verification.record.create", "verification.record.verify", "verification.record.revoke"].includes(entry.capability);
@@ -640,6 +665,7 @@ export function buildNativeCapabilityRegistry(): readonly NativeCapabilityEntry[
     applyBlindSolanaDevnetEvidence,
     applyRecordSolanaDevnetEvidence,
     applySolanaDevnetPolicyAuctionEvidence,
+    applySolanaDevnetGovernanceEvidence,
     applyTempoTestnetEvidence,
     applyBnbTestnetEvidence,
     applyHyperliquidTestnetEvidence,

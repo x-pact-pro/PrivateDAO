@@ -1,0 +1,15 @@
+{
+  "schema": "privatedao.solana-devnet.governance-kernel-e2e.v1",
+  "generatedAt": "2026-10-16T02:06:20.238Z",
+  "network": "solana-devnet",
+  "gateway": "ProductExecutionGateway",
+  "state": "reconciled",
+  "product": "governance",
+  "capability": "governance.proposal.execute",
+  "provider": "privatedao-governance-proposal",
+  "proposalDigest": "5d4064d945799cab282126a778a54236840b9b12efbec69117e030146decfcc0",
+  "passed": true,
+  "evidenceClass": "kernel-provider-e2e",
+  "onchainAnchor": false,
+  "broadcastAttempted": false
+}

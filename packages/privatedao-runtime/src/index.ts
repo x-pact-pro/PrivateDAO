@@ -203,6 +203,8 @@ export {
 } from "./stellar-network.js";
 export { SolanaNetworkAdapter, SolanaAdapterError, SOLANA_NETWORK_CONFIGS } from "./solana-network.js";
 export type { SolanaEnvironment, SolanaNetworkConfig, SolanaTransport, SolanaWalletAdapter } from "./solana-network.js";
+export { GovernanceProposalProvider } from "./governance-proposal-provider.js";
+export type { GovernanceProposalPayload, GovernanceProposalResult } from "./governance-proposal-provider.js";
 export type {
   StellarEnvironment,
   StellarNetworkConfig,

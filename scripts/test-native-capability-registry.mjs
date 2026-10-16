@@ -12,7 +12,7 @@ const solanaPayrollEntries = entries.filter((entry) => entry.product === "payrol
 
 assert.equal(entries.length, 238, "unexpected native capability matrix size");
 assert.equal(verified.length, 91, "only evidence-backed verification and organizational testnet rows should be verified");
-assert.equal(verifiedDevnet.length, 6, "Solana Devnet Kernel evidence must cover blind, record, treasury, and auction lanes");
+assert.equal(verifiedDevnet.length, 7, "Solana Devnet Kernel evidence must cover blind, record, treasury, governance, and auction lanes");
 assert.equal(liveAgents.length, 2, "the two live Agent Exchange rows must be runtime-verified");
 assert.equal(verifiedBlind.length, 1, "the Solana blind-verification Devnet evidence row must remain verified");
 assert.equal(verifiedRecord.length, 2, "the Solana record-verification Devnet evidence must cover create and verify");
@@ -28,6 +28,8 @@ assert.equal(verifiedRecord.every((entry) => entry.evidence === "devnet-e2e"), t
 assert.equal(verifiedRecord.every((entry) => entry.supportsExecution === true && entry.supportsReceipt === true && entry.supportsReconciliation === true), true);
 assert.equal(verifiedDevnet.filter((entry) => entry.product === "treasury" && entry.network === "solana-devnet").length, 1);
 assert.equal(verifiedDevnet.filter((entry) => entry.product === "auction" && entry.network === "solana-devnet").length, 2);
+assert.equal(verifiedDevnet.filter((entry) => entry.product === "governance" && entry.network === "solana-devnet").length, 1);
+assert.equal(verifiedDevnet.find((entry) => entry.product === "governance" && entry.network === "solana-devnet")?.provider, "privatedao-governance-proposal");
 for (const entry of liveAgents) {
   assert.equal(entry.product, "agent");
   assert.equal(entry.network, "solana-mainnet-beta");
