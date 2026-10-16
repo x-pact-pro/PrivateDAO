@@ -103,6 +103,8 @@ export function getConfig(env = process.env) {
     rateLimitPerMinute: boundedNumber(env.AGENT_EXCHANGE_RATE_LIMIT_PER_MINUTE || 120, 120, 10, 1000),
     priceMultiplier: boundedNumber(env.AGENT_EXCHANGE_PRICE_MULTIPLIER || 1, 1, 0.000001, 1000),
     marketplaceFeeBps: boundedNumber(env.AGENT_EXCHANGE_MARKETPLACE_FEE_BPS || 1000, 1000, 0, 10000),
+    sealReputationEnabled: bool(env.SEAL_REPUTATION_ENABLED),
+    sealkeeperTimeoutMs: boundedNumber(env.SEALKEEPER_TIMEOUT_MS || 8000, 8000, 1000, 30000),
   };
 }
 
