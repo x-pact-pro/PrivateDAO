@@ -12,12 +12,13 @@ const solanaPayrollEntries = entries.filter((entry) => entry.product === "payrol
 
 assert.equal(entries.length, 238, "unexpected native capability matrix size");
 assert.equal(verified.length, 91, "only evidence-backed verification and organizational testnet rows should be verified");
-assert.equal(verifiedDevnet.length, 7, "Solana Devnet Kernel evidence must cover blind, record, treasury, governance, and auction lanes");
+assert.equal(verifiedDevnet.length, 10, "Solana Devnet Kernel evidence must cover blind, record, payroll, treasury, governance, and auction lanes");
 assert.equal(liveAgents.length, 2, "the two live Agent Exchange rows must be runtime-verified");
 assert.equal(verifiedBlind.length, 1, "the Solana blind-verification Devnet evidence row must remain verified");
 assert.equal(verifiedRecord.length, 2, "the Solana record-verification Devnet evidence must cover create and verify");
-assert.equal(verifiedPayrollLanes.length, 0, "legacy Umbra payroll evidence must not be promoted to verified");
-assert.equal(solanaPayrollEntries.every((entry) => entry.status === "implementation" && entry.supportsExecution === false), true, "legacy Umbra payroll evidence must not masquerade as Kernel E2E");
+assert.equal(verifiedPayrollLanes.length, 3, "Solana payroll Kernel evidence must cover calculation, approval, and settlement");
+assert.equal(solanaPayrollEntries.every((entry) => entry.status === "devnet_verified" && entry.supportsExecution === true), true, "Solana payroll evidence must be Kernel-native");
+assert.equal(new Set(verifiedPayrollLanes.map((entry) => entry.provider)).size, 3, "Solana payroll stages must use distinct Kernel providers");
 assert.equal(verifiedBlind[0]?.network, "solana-devnet");
 assert.equal(verifiedBlind[0]?.capability, "verification.blind.prove");
 assert.equal(verifiedBlind[0]?.evidence, "devnet-e2e");

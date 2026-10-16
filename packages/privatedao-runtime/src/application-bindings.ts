@@ -214,8 +214,9 @@ export const APPLICATION_CAPABILITY_BINDINGS: readonly ApplicationCapabilityBind
     product: "payroll",
     capability: "payroll.settle",
     network: "solana-devnet",
-    mode: "unbound",
-    note: "The legacy private-payout route remains available only as a legacy surface; Payroll settlement must use a Kernel provider with independent settlement evidence.",
+    mode: "kernel-gateway",
+    entrypoint: "kernel://payroll.settle",
+    note: "Kernel-native payroll settlement produces a reconciled policy receipt; it does not claim an onchain payout or Solana transaction.",
   },
   {
     product: "payroll",

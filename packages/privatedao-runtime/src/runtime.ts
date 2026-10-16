@@ -12,6 +12,7 @@ import { AuctionOutcomeProofProvider } from "./auction-outcome-provider.js";
 import { AuctionBidCommitProvider } from "./auction-bid-provider.js";
 import { PayrollApprovalProvider } from "./payroll-approval-provider.js";
 import { GovernanceProposalProvider } from "./governance-proposal-provider.js";
+import { PayrollSettlementProvider } from "./payroll-settlement-provider.js";
 
 /**
  * Single composition boundary for PrivateDAO applications.
@@ -34,6 +35,7 @@ export function createPrivateDaoRuntime(providers?: ProviderRegistry, options: K
     providerRegistry.register(new PayrollCalculationProvider());
     providerRegistry.register(new PayrollApprovalProvider());
     providerRegistry.register(new GovernanceProposalProvider());
+    providerRegistry.register(new PayrollSettlementProvider());
     providerRegistry.register(new TreasuryPolicyProvider());
     providerRegistry.register(new RecordCreationProvider());
     providerRegistry.register(new RecordVerificationProvider());

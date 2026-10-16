@@ -205,6 +205,8 @@ export { SolanaNetworkAdapter, SolanaAdapterError, SOLANA_NETWORK_CONFIGS } from
 export type { SolanaEnvironment, SolanaNetworkConfig, SolanaTransport, SolanaWalletAdapter } from "./solana-network.js";
 export { GovernanceProposalProvider } from "./governance-proposal-provider.js";
 export type { GovernanceProposalPayload, GovernanceProposalResult } from "./governance-proposal-provider.js";
+export { PayrollSettlementProvider } from "./payroll-settlement-provider.js";
+export type { PayrollSettlementPayload, PayrollSettlementResult } from "./payroll-settlement-provider.js";
 export type {
   StellarEnvironment,
   StellarNetworkConfig,

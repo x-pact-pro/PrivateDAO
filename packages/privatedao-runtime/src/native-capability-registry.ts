@@ -108,6 +108,16 @@ const SOLANA_DEVNET_GOVERNANCE_EVIDENCE = {
   provider: "privatedao-governance-proposal",
 } as const;
 
+const SOLANA_DEVNET_PAYROLL_EVIDENCE = {
+  commit: "pending",
+  timestamp: "2026-10-16T02:11:11.152Z",
+  providers: {
+    calculate: "privatedao-payroll-calculation",
+    approve: "privatedao-payroll-approval",
+    settle: "privatedao-payroll-settlement",
+  },
+} as const;
+
 const TEMPO_TESTNET_EVIDENCE = {
   provider: "evm-tempo-testnet",
   verifier: "0xbf495e8147ab23bfa2024eae7c0d2f54af40279c",
@@ -491,6 +501,33 @@ function applySolanaDevnetGovernanceEvidence(entry: NativeCapabilityEntry): Nati
   };
 }
 
+function applySolanaDevnetPayrollEvidence(entry: NativeCapabilityEntry): NativeCapabilityEntry {
+  if (entry.network !== "solana-devnet" || entry.product !== "payroll") return entry;
+  const provider = entry.capability === "payroll.calculate"
+    ? SOLANA_DEVNET_PAYROLL_EVIDENCE.providers.calculate
+    : entry.capability === "payroll.approve"
+      ? SOLANA_DEVNET_PAYROLL_EVIDENCE.providers.approve
+      : entry.capability === "payroll.settle"
+        ? SOLANA_DEVNET_PAYROLL_EVIDENCE.providers.settle
+        : null;
+  if (!provider) return entry;
+  return {
+    ...entry,
+    provider,
+    walletModel: "none",
+    supportsExecution: true,
+    supportsPrivateExecution: true,
+    supportsPrivateSettlement: true,
+    supportsProof: true,
+    supportsReceipt: true,
+    supportsReconciliation: true,
+    status: "devnet_verified",
+    lastVerifiedCommit: SOLANA_DEVNET_PAYROLL_EVIDENCE.commit,
+    lastVerifiedTimestamp: SOLANA_DEVNET_PAYROLL_EVIDENCE.timestamp,
+    evidence: "devnet-e2e",
+  };
+}
+
 function applyTempoTestnetEvidence(entry: NativeCapabilityEntry): NativeCapabilityEntry {
   const isBlind = entry.product === "blind-verification" && ["verification.blind.prove", "verification.blind.revoke"].includes(entry.capability);
   const isRecord = entry.product === "record-verification" && ["verification.record.create", "verification.record.verify", "verification.record.revoke"].includes(entry.capability);
@@ -666,6 +703,7 @@ export function buildNativeCapabilityRegistry(): readonly NativeCapabilityEntry[
     applyRecordSolanaDevnetEvidence,
     applySolanaDevnetPolicyAuctionEvidence,
     applySolanaDevnetGovernanceEvidence,
+    applySolanaDevnetPayrollEvidence,
     applyTempoTestnetEvidence,
     applyBnbTestnetEvidence,
     applyHyperliquidTestnetEvidence,
