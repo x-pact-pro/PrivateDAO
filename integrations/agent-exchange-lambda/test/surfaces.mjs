@@ -33,6 +33,10 @@ test("human root is HTML while machine surfaces remain available", async () => {
   }
   const marketplace = await request("/marketplace");
   assert.match(marketplace.body, /https:\/\/privatedao\.org\/\?lang=en/);
+  for (const productName of ["Treasury Guard Scan", "Token Safety Brief", "Transaction Safety Check"]) {
+    assert.match(marketplace.body, new RegExp(productName));
+  }
+  assert.match(marketplace.body, /Open product and get a quote/);
   const integrationPage = await request("/integrations");
   assert.equal(integrationPage.statusCode, 200);
   assert.match(integrationPage.body, /Recognize the stack at a glance/);
