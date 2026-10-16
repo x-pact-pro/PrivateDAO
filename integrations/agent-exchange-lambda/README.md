@@ -4,6 +4,10 @@ This directory is the canonical source for the independently deployed Agent
 Exchange Lambda. It is intentionally separate from the commercial website and
 the game runtime.
 
+Product boundaries, the internal-only Sealkeeper rule, and the controlled paid
+E2E release procedure are defined in
+[`docs/agent-exchange-scope-and-release-boundaries.md`](docs/agent-exchange-scope-and-release-boundaries.md).
+
 ## Runtime
 
 - Function: `PrivateDAOAgentExchange-Function-N2zgpQmMN41S`

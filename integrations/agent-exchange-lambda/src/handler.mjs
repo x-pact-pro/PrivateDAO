@@ -717,7 +717,6 @@ function openapi() {
     "/api/registry/agents/{agentId}/owner-token/rotate": { post: { operationId: "rotateSellerOwnerToken" } },
     "/api/registry/agents/{agentId}/replace": { post: { operationId: "replaceSellerEndpoint" } },
     "/api/registry/agents/{agentId}/retire": { post: { operationId: "retireSeller" } },
-    "/api/internal/sealkeeper/verify": { post: { operationId: "verifySealkeeperReadOnly" } },
     "/api/external/jobs": { post: { operationId: "createExternalJob" } },
     "/api/external/jobs/{jobId}/payment": { post: { operationId: "submitExternalPayment", responses: { "200": { description: "Payment accepted or job completed" }, "202": { description: "Payment verification or processing is still in progress" }, "409": { description: "Payment was accepted but execution requires non-replaying recovery" } } } },
     "/api/github/webhook": { post: { operationId: "githubWebhook" } },
