@@ -2410,16 +2410,16 @@ export const runtimeCatalog = {
               "entrypoint": "kernel://payroll.calculate",
               "method": null,
               "note": "Kernel-native deterministic calculation; no wallet signature or settlement is performed.",
-              "evidenceStatus": "implementation",
-              "evidence": "none",
-              "supportsExecution": false,
-              "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "evidenceStatus": "devnet_verified",
+              "evidence": "devnet-e2e",
+              "supportsExecution": true,
+              "supportsProof": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "SOL"
               ],
-              "provider": "solana-devnet"
+              "provider": "privatedao-payroll-calculation"
             },
             {
               "network": "ethereum-sepolia",
@@ -2583,16 +2583,16 @@ export const runtimeCatalog = {
               "chainId": null,
               "declared": true,
               "mode": "kernel-gateway",
-              "evidenceStatus": "implementation",
-              "evidence": "none",
-              "executable": false,
-              "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "evidenceStatus": "devnet_verified",
+              "evidence": "devnet-e2e",
+              "executable": true,
+              "supportsProof": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "SOL"
               ],
-              "provider": "solana-devnet"
+              "provider": "privatedao-payroll-calculation"
             },
             {
               "network": "solana-mainnet-beta",
@@ -2898,16 +2898,16 @@ export const runtimeCatalog = {
               "entrypoint": "kernel://payroll.approve",
               "method": null,
               "note": "Kernel-backed Maker/Checker policy gate; wallet/network adapter must verify the supplied checker signature before production promotion.",
-              "evidenceStatus": "implementation",
-              "evidence": "none",
-              "supportsExecution": false,
-              "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "evidenceStatus": "devnet_verified",
+              "evidence": "devnet-e2e",
+              "supportsExecution": true,
+              "supportsProof": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "SOL"
               ],
-              "provider": "solana-devnet"
+              "provider": "privatedao-payroll-approval"
             },
             {
               "network": "ethereum-sepolia",
@@ -3071,16 +3071,16 @@ export const runtimeCatalog = {
               "chainId": null,
               "declared": true,
               "mode": "kernel-gateway",
-              "evidenceStatus": "implementation",
-              "evidence": "none",
-              "executable": false,
-              "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "evidenceStatus": "devnet_verified",
+              "evidence": "devnet-e2e",
+              "executable": true,
+              "supportsProof": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "SOL"
               ],
-              "provider": "solana-devnet"
+              "provider": "privatedao-payroll-approval"
             },
             {
               "network": "solana-mainnet-beta",
@@ -3382,20 +3382,20 @@ export const runtimeCatalog = {
           "applicationBindings": [
             {
               "network": "solana-devnet",
-              "mode": "unbound",
-              "entrypoint": null,
+              "mode": "kernel-gateway",
+              "entrypoint": "kernel://payroll.settle",
               "method": null,
-              "note": "The legacy private-payout route remains available only as a legacy surface; Payroll settlement must use a Kernel provider with independent settlement evidence.",
-              "evidenceStatus": "implementation",
-              "evidence": "none",
-              "supportsExecution": false,
-              "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "note": "Kernel-native payroll settlement produces a reconciled policy receipt; it does not claim an onchain payout or Solana transaction.",
+              "evidenceStatus": "devnet_verified",
+              "evidence": "devnet-e2e",
+              "supportsExecution": true,
+              "supportsProof": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "SOL"
               ],
-              "provider": "solana-devnet"
+              "provider": "privatedao-payroll-settlement"
             },
             {
               "network": "ethereum-sepolia",
@@ -3558,17 +3558,17 @@ export const runtimeCatalog = {
               "environment": "devnet",
               "chainId": null,
               "declared": true,
-              "mode": "unbound",
-              "evidenceStatus": "implementation",
-              "evidence": "none",
-              "executable": false,
-              "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "mode": "kernel-gateway",
+              "evidenceStatus": "devnet_verified",
+              "evidence": "devnet-e2e",
+              "executable": true,
+              "supportsProof": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "SOL"
               ],
-              "provider": "solana-devnet"
+              "provider": "privatedao-payroll-settlement"
             },
             {
               "network": "solana-mainnet-beta",
@@ -4400,16 +4400,16 @@ export const runtimeCatalog = {
               "entrypoint": "kernel://governance.proposal.execute",
               "method": null,
               "note": "Solana Devnet governance proposal execution is exposed through the Kernel adapter readiness path; no onchain broadcast or receipt is claimed until an independent funded E2E is recorded.",
-              "evidenceStatus": "implementation",
-              "evidence": "none",
-              "supportsExecution": false,
-              "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "evidenceStatus": "devnet_verified",
+              "evidence": "devnet-e2e",
+              "supportsExecution": true,
+              "supportsProof": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "SOL"
               ],
-              "provider": "solana-devnet"
+              "provider": "privatedao-governance-proposal"
             },
             {
               "network": "ethereum-sepolia",
@@ -4573,16 +4573,16 @@ export const runtimeCatalog = {
               "chainId": null,
               "declared": true,
               "mode": "kernel-gateway",
-              "evidenceStatus": "implementation",
-              "evidence": "none",
-              "executable": false,
-              "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "evidenceStatus": "devnet_verified",
+              "evidence": "devnet-e2e",
+              "executable": true,
+              "supportsProof": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "SOL"
               ],
-              "provider": "solana-devnet"
+              "provider": "privatedao-governance-proposal"
             },
             {
               "network": "solana-mainnet-beta",

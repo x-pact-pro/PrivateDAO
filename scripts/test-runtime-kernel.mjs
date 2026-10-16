@@ -105,9 +105,9 @@ assert.equal(isRuntimeProductAvailable("record-verification"), true);
 assert.equal(isRuntimeProductAvailable("payroll"), true);
 assert.equal(isRuntimeProductAvailable("governance"), true);
   assert.equal(isRuntimeProductAvailable("agent"), false);
-assert.equal(isRuntimeCapabilityExecutable("payroll", "payroll.calculate", "solana-devnet"), false);
-assert.equal(isRuntimeCapabilityExecutable("payroll", "payroll.approve", "solana-devnet"), false);
-assert.equal(isRuntimeCapabilityExecutable("payroll", "payroll.settle", "solana-devnet"), false);
+assert.equal(isRuntimeCapabilityExecutable("payroll", "payroll.calculate", "solana-devnet"), true);
+assert.equal(isRuntimeCapabilityExecutable("payroll", "payroll.approve", "solana-devnet"), true);
+assert.equal(isRuntimeCapabilityExecutable("payroll", "payroll.settle", "solana-devnet"), true);
 
 const runtime = createPrivateDaoRuntime(registry);
 const protocolRegistry = runtime.protocols;

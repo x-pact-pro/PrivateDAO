@@ -70,9 +70,9 @@ assert.ok(zcashRuntime.gateway, "Zcash Testnet product bindings must compose thr
 assert.throws(
   () => createHttpBackedPrivateDaoRuntime({
     baseUrl: "https://api.example.test",
-    providerId: "legacy-provider",
+    providerId: "unbound-provider",
     network: "solana-devnet",
-    capabilities: ["payroll.settle"],
+    capabilities: ["agent.invoke"],
     fetchImpl: async () => json({}),
   }),
   /must use a Kernel gateway binding/,
