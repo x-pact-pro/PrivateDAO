@@ -186,6 +186,11 @@ test("human root is HTML while machine surfaces remain available", async () => {
   const productsPage = await request("/products");
   assert.equal(productsPage.statusCode, 200);
   assert.match(productsPage.body, /Treasury Guard Scan/);
+  const pricing = await request("/api/pricing");
+  assert.equal(pricing.statusCode, 200);
+  const pricingPayload = JSON.parse(pricing.body);
+  assert.deepEqual(pricingPayload.products.map((product) => product.id), ["treasury-guard-scan", "token-safety-brief", "transaction-safety-check"]);
+  assert.equal(pricingPayload.products[1].quote_endpoint, "/api/products/token-safety-brief/quote");
 });
 
 test("product quote packages existing services without trusting client pricing", async () => {

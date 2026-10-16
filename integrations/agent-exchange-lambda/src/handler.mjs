@@ -4186,6 +4186,17 @@ async function handle(e) {
         access: service.access,
         free: service.access === "free",
       })),
+      products: PRODUCTS.map((product) => ({
+        id: product.id,
+        name: product.name,
+        category: product.category,
+        price: product.price,
+        currency: product.currency,
+        billing_model: product.billing_model,
+        networks: product.networks,
+        included_services: product.included_services,
+        quote_endpoint: `/api/products/${product.id}/quote`,
+      })),
     });
   if (method === "GET" && path === "/api/integrations")
     return json({
