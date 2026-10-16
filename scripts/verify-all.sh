@@ -58,6 +58,7 @@ npm run test:evm:verification-gateway-path >/dev/null
 npm run test:evm:organizational-gateway-path >/dev/null
 npm run test:zcash:gateway-path >/dev/null
 node --import tsx scripts/test-payment-rails.mjs >/dev/null
+node --import tsx scripts/test-commercial-license-boundary.mjs >/dev/null
 
 echo "[verify-all] checking tracked secret paths"
 npm run verify:tracked-secrets >/dev/null
