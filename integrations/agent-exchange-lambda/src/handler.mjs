@@ -36,7 +36,8 @@ import { mongoProviderStatus, persistEvidence } from "./mongodb.mjs";
 import { assertPublicHttps, fetchPublicHttps } from "./url-safety.mjs";
 import { integrationDirectory, serviceDetails, serviceRecommendation, SERVICE_CATEGORIES } from "./exchange-metadata.mjs";
 import { issuePdaoChallenge, verifyPdaoHolderAccess } from "./pdao-entitlement.mjs";
-import { runScheduledSellerSettlements } from "./settlement.mjs";
+import { runScheduledSettlementReport, settlementBatchForResponse } from "./settlement.mjs";
+import { issueOwnerSettlementChallenge, listSettlementBatches, prepareSettlementBatch, reconcileSettlementBatch, submitSignedSettlementBatch, transitionSettlementBatch, verifyOwnerHeaders } from "./owner-settlement.mjs";
 import { HandshakeReplayCache, readSealReputation, sealkeeperFailure } from "./sealkeeper.mjs";
 
 const config = getConfig();
@@ -348,6 +349,7 @@ function renderTools(){
   $("tools").innerHTML=state.tools.map((tool,i)=>{const safe=toolSafe(tool),selected=state.services.some(s=>s.tool===tool.name);return '<article class="tool '+(selected?"selected":"")+'"><div class="tool-head"><input type="checkbox" data-tool-index="'+i+'" '+(selected?"checked":"")+(safe?"":" disabled")+'><div><h3>'+escapeHtml(tool.name)+'</h3><p class="muted">'+escapeHtml(tool.description||"Discovered MCP tool")+'</p><span class="badge '+(safe?"":"blocked")+'">'+(safe?"Read-only candidate":"Blocked by safety policy")+'</span></div></div></article>'}).join("")||'<p class="muted">No tools were discovered.</p>';
   all("[data-tool-index]").forEach(box=>box.onchange=()=>{const tool=state.tools[Number(box.dataset.toolIndex)];if(box.checked){state.services.push({id:tool.name,tool:tool.name,title:tool.title||tool.name,description:tool.description||"",category:"Agent service",price:0.01,asset:"USDC",network:"solana-mainnet-beta",input_schema:tool.inputSchema||{type:"object"},output_schema:{type:"object"}})}else state.services=state.services.filter(s=>s.tool!==tool.name);renderTools();renderServiceEditor()});
 }
+
 function renderServiceEditor(){const root=$("serviceEditor");root.innerHTML=state.services.length?state.services.map((s,i)=>'<article class="card"><div class="grid"><div class="field"><label>Service title</label><input data-s="'+i+'" data-k="title" value="'+escapeAttr(s.title)+'"></div><div class="field"><label>Category</label><input data-s="'+i+'" data-k="category" value="'+escapeAttr(s.category||"Agent service")+'"></div><div class="field"><label>Price (USDC)</label><input type="number" min="0" step="0.000001" data-s="'+i+'" data-k="price" value="'+escapeAttr(String(s.price))+'"></div><div class="field"><label>Payment network</label><select data-s="'+i+'" data-k="network"><option value="solana-mainnet-beta" '+(s.network==="solana-mainnet-beta"?"selected":"")+'>Solana Mainnet</option></select></div></div><div class="field"><label>Description</label><textarea data-s="'+i+'" data-k="description">'+escapeHtml(s.description||"")+'</textarea></div><details><summary>Advanced schemas</summary><div class="grid"><textarea data-s="'+i+'" data-k="input_schema">'+escapeHtml(JSON.stringify(s.input_schema||{type:"object"},null,2))+'</textarea><textarea data-s="'+i+'" data-k="output_schema">'+escapeHtml(JSON.stringify(s.output_schema||{type:"object"},null,2))+'</textarea></div></details></article>').join(""):'<div class="notice">Select at least one safe discovered tool to continue.</div>';
   all("[data-s]").forEach(el=>el.onchange=()=>{const s=state.services[Number(el.dataset.s)],k=el.dataset.k;let v=el.value;if(k==="price")v=Number(v);if(k.endsWith("_schema")){try{v=JSON.parse(v)}catch(_e){notice("Schema must be valid JSON.","error");return}}s[k]=v});
 }
@@ -366,6 +368,17 @@ $("dashSales").innerHTML='<h3>Recent receipts</h3>'+((d.sales.receipts||[]).slic
 async function loadPromotions(){try{const p=await json(await fetch("/api/marketplace/policy"));$("promotions").innerHTML=Object.entries(p.promotion_packages||{}).map(([id,x])=>'<article class="card promotion"><h3>'+escapeHtml(x.label)+'</h3><strong>$'+Number(x.price_usd).toFixed(2)+' · '+x.duration_days+' days</strong><p class="muted">'+escapeHtml(x.deliverables.join(" · "))+'</p><small>Channels: '+escapeHtml(x.channels.join(", "))+' · '+escapeHtml(x.approval_required?"approval required":"PrivateDAO delivery")+'</small><small>Third-party acceptance is outside PrivateDAO control where applicable.</small><button class="secondary" data-promo="'+escapeAttr(id)+'">View package</button></article>').join("");all("[data-promo]").forEach(b=>b.onclick=()=>notice("Promotion is optional. PrivateDAO delivers only the package deliverables shown; payment does not guarantee third-party partnership, endorsement, or acceptance.","success"))}catch(_e){}}
 $("refreshDash").onclick=()=>loadDashboard().catch(e=>notice(e.message,"error"));$("rotate").onclick=async()=>{try{const r=await json(await fetch("/api/registry/agents/"+encodeURIComponent(state.agent.id)+"/owner-token/rotate",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({owner_token:state.token})}));state.token=r.owner_token;$("rotateResult").innerHTML='<div class="notice success">New credential (save now; shown once):<pre class="json">'+escapeHtml(r.owner_token)+'</pre></div>'}catch(e){$("rotateResult").innerHTML='<div class="notice error">'+escapeHtml(e.message)+'</div>'}};policy().catch(()=>{});
 </script></body></html>`.replace('<strong id="heroFee">', '<strong id="listingFee"><span id="heroFee">').replace('</strong><p>per agent', '</span></strong><p>per agent').replace('first five commercial services', 'first <span id="serviceLimit">five</span> commercial services').replace('<b id="heroCommission">', '<b id="platformFee"><span id="heroCommission">').replace('</b> PrivateDAO fee', '</span></b> PrivateDAO fee').replace('<b id="heroNet">', '<b id="sellerNet"><span id="heroNet">').replace('%.</b>', '%.</span></b>').replace('Only discovered read-only tools can be selected.', 'Select read-only commercial tools. Only discovered read-only tools can be selected.').replace('<div id="tools" class="grid">', '<div id="toolPicker" class="hidden">Select read-only commercial tools</div><input id="metadataFile" type="file" accept="application/json" hidden><div id="tools" class="grid">').replace('Connect wallet and pay', 'Pay listing fee with wallet').replace('<h3>Security</h3>', '<h3>Security</h3><span id="rotateCredential" class="hidden"></span>').replace('async function policy()', 'async function loadMarketplacePolicy()').replace('policy().catch', 'loadMarketplacePolicy().catch').replace('<h2>Verify your agent connection</h2>', '<h2>Verify MCP and preview services</h2>');
+}
+function ownerSettlementPage() {
+  return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Owner Settlement | PrivateDAO</title><style>body{font-family:system-ui,sans-serif;max-width:1180px;margin:0 auto;padding:24px;color:#071a32;background:#f7faff}.card{background:#fff;border:1px solid #dbe5ef;border-radius:16px;padding:20px;margin:16px 0}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}.muted{color:#52657c}.warn{background:#fff7e6;border:1px solid #e8bd64;padding:12px;border-radius:10px}.danger{color:#a12a2a}.button{border:0;border-radius:8px;padding:10px 14px;background:#1769e0;color:#fff;cursor:pointer;margin:4px}.secondary{background:#eaf2fc;color:#1459b8}.entry{border-top:1px solid #e5edf5;padding:10px 0}.stat{font-size:25px;font-weight:800}pre{white-space:pre-wrap;overflow:auto}@media(max-width:650px){body{padding:14px}}</style></head><body><a href="/marketplace">PrivateDAO Agent Exchange</a><h1>Owner Settlement Dashboard</h1><p class="muted">Automated accounting and owner-approved settlement. No backend signer exists. Every Solana USDC payout requires the configured Treasury wallet to review and sign.</p><div class="warn">Treasury: <code>${config.treasury}</code><br><b>Approval does not broadcast funds.</b> The wallet shows exact recipients and amounts before signing.</div><section class="card"><button class="button" id="connect">Connect Treasury wallet</button><span id="wallet" class="muted">Not connected</span><div id="status" class="muted"></div></section><section class="grid" id="summary"></section><section class="card"><h2>Settlement batches</h2><div id="batches"><p class="muted">Connect the Treasury wallet to load batches.</p></div></section><script>
+const $=id=>document.getElementById(id);let auth={wallet:null,message:null,signature:null};let provider=null;
+const enc=bytes=>btoa(String.fromCharCode(...bytes));const headers=()=>({'content-type':'application/json','x-pdao-owner-wallet':auth.wallet,'x-pdao-owner-message':auth.message,'x-pdao-owner-signature':auth.signature});
+async function json(r){const x=await r.json();if(!r.ok)throw Error(x.message||x.error||'request failed');return x}
+async function ownerAuth(){provider=window.solana||window.backpack||window.solflare;if(!provider?.connect||!provider?.signMessage)throw Error('A Solana wallet with signMessage support is required');const connected=await provider.connect();auth.wallet=connected.publicKey?.toString()||provider.publicKey?.toString();const challenge=await json(await fetch('/api/owner/settlements/challenge',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({wallet:auth.wallet})}));const signed=await provider.signMessage(new TextEncoder().encode(challenge.message),'utf8');auth.message=challenge.message;auth.signature=enc(signed.signature||signed);$('wallet').textContent=auth.wallet}
+async function load(){const data=await json(await fetch('/api/owner/settlements/batches',{headers:headers()}));const totals=(data.batches||[]).filter(x=>x.status!=='empty').reduce((a,b)=>({gross:a.gross+Number(b.totals?.gross_amount||0),fee:a.fee+Number(b.totals?.platform_fee_amount||0),net:a.net+Number(b.totals?.seller_net_amount||0)}),{gross:0,fee:0,net:0});$('summary').innerHTML=[['Gross',totals.gross],['PrivateDAO fees',totals.fee],['Seller net',totals.net]].map(x=>'<article class="card"><small>'+x[0]+'</small><div class="stat">'+x[1].toFixed(6)+' USDC</div></article>').join('');$('batches').innerHTML=(data.batches||[]).map(b=>'<article class="entry"><h3>'+b.id+' · '+b.status+'</h3><p>'+b.entry_count+' entries · '+Number(b.totals?.seller_net_amount||0).toFixed(6)+' USDC · expires '+b.expires_at+'</p><p>'+((b.warnings||[]).map(w=>'<span class="danger">Warning: '+w.reason+'</span>').join('<br>')||'No warnings')+'</p><details><summary>Recipients and accounting</summary><pre>'+JSON.stringify(b.entries,null,2)+'</pre></details>'+(['pending_owner_approval','deferred'].includes(b.status)?'<button class="button" data-action="approve" data-id="'+b.id+'">Approve batch</button><button class="button secondary" data-action="defer" data-id="'+b.id+'">Defer</button><button class="button secondary" data-action="reject" data-id="'+b.id+'">Reject</button>':'')+(['approved','prepared'].includes(b.status)?'<button class="button" data-action="prepare" data-id="'+b.id+'">Prepare wallet transaction</button>':'')+(b.status==='broadcast_pending'?'<button class="button" data-action="reconcile" data-id="'+b.id+'">Reconcile finality</button>':'')+'</article>').join('')||'<p class="muted">No settlement batches.</p>';document.querySelectorAll('[data-action]').forEach(x=>x.onclick=()=>act(x.dataset.action,x.dataset.id))}
+async function act(action,id){try{if(['approve','reject','defer'].includes(action)){await json(await fetch('/api/owner/settlements/batches/'+encodeURIComponent(id)+'/'+action,{method:'POST',headers:headers(),body:'{}'}));return load()}if(action==='prepare'){const p=await json(await fetch('/api/owner/settlements/batches/'+encodeURIComponent(id)+'/prepare',{method:'POST',headers:headers(),body:'{}'}));$('status').textContent='Review exact recipients in your wallet; browser will not broadcast before signing.';const web3=await import('/assets/browser/solana-web3.mjs');const tx=web3.Transaction.from(Uint8Array.from(atob(p.transaction_base64),c=>c.charCodeAt(0)));const signed=await provider.signTransaction(tx);const submitted=await json(await fetch('/api/owner/settlements/'+encodeURIComponent(id)+'/submit',{method:'POST',headers:headers(),body:JSON.stringify({signed_transaction_base64:enc(signed.serialize())})}));$('status').textContent='Submitted and reconciled: '+(submitted.batch?.payout_signature||'pending');return load()}if(action==='reconcile'){await json(await fetch('/api/owner/settlements/'+encodeURIComponent(id)+'/reconcile',{method:'POST',headers:headers(),body:'{}'}));return load()}}catch(e){$('status').textContent=e.message}}
+$('connect').onclick=async()=>{try{await ownerAuth();await load()}catch(e){$('status').textContent=e.message}};
+</script></body></html>`;
 }
 async function githubWebhook(body, rawBody, signature, eventName) {
   if (!config.githubWebhookSecret) throw Object.assign(new Error("GitHub webhook secret is not configured"), { statusCode: 503 });
@@ -717,6 +730,10 @@ function openapi() {
     "/api/registry/agents/{agentId}/owner-token/rotate": { post: { operationId: "rotateSellerOwnerToken" } },
     "/api/registry/agents/{agentId}/replace": { post: { operationId: "replaceSellerEndpoint" } },
     "/api/registry/agents/{agentId}/retire": { post: { operationId: "retireSeller" } },
+    "/api/owner/settlements/challenge": { post: { operationId: "ownerSettlementChallenge" } },
+    "/api/owner/settlements/batches": { get: { operationId: "listOwnerSettlementBatches" } },
+    "/api/owner/settlements/batches/{batchId}/{action}": { post: { operationId: "ownerSettlementBatchAction" } },
+    "/api/owner/settlements/{batchId}/{action}": { post: { operationId: "ownerSettlementBroadcastOrReconcile" } },
     "/api/internal/sealkeeper/verify": { post: { operationId: "verifySealkeeperReadOnly" } },
     "/api/external/jobs": { post: { operationId: "createExternalJob" } },
     "/api/external/jobs/{jobId}/payment": { post: { operationId: "submitExternalPayment", responses: { "200": { description: "Payment accepted or job completed" }, "202": { description: "Payment verification or processing is still in progress" }, "409": { description: "Payment was accepted but execution requires non-replaying recovery" } } } },
@@ -3764,6 +3781,9 @@ async function handle(e) {
     return json(await githubRepositoryContext(config, installationId, body.repository || body.repo));
   }
   if (method === "GET" && ASSETS[path]) return clientAssetResponse(path);
+  if (method === "GET" && path === "/owner/settlements") {
+    return { statusCode: 200, headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store", "content-security-policy": "default-src 'self'; base-uri 'none'; object-src 'none'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; connect-src 'self' https://agents.privatedao.org https://api.mainnet-beta.solana.com; frame-ancestors 'none'", "x-content-type-options": "nosniff", "referrer-policy": "no-referrer", "permissions-policy": "camera=(), microphone=(), geolocation=()" }, body: ownerSettlementPage() };
+  }
   if (method === "GET" && path === "/integrations") {
     trackFunnel("integrations_view");
     return { statusCode: 200, headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store" }, body: integrationPage() };
@@ -3969,6 +3989,28 @@ async function handle(e) {
     return json(await buildPaymentTransaction(paymentTransaction[1], body.payer, body.sourceTokenAccount));
   if (method === "GET" && path === "/api/network/stats")
     return json(await networkStats(config));
+  if (method === "POST" && path === "/api/owner/settlements/challenge")
+    return json(await issueOwnerSettlementChallenge(config, await store(), body.wallet));
+  if (method === "GET" && path === "/api/owner/settlements/batches") {
+    await verifyOwnerHeaders(config, await store(), e.headers || {});
+    return json({ batches: (await listSettlementBatches(config, await store())).map(settlementBatchForResponse), treasury: config.treasury, network: "solana-mainnet-beta", asset: "USDC", approval_is_not_broadcast: true });
+  }
+  const ownerBatchAction = path.match(/^\/api\/owner\/settlements\/batches\/([^/]+)\/(approve|reject|defer|prepare)$/);
+  if (method === "POST" && ownerBatchAction) {
+    const storage = await store();
+    const actor = await verifyOwnerHeaders(config, storage, e.headers || {});
+    const [, batchId, action] = ownerBatchAction;
+    if (action === "prepare") return json(await prepareSettlementBatch(config, storage, decodeURIComponent(batchId), actor));
+    return json(await transitionSettlementBatch(config, storage, decodeURIComponent(batchId), action, actor));
+  }
+  const ownerSubmit = path.match(/^\/api\/owner\/settlements\/([^/]+)\/(submit|reconcile)$/);
+  if (method === "POST" && ownerSubmit) {
+    const storage = await store();
+    const actor = await verifyOwnerHeaders(config, storage, e.headers || {});
+    const [, batchId, action] = ownerSubmit;
+    if (action === "reconcile") return json(await reconcileSettlementBatch(config, storage, decodeURIComponent(batchId), actor));
+    return json(await submitSignedSettlementBatch(config, storage, decodeURIComponent(batchId), body.signed_transaction_base64, actor));
+  }
   if (method === "GET" && path === "/api/network/health") {
     const requested = String(e.queryStringParameters?.network || "").trim();
     const networks = requested ? [requested] : ["solana-mainnet-beta", "ethereum-mainnet", "base-mainnet", "arbitrum-mainnet"];
@@ -4576,7 +4618,7 @@ export async function handler(event) {
   try {
     if (event?.source === "aws.events" || event?.source === "aws.scheduler") {
       await runtimeConfig();
-      return await runScheduledSellerSettlements(config, await store());
+      return await runScheduledSettlementReport(config, await store());
     }
     const response = withSecurityHeaders(await handle(event));
     if (methodOf(event) !== "HEAD") return response;
