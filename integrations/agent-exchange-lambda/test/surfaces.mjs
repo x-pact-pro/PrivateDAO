@@ -834,7 +834,7 @@ test("external seller ownership protects mutations and publishes declared servic
   const listingQuote = await request("/api/marketplace/seller-listings/quote", "POST", { agent_id: record.id, owner_token: ownerToken, tier: "pro", accept_terms: true, terms_version: "seller-marketplace-v1" });
   assert.equal(listingQuote.statusCode, 201);
   const listingQuoteBody = JSON.parse(listingQuote.body);
-  assert.equal(listingQuoteBody.quote.amount, 10);
+  assert.equal(listingQuoteBody.quote.amount, 49);
   assert.equal(listingQuoteBody.status, "awaiting_payment");
   const changedAfterQuote = await request(`/api/registry/agents/${record.id}/services`, "PATCH", { owner_token: ownerToken, services: [{ id: "read", title: "Read evidence v2", description: "Changed after quote", price: 0.03, asset: "USDC", network: "solana-mainnet-beta" }], accepted_assets: ["USDC"] });
   assert.equal(changedAfterQuote.statusCode, 200);
@@ -1117,7 +1117,7 @@ test("external seller listing pricing is one payment per agent regardless of ser
     assert.equal(firstPartyBody.seller_net_amount, null);
     const registered = JSON.parse((await request("/api/registry/register", "POST", { name: "Pricing Fixture", mcp_url: "https://example.com/mcp" })).body);
     const serviceSet = (count) => Array.from({ length: count }, (_item, index) => ({ id: `service_${index + 1}`, tool: "read", title: `Service ${index + 1}`, price: 0.01, asset: "USDC", network: "solana-mainnet-beta" }));
-    for (const [count, expected] of [[1, 12], [5, 12]]) {
+    for (const [count, expected] of [[1, 49], [5, 49]]) {
       const updated = await request(`/api/registry/agents/${registered.id}/services`, "PATCH", { owner_token: registered.owner_token, services: serviceSet(count), accepted_assets: ["USDC"], payout: { address: "2BJ4ezxqV9YJXc38D9duKBkdn4su4jE1beKUHwH663sL", network: "solana-mainnet-beta", asset: "USDC" } });
       assert.equal(updated.statusCode, 200, updated.body);
       const quoteResponse = await request("/api/marketplace/seller-listings/quote", "POST", { agent_id: registered.id, owner_token: registered.owner_token, tier: "pro", accept_terms: true, terms_version: "seller-marketplace-v1" });

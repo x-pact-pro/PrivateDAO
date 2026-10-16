@@ -126,13 +126,14 @@ function normalizeMarketplacePolicy(value = {}) {
       }),
     },
   };
+  const fixedListingFees = { free: 0, basic: 10, pro: 49 };
   for (const [id, defaults] of Object.entries(DEFAULT_MARKETPLACE_POLICY.seller_tiers)) {
     const item = tiers[id] && typeof tiers[id] === "object" ? tiers[id] : {};
     policy.seller_tiers[id] = {
       ...defaults,
       label: String(item.label || defaults.label).slice(0, 100),
       max_services: Math.floor(boundedNumber(item.max_services, defaults.max_services, 1, policy.max_services_per_seller)),
-      listing_fee_usd: boundedNumber(item.listing_fee_usd, policy.listing_fee_usd, 0, 10000),
+      listing_fee_usd: fixedListingFees[id] ?? boundedNumber(item.listing_fee_usd, policy.listing_fee_usd, 0, 10000),
       monthly_fee_usd: boundedNumber(item.monthly_fee_usd, defaults.monthly_fee_usd, 0, 10000),
       requires_backlink: item.requires_backlink === undefined ? Boolean(defaults.requires_backlink) : Boolean(item.requires_backlink),
     };
