@@ -75,6 +75,7 @@ owner:
 | AMD | AMD AI Developer Program | AI workload, accelerator, and performance validation |
 | Intel | Intel Partner Plus | OpenVINO inference and performance validation |
 | GitHub | GitHub Developer Program | Developer tooling, repository provenance, and integration testing |
+| DigitalOcean | DigitalOcean developer infrastructure access | Cloud compute, storage, and deployment experimentation |
 
 These program relationships do not by themselves mean endorsement of every
 PrivateDAO product, certification, customer reference, grant award, or joint

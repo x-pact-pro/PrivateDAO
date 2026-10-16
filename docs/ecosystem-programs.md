@@ -14,6 +14,7 @@ project owner. Private correspondence is not copied into this repository.
 | AMD | AMD AI Developer Program | Accepted | AI developer tooling and performance testing |
 | Intel | Intel Partner Plus | Accepted | OpenVINO and hardware-aware inference testing |
 | GitHub | GitHub Developer Program | Welcomed | Developer tooling, repository provenance, and API integration |
+| DigitalOcean | DigitalOcean developer infrastructure access | Welcomed | Cloud compute, storage, and deployment experimentation |
 
 ## Disclosure boundary
 
@@ -27,7 +28,8 @@ Exchange: MongoDB Atlas is used for idempotent evidence-history persistence and
 search, while DynamoDB remains the canonical store for jobs, payments, and
 receipts. MongoDB does not hold wallet keys or payment credentials.
 
-IBM, AMD, Intel, and GitHub are recorded as ecosystem program relationships and
+IBM, AMD, Intel, GitHub, and DigitalOcean are recorded as ecosystem program or
+infrastructure relationships and
 technical validation partners. Their presence here does not expose credentials
 or imply that a provider endpoint is configured in every environment.
 

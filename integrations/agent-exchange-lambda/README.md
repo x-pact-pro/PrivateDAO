@@ -147,7 +147,10 @@ Program resources are used for AI workload validation, and GitHub Developer
 Program resources support repository evidence and tooling. GitHub
 repository evidence uses the public GitHub API (with an optional secret-backed
 token for higher API limits). Provider identity and evidence persistence status
-are included in completed results without returning credentials.
+are included in completed results without returning credentials. DigitalOcean
+infrastructure access is documented separately as a compute, storage, and
+deployment experimentation relationship; it is not presented as a product
+endorsement or external marketplace placement.
 
 The GitHub App runtime additionally reads the JSON secret
 `pdao/agent-exchange/github` through `AGENT_EXCHANGE_GITHUB_SECRET_ID`. Its
