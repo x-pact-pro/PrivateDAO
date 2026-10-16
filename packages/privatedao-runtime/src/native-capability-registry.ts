@@ -103,7 +103,7 @@ const SOLANA_DEVNET_POLICY_AUCTION_EVIDENCE = {
 } as const;
 
 const SOLANA_DEVNET_GOVERNANCE_EVIDENCE = {
-  commit: "pending",
+  commit: "06a3e5ceb",
   timestamp: "2026-10-16T02:06:20.238Z",
   provider: "privatedao-governance-proposal",
 } as const;
