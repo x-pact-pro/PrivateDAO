@@ -1,0 +1,32 @@
+{
+  "schema": "privatedao.solana-devnet.enterprise-policy-auction-e2e.v1",
+  "generatedAt": "2026-10-15T21:52:24.921Z",
+  "network": "solana-devnet",
+  "gateway": "ProductExecutionGateway",
+  "state": "reconciled",
+  "products": {
+    "treasury": {
+      "capability": "treasury.policy.check",
+      "provider": "privatedao-treasury-policy",
+      "passed": true,
+      "signatures": 0
+    },
+    "auction": {
+      "capabilities": [
+        "auction.bid.commit",
+        "auction.settle"
+      ],
+      "providers": [
+        "privatedao-auction-bid-commit",
+        "privatedao-auction-outcome-proof"
+      ],
+      "bidProofHash": "ddb6e99bf24007ce77da6bfd0a183a6389bca6abda3f26e9d0dcc3f9050d2937",
+      "outcomeProofType": "groth16-auction-outcome-v1",
+      "privateDataExcluded": true,
+      "signatures": 0
+    }
+  },
+  "evidenceClass": "kernel-provider-e2e",
+  "broadcastAttempted": false,
+  "inputMaterialHash": "6a7ced0ba5b2dcd9d98e8626ebc81685546c260a25fa957af091f13796c6161a"
+}

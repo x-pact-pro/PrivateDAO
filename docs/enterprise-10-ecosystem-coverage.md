@@ -36,7 +36,7 @@ A lane is **verified** only when it is declared, bound through kernel://, has an
 | payroll | zcash | planned | 0/3 | payroll.calculate: zcash-testnet=kernel-gateway/implementation; payroll.approve: zcash-testnet=kernel-gateway/implementation; payroll.settle: zcash-testnet=kernel-gateway/implementation |
 | payroll | hyperliquid | planned | 0/3 | payroll.calculate: hyperliquid-testnet=kernel-gateway/implementation; payroll.approve: hyperliquid-testnet=kernel-gateway/implementation; payroll.settle: hyperliquid-testnet=kernel-gateway/implementation |
 | payroll | stellar | verified | 3/3 | payroll.calculate: stellar-testnet=kernel-gateway/testnet_verified; payroll.approve: stellar-testnet=kernel-gateway/testnet_verified; payroll.settle: stellar-testnet=kernel-gateway/testnet_verified |
-| treasury | solana | planned | 0/1 | treasury.policy.check: solana-devnet=kernel-gateway/implementation, solana-mainnet-beta=unbound/missing |
+| treasury | solana | verified | 1/1 | treasury.policy.check: solana-devnet=kernel-gateway/devnet_verified, solana-mainnet-beta=unbound/missing |
 | treasury | ethereum | verified | 1/1 | treasury.policy.check: ethereum-sepolia=kernel-gateway/testnet_verified, ethereum-mainnet=unbound/missing |
 | treasury | arbitrum | verified | 1/1 | treasury.policy.check: arbitrum-sepolia=kernel-gateway/testnet_verified, arbitrum-one=unbound/missing |
 | treasury | bnb | verified | 1/1 | treasury.policy.check: bnb-testnet=kernel-gateway/testnet_verified, bnb-mainnet=unbound/missing |
@@ -56,7 +56,7 @@ A lane is **verified** only when it is declared, bound through kernel://, has an
 | governance | zcash | planned | 0/1 | governance.proposal.execute: zcash-testnet=kernel-gateway/implementation |
 | governance | hyperliquid | verified | 1/1 | governance.proposal.execute: hyperliquid-testnet=kernel-gateway/testnet_verified |
 | governance | stellar | verified | 1/1 | governance.proposal.execute: stellar-testnet=kernel-gateway/testnet_verified |
-| auction | solana | planned | 0/2 | auction.bid.commit: solana-devnet=kernel-gateway/implementation, solana-mainnet-beta=unbound/missing; auction.settle: solana-devnet=kernel-gateway/implementation, solana-mainnet-beta=unbound/missing |
+| auction | solana | verified | 2/2 | auction.bid.commit: solana-devnet=kernel-gateway/devnet_verified, solana-mainnet-beta=unbound/missing; auction.settle: solana-devnet=kernel-gateway/devnet_verified, solana-mainnet-beta=unbound/missing |
 | auction | ethereum | verified | 2/2 | auction.bid.commit: ethereum-sepolia=kernel-gateway/testnet_verified, ethereum-mainnet=unbound/missing; auction.settle: ethereum-sepolia=kernel-gateway/testnet_verified, ethereum-mainnet=unbound/missing |
 | auction | arbitrum | verified | 2/2 | auction.bid.commit: arbitrum-sepolia=kernel-gateway/testnet_verified, arbitrum-one=unbound/missing; auction.settle: arbitrum-sepolia=kernel-gateway/testnet_verified, arbitrum-one=unbound/missing |
 | auction | bnb | verified | 2/2 | auction.bid.commit: bnb-testnet=kernel-gateway/testnet_verified, bnb-mainnet=unbound/missing; auction.settle: bnb-testnet=kernel-gateway/testnet_verified, bnb-mainnet=unbound/missing |

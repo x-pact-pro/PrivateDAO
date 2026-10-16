@@ -3893,16 +3893,16 @@ export const runtimeCatalog = {
               "entrypoint": "kernel://treasury.policy.check",
               "method": null,
               "note": "Kernel-native deterministic policy evaluation; no wallet signature or treasury movement is performed.",
-              "evidenceStatus": "implementation",
-              "evidence": "none",
-              "supportsExecution": false,
+              "evidenceStatus": "devnet_verified",
+              "evidence": "devnet-e2e",
+              "supportsExecution": true,
               "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "SOL"
               ],
-              "provider": "solana-devnet"
+              "provider": "privatedao-treasury-policy"
             },
             {
               "network": "ethereum-sepolia",
@@ -4066,16 +4066,16 @@ export const runtimeCatalog = {
               "chainId": null,
               "declared": true,
               "mode": "kernel-gateway",
-              "evidenceStatus": "implementation",
-              "evidence": "none",
-              "executable": false,
+              "evidenceStatus": "devnet_verified",
+              "evidence": "devnet-e2e",
+              "executable": true,
               "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "SOL"
               ],
-              "provider": "solana-devnet"
+              "provider": "privatedao-treasury-policy"
             },
             {
               "network": "solana-mainnet-beta",
@@ -4907,16 +4907,16 @@ export const runtimeCatalog = {
               "entrypoint": "kernel://auction.bid.commit",
               "method": null,
               "note": "Kernel adapter delegates to the HTTPS sealed-bid commitment service; it returns observed public commitments and does not claim a wallet signature or token movement.",
-              "evidenceStatus": "implementation",
-              "evidence": "none",
-              "supportsExecution": false,
-              "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "evidenceStatus": "devnet_verified",
+              "evidence": "devnet-e2e",
+              "supportsExecution": true,
+              "supportsProof": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "SOL"
               ],
-              "provider": "solana-devnet"
+              "provider": "privatedao-auction-bid-commit"
             },
             {
               "network": "ethereum-sepolia",
@@ -5080,16 +5080,16 @@ export const runtimeCatalog = {
               "chainId": null,
               "declared": true,
               "mode": "kernel-gateway",
-              "evidenceStatus": "implementation",
-              "evidence": "none",
-              "executable": false,
-              "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "evidenceStatus": "devnet_verified",
+              "evidence": "devnet-e2e",
+              "executable": true,
+              "supportsProof": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "SOL"
               ],
-              "provider": "solana-devnet"
+              "provider": "privatedao-auction-bid-commit"
             },
             {
               "network": "solana-mainnet-beta",
@@ -5395,16 +5395,16 @@ export const runtimeCatalog = {
               "entrypoint": "kernel://auction.settle",
               "method": null,
               "note": "Kernel adapter delegates to the HTTPS outcome-proof service; it proves an already-bound result and does not claim token movement or an on-chain signature.",
-              "evidenceStatus": "implementation",
-              "evidence": "none",
-              "supportsExecution": false,
-              "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "evidenceStatus": "devnet_verified",
+              "evidence": "devnet-e2e",
+              "supportsExecution": true,
+              "supportsProof": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "SOL"
               ],
-              "provider": "solana-devnet"
+              "provider": "privatedao-auction-outcome-proof"
             },
             {
               "network": "ethereum-sepolia",
@@ -5568,16 +5568,16 @@ export const runtimeCatalog = {
               "chainId": null,
               "declared": true,
               "mode": "kernel-gateway",
-              "evidenceStatus": "implementation",
-              "evidence": "none",
-              "executable": false,
-              "supportsProof": false,
-              "supportsReceipt": false,
-              "supportsReconciliation": false,
+              "evidenceStatus": "devnet_verified",
+              "evidence": "devnet-e2e",
+              "executable": true,
+              "supportsProof": true,
+              "supportsReceipt": true,
+              "supportsReconciliation": true,
               "supportedAssets": [
                 "SOL"
               ],
-              "provider": "solana-devnet"
+              "provider": "privatedao-auction-outcome-proof"
             },
             {
               "network": "solana-mainnet-beta",

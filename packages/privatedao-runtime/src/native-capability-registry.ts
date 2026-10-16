@@ -94,6 +94,14 @@ const RECORD_SOLANA_DEVNET_EVIDENCE = {
   timestamp: "2026-10-16T00:58:15.368Z",
 } as const;
 
+const SOLANA_DEVNET_POLICY_AUCTION_EVIDENCE = {
+  commit: "pending",
+  timestamp: "2026-10-15T21:52:24.921Z",
+  treasuryProvider: "privatedao-treasury-policy",
+  auctionBidProvider: "privatedao-auction-bid-commit",
+  auctionSettleProvider: "privatedao-auction-outcome-proof",
+} as const;
+
 const TEMPO_TESTNET_EVIDENCE = {
   provider: "evm-tempo-testnet",
   verifier: "0xbf495e8147ab23bfa2024eae7c0d2f54af40279c",
@@ -432,6 +440,32 @@ function applyRecordSolanaDevnetEvidence(entry: NativeCapabilityEntry): NativeCa
   };
 }
 
+function applySolanaDevnetPolicyAuctionEvidence(entry: NativeCapabilityEntry): NativeCapabilityEntry {
+  const isTreasury = entry.product === "treasury" && entry.capability === "treasury.policy.check";
+  const isAuction = entry.product === "auction" && ["auction.bid.commit", "auction.settle"].includes(entry.capability);
+  if (entry.network !== "solana-devnet" || (!isTreasury && !isAuction)) return entry;
+  const provider = isTreasury
+    ? SOLANA_DEVNET_POLICY_AUCTION_EVIDENCE.treasuryProvider
+    : entry.capability === "auction.bid.commit"
+      ? SOLANA_DEVNET_POLICY_AUCTION_EVIDENCE.auctionBidProvider
+      : SOLANA_DEVNET_POLICY_AUCTION_EVIDENCE.auctionSettleProvider;
+  return {
+    ...entry,
+    provider,
+    walletModel: "none",
+    supportsExecution: true,
+    supportsPrivateExecution: false,
+    supportsPrivateSettlement: false,
+    supportsProof: isAuction,
+    supportsReceipt: true,
+    supportsReconciliation: true,
+    status: "devnet_verified",
+    lastVerifiedCommit: SOLANA_DEVNET_POLICY_AUCTION_EVIDENCE.commit,
+    lastVerifiedTimestamp: SOLANA_DEVNET_POLICY_AUCTION_EVIDENCE.timestamp,
+    evidence: "devnet-e2e",
+  };
+}
+
 function applyTempoTestnetEvidence(entry: NativeCapabilityEntry): NativeCapabilityEntry {
   const isBlind = entry.product === "blind-verification" && ["verification.blind.prove", "verification.blind.revoke"].includes(entry.capability);
   const isRecord = entry.product === "record-verification" && ["verification.record.create", "verification.record.verify", "verification.record.revoke"].includes(entry.capability);
@@ -597,34 +631,57 @@ function applyOrganizationalPayrollEvidence(entry: NativeCapabilityEntry): Nativ
  * executable or presented as verified support.
  */
 export function buildNativeCapabilityRegistry(): readonly NativeCapabilityEntry[] {
+  const evidenceTransforms = [
+    applyEthereumSepoliaEvidence,
+    applyBaseSepoliaEvidence,
+    applyArbitrumSepoliaEvidence,
+    applyAgentMainnetEvidence,
+    applyPayrollDevnetEvidence,
+    applyBlindSolanaDevnetEvidence,
+    applyRecordSolanaDevnetEvidence,
+    applySolanaDevnetPolicyAuctionEvidence,
+    applyTempoTestnetEvidence,
+    applyBnbTestnetEvidence,
+    applyHyperliquidTestnetEvidence,
+    applyRobinhoodTestnetEvidence,
+    applyStellarTestnetEvidence,
+    applyOrganizationalPayrollEvidence,
+    applyOrganizationalEvidence,
+  ] as const;
+
   return PRODUCT_CATALOG.flatMap((product) =>
     product.capabilities.flatMap((capability) =>
-      NETWORK_MATRIX.map((network) => applyOrganizationalEvidence(applyOrganizationalPayrollEvidence(applyStellarTestnetEvidence(applyRobinhoodTestnetEvidence(applyHyperliquidTestnetEvidence(applyBnbTestnetEvidence(applyTempoTestnetEvidence(applyRecordSolanaDevnetEvidence(applyBlindSolanaDevnetEvidence(applyPayrollDevnetEvidence(applyAgentMainnetEvidence(applyArbitrumSepoliaEvidence(applyBaseSepoliaEvidence(applyEthereumSepoliaEvidence({
-        product: product.id,
-        capability: capability.id,
-        network: network.id,
-        networkFamily: network.family,
-        declared: product.networks.includes(network.id) && capability.networks.includes(network.id),
-        environment: network.environment,
-        chainId: network.chainId ?? null,
-        nativeAsset: nativeAsset(network),
-        supportedAssets: nativeAsset(network) ? [nativeAsset(network) as string] : [],
-        contracts: [],
-        verifier: null,
-        provider: network.adapterId ?? null,
-        walletModel: network.family === "solana" || network.family === "evm" ? "external-wallet" : "none",
-        supportsExecution: false,
-        supportsPrivateExecution: false,
-        supportsPrivateSettlement: false,
-        supportsProof: false,
-        supportsReceipt: false,
-        supportsReconciliation: false,
-        supportsMainnet: false,
-        status: defaultStatus(product.networks.includes(network.id) && capability.networks.includes(network.id), network),
-        lastVerifiedCommit: null,
-        lastVerifiedTimestamp: null,
-        evidence: "none",
-      })))))))))))))) ,
+      NETWORK_MATRIX.map((network) => {
+        const declared = product.networks.includes(network.id) && capability.networks.includes(network.id);
+        const asset = nativeAsset(network);
+        const entry: NativeCapabilityEntry = {
+          product: product.id,
+          capability: capability.id,
+          network: network.id,
+          networkFamily: network.family,
+          declared,
+          environment: network.environment,
+          chainId: network.chainId ?? null,
+          nativeAsset: asset,
+          supportedAssets: asset ? [asset] : [],
+          contracts: [],
+          verifier: null,
+          provider: network.adapterId ?? null,
+          walletModel: network.family === "solana" || network.family === "evm" ? "external-wallet" : "none",
+          supportsExecution: false,
+          supportsPrivateExecution: false,
+          supportsPrivateSettlement: false,
+          supportsProof: false,
+          supportsReceipt: false,
+          supportsReconciliation: false,
+          supportsMainnet: false,
+          status: defaultStatus(declared, network),
+          lastVerifiedCommit: null,
+          lastVerifiedTimestamp: null,
+          evidence: "none",
+        };
+        return evidenceTransforms.reduce((current, transform) => transform(current), entry);
+      }),
     ),
-  ));
+  );
 }
