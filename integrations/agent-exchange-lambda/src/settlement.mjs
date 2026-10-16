@@ -5,7 +5,7 @@ import {
   TOKEN_PROGRAM_ID,
   createAssociatedTokenAccountIdempotentInstruction,
   createTransferCheckedInstruction,
-} from "../scripts/browser/spl-token-entry.mjs";
+} from "./spl-token.mjs";
 
 const USDC_DECIMALS = 6;
 const MEMO_PROGRAM_ID = new PublicKey("MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr");
