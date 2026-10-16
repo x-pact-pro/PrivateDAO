@@ -1,21 +1,15 @@
 import { Keypair, PublicKey, Connection, Transaction, TransactionInstruction } from "@solana/web3.js";
-import { assertMainnetConfig, derivedTreasuryTokenAccount } from "./solana.mjs";
 import {
   ASSOCIATED_TOKEN_PROGRAM_ID,
   TOKEN_PROGRAM_ID,
   createAssociatedTokenAccountIdempotentInstruction,
   createTransferCheckedInstruction,
-} from "./spl-token.mjs";
+  getAssociatedTokenAddressSync,
+} from "@solana/spl-token";
+import { assertMainnetConfig, derivedTreasuryTokenAccount } from "./solana.mjs";
 
 const USDC_DECIMALS = 6;
 const MEMO_PROGRAM_ID = new PublicKey("MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr");
-
-function associatedTokenAddress(mint, owner) {
-  return PublicKey.findProgramAddressSync(
-    [owner.toBuffer(), TOKEN_PROGRAM_ID.toBuffer(), mint.toBuffer()],
-    ASSOCIATED_TOKEN_PROGRAM_ID,
-  )[0];
-}
 
 function parseSecretKey(value) {
   const raw = String(value || "").trim();
@@ -81,7 +75,7 @@ export async function runScheduledSellerSettlements(config, storage, { limit = c
       if (!payout?.address || payout.network !== "solana-mainnet-beta" || payout.asset !== "USDC") throw new Error("seller payout rail is invalid");
       if (payout.address === config.treasury) throw new Error("seller payout cannot equal the treasury");
       const destination = new PublicKey(payout.address);
-      const destinationAta = associatedTokenAddress(new PublicKey(config.usdcMint), destination);
+      const destinationAta = getAssociatedTokenAddressSync(new PublicKey(config.usdcMint), destination, false, TOKEN_PROGRAM_ID, ASSOCIATED_TOKEN_PROGRAM_ID);
       const latest = await connection.getLatestBlockhash("finalized");
       const transaction = new Transaction({ recentBlockhash: latest.blockhash, feePayer: signer.publicKey });
       transaction.add(

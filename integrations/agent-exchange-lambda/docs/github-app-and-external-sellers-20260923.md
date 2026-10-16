@@ -31,6 +31,6 @@ Commercial service metadata is explicit: service/tool ID, title, description, pr
 
 An external paid request is quote-first and uses the existing finalized Solana Mainnet USDC verification rail. The buyer pays the exchange treasury quoted in the payment intent; the result receipt names the seller and records gross amount, protocol fee, net payable amount, payout declaration, and settlement status. This release records `payable_pending_admin_settlement`; it does not broadcast an automatic seller payout transaction. This boundary avoids signing or moving funds without a separately approved payout rail.
 
-## Brian handoff
+## Pilot-provider handoff
 
-Before publishing Singularity's commercial services, provide the exact values for each of `mint_audit`, `inspect_exit`, `inspect_payment`, `prove_payment`, and `mesh`: public display title, description, free/paid status, numeric price, asset, payment network, accepted assets, input schema, output schema, and the seller payout address. No price or payout address is invented by the exchange.
+Before publishing any pilot provider's commercial services, provide the exact values for each tool: public display title, description, free/paid status, numeric price, asset, payment network, accepted assets, input schema, output schema, and the seller payout address. No price or payout address is invented by the exchange. A Registry record or interoperability test does not make the provider an official PrivateDAO partner or sponsored placement; official directory entries come only from `integrationDirectory()` and paid promotion is separately disclosed.

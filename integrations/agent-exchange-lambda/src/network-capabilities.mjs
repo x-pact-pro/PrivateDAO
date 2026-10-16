@@ -56,12 +56,6 @@ export const NETWORK_CAPABILITIES = Object.freeze([
     capabilities: ["service-discovery", "registry", "marketplace-metadata"],
   },
   {
-    id: "bnb:testnet",
-    label: "BNB Testnet",
-    status: "discovery-only",
-    capabilities: ["service-discovery", "registry", "marketplace-metadata"],
-  },
-  {
     id: "robinhood:testnet",
     label: "Robinhood Testnet",
     status: "discovery-only",
@@ -76,12 +70,6 @@ export const NETWORK_CAPABILITIES = Object.freeze([
   {
     id: "tempo:testnet",
     label: "Tempo Testnet",
-    status: "discovery-only",
-    capabilities: ["service-discovery", "registry", "marketplace-metadata"],
-  },
-  {
-    id: "zcash:testnet",
-    label: "Zcash Testnet",
     status: "discovery-only",
     capabilities: ["service-discovery", "registry", "marketplace-metadata"],
   },
@@ -109,11 +97,9 @@ const NETWORK_ALIASES = Object.freeze({
   "ethereum:sepolia": "ethereum:sepolia",
   "arbitrum:sepolia": "arbitrum:sepolia",
   "base:sepolia": "base:sepolia",
-  "bnb:testnet": "bnb:testnet",
   "robinhood:testnet": "robinhood:testnet",
   "hyperliquid:testnet": "hyperliquid:testnet",
   "tempo:testnet": "tempo:testnet",
-  "zcash:testnet": "zcash:testnet",
 });
 
 export function normalizeNetworkId(id) {
