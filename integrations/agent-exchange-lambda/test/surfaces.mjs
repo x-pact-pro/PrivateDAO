@@ -1208,6 +1208,15 @@ test("admin marketplace policy is persisted and controls public terms", async ()
     assert.equal(initial.additional_service_fee_usd, 0);
     assert.equal(initial.max_services_per_seller, 5);
     assert.equal(initial.promotion_packages.featured_listing.price_usd, 75);
+    assert.equal(initial.promotion_packages.premium_promotion.price_usd, 250);
+    assert.equal(initial.pdao_pricing.payment_discount_bps, 2000);
+    assert.deepEqual(initial.pdao_pricing.holder_tiers.map((tier) => tier.discount_bps), [0, 500, 1000, 1500]);
+    const pdaoBenefits = JSON.parse((await request("/api/marketplace/pdao-benefits")).body);
+    assert.equal(pdaoBenefits.token, "9isGuumtaqvJeJeyLF44fvfskk2cv5mYsopexMBfpump");
+    const usdcQuote = await request("/api/marketplace/pricing/quote", "POST", { amount_usd: 49, payment_asset: "USDC" });
+    assert.equal(usdcQuote.statusCode, 201);
+    assert.equal(JSON.parse(usdcQuote.body).quote.amount, 49);
+    assert.equal(JSON.parse(usdcQuote.body).quote.currency, "USDC");
     const updated = await request("/api/admin/marketplace/policy", "PATCH", { listing_fee_usd: 12, platform_fee_bps: 900 }, { "x-pdao-admin-smoke": "test-admin-token" });
     assert.equal(updated.statusCode, 200);
     assert.equal(JSON.parse(updated.body).listing_fee_usd, 12);

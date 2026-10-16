@@ -78,10 +78,10 @@ export async function treasuryTokenAccount(config) {
   return derivedTreasuryTokenAccount(config);
 }
 
-export async function derivedTreasuryTokenAccount(config) {
+export async function derivedTokenAccount(config, mintAddress) {
   const { PublicKey } = await import("@solana/web3.js");
   const owner = new PublicKey(config.treasury);
-  const mint = new PublicKey(config.usdcMint);
+  const mint = new PublicKey(mintAddress);
   const tokenProgram = new PublicKey(
     "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
   );
@@ -92,6 +92,10 @@ export async function derivedTreasuryTokenAccount(config) {
     [owner.toBuffer(), tokenProgram.toBuffer(), mint.toBuffer()],
     associatedProgram,
   )[0].toBase58();
+}
+
+export async function derivedTreasuryTokenAccount(config) {
+  return derivedTokenAccount(config, config.usdcMint);
 }
 
 export async function readRpc(config, method, params = []) {
@@ -117,10 +121,11 @@ export async function verifyPayment(config, payment, quote) {
     assertMainnetConfig(config);
     if (quote.network !== "solana-mainnet-beta")
       return { ok: false, reason: "payment network does not match Solana Mainnet" };
-    if (quote.currency === "USDC") {
-      if (quote.mint !== config.usdcMint || quote.treasuryOwner !== config.treasury)
+    if (quote.currency === "USDC" || quote.currency === "PDAO") {
+      const expectedMint = quote.currency === "PDAO" ? config.pdaoMint : config.usdcMint;
+      if (quote.mint !== expectedMint || quote.treasuryOwner !== config.treasury)
         return { ok: false, reason: "payment treasury or USDC mint does not match production configuration" };
-      const canonicalAta = await derivedTreasuryTokenAccount(config);
+      const canonicalAta = await derivedTokenAccount(config, expectedMint);
       if (quote.treasuryTokenAccount !== canonicalAta)
         return { ok: false, reason: "payment treasury token account is not canonical" };
     } else if (quote.currency === "SOL") {
@@ -164,7 +169,7 @@ export async function verifyPayment(config, payment, quote) {
   if (!paymentReferenceMatches(instructions, quote.paymentReference))
     return { ok: false, reason: "payment reference does not match quote" };
   const expected = Number(quote.amountAtomic);
-  if (quote.currency === "USDC") {
+  if (quote.currency === "USDC" || quote.currency === "PDAO") {
     const treasuryOwner = quote.treasuryOwner || quote.recipient;
     if (!treasuryOwner)
       return { ok: false, reason: "quote treasury owner is missing" };
@@ -185,8 +190,8 @@ export async function verifyPayment(config, payment, quote) {
       };
     }
     const info = account.result?.value?.data?.parsed?.info;
-    if (!info || info.mint !== config.usdcMint || info.owner !== treasuryOwner)
-      return { ok: false, reason: "treasury USDC token account is not initialized or does not match" };
+    if (!info || info.mint !== quote.mint || info.owner !== treasuryOwner)
+      return { ok: false, reason: "treasury token account is not initialized or does not match" };
   }
   const distribution = Array.isArray(quote.distribution) ? quote.distribution : null;
   let match = false;
