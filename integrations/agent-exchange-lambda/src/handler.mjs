@@ -969,7 +969,7 @@ const CLIENT_ASSETS = {
 const INTEGRATION_BRANDS = {
   "ibm-watsonx": { name: "IBM watsonx", src: "/assets/ecosystem/ibm-watsonx.svg" },
   "intel-openvino": { name: "Intel OpenVINO", src: "/assets/ecosystem/openvino.svg" },
-  "amd-ai": { name: "AMD", src: "/assets/ecosystem/amd.svg" },
+  "amd-ai": { name: "AMD", src: "/assets/ecosystem/amd-official.png" },
   mongodb: { name: "MongoDB", src: "/assets/ecosystem/mongodb.svg" },
   github: { name: "GitHub", src: "/assets/ecosystem/github.svg" },
   digitalocean: { name: "DigitalOcean", src: "/assets/ecosystem/digitalocean.svg" },
@@ -978,7 +978,7 @@ const INTEGRATION_BRANDS = {
 const ECOSYSTEM_ASSETS = {
   "/assets/ecosystem/ibm-watsonx.svg": { file: new URL("../assets/ecosystem/ibm-watsonx.svg", import.meta.url), contentType: "image/svg+xml", binary: false },
   "/assets/ecosystem/openvino.svg": { file: new URL("../assets/ecosystem/openvino.svg", import.meta.url), contentType: "image/svg+xml", binary: false },
-  "/assets/ecosystem/amd.svg": { file: new URL("../assets/ecosystem/amd.svg", import.meta.url), contentType: "image/svg+xml", binary: false },
+  "/assets/ecosystem/amd-official.png": { file: new URL("../assets/ecosystem/amd-official.png", import.meta.url), contentType: "image/png", binary: true },
   "/assets/ecosystem/mongodb.svg": { file: new URL("../assets/ecosystem/mongodb.svg", import.meta.url), contentType: "image/svg+xml", binary: false },
   "/assets/ecosystem/github.svg": { file: new URL("../assets/ecosystem/github.svg", import.meta.url), contentType: "image/svg+xml", binary: false },
   "/assets/ecosystem/digitalocean.svg": { file: new URL("../assets/ecosystem/digitalocean.svg", import.meta.url), contentType: "image/svg+xml", binary: false },
