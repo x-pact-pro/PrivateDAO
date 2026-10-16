@@ -24,7 +24,8 @@ for (const product of PRODUCT_CATALOG) {
 
 for (const binding of APPLICATION_CAPABILITY_BINDINGS) {
   if (enterpriseIds.has(binding.product)) {
-    assert.notEqual(binding.mode, "legacy-provider", `${binding.product}/${binding.capability}/${binding.network} bypasses the Kernel gateway`);
+    assert.equal(binding.mode, "kernel-gateway", `${binding.product}/${binding.capability}/${binding.network} must use the Kernel gateway`);
+    assert.match(binding.entrypoint ?? "", /^kernel:\/\//, `${binding.product}/${binding.capability}/${binding.network} must expose a kernel:// entrypoint`);
   }
   if (agentIds.has(binding.product)) assert.equal(binding.product, "agent", "Agent Exchange binding leaked to another product id");
 }
