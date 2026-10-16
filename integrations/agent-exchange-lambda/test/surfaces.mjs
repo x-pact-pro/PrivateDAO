@@ -190,6 +190,8 @@ test("human root is HTML while machine surfaces remain available", async () => {
   const productsPage = await request("/products");
   assert.equal(productsPage.statusCode, 200);
   assert.match(productsPage.body, /Treasury Guard Scan/);
+  assert.match(productsPage.body, /Base64 unsigned transaction/);
+  assert.doesNotMatch(productsPage.body, /JSON\.parse\(transaction\.value/);
   const pricing = await request("/api/pricing");
   assert.equal(pricing.statusCode, 200);
   const pricingPayload = JSON.parse(pricing.body);
@@ -210,6 +212,16 @@ test("product quote packages existing services without trusting client pricing",
   assert.equal(intent.items.length, 4);
   const invalid = await request("/api/products/unknown/quote", "POST", { input: {} });
   assert.equal(invalid.statusCode, 404);
+  const invalidTransaction = await request("/api/products/transaction-safety-check/quote", "POST", {
+    input: { network: "solana-mainnet-beta", transaction: { instructions: [] } },
+  });
+  assert.equal(invalidTransaction.statusCode, 400);
+  assert.match(invalidTransaction.body, /base64 serialized unsigned Solana transaction/);
+  const transactionQuote = await request("/api/products/transaction-safety-check/quote", "POST", {
+    input: { network: "solana-mainnet-beta", transaction: "AA==" },
+  });
+  assert.equal(transactionQuote.statusCode, 402);
+  assert.equal(JSON.parse(transactionQuote.body).payment_intent.product_price, 0.17);
 });
 
 test("agreements require the declared buyer and the production USDC rail", async () => {
