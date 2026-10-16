@@ -59,7 +59,7 @@ test("human root is HTML while machine surfaces remain available", async () => {
   assert.match(sellerPortal.body, /!tool\.annotations\|\|tool\.annotations\.readOnlyHint!==false/);
   assert.match(sellerPortal.body, /'"':"&quot;"/);
   assert.match(sellerPortal.body, /api\/marketplace\/policy/);
-  assert.match(sellerPortal.body, /additional_service_fee_usd:0/);
+  assert.match(sellerPortal.body, /All services on this agent/);
   assert.match(sellerPortal.body, /response\.ok&&result\.status==="paid"/);
   assert.match(sellerPortal.body, /Do not submit another payment/);
   assert.match(sellerPortal.body, /state\.paymentSignature=sent\.signature/);
@@ -930,7 +930,7 @@ test("external seller paid lifecycle quotes, executes once, and records attribut
     assert.equal(paidBody.receipt.status, "VERIFIED");
     assert.equal(paidBody.receipt.seller_agent_id, registeredBody.id);
     assert.equal(paidBody.receipt.seller_service_id, "read");
-    assert.equal(paidBody.receipt.seller_settlement.status, "payable_pending_admin_settlement");
+    assert.equal(paidBody.receipt.seller_settlement.status, "payable_pending_scheduled_settlement");
     assert.equal(paidBody.receipt.seller_settlement.gross_amount, 0.03);
     assert.equal(paidBody.receipt.seller_settlement.protocol_fee, 0.003);
     assert.equal(paidBody.receipt.seller_settlement.platform_fee_amount, 0.003);
@@ -996,7 +996,7 @@ test("external seller paid lifecycle quotes, executes once, and records attribut
   }
 });
 
-test("external seller listing pricing includes five services and bills each additional service once", async () => {
+test("external seller listing pricing is one payment per agent regardless of service count", async () => {
   process.env.AGENT_EXCHANGE_TEST_ADMIN_TOKEN = "test-admin-token";
   resetForTests();
   const originalFetch = globalThis.fetch;
@@ -1009,7 +1009,7 @@ test("external seller listing pricing includes five services and bills each addi
     throw new Error(`unexpected pricing fixture request: ${payload.method}`);
   };
   try {
-    const policyUpdate = await request("/api/admin/marketplace/policy", "PATCH", { listing_fee_usd: 12 }, { "x-pdao-admin-smoke": "test-admin-token" });
+    const policyUpdate = await request("/api/admin/marketplace/policy", "PATCH", { listing_fee_usd: 12, additional_service_fee_usd: 99 }, { "x-pdao-admin-smoke": "test-admin-token" });
     assert.equal(policyUpdate.statusCode, 200, policyUpdate.body);
     const firstPartyQuote = await request("/api/payments/quote", "POST", { service_id: "verify.deep", job_id: "first_party_fixture" });
     assert.equal(firstPartyQuote.statusCode, 200);
@@ -1024,7 +1024,9 @@ test("external seller listing pricing includes five services and bills each addi
       assert.equal(updated.statusCode, 200, updated.body);
       const quoteResponse = await request("/api/marketplace/seller-listings/quote", "POST", { agent_id: registered.id, owner_token: registered.owner_token, tier: "pro", accept_terms: true, terms_version: "seller-marketplace-v1" });
       assert.equal(quoteResponse.statusCode, 201);
-      assert.equal(JSON.parse(quoteResponse.body).quote.amount, expected);
+      const quote = JSON.parse(quoteResponse.body).quote;
+      assert.equal(quote.amount, expected);
+      assert.ok(quote.fee_items.every((item) => item.fee_amount === 0 && item.included === true));
     }
     const tooMany = await request(`/api/registry/agents/${registered.id}/services`, "PATCH", { owner_token: registered.owner_token, services: serviceSet(6), accepted_assets: ["USDC"], payout: { address: "2BJ4ezxqV9YJXc38D9duKBkdn4su4jE1beKUHwH663sL", network: "solana-mainnet-beta", asset: "USDC" } });
     assert.equal(tooMany.statusCode, 400);

@@ -48,8 +48,13 @@ action.
 External seller lifecycle tools are `external_services`,
 `seller_update_services`, `seller_replace_endpoint`, and `seller_retire`.
 Prices and payout addresses are seller-declared; the exchange does not infer
-them. External paid execution records a seller settlement payable in the
-receipt and does not broadcast an automatic payout transaction.
+them. External paid execution records gross amount, the configurable PrivateDAO
+platform fee, any separately configured processing fee, and the Solana network
+fee paid by the buyer wallet. Seller proceeds enter the scheduled settlement
+queue and are paid from a dedicated signer held in AWS Secrets Manager only
+after the payout rail and treasury signer match are verified. A missing or
+mismatched signer fails closed; it never falls back to manual or unverified
+transfers.
 
 Seller ownership tokens are returned only once during initial registration and
 only a hash is retained by PrivateDAO. A lost token cannot be recovered from
@@ -141,6 +146,11 @@ Solana, then execute the read-only target service. EVM transaction simulation
 and Jupiter swap quotes never sign or broadcast transactions. Solana
 transaction simulation uses `simulateTransaction` with signature verification
 disabled; it returns simulation logs and compute usage only.
+
+The scheduled payout sweep is enabled by the deployment template every five
+minutes and is intentionally inert until the dedicated
+`AGENT_EXCHANGE_PAYOUT_SECRET_ID` secret is provisioned with the treasury
+keypair. The key is never returned to sellers, browsers, receipts, or logs.
 
 ## PDAO token-holder access
 

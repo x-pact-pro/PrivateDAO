@@ -188,8 +188,10 @@ export async function verifyPayment(config, payment, quote) {
     if (!info || info.mint !== config.usdcMint || info.owner !== treasuryOwner)
       return { ok: false, reason: "treasury USDC token account is not initialized or does not match" };
   }
+  const distribution = Array.isArray(quote.distribution) ? quote.distribution : null;
   let match = false;
   let sourceInspectionTransient = false;
+  const transfers = [];
   for (const instruction of instructions) {
     // jsonParsed SPL `transfer` instructions do not include the token mint.
     // Prove the source token account instead of rejecting valid wallet
@@ -204,6 +206,8 @@ export async function verifyPayment(config, payment, quote) {
       );
     else {
       if (instruction.program !== "spl-token" || !["transfer", "transferChecked"].includes(instruction.parsed?.type)) continue;
+      if (Number(info.amount ?? info.tokenAmount?.amount) > 0) transfers.push({ destination: info.destination, amount: Number(info.amount ?? info.tokenAmount?.amount), mint: info.mint || null, source: info.source || null });
+      if (distribution) continue;
       if (info.destination !== quote.treasuryTokenAccount || Number(info.amount ?? info.tokenAmount?.amount) !== expected) continue;
       if (quote.mint && info.mint === quote.mint) match = true;
       else if (quote.mint && info.mint) continue;
@@ -222,6 +226,13 @@ export async function verifyPayment(config, payment, quote) {
     }
     if (match) break;
   }
+  if (distribution) {
+    match = distribution.every((item) => transfers.some((transfer) =>
+      transfer.destination === item.destination &&
+      transfer.amount === Number(item.amountAtomic) &&
+      (!item.mint || transfer.mint === item.mint),
+    ));
+  }
   if (!match && sourceInspectionTransient)
     return { ok: false, transient: true, reason: "payment is submitted; source token account verification is temporarily retrying" };
   return {
@@ -229,6 +240,10 @@ export async function verifyPayment(config, payment, quote) {
     slot: tx.slot,
     blockTime: tx.blockTime,
     cluster: "mainnet-beta",
+    feeLamports: Number(tx.meta?.fee || 0),
+    distribution: distribution
+      ? distribution.map((item) => ({ destination: item.destination, amountAtomic: Number(item.amountAtomic), role: item.role || "recipient" }))
+      : null,
     reason: match
       ? tx.meta?.err
         ? "transaction failed"
