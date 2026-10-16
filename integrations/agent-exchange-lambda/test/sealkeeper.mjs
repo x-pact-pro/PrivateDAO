@@ -100,6 +100,36 @@ test("honors the configured SEAL clock-skew bound", async () => {
   await assert.rejects(() => verifySeal(seal, { expectedAgentId: agentId, keyCache: cacheFor(jwk, async () => response({ keys: [jwk] })), now, maxClockSkewSeconds: 1 }), (error) => error.code === "not_yet_valid");
 });
 
+test("maps every official read fixture to a non-accepted result", async () => {
+  const fixtures = [
+    ["checking", 404], ["no_recent_check", 404], ["no_seal", 404], ["not_found", 404],
+    ["rate_limited", 429], ["renamed", 404], ["validation_failed", 400], ["withheld", 404],
+  ];
+  for (const [name, status] of fixtures) {
+    const fixture = await (await fetch(`https://raw.githubusercontent.com/sealkeeper-dev/cli/main/fixtures/reads/${name}.json`)).json();
+    const fetchImpl = async () => response(fixture.body, status, fixture.headers || {});
+    await assert.rejects(() => readSealReputation({ agentId, fetchImpl, includeTasks: false }), (error) => error instanceof SealkeeperError && error.code === fixture.body.error.code, name);
+  }
+});
+
+test("follows the documented task cursor without exposing task submissions", async () => {
+  const { pair, jwk } = fixtureKey();
+  const seal = makeSeal(pair.privateKey, { iss: "sealkeeper.run", sub: agentId, ver: 1, iat: now() / 1000, exp: now() / 1000 + 3600 });
+  let taskCalls = 0;
+  const fetchImpl = async (url) => {
+    if (String(url).endsWith("/.well-known/seal.json")) return response({ keys: [jwk] });
+    if (String(url).endsWith("/seal")) return response({ seal });
+    taskCalls += 1;
+    return taskCalls === 1
+      ? response({ tasks: [{ id: "task-1", countsForTrust: false, submission: "must-not-leak" }], nextCursor: "cursor-2" })
+      : response({ tasks: [{ id: "task-2", countsForTrust: false, submission: "must-not-leak" }], nextCursor: null });
+  };
+  const result = await readSealReputation({ agentId, fetchImpl, keyCache: cacheFor(jwk, fetchImpl), now });
+  assert.equal(taskCalls, 2);
+  assert.deepEqual(result.taskEvidence.tasks.map((task) => task.id), ["task-1", "task-2"]);
+  assert.equal(Object.hasOwn(result.taskEvidence.tasks[0], "submission"), false);
+});
+
 test("official fixtures pass when explicitly enabled", { skip: !process.env.SEALKEEPER_RUN_LIVE_TESTS }, async (t) => {
   const fixtureBase = "https://raw.githubusercontent.com/sealkeeper-dev/cli/main/fixtures";
   const get = async (path) => (await fetch(`${fixtureBase}/${path}`)).text();
