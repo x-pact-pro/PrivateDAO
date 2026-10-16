@@ -36,6 +36,7 @@ import { mongoProviderStatus, persistEvidence } from "./mongodb.mjs";
 import { assertPublicHttps, fetchPublicHttps } from "./url-safety.mjs";
 import { integrationDirectory, serviceDetails, serviceRecommendation, SERVICE_CATEGORIES } from "./exchange-metadata.mjs";
 import { issuePdaoChallenge, verifyPdaoHolderAccess } from "./pdao-entitlement.mjs";
+import { runScheduledSellerSettlements } from "./settlement.mjs";
 
 const config = getConfig();
 let storePromise;
@@ -60,6 +61,7 @@ const DEFAULT_MARKETPLACE_POLICY = {
   version: 2,
   listing_fee_usd: 10,
   platform_fee_bps: 1000,
+  processing_fee_bps: 0,
   included_services: 5,
   additional_service_fee_usd: 0,
   max_services_per_seller: 5,
@@ -86,6 +88,7 @@ function normalizeMarketplacePolicy(value = {}) {
     version: 2,
     listing_fee_usd: boundedNumber(source.listing_fee_usd, 10, 0, 10000),
     platform_fee_bps: Math.floor(boundedNumber(source.platform_fee_bps, 1000, 0, 10000)),
+    processing_fee_bps: Math.floor(boundedNumber(source.processing_fee_bps, 0, 0, 10000)),
     included_services: Math.floor(boundedNumber(source.included_services, 5, 1, 1000)),
     additional_service_fee_usd: boundedNumber(source.additional_service_fee_usd, 0, 0, 10000),
     max_services_per_seller: Math.floor(boundedNumber(source.max_services_per_seller, 5, 1, 1000)),
@@ -1570,7 +1573,7 @@ async function buildPaymentTransaction(jobId, payerText, sourceTokenAccountText 
   try {
     if (source) {
       const latest = await readRpc(config, "getLatestBlockhash", [{ commitment: "finalized" }]);
-  return { payer: payerText, sourceTokenAccount: source.pubkey, mint: quote.mint, treasuryOwner: quote.treasuryOwner, treasuryTokenAccount: quote.treasuryTokenAccount, amountBaseUnits: String(quote.amountAtomic), paymentReference: quote.paymentReference, recentBlockhash: latest.result.value.blockhash, lastValidBlockHeight: latest.result.value.lastValidBlockHeight, expiresAt: quote.expires_at };
+  return { payer: payerText, sourceTokenAccount: source.pubkey, mint: quote.mint, treasuryOwner: quote.treasuryOwner, treasuryTokenAccount: quote.treasuryTokenAccount, distribution: quote.distribution || null, grossAmount: quote.gross_amount ?? quote.amount, platformFeeAmount: quote.platform_fee_amount || 0, processingFeeAmount: quote.processing_fee_amount || 0, sellerNetAmount: quote.seller_net_amount ?? null, amountBaseUnits: String(quote.amountAtomic), paymentReference: quote.paymentReference, recentBlockhash: latest.result.value.blockhash, lastValidBlockHeight: latest.result.value.lastValidBlockHeight, expiresAt: quote.expires_at };
     }
     const accounts = await readRpc(config, "getTokenAccountsByOwner", [
       payerText,
@@ -1608,7 +1611,7 @@ async function buildPaymentTransaction(jobId, payerText, sourceTokenAccountText 
       { statusCode: 402 },
     );
   const latest = await readRpc(config, "getLatestBlockhash", [{ commitment: "finalized" }]);
-  return { payer: payerText, sourceTokenAccount: source?.pubkey || null, mint: quote.mint, treasuryOwner: quote.treasuryOwner, treasuryTokenAccount: quote.treasuryTokenAccount, amountBaseUnits: String(quote.amountAtomic), paymentReference: quote.paymentReference, recentBlockhash: latest.result.value.blockhash, lastValidBlockHeight: latest.result.value.lastValidBlockHeight, expiresAt: quote.expires_at };
+  return { payer: payerText, sourceTokenAccount: source?.pubkey || null, mint: quote.mint, treasuryOwner: quote.treasuryOwner, treasuryTokenAccount: quote.treasuryTokenAccount, distribution: quote.distribution || null, grossAmount: quote.gross_amount ?? quote.amount, platformFeeAmount: quote.platform_fee_amount || 0, processingFeeAmount: quote.processing_fee_amount || 0, sellerNetAmount: quote.seller_net_amount ?? null, amountBaseUnits: String(quote.amountAtomic), paymentReference: quote.paymentReference, recentBlockhash: latest.result.value.blockhash, lastValidBlockHeight: latest.result.value.lastValidBlockHeight, expiresAt: quote.expires_at };
 }
 const collectionFor = (name) =>
   ({
@@ -2264,13 +2267,16 @@ async function treasuryStatus() {
   };
 }
 async function recordRevenue(job, payment) {
-  const grossAmount = Number(payment?.amount || 0);
+  const quote = job.quote_id ? await (await store()).get("Quotes", job.quote_id) : null;
+  const grossAmount = Number(quote?.gross_amount ?? payment?.amount ?? 0);
   const policy = await marketplacePolicy();
   const firstParty = !job?.seller_agent_id;
   const feeBps = firstParty ? 0 : Number(job.platform_fee_bps ?? policy.platform_fee_bps);
   const protocolFee = Number(
-    ((grossAmount * feeBps) / 10000).toFixed(6),
+    quote?.platform_fee_amount ?? ((grossAmount * feeBps) / 10000).toFixed(6),
   );
+  const processingFeeBps = Number(quote?.processing_fee_bps ?? policy.processing_fee_bps ?? 0);
+  const processingFee = Number(quote?.processing_fee_amount ?? ((grossAmount * processingFeeBps) / 10000).toFixed(6));
   await (
     await store()
   ).put(
@@ -2287,6 +2293,11 @@ async function recordRevenue(job, payment) {
       protocolFee,
       platformFeeAmount: protocolFee,
       feeBps,
+      processingFeeAmount: processingFee,
+      processingFeeBps,
+      buyerAmount: Number(payment?.amount ?? quote?.amount ?? grossAmount),
+      networkFeeLamports: Number(payment?.feeLamports || 0),
+      networkFeePolicy: "payer_direct",
       asset: payment?.currency || "USDC",
       paymentSignature: payment?.signature || null,
       timestamp: now(),
@@ -2400,12 +2411,16 @@ async function createExternalJob(serviceId, input = {}, access = null) {
   const storage = await store();
   await storage.put("Jobs", id, job, true);
   if (service.free || holderAccess) return completeExternalJob(job, await invokeMcpAgent(await storage.get("Registry", service.seller_agent_id), service.tool, input), null);
-  const amount = Number((service.price * config.priceMultiplier).toFixed(6));
+  const grossAmount = Number((service.price * config.priceMultiplier).toFixed(6));
   const policy = await marketplacePolicy();
-  const platformFee = Number(((amount * policy.platform_fee_bps) / 10000).toFixed(6));
-  const sellerNet = Number((amount - platformFee).toFixed(6));
+  const platformFee = Number(((grossAmount * policy.platform_fee_bps) / 10000).toFixed(6));
+  const processingFee = Number(((grossAmount * policy.processing_fee_bps) / 10000).toFixed(6));
+  const sellerNet = Number((grossAmount - platformFee).toFixed(6));
   const ata = await treasuryTokenAccount(config);
-  const quote = { created_at: now(), quote_id: `q_${randomUUID()}`, job_id: id, service_id: service.id, external: true, seller_agent_id: service.seller_agent_id, seller_service_id: service.service_id, seller_tool: service.tool, amount, amountAtomic: Math.round(amount * 1e6), gross_amount: amount, platform_fee_bps: policy.platform_fee_bps, platform_fee_amount: platformFee, protocol_fee: platformFee, seller_net_amount: sellerNet, seller_amount: sellerNet, currency: service.asset, network: "solana-mainnet-beta", target_network: service.network, mint: config.usdcMint, treasuryOwner: config.treasury, treasuryTokenAccount: ata, recipient: config.treasury, paymentReference: `PDAOJOB:${id}`, expires_at: new Date(Date.now() + 1800000).toISOString(), payment_required: true, seller_payout: service.payout || (await storage.get("Registry", service.seller_agent_id))?.payout || null };
+  const sellerPayoutConfig = service.payout || (await storage.get("Registry", service.seller_agent_id))?.payout || null;
+  if (!sellerPayoutConfig?.address) throw Object.assign(new Error("seller payout is not configured"), { statusCode: 409 });
+  const buyerTotal = Number((grossAmount + processingFee).toFixed(6));
+  const quote = { created_at: now(), quote_id: `q_${randomUUID()}`, job_id: id, service_id: service.id, external: true, seller_agent_id: service.seller_agent_id, seller_service_id: service.service_id, seller_tool: service.tool, amount: buyerTotal, amountAtomic: Math.round(buyerTotal * 1e6), gross_amount: grossAmount, platform_fee_bps: policy.platform_fee_bps, platform_fee_amount: platformFee, processing_fee_bps: policy.processing_fee_bps, processing_fee_amount: processingFee, network_fee_policy: "payer_direct", protocol_fee: platformFee, seller_net_amount: sellerNet, seller_amount: sellerNet, currency: service.asset, network: "solana-mainnet-beta", target_network: service.network, mint: config.usdcMint, treasuryOwner: config.treasury, treasuryTokenAccount: ata, recipient: config.treasury, paymentReference: `PDAOJOB:${id}`, expires_at: new Date(Date.now() + 1800000).toISOString(), payment_required: true, seller_payout: sellerPayoutConfig };
   job.platform_fee_bps = policy.platform_fee_bps;
   await storage.put("Quotes", quote.quote_id, quote, true);
   job.quote_id = quote.quote_id;
@@ -2417,14 +2432,17 @@ async function completeExternalJob(job, execution, payment) {
   if (job.status === "completed" && job.receipt_id) return { job_id: job.id, status: job.status, result: job.result, receipt: await storage.get("Receipts", job.receipt_id) };
   const result = execution?.result || execution;
   const policy = await marketplacePolicy();
-  const feeBps = Number(job.platform_fee_bps ?? policy.platform_fee_bps);
-  const grossAmount = Number(payment?.amount || 0);
-  const platformFee = Number(((grossAmount * feeBps) / 10000).toFixed(6));
+  const quote = job.quote_id ? await storage.get("Quotes", job.quote_id) : null;
+  const feeBps = Number(quote?.platform_fee_bps ?? job.platform_fee_bps ?? policy.platform_fee_bps);
+  const grossAmount = Number(quote?.gross_amount ?? payment?.amount ?? 0);
+  const platformFee = Number(quote?.platform_fee_amount ?? ((grossAmount * feeBps) / 10000).toFixed(6));
+  const processingFeeBps = Number(quote?.processing_fee_bps ?? policy.processing_fee_bps ?? 0);
+  const processingFee = Number(quote?.processing_fee_amount ?? ((grossAmount * processingFeeBps) / 10000).toFixed(6));
   const sellerNet = Number((grossAmount - platformFee).toFixed(6));
   const persistence = await persistEvidence(config, { job_id: job.id, service: job.service_id, input_hash: job.input_hash, completed_at: now(), result });
-  const settlement = { id: `seller_settlement_${job.id}`, kind: "seller_settlement", job_id: job.id, seller_agent_id: job.seller_agent_id, gross_amount: grossAmount, platform_fee_amount: platformFee, platform_fee_bps: feeBps, protocol_fee: platformFee, seller_net_amount: sellerNet, seller_amount: sellerNet, asset: payment?.currency || job.payment_asset, payout: (await storage.get("Registry", job.seller_agent_id))?.payout || null, status: "payable_pending_admin_settlement", created_at: now() };
+  const settlement = { id: `seller_settlement_${job.id}`, kind: "seller_settlement", job_id: job.id, seller_agent_id: job.seller_agent_id, gross_amount: grossAmount, buyer_amount: Number(payment?.amount || quote?.amount || grossAmount), platform_fee_amount: platformFee, platform_fee_bps: feeBps, processing_fee_amount: processingFee, processing_fee_bps: processingFeeBps, network_fee_lamports: Number(payment?.feeLamports || 0), network_fee_policy: "payer_direct", protocol_fee: platformFee, seller_net_amount: sellerNet, seller_amount: sellerNet, asset: payment?.currency || job.payment_asset, payout: (await storage.get("Registry", job.seller_agent_id))?.payout || null, status: "payable_pending_scheduled_settlement", created_at: now() };
   await storage.put("Registry", settlement.id, settlement, true);
-  const receipt = { receipt_id: receiptId({ job_id: job.id, service: job.service_id, result_hash: digest(result) }), job_id: job.id, service: job.service_id, input_hash: job.input_hash, result_hash: digest(result), evidence_hash: digest(result), payment_signature: payment?.signature || null, amount: payment?.amount || 0, gross_amount: grossAmount, platform_fee_amount: platformFee, platform_fee_bps: feeBps, seller_net_amount: sellerNet, asset: payment?.currency || null, treasury: config.treasury, network: "solana-mainnet-beta", target_network: job.target_network || null, seller_agent_id: job.seller_agent_id, seller_service_id: job.seller_service_id, seller_settlement: { id: settlement.id, gross_amount: settlement.gross_amount, platform_fee_amount: settlement.platform_fee_amount, platform_fee_bps: settlement.platform_fee_bps, protocol_fee: settlement.protocol_fee, seller_net_amount: settlement.seller_net_amount, seller_amount: settlement.seller_amount, status: settlement.status }, evidence_persistence: persistence.status, status: "VERIFIED", created_at: job.created_at, completed_at: now(), ...(job.pdao_entitlement ? { access_method: "pdao_holder_monthly", access_wallet: job.pdao_entitlement.wallet, access_token_mint: job.pdao_entitlement.token_mint, access_threshold_usd: job.pdao_entitlement.threshold_usd, access_verified_at: job.pdao_entitlement.verified_at, access_active_until: job.pdao_entitlement.active_until } : {}) };
+  const receipt = { receipt_id: receiptId({ job_id: job.id, service: job.service_id, result_hash: digest(result) }), job_id: job.id, service: job.service_id, input_hash: job.input_hash, result_hash: digest(result), evidence_hash: digest(result), payment_signature: payment?.signature || null, amount: payment?.amount || 0, gross_amount: grossAmount, buyer_amount: settlement.buyer_amount, platform_fee_amount: platformFee, platform_fee_bps: feeBps, processing_fee_amount: processingFee, processing_fee_bps: processingFeeBps, network_fee_lamports: settlement.network_fee_lamports, network_fee_policy: "payer_direct", seller_net_amount: sellerNet, asset: payment?.currency || null, treasury: config.treasury, network: "solana-mainnet-beta", target_network: job.target_network || null, seller_agent_id: job.seller_agent_id, seller_service_id: job.seller_service_id, seller_settlement: { id: settlement.id, gross_amount: settlement.gross_amount, buyer_amount: settlement.buyer_amount, protocol_fee: settlement.protocol_fee, platform_fee_amount: settlement.platform_fee_amount, platform_fee_bps: settlement.platform_fee_bps, processing_fee_amount: settlement.processing_fee_amount, processing_fee_bps: settlement.processing_fee_bps, network_fee_lamports: settlement.network_fee_lamports, seller_net_amount: settlement.seller_net_amount, seller_amount: settlement.seller_amount, status: settlement.status }, evidence_persistence: persistence.status, status: "VERIFIED", created_at: job.created_at, completed_at: now(), ...(job.pdao_entitlement ? { access_method: "pdao_holder_monthly", access_wallet: job.pdao_entitlement.wallet, access_token_mint: job.pdao_entitlement.token_mint, access_threshold_usd: job.pdao_entitlement.threshold_usd, access_verified_at: job.pdao_entitlement.verified_at, access_active_until: job.pdao_entitlement.active_until } : {}) };
   receipt.public_url = `https://${config.domain}/receipts/${encodeURIComponent(receipt.receipt_id)}`;
   receipt.verification_url = `https://${config.domain}/verify/receipt/${encodeURIComponent(receipt.receipt_id)}`;
   await storage.put("Receipts", receipt.receipt_id, receipt, true);
@@ -3509,10 +3527,10 @@ async function sellerDashboard(agentId, ownerToken) {
     storage.list("Quotes"), storage.list("Receipts"), storage.list("Registry"), storage.list("Revenue"),
   ]);
   const sellerQuotes = quotes.filter((item) => item.seller_agent_id === agentId || item.listing_id === `seller_listing_${agentId}` || item.seller_agent_id === agentId);
-  const sellerReceipts = receipts.filter((item) => item.seller_agent_id === agentId).map((item) => ({ receipt_id: item.receipt_id, job_id: item.job_id || null, service: item.service || null, gross_amount: item.gross_amount ?? item.amount ?? 0, platform_fee_amount: item.platform_fee_amount ?? 0, seller_net_amount: item.seller_net_amount ?? 0, asset: item.asset || null, status: item.status, verification_url: item.verification_url || null, completed_at: item.completed_at || null }));
-  const sellerSettlements = settlements.filter((item) => item.kind === "seller_settlement" && item.seller_agent_id === agentId).map((item) => ({ id: item.id, job_id: item.job_id || null, gross_amount: item.gross_amount ?? 0, platform_fee_amount: item.platform_fee_amount ?? 0, seller_net_amount: item.seller_net_amount ?? 0, asset: item.asset || null, payout: item.payout || null, status: item.status, created_at: item.created_at || null }));
-  const sellerRevenue = revenue.filter((item) => item.seller_agent_id === agentId || item.jobId && item.seller_agent_id === agentId).map((item) => ({ id: item.id, gross_amount: item.grossAmount ?? 0, platform_fee_amount: item.platformFeeAmount ?? item.protocolFee ?? 0, seller_net_amount: Number((Number(item.grossAmount || 0) - Number(item.platformFeeAmount ?? item.protocolFee ?? 0)).toFixed(6)), asset: item.asset || null, timestamp: item.timestamp || null }));
-  return { agent: publicRegistryAgent(agent), readiness, listing: listing ? { id: listing.id, status: listing.status, payment_status: listing.payment_status, listing_fee_status: listing.listing_fee_status, commercial_publication_status: listing.commercial_publication_status, service_ids: listing.service_ids || [], receipt_id: listing.receipt_id || null } : null, quote_count: sellerQuotes.length, sales: { receipt_count: sellerReceipts.length, gross_amount: sellerReceipts.reduce((n, item) => n + Number(item.gross_amount || 0), 0), platform_fee_amount: sellerReceipts.reduce((n, item) => n + Number(item.platform_fee_amount || 0), 0), seller_net_amount: sellerReceipts.reduce((n, item) => n + Number(item.seller_net_amount || 0), 0), receipts: sellerReceipts }, settlements: sellerSettlements, revenue: sellerRevenue };
+  const sellerReceipts = receipts.filter((item) => item.seller_agent_id === agentId).map((item) => ({ receipt_id: item.receipt_id, job_id: item.job_id || null, service: item.service || null, gross_amount: item.gross_amount ?? item.amount ?? 0, platform_fee_amount: item.platform_fee_amount ?? 0, processing_fee_amount: item.processing_fee_amount ?? 0, network_fee_lamports: item.network_fee_lamports ?? 0, seller_net_amount: item.seller_net_amount ?? 0, asset: item.asset || null, status: item.status, verification_url: item.verification_url || null, completed_at: item.completed_at || null }));
+  const sellerSettlements = settlements.filter((item) => item.kind === "seller_settlement" && item.seller_agent_id === agentId).map((item) => ({ id: item.id, job_id: item.job_id || null, gross_amount: item.gross_amount ?? 0, buyer_amount: item.buyer_amount ?? item.gross_amount ?? 0, platform_fee_amount: item.platform_fee_amount ?? 0, processing_fee_amount: item.processing_fee_amount ?? 0, network_fee_lamports: item.network_fee_lamports ?? 0, seller_net_amount: item.seller_net_amount ?? 0, asset: item.asset || null, payout: item.payout || null, payout_signature: item.payout_signature || null, status: item.status, created_at: item.created_at || null, settled_at: item.settled_at || null }));
+  const sellerRevenue = revenue.filter((item) => item.seller_agent_id === agentId || item.jobId && item.seller_agent_id === agentId).map((item) => ({ id: item.id, gross_amount: item.grossAmount ?? 0, buyer_amount: item.buyerAmount ?? item.grossAmount ?? 0, platform_fee_amount: item.platformFeeAmount ?? item.protocolFee ?? 0, processing_fee_amount: item.processingFeeAmount ?? 0, network_fee_lamports: item.networkFeeLamports ?? 0, seller_net_amount: Number((Number(item.grossAmount || 0) - Number(item.platformFeeAmount ?? item.protocolFee ?? 0)).toFixed(6)), asset: item.asset || null, timestamp: item.timestamp || null }));
+  return { agent: publicRegistryAgent(agent), readiness, listing: listing ? { id: listing.id, status: listing.status, payment_status: listing.payment_status, listing_fee_status: listing.listing_fee_status, commercial_publication_status: listing.commercial_publication_status, service_ids: listing.service_ids || [], receipt_id: listing.receipt_id || null } : null, quote_count: sellerQuotes.length, sales: { receipt_count: sellerReceipts.length, gross_amount: sellerReceipts.reduce((n, item) => n + Number(item.gross_amount || 0), 0), platform_fee_amount: sellerReceipts.reduce((n, item) => n + Number(item.platform_fee_amount || 0), 0), processing_fee_amount: sellerReceipts.reduce((n, item) => n + Number(item.processing_fee_amount || 0), 0), network_fee_lamports: sellerReceipts.reduce((n, item) => n + Number(item.network_fee_lamports || 0), 0), seller_net_amount: sellerReceipts.reduce((n, item) => n + Number(item.seller_net_amount || 0), 0), receipts: sellerReceipts }, settlements: sellerSettlements, revenue: sellerRevenue };
 }
 
 // Recovery is deliberately admin-gated: the seller token is never recoverable from its hash.
@@ -4528,6 +4546,10 @@ async function mcp(request) {
 
 export async function handler(event) {
   try {
+    if (event?.source === "aws.events" || event?.source === "aws.scheduler") {
+      await runtimeConfig();
+      return await runScheduledSellerSettlements(config, await store());
+    }
     const response = withSecurityHeaders(await handle(event));
     if (methodOf(event) !== "HEAD") return response;
     const headers = { ...(response.headers || {}) };

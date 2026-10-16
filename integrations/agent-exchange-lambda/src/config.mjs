@@ -75,6 +75,9 @@ export function getConfig(env = process.env) {
     githubToken: env.GITHUB_TOKEN || "",
     githubApiUrl: env.GITHUB_API_URL || "https://api.github.com",
     githubRepository: env.GITHUB_REPOSITORY || "",
+    payoutSecretId: env.AGENT_EXCHANGE_PAYOUT_SECRET_ID || "",
+    payoutSignerSecret: "",
+    payoutBatchLimit: boundedNumber(env.AGENT_EXCHANGE_PAYOUT_BATCH_LIMIT || 20, 20, 1, 100),
     marketDataUrl: env.PDAO_MARKET_DATA_URL || "https://api.dexscreener.com/latest/dex",
     telegramNotifications: bool(env.PDAO_TELEGRAM_NOTIFICATIONS_ENABLED),
     discordNotifications: bool(env.PDAO_DISCORD_NOTIFICATIONS_ENABLED),
@@ -169,11 +172,12 @@ export async function hydrateConfig(config, env = process.env) {
     [config.mongoSecretId, (values) => { if (values.MONGODB_URI) config.mongoUri = values.MONGODB_URI; if (values.MONGODB_DATABASE) config.mongoDatabase = values.MONGODB_DATABASE; if (values.MONGODB_COLLECTION) config.mongoCollection = values.MONGODB_COLLECTION; }],
     [config.ibmSecretId, (values) => { if (values.IBM_WATSONX_API_KEY) config.ibmApiKey = values.IBM_WATSONX_API_KEY; if (values.IBM_WATSONX_URL) config.ibmUrl = values.IBM_WATSONX_URL; if (values.IBM_WATSONX_PROJECT_ID) config.ibmProjectId = values.IBM_WATSONX_PROJECT_ID; if (values.IBM_WATSONX_MODEL_ID) config.ibmModel = values.IBM_WATSONX_MODEL_ID; }],
     [config.githubSecretId, (values) => { if (values.GITHUB_TOKEN) config.githubToken = values.GITHUB_TOKEN; if (values.GITHUB_REPOSITORY) config.githubRepository = values.GITHUB_REPOSITORY; if (values.GITHUB_APP_ID) config.githubAppId = Number(values.GITHUB_APP_ID); if (values.GITHUB_APP_PRIVATE_KEY) config.githubAppPrivateKey = values.GITHUB_APP_PRIVATE_KEY; if (values.GITHUB_WEBHOOK_SECRET) config.githubWebhookSecret = values.GITHUB_WEBHOOK_SECRET; if (values.GITHUB_APP_SLUG) config.githubAppSlug = values.GITHUB_APP_SLUG; }],
+    [config.payoutSecretId, (values, raw) => { config.payoutSignerSecret = values.SOLANA_PAYOUT_PRIVATE_KEY || values.PAYOUT_SIGNER_PRIVATE_KEY || values.secretKey || values.privateKey || raw || ""; }],
   ];
   for (const [secretId, apply] of optionalSecrets) {
     if (!secretId) continue;
     const optional = await client.send(new GetSecretValueCommand({ SecretId: secretId }));
-    apply(parseOptional(optional.SecretString));
+    apply(parseOptional(optional.SecretString), optional.SecretString || "");
   }
   return config;
 }

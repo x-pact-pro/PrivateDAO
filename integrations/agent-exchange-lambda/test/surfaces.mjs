@@ -930,7 +930,7 @@ test("external seller paid lifecycle quotes, executes once, and records attribut
     assert.equal(paidBody.receipt.status, "VERIFIED");
     assert.equal(paidBody.receipt.seller_agent_id, registeredBody.id);
     assert.equal(paidBody.receipt.seller_service_id, "read");
-    assert.equal(paidBody.receipt.seller_settlement.status, "payable_pending_admin_settlement");
+    assert.equal(paidBody.receipt.seller_settlement.status, "payable_pending_scheduled_settlement");
     assert.equal(paidBody.receipt.seller_settlement.gross_amount, 0.03);
     assert.equal(paidBody.receipt.seller_settlement.protocol_fee, 0.003);
     assert.equal(paidBody.receipt.seller_settlement.platform_fee_amount, 0.003);
