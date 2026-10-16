@@ -13,6 +13,7 @@ export class MemoryStore {
   async claim(collection, key, claim) {
     const map = this.map(collection);
     const current = map.get(key);
+    if (claim.expected_status && current?.status !== claim.expected_status) throw new Error("conditional claim failed");
     if (current?.claim_expires_at && Date.parse(current.claim_expires_at) > Date.now()) throw new Error("conditional claim failed");
     const next = { ...(current || {}), ...structuredClone(claim) };
     map.set(key, next);
@@ -64,9 +65,9 @@ export async function createStore(config) {
           TableName: table(collection),
           Key: { id: key },
           UpdateExpression: "SET #claimStartedAt = :claimStartedAt, #claimExpiresAt = :claimExpiresAt, #claimInstallationId = :claimInstallationId",
-          ConditionExpression: "attribute_not_exists(#claimExpiresAt) OR #claimExpiresAt < :now",
-          ExpressionAttributeNames: { "#claimStartedAt": "claim_started_at", "#claimExpiresAt": "claim_expires_at", "#claimInstallationId": "claim_installation_id" },
-          ExpressionAttributeValues: { ":claimStartedAt": claim.claim_started_at, ":claimExpiresAt": claim.claim_expires_at, ":claimInstallationId": claim.claim_installation_id, ":now": new Date().toISOString() },
+          ConditionExpression: `${claim.expected_status ? "#status = :expectedStatus AND " : ""}(attribute_not_exists(#claimExpiresAt) OR #claimExpiresAt < :now)`,
+          ExpressionAttributeNames: { "#claimStartedAt": "claim_started_at", "#claimExpiresAt": "claim_expires_at", "#claimInstallationId": "claim_installation_id", ...(claim.expected_status ? { "#status": "status" } : {}) },
+          ExpressionAttributeValues: { ":claimStartedAt": claim.claim_started_at, ":claimExpiresAt": claim.claim_expires_at, ":claimInstallationId": claim.claim_installation_id, ":now": new Date().toISOString(), ...(claim.expected_status ? { ":expectedStatus": claim.expected_status } : {}) },
           ReturnValues: "ALL_NEW",
         }));
         return result.Attributes;

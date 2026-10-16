@@ -188,6 +188,15 @@ jobs:
           echo "Region: $AWS_REGION"
           echo "Runtime: $runtime"
 
+      - name: Require the configured payout secret before deployment
+        run: |
+          set -euo pipefail
+          aws secretsmanager describe-secret \
+            --secret-id pdao/agent-exchange/payout-signer \
+            --region "$AWS_REGION" \
+            --query '{name:Name,last_changed:LastChangedDate,status:DeletedDate}' \
+            --output json
+
       - name: Capture exact production rollback package
         id: capture
         run: |
