@@ -41,6 +41,7 @@ The zero-count, `level=none` result is the intended official test-agent outcome.
 - Lambda lint: PASS
 - Lambda unit/integration suite: `79 PASS / 0 FAIL / 1 SKIP` (the skip is the opt-in live fixture test)
 - Official live fixtures: `11 PASS / 0 FAIL / 0 SKIP`, including valid, expired, bad-signature, unknown-key, version-4 handshake, and fixture identity assertions
+- Official CLI comparison: PASS; `npx sealkeeper@latest seal verify` exited `0` for the live test-agent SEAL.
 - Lambda package build: PASS; compressed package integrity check PASS
 - Repository quality gate: PASS
 - Repository security gate: PASS; existing allowed Rust advisories remain unchanged
@@ -53,6 +54,10 @@ READY FOR FOCUSED SECURITY REVIEW: YES
 NOT PRODUCTION-ENABLED: YES
 
 The adapter is suitable for review as a read-only, optional signal. It should not be treated as a production trust gate until reviewers examine key-cache invalidation, handshake challenge lifecycle, route authentication, and the policy for attaching SEAL metadata to registered agents.
+
+## Requested agent coverage
+
+The supplied live target is Sealkeeper's official `test-agent` (raw id `j2KKg1Ij_Wm_9MP_WAd0jpcdwboD6B1NDGcev5WQV9M`). No Carl agent id or endpoint was supplied, so Carl was not tested and is not claimed as verified.
 
 ## Files changed
 
