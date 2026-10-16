@@ -35,6 +35,7 @@ import { applyGithubMarketplacePurchase, githubAppConfigured, githubGetInstallat
 import { mongoProviderStatus, persistEvidence } from "./mongodb.mjs";
 import { assertPublicHttps, fetchPublicHttps } from "./url-safety.mjs";
 import { integrationDirectory, serviceDetails, serviceRecommendation, SERVICE_CATEGORIES } from "./exchange-metadata.mjs";
+import { PRODUCTS, productById, publicProduct } from "./products.mjs";
 import { issuePdaoChallenge, verifyPdaoHolderAccess } from "./pdao-entitlement.mjs";
 import { runScheduledSellerSettlements } from "./settlement.mjs";
 import { HandshakeReplayCache, readSealReputation, sealkeeperFailure } from "./sealkeeper.mjs";
@@ -597,7 +598,8 @@ function card() {
       openclaw: `https://${config.domain}/connect/openclaw`,
       mcpGuide: `https://${config.domain}/mcp`,
     },
-    serviceCatalog: `https://${config.domain}/api/services`,
+      serviceCatalog: `https://${config.domain}/api/services`,
+      productCatalog: `https://${config.domain}/api/products`,
     pricing: `https://${config.domain}/api/pricing`,
     integrationCatalog: `https://${config.domain}/api/integrations`,
     semanticGuide: `https://${config.domain}/llms-full.txt`,
@@ -706,6 +708,8 @@ function openapi() {
   const paths = {
     "/api/health": { get: { operationId: "health" } },
     "/api/services": { get: { operationId: "services" } },
+    "/api/products": { get: { operationId: "products" } },
+    "/api/products/{productId}/quote": { post: { operationId: "productQuote" } },
     "/api/pricing": { get: { operationId: "pricing" } },
     "/api/jobs": { post: { operationId: "createJob", requestBody: { required: true, content: { "application/json": { schema: { $ref: "#/components/schemas/CreateJobRequest" } } } } } },
     "/api/checkout/batch": { post: { operationId: "createBatchCheckout", description: "Create one quote for up to ten first-party services; payment remains finalized USDC on Solana Mainnet.", requestBody: { required: true, content: { "application/json": { schema: { type: "object", required: ["items"], properties: { items: { type: "array", minItems: 1, maxItems: 10, items: { type: "object", required: ["service_id", "input"], properties: { service_id: { type: "string" }, input: { type: "object" } }, additionalProperties: false } } }, additionalProperties: false } } } } } },
@@ -1432,6 +1436,11 @@ payButton.onclick=async()=>{payButton.disabled=true;try{if(!quote||!payer)throw 
 load().catch(error=>show("CATALOG ERROR: "+(error.message||String(error))));</script></body></html>`;
 }
 
+function productsPage() {
+  const cards = PRODUCTS.map((product) => `<article class="product" data-product="${escapeHtml(product.id)}"><p class="eyebrow">${escapeHtml(product.category)}</p><h2>${escapeHtml(product.name)}</h2><p>${escapeHtml(product.tagline)}</p><strong>${product.price.toFixed(2)} USDC · ${escapeHtml(product.billing_model.replaceAll("_", " "))}</strong><p class="muted">${escapeHtml(product.value)}</p><p class="small">Includes: ${escapeHtml(product.included_services.join(", "))}</p><label>Network<select data-field="network">${product.networks.map((network) => `<option value="${escapeHtml(network)}">${escapeHtml(network)}</option>`).join("")}</select></label><label>${product.fields.includes("wallet") ? "Wallet address" : product.fields.includes("mint") ? "Token or contract address" : "Unsigned transaction JSON"}${product.fields.includes("transaction") ? `<textarea data-field="transaction" placeholder='{"instructions":[]}'>${escapeHtml(JSON.stringify({ instructions: [] }, null, 2))}</textarea>` : `<input data-field="${product.fields.includes("wallet") ? "wallet" : "mint"}" placeholder="Paste a public address" autocomplete="off">`}</label><button data-action="quote" type="button">Get exact quote</button><a data-pay class="pay-link" hidden>Continue to wallet approval</a><pre data-result aria-live="polite">Ready. No wallet connected and no transaction signed.</pre></article>`).join("");
+  return injectLanguageWidget(`<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>PrivateDAO Products | Agent Exchange</title><meta name="description" content="Productized evidence workflows for treasury, asset diligence and transaction safety."><style>:root{--ink:#071a32;--muted:#52657b;--line:#dbe5ef;--blue:#1769e0;--pale:#f5f9ff;--green:#087f5b}*{box-sizing:border-box}body{margin:0;color:var(--ink);font:16px/1.55 Inter,system-ui,sans-serif}main{max-width:1180px;margin:auto;padding:26px 24px 72px}header{display:flex;justify-content:space-between;gap:20px;padding-bottom:72px}.brand,a{color:var(--blue);font-weight:750;text-decoration:none}.brand{color:var(--ink);font-weight:850}.nav{display:flex;gap:18px}.eyebrow{color:var(--blue);font-size:.72rem;font-weight:850;letter-spacing:.12em;text-transform:uppercase}.hero{max-width:760px;margin-bottom:48px}.hero h1{font-size:clamp(3rem,7vw,6rem);line-height:.95;letter-spacing:-.06em;margin:12px 0 18px}.hero p{color:var(--muted);font-size:1.15rem}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}.product{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:16px;padding:22px;min-height:540px;box-shadow:0 10px 28px rgba(14,42,78,.05)}.product h2{margin:5px 0 8px}.product>p{color:var(--muted)}.product strong{color:var(--green);margin:6px 0 14px}.product .small{font-size:.85rem}.product label{display:block;font-weight:750;margin-top:12px}.product input,.product select,.product textarea{display:block;width:100%;margin-top:6px;padding:10px;border:1px solid var(--line);border-radius:9px;font:inherit}.product textarea{min-height:100px;font:12px ui-monospace,monospace}.product button{border:0;border-radius:999px;background:var(--ink);color:white;padding:11px 15px;font:inherit;font-weight:800;cursor:pointer;margin-top:16px}.product button:disabled{opacity:.55}.product .pay-link{display:inline-block;margin-top:10px;color:var(--blue);font-weight:800}.product pre{white-space:pre-wrap;overflow-wrap:anywhere;color:var(--muted);font-size:.78rem;margin-top:14px;min-height:100px}.muted{color:var(--muted)}footer{border-top:1px solid var(--line);margin-top:60px;padding-top:20px;color:var(--muted)}@media(max-width:820px){main{padding:20px 16px 52px}.grid{grid-template-columns:1fr}.nav{gap:10px;font-size:.8rem}.product{min-height:0}}</style></head><body><main><header><a class="brand" href="/">PrivateDAO Agent Exchange</a><nav class="nav"><a href="/marketplace">Services</a><a href="/mcp">MCP</a><a href="/api/products">Product API</a></nav></header><section class="hero"><p class="eyebrow">Productized workflows</p><h1>Buy a decision, not a data point.</h1><p>Choose a repeatable workflow, provide the public subject, receive one exact quote, and get an ordered receipt for the completed evidence. Payment stays quote-first and requires explicit wallet approval.</p></section><section class="grid">${cards}</section><footer>Read-only execution · USDC payment on Solana Mainnet · target networks remain service-specific · no private keys requested.</footer></main><script>document.querySelectorAll('[data-action="quote"]').forEach(button=>button.addEventListener('click',async()=>{const card=button.closest('[data-product]'),product=card.dataset.product,result=card.querySelector('[data-result]'),pay=card.querySelector('[data-pay]'),network=card.querySelector('[data-field="network"]').value;button.disabled=true;pay.hidden=true;try{const input={network};const wallet=card.querySelector('[data-field="wallet"]'),mint=card.querySelector('[data-field="mint"]'),transaction=card.querySelector('[data-field="transaction"]');if(wallet)input.wallet=wallet.value.trim();if(mint)input.mint=mint.value.trim();if(transaction)input.transaction=JSON.parse(transaction.value||'{}');const response=await fetch('/api/products/'+encodeURIComponent(product)+'/quote',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({input})}),payload=await response.json();if(!response.ok&&response.status!==402)throw Error(payload.message||payload.error||'quote unavailable');const intent=payload.payment_intent||payload;result.textContent=JSON.stringify({status:'quote_ready',product,amount:intent.amount||0,currency:intent.asset||'USDC',payment_network:intent.network||'solana-mainnet-beta',job_id:intent.jobId||null,next:intent.jobId?'/pay/'+intent.jobId:'/checkout'},null,2);if(intent.jobId){pay.href='/pay/'+encodeURIComponent(intent.jobId);pay.hidden=false}}catch(error){result.textContent='QUOTE ERROR: '+(error.message||String(error))}finally{button.disabled=false}}));</script></body></html>`);
+}
+
 async function marketplacePage() {
   const policy = await marketplacePolicy();
   const grouped = SERVICE_CATEGORIES.map((category) => ({ ...category, services: SERVICES.filter((service) => serviceDetails(service).category === category.id) })).filter((category) => category.services.length);
@@ -1505,6 +1514,7 @@ function commercialHomePage() {
 function commercialHomePageWithOffer() {
   const offer = `<section class="section"><p class="eyebrow">Commercial model</p><h2>Built for a service economy.</h2><p>${escapeHtml(COMMERCIAL_HOLDER_OFFER)}</p><p>Developers list once, buyers pay only for completed work, and every commercial outcome carries a receipt and accounting trail.</p><div class="category-grid"><article class="category"><span>Seller onboarding</span><h3>$10 once per agent</h3><p>One listing fee covers the agent and its first five commercial services. It is separate from GitHub Marketplace billing.</p></article><article class="category"><span>Execution economics</span><h3>10% platform fee · 90% seller net</h3><p>Applied to successfully completed paid executions and shown in the quote, receipt, and settlement record.</p></article><article class="category"><span>Holder access</span><h3>30 days at $25 PDAO value</h3><p>The exact PDAO mint is checked from the signed wallet at every request. No transaction is sent for eligibility.</p></article></div></section>`;
   return commercialHomePage()
+    .replace('<a href="/connect">Connect an agent</a>', '<a href="/products">Products</a><a href="/connect">Connect an agent</a>')
     .replace('<a href="/mcp">MCP</a>', '<a href="/mcp">MCP</a><a href="/a2a">A2A</a><a href="/sellers">Sell</a>')
     .replace('A commercial service layer for AI agents. Discover a capability, request the work, pay only when required, and receive evidence that can be checked independently.', 'A commercial service economy for people and autonomous agents. Discover a capability, request the work, use PDAO holder access when eligible or pay quoted USDC on Solana Mainnet, and receive independently verifiable evidence.')
     .replace('<section class="section"><p class="eyebrow">What can an agent use?</p>', `${offer}<section class="section"><p class="eyebrow">What can an agent use?</p>`)
@@ -3084,6 +3094,47 @@ async function makeBatchQuote(job, items, total) {
   return quote;
 }
 
+function productBatchItems(product, input = {}) {
+  const network = normalizeNetworkId(input.network || product.networks[0]);
+  if (!product.networks.includes(network)) throw Object.assign(new Error(`product is not supported on ${network}`), { statusCode: 400 });
+  if (product.id === "treasury-guard-scan") {
+    return [
+      { service_id: "wallet.intelligence", input: { network, wallet: input.wallet } },
+      { service_id: "anomaly.detect", input: { network, wallet: input.wallet } },
+    ];
+  }
+  if (product.id === "token-safety-brief") {
+    return [
+      { service_id: "token.intelligence", input: { network, mint: input.mint } },
+      { service_id: "risk.score", input: { network, mint: input.mint } },
+      { service_id: "launch.check", input: { network, mint: input.mint } },
+      { service_id: "market.snapshot", input: { network, mint: input.mint } },
+    ];
+  }
+  if (product.id === "transaction-safety-check") {
+    return [
+      { service_id: "transaction.explain", input: { network, transaction: input.transaction } },
+      { service_id: "transaction.simulate", input: { network, transaction: input.transaction } },
+      { service_id: "decision.context", input: { network, evidence: { transaction: input.transaction, product: product.id } } },
+    ];
+  }
+  throw Object.assign(new Error("unknown product"), { statusCode: 404 });
+}
+
+async function createProductQuote(productId, body = {}) {
+  const product = productById(productId);
+  if (!product) throw Object.assign(new Error("unknown product"), { statusCode: 404 });
+  const items = productBatchItems(product, body.input || {});
+  try {
+    return await createBatchJob(items);
+  } catch (error) {
+    if (error.statusCode === 402 && error.payment_intent) {
+      error.payment_intent = { ...error.payment_intent, product_id: product.id, product_name: product.name, product_price: product.price };
+    }
+    throw error;
+  }
+}
+
 async function executeBatchItems(job) {
   const items = job.execution_input?.items || [];
   const results = [];
@@ -3997,6 +4048,10 @@ async function handle(e) {
     const page = await marketplacePage();
     return { statusCode: 200, headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store" }, body: page.replace("<footer>", `${featured}<footer>`) };
   }
+  if (method === "GET" && path === "/products") {
+    trackFunnel("products_view");
+    return { statusCode: 200, headers: { "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=300" }, body: productsPage() };
+  }
   if (method === "GET" && path === "/checkout")
     return { statusCode: 200, headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store" }, body: batchCheckoutPage() };
   if (method === "GET" && (path === "/partners" || path === "/marketplace/partners"))
@@ -4086,11 +4141,11 @@ async function handle(e) {
   if (method === "GET" && ["/llms.txt", "/llms-full.txt"].includes(path))
     return text(llms() + String.fromCharCode(10) + "Distribution: https://" + config.domain + "/connect" + String.fromCharCode(10) + "ChatGPT: https://" + config.domain + "/connect/chatgpt" + String.fromCharCode(10) + "Claude: https://" + config.domain + "/connect/claude" + String.fromCharCode(10) + "Grok: https://" + config.domain + "/connect/grok" + String.fromCharCode(10) + "OpenClaw: https://" + config.domain + "/connect/openclaw" + String.fromCharCode(10) + "MCP landing: https://" + config.domain + "/mcp" + String.fromCharCode(10) + "Production services: " + SERVICES.length + String.fromCharCode(10));
   if (method === "GET" && path === "/robots.txt")
-    return text(`User-agent: *\nAllow: /\nAllow: /marketplace\nAllow: /integrations\nAllow: /partners\nAllow: /marketplace/partners\nAllow: /connect\nAllow: /connect/chatgpt\nAllow: /connect/claude\nAllow: /connect/grok\nAllow: /connect/openclaw\nAllow: /mcp\nAllow: /.well-known/\nAllow: /api/acquisition\nAllow: /api/services\nAllow: /api/pricing\nAllow: /api/discovery\nAllow: /api/logistics/capabilities\nDisallow: /api/admin/\nDisallow: /api/revenue\nDisallow: /api/treasury/\nSitemap: https://${config.domain}/sitemap.xml\n`);
+    return text(`User-agent: *\nAllow: /\nAllow: /products\nAllow: /marketplace\nAllow: /integrations\nAllow: /partners\nAllow: /marketplace/partners\nAllow: /connect\nAllow: /connect/chatgpt\nAllow: /connect/claude\nAllow: /connect/grok\nAllow: /connect/openclaw\nAllow: /mcp\nAllow: /.well-known/\nAllow: /api/acquisition\nAllow: /api/services\nAllow: /api/products\nAllow: /api/pricing\nAllow: /api/discovery\nAllow: /api/logistics/capabilities\nDisallow: /api/admin/\nDisallow: /api/revenue\nDisallow: /api/treasury/\nSitemap: https://${config.domain}/sitemap.xml\n`);
   if (method === "GET" && path === "/favicon.ico")
     return { statusCode: 200, headers: { "content-type": "image/svg+xml", "cache-control": "public, max-age=86400" }, body: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="16" fill="#071a32"/><path d="M18 47V17h17c9 0 15 5 15 13s-6 13-15 13H27v4zm9-12h8c4 0 6-2 6-5s-2-5-6-5h-8z" fill="#fff"/><path d="M18 17h9v30h-9z" fill="#1769e0"/></svg>` };
   if (method === "GET" && path === "/sitemap.xml")
-    return { statusCode: 200, headers: { "content-type": "application/xml; charset=utf-8", "cache-control": "public, max-age=3600" }, body: `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>https://${config.domain}/</loc></url><url><loc>https://${config.domain}/marketplace</loc></url><url><loc>https://${config.domain}/partners</loc></url><url><loc>https://${config.domain}/marketplace/partners</loc></url><url><loc>https://${config.domain}/connect</loc></url><url><loc>https://${config.domain}/connect/chatgpt</loc></url><url><loc>https://${config.domain}/connect/claude</loc></url><url><loc>https://${config.domain}/connect/grok</loc></url><url><loc>https://${config.domain}/connect/openclaw</loc></url><url><loc>https://${config.domain}/mcp</loc></url><url><loc>https://${config.domain}/.well-known/agent-card.json</loc></url><url><loc>https://${config.domain}/openapi.json</loc></url>${SERVICES.map((service) => `<url><loc>https://${config.domain}${servicePath(service.id)}</loc></url>`).join("")}</urlset>` };
+    return { statusCode: 200, headers: { "content-type": "application/xml; charset=utf-8", "cache-control": "public, max-age=3600" }, body: `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>https://${config.domain}/</loc></url><url><loc>https://${config.domain}/products</loc></url><url><loc>https://${config.domain}/marketplace</loc></url><url><loc>https://${config.domain}/partners</loc></url><url><loc>https://${config.domain}/marketplace/partners</loc></url><url><loc>https://${config.domain}/connect</loc></url><url><loc>https://${config.domain}/connect/chatgpt</loc></url><url><loc>https://${config.domain}/connect/claude</loc></url><url><loc>https://${config.domain}/connect/grok</loc></url><url><loc>https://${config.domain}/connect/openclaw</loc></url><url><loc>https://${config.domain}/mcp</loc></url><url><loc>https://${config.domain}/.well-known/agent-card.json</loc></url><url><loc>https://${config.domain}/openapi.json</loc></url>${SERVICES.map((service) => `<url><loc>https://${config.domain}${servicePath(service.id)}</loc></url>`).join("")}</urlset>` };
   if (method === "GET" && path === "/llms.json")
     return json({
       name: "PrivateDAO Agent Exchange",
@@ -4098,6 +4153,7 @@ async function handle(e) {
       lifecycle: ["discover", "request", "execute", "pay_when_required", "verify"],
       categories: SERVICE_CATEGORIES,
       services: SERVICES.map(serviceManifest),
+      products: PRODUCTS.map(publicProduct),
       integrations: integrationDirectory(),
       payment: { quote_first: true, network: "solana-mainnet-beta", asset: "USDC", finalized_transaction_required: true },
       discovery: `https://${config.domain}/.well-known/agent-card.json`,
@@ -4114,6 +4170,11 @@ async function handle(e) {
       },
     });
   }
+  if (method === "GET" && path === "/api/products")
+    return json({ products: PRODUCTS.map(publicProduct), payment: { network: "solana-mainnet-beta", asset: "USDC", quote_first: true } });
+  const productQuoteRoute = path.match(/^\/api\/products\/([^/]+)\/quote$/);
+  if (method === "POST" && productQuoteRoute)
+    return json(await createProductQuote(decodeURIComponent(productQuoteRoute[1]), body));
   if (method === "GET" && path === "/api/pricing")
     return json({
       network: "solana:mainnet-beta",
@@ -4488,6 +4549,7 @@ async function mcp(request) {
   const schemas = {
     exchange_overview: { type: "object", properties: {}, additionalProperties: false, description: "Explain what the PrivateDAO Agent Exchange is, its lifecycle, endpoints, payment rail and verification model." },
     pdao_services: { type: "object", properties: {}, additionalProperties: false, description: "List every current PrivateDAO service with category, customer value, access, price, inputs, output, networks, runtime status and payment behavior." },
+    product_catalog: { type: "object", properties: {}, additionalProperties: false, description: "List productized workflows with buyer, price, included services, supported networks and the exact quote-first checkout path." },
     service_recommendation: { type: "object", properties: { task: { type: "string", minLength: 2, maxLength: 500, description: "Natural-language task the agent wants to accomplish." }, network: { type: "string", description: "Optional target network constraint." } }, required: ["task"], additionalProperties: false },
     provider_integrations: { type: "object", properties: {}, additionalProperties: false, description: "Explain the commercial role and verified status of each ecosystem integration without exposing credentials." },
     payment_guide: { type: "object", properties: {}, additionalProperties: false, description: "Return the exact quote-first paid-service lifecycle and safety rules." },
@@ -4612,6 +4674,7 @@ async function mcp(request) {
   const annotations = {
     exchange_overview: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     pdao_services: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+    product_catalog: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     service_recommendation: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     provider_integrations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     payment_guide: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
@@ -4635,6 +4698,7 @@ async function mcp(request) {
   const tools = [
     "exchange_overview",
     "pdao_services",
+    "product_catalog",
     "service_recommendation",
     "provider_integrations",
     "payment_guide",
@@ -4660,6 +4724,7 @@ async function mcp(request) {
     description: ({
       exchange_overview: "Start here. Explain the PrivateDAO Agent Exchange as a service economy for AI agents: discover a capability, request it, receive a quote when paid, execute read-only evidence work, and verify the receipt.",
       pdao_services: "Return the complete current catalog with service IDs, customer value, category, pricing, inputs, outputs, target networks and payment behavior.",
+      product_catalog: "Return the current product packages with buyer, price, included services, target networks and exact batch checkout path.",
       service_recommendation: "Map a natural-language task to the best available PrivateDAO services. Use this before create_paid_job when the user has not named a service ID.",
       provider_integrations: "Explain what IBM watsonx, Intel OpenVINO, MongoDB, GitHub, ChatGPT, Claude, Grok, OpenClaw and the PrivateDAO Kernel add to the ecosystem, with relationship disclosures and safe provider status.",
       payment_guide: "Explain the quote-first Solana Mainnet USDC payment flow. Never infer an amount, never pay before a payment_intent, and never request a private key.",
@@ -4688,6 +4753,7 @@ async function mcp(request) {
         guidance: "Use service_recommendation for task selection, pdao_services for exact schemas, and payment_guide before any paid action.",
       };
       else if (name === "pdao_services") result = { categories: SERVICE_CATEGORIES, services: [...SERVICES.map(serviceManifest), ...(await externalServiceManifests())] };
+      else if (name === "product_catalog") result = { products: PRODUCTS.map(publicProduct), note: "Products are packaged first-party services. The server returns the exact quote before any payment." };
       else if (name === "service_recommendation") {
         const ids = serviceRecommendation(a.task);
         result = { task: a.task, matches: (ids.length ? ids : SERVICES.map((service) => service.id)).map((id) => serviceManifest(serviceById(id))), note: ids.length ? "Matches are ranked by task keywords; inspect each input schema before requesting." : "No direct keyword match; review the full catalog before choosing." };

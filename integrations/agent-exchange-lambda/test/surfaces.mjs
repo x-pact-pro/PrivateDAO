@@ -178,6 +178,29 @@ test("human root is HTML while machine surfaces remain available", async () => {
   assert.ok(githubService.input_schema.anyOf.some((branch) => branch.required.includes("repository")));
   assert.equal((await request("/api/revenue")).statusCode, 404);
   assert.equal((await request("/api/treasury/status")).statusCode, 404);
+  const products = await request("/api/products");
+  assert.equal(products.statusCode, 200);
+  const productPayload = JSON.parse(products.body);
+  assert.deepEqual(productPayload.products.map((product) => product.id), ["treasury-guard-scan", "token-safety-brief", "transaction-safety-check"]);
+  assert.equal(productPayload.products[0].checkout.quote_first, true);
+  const productsPage = await request("/products");
+  assert.equal(productsPage.statusCode, 200);
+  assert.match(productsPage.body, /Treasury Guard Scan/);
+});
+
+test("product quote packages existing services without trusting client pricing", async () => {
+  resetForTests();
+  const quote = await request("/api/products/token-safety-brief/quote", "POST", {
+    input: { network: "solana-mainnet-beta", mint: "11111111111111111111111111111111" },
+  });
+  assert.equal(quote.statusCode, 402);
+  const intent = JSON.parse(quote.body).payment_intent;
+  assert.equal(intent.product_id, "token-safety-brief");
+  assert.equal(intent.product_price, 0.09);
+  assert.equal(intent.amount, "0.090000");
+  assert.equal(intent.items.length, 4);
+  const invalid = await request("/api/products/unknown/quote", "POST", { input: {} });
+  assert.equal(invalid.statusCode, 404);
 });
 
 test("agreements require the declared buyer and the production USDC rail", async () => {
@@ -572,7 +595,7 @@ test("MCP lifecycle, schemas, errors, and network aliases are protocol-safe", as
   assert.equal(cancelled.body, "");
 
   const listed = JSON.parse((await request("/mcp", "POST", { jsonrpc: "2.0", id: 2, method: "tools/list", params: {} })).body).result.tools;
-  assert.equal(listed.length, 21);
+  assert.equal(listed.length, 22);
   for (const tool of listed) {
     assert.equal(tool.inputSchema.type, "object", tool.name);
     assert.ok(tool.inputSchema.properties, tool.name);
@@ -585,6 +608,8 @@ test("MCP lifecycle, schemas, errors, and network aliases are protocol-safe", as
   assert.deepEqual(byName.logistics_request.required, ["capability"]);
   assert.deepEqual(byName.receipt_verify.required, ["receipt"]);
   assert.equal(byName.receipt_verify.properties.receipt.type, "object");
+  const productCatalog = JSON.parse((await request("/mcp", "POST", { jsonrpc: "2.0", id: 10, method: "tools/call", params: { name: "product_catalog", arguments: {} } })).body);
+  assert.equal(productCatalog.result.structuredContent.products.length, 3);
   for (const toolName of ["exchange_overview", "service_recommendation", "provider_integrations", "payment_guide", "execution_guide"])
     assert.ok(byName[toolName], `${toolName} discovery tool`);
 

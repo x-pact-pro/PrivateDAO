@@ -24,10 +24,13 @@ The human batch checkout and the automation contract are documented in
 
 ## Public surfaces
 
+- `/products` productized, repeatable workflows for treasury, asset diligence and transaction safety
 - `/marketplace` commercial service catalog
 - `/connect` developer connection flow
 - `/.well-known/agent-card.json` discovery card
 - `/api/services` service catalog API
+- `/api/products` product catalog API
+- `POST /api/products/{productId}/quote` product quote endpoint; it composes first-party services into the existing batch checkout and never trusts client pricing
 - `/api/network/health?network=ethereum-mainnet` sanitized provider health
 - `/api/providers/status` sanitized OpenVINO, watsonx, MongoDB, and GitHub status
 - `/api/integrations` commercial integration directory and relationship disclosures
@@ -54,6 +57,20 @@ action.
 
 External seller lifecycle tools are `external_services`,
 `seller_update_services`, `seller_replace_endpoint`, and `seller_retire`.
+
+## Productized workflows
+
+The product layer packages existing first-party read-only services into repeatable
+offers without creating a second execution or payment rail:
+
+- `treasury-guard-scan` — wallet intelligence plus anomaly detection; `0.20 USDC` per scan.
+- `token-safety-brief` — token intelligence, risk, launch and market context; `0.09 USDC` per asset.
+- `transaction-safety-check` — transaction explanation, simulation and decision context; `0.17 USDC` per check on Solana.
+
+Prices are checked server-side from the included service definitions. The product
+quote returns HTTP `402` with an exact finalized Solana Mainnet USDC payment intent,
+after which the existing `/api/jobs/{jobId}/payment` lifecycle returns one ordered
+receipt. No product endpoint signs, broadcasts, or requests private keys.
 Prices and payout addresses are seller-declared; the exchange does not infer
 them. External paid execution records gross amount, the configurable PrivateDAO
 platform fee, any separately configured processing fee, and the Solana network
