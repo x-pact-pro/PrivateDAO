@@ -41,6 +41,33 @@ async function checkUrl(value, label, { required = false } = {}) {
   }
 }
 
+export async function verifyCommunityBacklink(websiteUrl) {
+  const urlText = trimUrl(websiteUrl);
+  if (!urlText) return { verified: false, reason: "website_missing" };
+  let url;
+  try { url = await assertPublicHttps(urlText); }
+  catch { return { verified: false, reason: "website_unsafe_url" }; }
+  try {
+    const response = await fetchPublicHttps(url, {
+      redirect: "manual",
+      signal: AbortSignal.timeout(5000),
+      headers: { accept: "text/html,text/plain" },
+    });
+    if (!response.ok || (response.status >= 300 && response.status < 400))
+      return { verified: false, url: url.href, reason: "website_unreachable" };
+    const text = (await response.text()).slice(0, MAX_TEXT_BYTES).toLowerCase();
+    const hasBacklink = text.includes("https://agents.privatedao.org/") || text.includes("https://privatedao.org/");
+    const hasMarker = text.includes("data-privatedao-agent-exchange") || text.includes("listed on privatedao agent exchange");
+    return {
+      verified: hasBacklink && hasMarker,
+      url: url.href,
+      reason: hasBacklink && hasMarker ? "public_backlink_and_badge_marker_found" : "badge_or_backlink_missing",
+    };
+  } catch {
+    return { verified: false, url: url.href, reason: "website_unreachable" };
+  }
+}
+
 function githubParts(value) {
   try {
     const url = new URL(value);

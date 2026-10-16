@@ -100,6 +100,31 @@ audit, legal certification, or guarantee of safe behavior. `auto_publish` is
 honored only after finalized listing payment and a passed screening gate;
 otherwise the seller remains eligible for explicit publication.
 
+### Seller listing packages
+
+The seller portal at `/sellers` exposes these first-party packages:
+
+- **Community Listing** — no listing payment, up to 3 read-only services, only
+  when automated screening passes and the submitted public website contains the
+  exact PrivateDAO Agent Exchange badge/backlink marker. The API records this as
+  `payment_status: waived` and `payment_type: community_badge`.
+- **Basic Listing** — `$10` one-time, up to 5 read-only services.
+- **Growth Listing** — `$49` one-time, up to 5 read-only services.
+- **Featured Listing** and **Ecosystem Campaign** — optional sponsored packages
+  with separate campaign records and disclosure. They do not create technical
+  verification, partnership, endorsement, or third-party acceptance.
+
+The community badge embed is intentionally simple and auditable:
+
+```html
+<a href="https://agents.privatedao.org/" rel="nofollow" data-privatedao-agent-exchange="community-listing">Listed on PrivateDAO Agent Exchange</a>
+```
+
+The server checks the live website through the same public-HTTPS/SSRF-safe
+boundary used by seller screening, refuses redirects, bounds the response to
+64 KiB, and verifies the HTML at the time of the free-listing request. A passed
+screening result remains automated screening only, not a security audit.
+
 Use the endpoint as a custom remote MCP app in ChatGPT developer mode, as a
 remote HTTP MCP server in Claude, or as an OpenClaw `streamable-http` server.
 No client-specific bridge or private credential is required for the public

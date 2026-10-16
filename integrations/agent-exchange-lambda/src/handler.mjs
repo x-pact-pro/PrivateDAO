@@ -34,7 +34,7 @@ import { githubProviderStatus, repositoryEvidence } from "./github.mjs";
 import { applyGithubMarketplacePurchase, githubAppConfigured, githubGetInstallation, githubInstallationRepositories, githubRepositoryContext, mergeGithubInstallationRepositories, publicGithubInstallationRecord, verifyGithubWebhook } from "./github-app.mjs";
 import { mongoProviderStatus, persistEvidence } from "./mongodb.mjs";
 import { assertPublicHttps, fetchPublicHttps } from "./url-safety.mjs";
-import { reviewSellerSubmission } from "./seller-review.mjs";
+import { reviewSellerSubmission, verifyCommunityBacklink } from "./seller-review.mjs";
 import { integrationDirectory, serviceDetails, serviceRecommendation, SERVICE_CATEGORIES } from "./exchange-metadata.mjs";
 import { PRODUCTS, productById, publicProduct } from "./products.mjs";
 import { issuePdaoChallenge, verifyPdaoHolderAccess } from "./pdao-entitlement.mjs";
@@ -62,7 +62,7 @@ const MARKETPLACE_POLICY_ID = "platform_settings_marketplace";
 const SELLER_TERMS_VERSION = "seller-marketplace-v1";
 const COMMERCIAL_HOLDER_OFFER = "If you or your agent hold at least $25 worth of PDAO token 9isGuumtaqvJeJeyLF44fvfskk2cv5mYsopexMBfpump in your wallet, you enjoy all verification services for one month without usage limits. Buy PDAO and save payments for one month.";
 const DEFAULT_MARKETPLACE_POLICY = {
-  version: 2,
+  version: 3,
   listing_fee_usd: 10,
   platform_fee_bps: 1000,
   processing_fee_bps: 0,
@@ -70,9 +70,9 @@ const DEFAULT_MARKETPLACE_POLICY = {
   additional_service_fee_usd: 0,
   max_services_per_seller: 5,
   seller_tiers: {
-    free: { label: "Free Seller", max_services: 5, listing_fee_usd: 10, monthly_fee_usd: 0 },
+    free: { label: "Community Listing", max_services: 3, listing_fee_usd: 0, monthly_fee_usd: 0, requires_backlink: true },
     basic: { label: "Basic Listing", max_services: 5, listing_fee_usd: 10, monthly_fee_usd: 0 },
-    pro: { label: "Pro Seller", max_services: 5, listing_fee_usd: 10, monthly_fee_usd: 0 },
+    pro: { label: "Growth Listing", max_services: 5, listing_fee_usd: 49, monthly_fee_usd: 0 },
   },
   promotion_packages: {
     featured_listing: { label: "Featured Listing", price_usd: 75, duration_days: 30, deliverables: ["Paid featured listing", "Sponsored placement inside Agent Exchange", "Partners spotlight"], channels: ["PrivateDAO Agent Exchange"], availability: "subject_to_capacity", capacity: 10, approval_required: false, third_party_controlled: false },
@@ -89,7 +89,7 @@ function normalizeMarketplacePolicy(value = {}) {
   const packages = source.promotion_packages && typeof source.promotion_packages === "object" ? source.promotion_packages : {};
   const policy = {
     ...DEFAULT_MARKETPLACE_POLICY,
-    version: 2,
+    version: 3,
     listing_fee_usd: boundedNumber(source.listing_fee_usd, 10, 0, 10000),
     platform_fee_bps: Math.floor(boundedNumber(source.platform_fee_bps, 1000, 0, 10000)),
     processing_fee_bps: Math.floor(boundedNumber(source.processing_fee_bps, 0, 0, 10000)),
@@ -109,6 +109,7 @@ function normalizeMarketplacePolicy(value = {}) {
       max_services: Math.floor(boundedNumber(item.max_services, defaults.max_services, 1, policy.max_services_per_seller)),
       listing_fee_usd: boundedNumber(item.listing_fee_usd, policy.listing_fee_usd, 0, 10000),
       monthly_fee_usd: boundedNumber(item.monthly_fee_usd, defaults.monthly_fee_usd, 0, 10000),
+      requires_backlink: item.requires_backlink === undefined ? Boolean(defaults.requires_backlink) : Boolean(item.requires_backlink),
     };
   }
   for (const [id, defaults] of Object.entries(DEFAULT_MARKETPLACE_POLICY.promotion_packages)) {
@@ -130,14 +131,19 @@ function normalizeMarketplacePolicy(value = {}) {
 }
 async function marketplacePolicy() {
   const saved = await (await store()).get("Registry", MARKETPLACE_POLICY_ID);
-  if (saved?.policy && Number(saved.policy.version || 0) < 2) {
+  if (saved?.policy && Number(saved.policy.version || 0) < 3) {
     const migrated = normalizeMarketplacePolicy({
       ...saved.policy,
-      version: 2,
+      version: 3,
       additional_service_fee_usd: 0,
       max_services_per_seller: 5,
       included_services: 5,
-      seller_tiers: Object.fromEntries(Object.entries(saved.policy.seller_tiers || {}).map(([id, tier]) => [id, { ...tier, max_services: 5 }])),
+      seller_tiers: {
+        ...(saved.policy.seller_tiers || {}),
+        free: { ...(saved.policy.seller_tiers?.free || {}), label: "Community Listing", max_services: 3, listing_fee_usd: 0, requires_backlink: true },
+        basic: { ...(saved.policy.seller_tiers?.basic || {}), label: "Basic Listing", max_services: 5, listing_fee_usd: 10 },
+        pro: { ...(saved.policy.seller_tiers?.pro || {}), label: "Growth Listing", max_services: 5, listing_fee_usd: 49 },
+      },
     });
     await (await store()).put("Registry", MARKETPLACE_POLICY_ID, { ...saved, policy: migrated, updated_at: now() });
     return migrated;
@@ -166,7 +172,7 @@ async function saveMarketplacePolicy(value) {
   return policy;
 }
 function sellerListingState(agent) {
-  return agent?.commercial_publication_status === "published" && agent?.listing_fee_status === "paid";
+  return agent?.commercial_publication_status === "published" && ["paid", "waived"].includes(agent?.listing_fee_status);
 }
 const publicSecretKeyPattern = /^(?:owner_token(?:_hash)?|github_access_token(?:_hash)?|connection_token(?:_hash)?|api_key|client_secret|secret|password|private_key|credential(?:_hash)?)$/i;
 function redactPublicValue(value) {
@@ -247,7 +253,7 @@ function sellerListingPlan(agent, services, policy, listing = null) {
   // Every new service on an already-listed agent is included in that same
   // listing entitlement.
   const items = newServices.map((service) => ({ service_id: service.id, fee_amount: 0, included: true }));
-  const baseFee = listing?.payment_status === "paid" ? 0 : Number(policy.listing_fee_usd);
+  const baseFee = ["paid", "waived"].includes(listing?.payment_status) ? 0 : Number(policy.listing_fee_usd);
   const amount = Number((baseFee + items.reduce((sum, item) => sum + Number(item.fee_amount), 0)).toFixed(6));
   return { ledger, newServices, items, amount, baseFee, billableServices: newServices, serviceIds: services.map((service) => service.id) };
 }
@@ -406,6 +412,9 @@ function sellerPortalPageAutomated() {
       `$("paymentResult").innerHTML='<div class="success notice">Payment independently verified. Publication is eligible; click Publish to make selected services public.</div>';$("publish").disabled=false`,
       `$("paymentResult").innerHTML=state.listing.publication==="published"?'<div class="success notice">Payment verified and the listing was published automatically.</div>':'<div class="success notice">Payment verified. Publication is eligible; click Publish to make selected services public.</div>';$("publish").disabled=state.listing.publication!=="published"`,
     );
+}
+function listingPackagesSection() {
+  return `<section class="listing-packages" aria-labelledby="listing-packages-title"><div class="packages-heading"><p class="eyebrow">SELLER PACKAGES</p><h2 id="listing-packages-title">Choose how your agent enters the Exchange</h2><p class="muted">Automated MCP screening is required for every package. Promotion is optional and never changes verification status.</p></div><div class="package-grid"><label class="package-card package-card-featured"><input type="radio" name="listingTier" value="free" checked><span class="package-body"><span class="package-kicker">COMMUNITY</span><strong>$0 <small>conditional</small></strong><span>Permanent standard listing after screening</span><span>Up to 3 read-only services</span><span>Requires the public badge and backlink</span></span></label><label class="package-card"><input type="radio" name="listingTier" value="basic"><span class="package-body"><span class="package-kicker">BASIC</span><strong>$10 <small>one-time</small></strong><span>Up to 5 read-only services</span><span>Standard marketplace placement</span><span>No backlink requirement</span></span></label><label class="package-card"><input type="radio" name="listingTier" value="pro"><span class="package-body"><span class="package-kicker">GROWTH</span><strong>$49 <small>one-time</small></strong><span>Up to 5 read-only services</span><span>Priority seller presentation</span><span>Includes standard listing review</span></span></label><div class="package-card sponsored-package"><div class="package-body"><span class="package-kicker">OPTIONAL PROMOTION</span><strong>Featured</strong><span>Paid sponsored placement with a separate campaign window</span><span>Does not create a partnership or security certification</span><a href="/partners">Review promotion packages</a></div></div></div><div class="community-badge"><strong>Community listing condition</strong><p class="muted">Add this public badge to the website submitted for review. PrivateDAO checks the live page before waiving the listing fee.</p><code>&lt;a href="https://agents.privatedao.org/" rel="nofollow" data-privatedao-agent-exchange="community-listing"&gt;Listed on PrivateDAO Agent Exchange&lt;/a&gt;</code><button id="copyCommunityBadge" class="secondary" type="button">Copy badge code</button><label><input id="communityBadgeAcknowledged" type="checkbox" required style="width:auto"> I understand the free listing remains conditional on the badge and backlink staying publicly available.</label></div></section><style>.listing-packages{margin:18px 0 28px}.packages-heading{margin-bottom:14px}.package-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.package-card{position:relative;display:block;border:1px solid #d9e3ef;border-radius:14px;background:#fff;cursor:pointer;min-height:220px}.package-card input{position:absolute;opacity:0}.package-card:has(input:checked){border-color:#1769e0;box-shadow:0 0 0 3px #1769e022}.package-body{display:flex;flex-direction:column;gap:9px;padding:18px;height:100%;box-sizing:border-box}.package-kicker{font-size:11px;font-weight:800;letter-spacing:.12em;color:#1769e0}.package-body strong{font-size:25px;color:#071a32}.package-body small{font-size:12px;font-weight:500;color:#52657c}.package-body span:not(.package-kicker){color:#52657c;font-size:14px}.sponsored-package{background:#f7faff}.sponsored-package a{margin-top:auto;color:#1769e0;font-weight:700}.community-badge{margin-top:14px;padding:16px;border:1px dashed #9db5d0;border-radius:12px;background:#f8fbff}.community-badge code{display:block;overflow:auto;padding:10px;background:#071a32;color:#fff;border-radius:8px;font-size:12px}.community-badge button{max-width:180px}.community-badge label{font-weight:500;margin-top:12px}@media(max-width:900px){.package-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:560px){.package-grid{grid-template-columns:1fr}}</style><script>document.querySelectorAll('input[name="listingTier"]').forEach((input)=>input.addEventListener('change',()=>{const free=input.value==='free';const box=document.querySelector('#communityBadgeAcknowledged');if(box)box.required=free}));const badgeCopy=document.querySelector('#copyCommunityBadge');if(badgeCopy)badgeCopy.onclick=()=>navigator.clipboard?.writeText('<a href="https://agents.privatedao.org/" rel="nofollow" data-privatedao-agent-exchange="community-listing">Listed on PrivateDAO Agent Exchange</a>').then(()=>{badgeCopy.textContent='Copied'});</script>`;
 }
 async function githubWebhook(body, rawBody, signature, eventName) {
   if (!config.githubWebhookSecret) throw Object.assign(new Error("GitHub webhook secret is not configured"), { statusCode: 503 });
@@ -1942,7 +1951,7 @@ async function agentProfilePage(id) {
 }
 async function listListings(query = {}) {
   const all = await (await store()).list(collectionFor("listings"));
-  const visibleStored = all.filter((listing) => listing.type !== "seller_listing" || (listing.status === "active" && listing.payment_status === "paid" && listing.commercial_publication_status === "published"));
+  const visibleStored = all.filter((listing) => listing.type !== "seller_listing" || (listing.status === "active" && ["paid", "waived"].includes(listing.payment_status) && listing.commercial_publication_status === "published"));
   const partnerships = await activePartnerships();
   const external = (await activeRegistryAgents())
     // A connected MCP endpoint without a declared commercial service belongs
@@ -2058,18 +2067,45 @@ async function sellerListingQuote(body) {
   if (invalid) throw Object.assign(new Error(`commercial service tool is not in the safe MCP allowlist: ${invalid.tool}`), { statusCode: 400 });
   const listingId = `seller_listing_${agent.id}`;
   const existing = await storage.get("Listings", listingId);
+  if (tierId === "free") {
+    if (!tier.requires_backlink) throw Object.assign(new Error("free community listing policy is not configured"), { statusCode: 503 });
+    if (agent.automated_review?.status !== "passed")
+      throw Object.assign(new Error("automated screening must pass before a free community listing can be published"), { statusCode: 409 });
+    if (body.community_badge_acknowledged !== true && body.communityBadgeAcknowledged !== true)
+      throw Object.assign(new Error("free community listing requires acceptance of the badge and backlink condition"), { statusCode: 400 });
+    const backlink = await verifyCommunityBacklink(agent.website_url);
+    if (!backlink.verified)
+      throw Object.assign(new Error(`free community listing requires the PrivateDAO badge and backlink (${backlink.reason})`), { statusCode: 409 });
+    const ledger = services.map((service) => ({ service_id: service.id, status: "paid", fee_amount: 0, included: true, waived: true, paid_at: now() }));
+    const listing = {
+      ...(existing || {}), id: listingId, agentId: agent.id, seller_agent_id: agent.id, provider: agent.name,
+      type: "seller_listing", tier: tierId, service_ids: services.map((service) => service.id), pending_service_ids: [],
+      listing_fee_status: "waived", payment_status: "waived", payment_type: "community_badge",
+      listing_fee_waived_reason: "verified_public_badge_and_backlink", community_badge: backlink,
+      status: "active", commercial_publication_status: "published", auto_publish_requested: true,
+      commercial_services_hash: digest(services), terms_version: SELLER_TERMS_VERSION, terms_accepted_at: now(),
+      created_at: existing?.created_at || now(), updated_at: now(), published_at: now(),
+    };
+    await storage.put("Listings", listingId, listing);
+    await storage.put("Registry", agent.id, {
+      ...agent, listing_fee_status: "waived", listing_fee_ledger: ledger, seller_tier: tierId,
+      commercial_publication_status: "published", auto_publish_requested: true, free_listing: backlink,
+      updated_at: now(),
+    });
+    return { listing, status: "published", publication: "published", payment: "waived", policy, tier, fee_plan: { amount: 0, currency: "USDC", waived: true, reason: "verified_public_badge_and_backlink" } };
+  }
   const plan = sellerListingPlan(agent, services, policy, existing);
-  if (existing?.payment_status === "paid" && plan.newServices.length && plan.amount === 0) {
+  if (["paid", "waived"].includes(existing?.payment_status) && plan.newServices.length && plan.amount === 0) {
     const nextLedger = [...plan.ledger, ...plan.newServices.map((service) => ({ service_id: service.id, status: "paid", fee_amount: 0, included: true, paid_at: now() }))];
     const nextListing = { ...existing, service_ids: [...new Set([...(existing.service_ids || []), ...plan.newServices.map((service) => service.id)])], pending_service_ids: [], commercial_services_hash: digest(services), updated_at: now() };
     await storage.put("Listings", listingId, nextListing);
     await storage.put("Registry", agent.id, { ...agent, listing_fee_ledger: nextLedger, updated_at: now() });
     return { listing: nextListing, status: "paid", policy, tier, fee_plan: { ...plan, amount: 0, items: plan.newServices.map((service) => ({ service_id: service.id, fee_amount: 0, included: true })) } };
   }
-  if (existing?.payment_status === "paid" && !plan.newServices.length) return { listing: existing, status: "paid", policy, tier, fee_plan: plan };
-  const amount = Number((existing?.payment_status === "paid" ? plan.amount : Number(tier.listing_fee_usd) + plan.items.reduce((sum, item) => sum + Number(item.fee_amount), 0)).toFixed(6));
-  const quotedServices = existing?.payment_status === "paid" ? plan.newServices : services;
-  const feeItems = existing?.payment_status === "paid"
+  if (["paid", "waived"].includes(existing?.payment_status) && !plan.newServices.length) return { listing: existing, status: existing.payment_status, policy, tier, fee_plan: plan };
+  const amount = Number((["paid", "waived"].includes(existing?.payment_status) ? plan.amount : Number(tier.listing_fee_usd) + plan.items.reduce((sum, item) => sum + Number(item.fee_amount), 0)).toFixed(6));
+  const quotedServices = ["paid", "waived"].includes(existing?.payment_status) ? plan.newServices : services;
+  const feeItems = ["paid", "waived"].includes(existing?.payment_status)
     ? plan.items
     : services.map((service) => ({ service_id: service.id, fee_amount: 0, included: true }));
   const quoteId = `lq_${randomUUID()}`;
@@ -2087,8 +2123,8 @@ async function sellerListingQuote(body) {
   await storage.put("Quotes", quote.quote_id, quote, true);
   const listing = {
     ...(existing || {}), id: listingId, agentId: agent.id, seller_agent_id: agent.id, provider: agent.name, type: "seller_listing",
-    tier: tierId, service_ids: existing?.payment_status === "paid" ? existing.service_ids || [] : quote.seller_service_ids, pending_service_ids: quote.seller_service_ids, listing_fee_status: existing?.payment_status === "paid" ? "paid" : "awaiting_payment", payment_status: existing?.payment_status === "paid" ? "paid" : "pending",
-    status: existing?.payment_status === "paid" ? existing.status : "pending", commercial_publication_status: existing?.commercial_publication_status || "draft", auto_publish_requested: autoPublish || existing?.auto_publish_requested === true, quote_id: quote.quote_id, commercial_services_hash: quote.commercial_services_hash, terms_version: quote.terms_version, terms_accepted_at: quote.terms_accepted_at, created_at: existing?.created_at || now(), updated_at: now(),
+    tier: tierId, service_ids: ["paid", "waived"].includes(existing?.payment_status) ? existing.service_ids || [] : quote.seller_service_ids, pending_service_ids: quote.seller_service_ids, listing_fee_status: ["paid", "waived"].includes(existing?.payment_status) ? existing.listing_fee_status : "awaiting_payment", payment_status: ["paid", "waived"].includes(existing?.payment_status) ? existing.payment_status : "pending",
+    status: ["paid", "waived"].includes(existing?.payment_status) ? existing.status : "pending", commercial_publication_status: existing?.commercial_publication_status || "draft", auto_publish_requested: autoPublish || existing?.auto_publish_requested === true, quote_id: quote.quote_id, commercial_services_hash: quote.commercial_services_hash, terms_version: quote.terms_version, terms_accepted_at: quote.terms_accepted_at, created_at: existing?.created_at || now(), updated_at: now(),
   };
   await storage.put("Listings", listingId, listing);
   return { listing, quote, policy, tier, fee_plan: plan, status: "awaiting_payment" };
@@ -3773,10 +3809,10 @@ async function registerMcp(body) {
     // A paid listing is eligible for publication, but a technical refresh or
     // metadata update must not silently republish a seller who explicitly
     // unpublished. Preserve the seller's current publication decision.
-    commercial_publication_status: existingListing?.payment_status === "paid"
+    commercial_publication_status: ["paid", "waived"].includes(existingListing?.payment_status)
       ? (existing?.commercial_publication_status || existingListing.commercial_publication_status || "eligible")
       : (commercialServicesChanged || !existing?.commercial_publication_status ? (commercialServices.length ? "draft" : null) : existing.commercial_publication_status),
-    listing_fee_status: existingListing?.payment_status === "paid" ? "paid" : (commercialServicesChanged || !existing?.listing_fee_status ? (commercialServices.length ? "required" : null) : existing.listing_fee_status),
+    listing_fee_status: ["paid", "waived"].includes(existingListing?.payment_status) ? existingListing.listing_fee_status : (commercialServicesChanged || !existing?.listing_fee_status ? (commercialServices.length ? "required" : null) : existing.listing_fee_status),
     payout,
     owner_token_hash: existing?.owner_token_hash || hashSecret(ownerToken),
     networks: Array.isArray(body.networks) ? body.networks.map(normalizeNetworkId).filter(Boolean) : (existing?.networks || []),
@@ -3853,7 +3889,7 @@ async function sellerReadiness(agentId) {
   if (services.length > policy.max_services_per_seller) missing.push("service_limit");
   if (!Array.isArray(agent.acceptedAssets) || !agent.acceptedAssets.length) missing.push("accepted_assets");
   if (!agent.payout) missing.push("payout");
-  if (agent.listing_fee_status !== "paid") missing.push("listing_fee");
+  if (!['paid', 'waived'].includes(agent.listing_fee_status)) missing.push("listing_fee");
   return {
     agent_id: agent.id,
     status: agent.status,
@@ -3907,7 +3943,7 @@ async function rotateSellerOwnerTokenAuthenticated(agentId, suppliedToken) {
 async function updateSellerServices(agentId, body) {
   const { storage, agent } = await ownedSeller(agentId, body.ownerToken || body.owner_token);
   const listing = await storage.get("Listings", `seller_listing_${agent.id}`);
-  const alreadyListed = listing?.payment_status === "paid" && listing?.listing_fee_status === "paid";
+  const alreadyListed = ["paid", "waived"].includes(listing?.payment_status) && ["paid", "waived"].includes(listing?.listing_fee_status);
   const policy = await marketplacePolicy();
   const services = normalizeCommercialServices(body.services || body.commercialServices || body.commercial_services || []);
   if (services.length > policy.max_services_per_seller)
@@ -3940,7 +3976,7 @@ async function updateSellerServices(agentId, body) {
 }
 async function setSellerPublication(agentId, body, published) {
   const { storage, agent } = await ownedSeller(agentId, body.ownerToken || body.owner_token);
-  if (published && agent.listing_fee_status !== "paid") throw Object.assign(new Error("a confirmed listing fee is required before publication"), { statusCode: 402 });
+  if (published && !["paid", "waived"].includes(agent.listing_fee_status)) throw Object.assign(new Error("a confirmed listing fee or verified community waiver is required before publication"), { statusCode: 402 });
   if (published && agent.status !== "connected") throw Object.assign(new Error("MCP verification must be connected before publication"), { statusCode: 409 });
   if (published && !(agent.commercial_services || []).length) throw Object.assign(new Error("at least one commercial service is required before publication"), { statusCode: 400 });
   if (published && !(agent.acceptedAssets || []).length) throw Object.assign(new Error("at least one accepted asset is required before publication"), { statusCode: 400 });
@@ -4127,10 +4163,14 @@ async function handle(e) {
   if (method === "GET" && (path === "/sellers" || path === "/list-your-agent")) {
     trackFunnel("seller_portal_view");
     const sellerPortal = sellerPortalPageAutomated()
+      .replace('<section class="hero">', `${listingPackagesSection()}<section class="hero">`)
       .replace('<section class="hero">', `${commercialOfferBanner()}<section class="hero">`)
       .replace("</style>", "@media(max-width:650px){.shell{padding:10px}}</style>")
       .replace('<input id="metadataFile" type="file" accept="application/json" hidden>', '<div class="actions" style="margin-top:12px"><button id="chooseMetadata" class="secondary" type="button">Import metadata JSON</button><input id="metadataFile" type="file" accept="application/json" hidden></div>')
-      .replace("</script></body></html>", 'const metadataFile=document.querySelector("#metadataFile"),chooseMetadata=document.querySelector("#chooseMetadata");if(metadataFile&&chooseMetadata){chooseMetadata.onclick=()=>metadataFile.click();metadataFile.onchange=async()=>{const file=metadataFile.files&&metadataFile.files[0];if(!file)return;try{$("metadataImport").value=await file.text();notice("Metadata imported and ready for validation.","success")}catch(error){notice("Metadata import failed: "+(error.message||String(error)),"error")}}}function bindPaymentRetry(){const retry=$("retryPayment");if(!retry||retry.dataset.retryBound==="1")return;retry.dataset.retryBound="1";retry.onclick=()=>verifySellerPayment().catch(error=>{$("paymentResult").innerHTML=`<div class="notice error">${escapeHtml(error.message)}<br><button id="retryPayment" class="secondary" type="button">Retry verification (do not pay again)</button></div>`;bindPaymentRetry()})}const paymentResult=$("paymentResult");if(paymentResult){new MutationObserver(bindPaymentRetry).observe(paymentResult,{childList:true,subtree:true});bindPaymentRetry()}</script></body></html>');
+      .replace("</script></body></html>", 'const metadataFile=document.querySelector("#metadataFile"),chooseMetadata=document.querySelector("#chooseMetadata");if(metadataFile&&chooseMetadata){chooseMetadata.onclick=()=>metadataFile.click();metadataFile.onchange=async()=>{const file=metadataFile.files&&metadataFile.files[0];if(!file)return;try{$("metadataImport").value=await file.text();notice("Metadata imported and ready for validation.","success")}catch(error){notice("Metadata import failed: "+(error.message||String(error)),"error")}}}function bindPaymentRetry(){const retry=$("retryPayment");if(!retry||retry.dataset.retryBound==="1")return;retry.dataset.retryBound="1";retry.onclick=()=>verifySellerPayment().catch(error=>{$("paymentResult").innerHTML=`<div class="notice error">${escapeHtml(error.message)}<br><button id="retryPayment" class="secondary" type="button">Retry verification (do not pay again)</button></div>`;bindPaymentRetry()})}const paymentResult=$("paymentResult");if(paymentResult){new MutationObserver(bindPaymentRetry).observe(paymentResult,{childList:true,subtree:true});bindPaymentRetry()}</script></body></html>')
+      .replace('tier:"basic",accept_terms:true,terms_version:"seller-marketplace-v1"', 'tier:document.querySelector(\'input[name="listingTier"]:checked\')?.value||"basic",free_listing_requested:document.querySelector(\'input[name="listingTier"]:checked\')?.value==="free",community_badge_acknowledged:document.querySelector("#communityBadgeAcknowledged")?.checked===true,accept_terms:true,terms_version:"seller-marketplace-v1"')
+      .replace('state.listing=q.listing;state.quote=q.quote;$("paymentSummary").innerHTML=', 'state.listing=q.listing;state.quote=q.quote;if(q.payment==="waived")$("paymentSummary").innerHTML=\'<div class="notice success">Community listing verified and published. No payment is required while the badge and backlink remain live.</div>\';else $("paymentSummary").innerHTML=')
+      .replace('$("pay").disabled=false;step(5)', '$("pay").disabled=q.payment==="waived";$("publish").disabled=q.payment==="waived";step(5)')
     return { statusCode: 200, headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store", "content-security-policy": "default-src 'self'; base-uri 'none'; object-src 'none'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; connect-src 'self' https://agents.privatedao.org https://api.mainnet-beta.solana.com; frame-ancestors 'none'", "x-content-type-options": "nosniff", "referrer-policy": "no-referrer", "permissions-policy": "camera=(), microphone=(), geolocation=()" }, body: sellerPortal };
   }
   if (method === "GET" && path === "/marketplace") {
