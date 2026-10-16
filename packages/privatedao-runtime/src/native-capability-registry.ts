@@ -95,7 +95,7 @@ const RECORD_SOLANA_DEVNET_EVIDENCE = {
 } as const;
 
 const SOLANA_DEVNET_POLICY_AUCTION_EVIDENCE = {
-  commit: "pending",
+  commit: "b7133360e",
   timestamp: "2026-10-15T21:52:24.921Z",
   treasuryProvider: "privatedao-treasury-policy",
   auctionBidProvider: "privatedao-auction-bid-commit",
