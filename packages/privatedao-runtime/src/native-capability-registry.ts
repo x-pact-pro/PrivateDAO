@@ -90,8 +90,8 @@ const BLIND_SOLANA_DEVNET_EVIDENCE = {
 
 const RECORD_SOLANA_DEVNET_EVIDENCE = {
   provider: "privatedao-record-verification",
-  commit: "pending",
-  timestamp: "2026-10-16T00:00:00.000Z",
+  commit: "b1b9cfbc2",
+  timestamp: "2026-10-16T00:52:52.252Z",
 } as const;
 
 const TEMPO_TESTNET_EVIDENCE = {
