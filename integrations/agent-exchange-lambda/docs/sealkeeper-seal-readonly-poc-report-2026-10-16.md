@@ -39,8 +39,9 @@ The zero-count, `level=none` result is the intended official test-agent outcome.
 ## Validation
 
 - Lambda lint: PASS
-- Lambda unit/integration suite: `79 PASS / 0 FAIL / 1 SKIP` (the skip is the opt-in live fixture test)
-- Official live fixtures: `11 PASS / 0 FAIL / 0 SKIP`, including valid, expired, bad-signature, unknown-key, version-4 handshake, and fixture identity assertions
+- Lambda unit/integration suite: `81 PASS / 0 FAIL / 1 SKIP` (the skip is the opt-in live fixture test)
+- Official read fixtures: `8 PASS / 0 FAIL`, covering checking, no-recent-check, no-seal, not-found, rate-limited, renamed, validation-failed, and withheld responses.
+- Official live fixtures: `13 PASS / 0 FAIL / 0 SKIP`, including valid, expired, bad-signature, unknown-key, version-4 handshake, and fixture identity assertions
 - Official CLI comparison: PASS; `npx sealkeeper@latest seal verify` exited `0` for the live test-agent SEAL.
 - Lambda package build: PASS; compressed package integrity check PASS
 - Repository quality gate: PASS
