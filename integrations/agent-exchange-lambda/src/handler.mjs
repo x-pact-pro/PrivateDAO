@@ -36,7 +36,7 @@ import { mongoProviderStatus, persistEvidence } from "./mongodb.mjs";
 import { assertPublicHttps, fetchPublicHttps } from "./url-safety.mjs";
 import { integrationDirectory, serviceDetails, serviceRecommendation, SERVICE_CATEGORIES } from "./exchange-metadata.mjs";
 import { issuePdaoChallenge, verifyPdaoHolderAccess } from "./pdao-entitlement.mjs";
-import { readSealReputation, sealkeeperFailure } from "./sealkeeper.mjs";
+import { HandshakeReplayCache, readSealReputation, sealkeeperFailure } from "./sealkeeper.mjs";
 
 const config = getConfig();
 let storePromise;
@@ -47,6 +47,7 @@ const now = () => new Date().toISOString();
 const githubSetupStateTtlMs = 15 * 60 * 1000;
 const githubRecordId = (installationId) => `github_installation_${String(installationId)}`;
 const githubStateId = (state) => `github_setup_state_${state}`;
+const sealkeeperReplayCache = new HandshakeReplayCache();
 const hashSecret = (value) => digest(String(value || ""));
 function secretMatches(supplied, storedHash) {
   if (!supplied || !storedHash) return false;
@@ -3700,7 +3701,7 @@ async function handle(e) {
     body = method === "GET" ? {} : parseBody(e);
   if (method === "OPTIONS") return json({}, 204);
   if (method === "POST" && path === "/api/internal/sealkeeper/verify") {
-    if (!config.sealReputationEnabled) return json({ error: "seal_reputation_disabled" }, 404);
+    if (!config.sealReputationEnabled || !adminTokenAuthorized(e)) return json({ error: "not_found" }, 404);
     const agentId = String(body.agent_id || body.agentId || "").trim();
     try {
       const fetchImpl = (url, init = {}) => fetch(url, { ...init, signal: AbortSignal.timeout(config.sealkeeperTimeoutMs) });
@@ -3711,6 +3712,7 @@ async function handle(e) {
         nonce: body.nonce,
         aud: body.aud,
         includeTasks: body.include_tasks !== false,
+        replayCache: sealkeeperReplayCache,
         fetchImpl,
       }));
     } catch (error) {
