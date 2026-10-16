@@ -28,6 +28,7 @@
     "esbuild": "0.28.2"
   },
   "overrides": {
+    "bigint-buffer": "file:vendor/bigint-buffer",
     "rpc-websockets": "9.3.3",
     "stream-json": "^3.6.0",
     "uuid": "^11.1.1"

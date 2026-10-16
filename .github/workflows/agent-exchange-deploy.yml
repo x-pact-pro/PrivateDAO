@@ -273,11 +273,16 @@ jobs:
 
           retry_json "$PUBLIC_BASE_URL/api/health" /tmp/health.json
           retry_json "$PUBLIC_BASE_URL/api/services" /tmp/services.json
+          retry_json "$PUBLIC_BASE_URL/api/products" /tmp/products.json
+          retry_json "$PUBLIC_BASE_URL/api/pricing" /tmp/pricing.json
           retry_json "$PUBLIC_BASE_URL/.well-known/agent-card.json" /tmp/agent-card.json
           retry_json "$PUBLIC_BASE_URL/openapi.json" /tmp/openapi.json
 
           jq -e '.services | type == "array" and length >= 24' /tmp/services.json >/dev/null
           jq -e '[.services[].id] | index("verify.basic") != null' /tmp/services.json >/dev/null
+          jq -e '.products | type == "array" and length >= 3' /tmp/products.json >/dev/null
+          jq -e '[.products[].id] | index("treasury-guard-scan") != null and index("token-safety-brief") != null and index("transaction-safety-check") != null' /tmp/products.json >/dev/null
+          jq -e '.products | length >= 3' /tmp/pricing.json >/dev/null
           jq -e '.openapi != null and .paths != null' /tmp/openapi.json >/dev/null
 
           echo "Production smoke gate passed."
