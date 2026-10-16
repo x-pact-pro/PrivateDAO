@@ -34,6 +34,7 @@ import { githubProviderStatus, repositoryEvidence } from "./github.mjs";
 import { applyGithubMarketplacePurchase, githubAppConfigured, githubGetInstallation, githubInstallationRepositories, githubRepositoryContext, mergeGithubInstallationRepositories, publicGithubInstallationRecord, verifyGithubWebhook } from "./github-app.mjs";
 import { mongoProviderStatus, persistEvidence } from "./mongodb.mjs";
 import { assertPublicHttps, fetchPublicHttps } from "./url-safety.mjs";
+import { reviewSellerSubmission } from "./seller-review.mjs";
 import { integrationDirectory, serviceDetails, serviceRecommendation, SERVICE_CATEGORIES } from "./exchange-metadata.mjs";
 import { PRODUCTS, productById, publicProduct } from "./products.mjs";
 import { issuePdaoChallenge, verifyPdaoHolderAccess } from "./pdao-entitlement.mjs";
@@ -374,6 +375,37 @@ $("dashSales").innerHTML='<h3>Recent receipts</h3>'+((d.sales.receipts||[]).slic
 async function loadPromotions(){try{const p=await json(await fetch("/api/marketplace/policy"));$("promotions").innerHTML=Object.entries(p.promotion_packages||{}).map(([id,x])=>'<article class="card promotion"><h3>'+escapeHtml(x.label)+'</h3><strong>$'+Number(x.price_usd).toFixed(2)+' · '+x.duration_days+' days</strong><p class="muted">'+escapeHtml(x.deliverables.join(" · "))+'</p><small>Channels: '+escapeHtml(x.channels.join(", "))+' · '+escapeHtml(x.approval_required?"approval required":"PrivateDAO delivery")+'</small><small>Third-party acceptance is outside PrivateDAO control where applicable.</small><button class="secondary" data-promo="'+escapeAttr(id)+'">View package</button></article>').join("");all("[data-promo]").forEach(b=>b.onclick=()=>notice("Promotion is optional. PrivateDAO delivers only the package deliverables shown; payment does not guarantee third-party partnership, endorsement, or acceptance.","success"))}catch(_e){}}
 $("refreshDash").onclick=()=>loadDashboard().catch(e=>notice(e.message,"error"));$("rotate").onclick=async()=>{try{const r=await json(await fetch("/api/registry/agents/"+encodeURIComponent(state.agent.id)+"/owner-token/rotate",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({owner_token:state.token})}));state.token=r.owner_token;$("rotateResult").innerHTML='<div class="notice success">New credential (save now; shown once):<pre class="json">'+escapeHtml(r.owner_token)+'</pre></div>'}catch(e){$("rotateResult").innerHTML='<div class="notice error">'+escapeHtml(e.message)+'</div>'}};policy().catch(()=>{});
 </script></body></html>`.replace('<strong id="heroFee">', '<strong id="listingFee"><span id="heroFee">').replace('</strong><p>per agent', '</span></strong><p>per agent').replace('first five commercial services', 'first <span id="serviceLimit">five</span> commercial services').replace('<b id="heroCommission">', '<b id="platformFee"><span id="heroCommission">').replace('</b> PrivateDAO fee', '</span></b> PrivateDAO fee').replace('<b id="heroNet">', '<b id="sellerNet"><span id="heroNet">').replace('%.</b>', '%.</span></b>').replace('Only discovered read-only tools can be selected.', 'Select read-only commercial tools. Only discovered read-only tools can be selected.').replace('<div id="tools" class="grid">', '<div id="toolPicker" class="hidden">Select read-only commercial tools</div><input id="metadataFile" type="file" accept="application/json" hidden><div id="tools" class="grid">').replace('Connect wallet and pay', 'Pay listing fee with wallet').replace('<h3>Security</h3>', '<h3>Security</h3><span id="rotateCredential" class="hidden"></span>').replace('async function policy()', 'async function loadMarketplacePolicy()').replace('policy().catch', 'loadMarketplacePolicy().catch').replace('<h2>Verify your agent connection</h2>', '<h2>Verify MCP and preview services</h2>');
+}
+function sellerPortalPageAutomated() {
+  return sellerPortalPageV5()
+    .replace(
+      '<div class="field"><label for="endpoint">Public MCP endpoint</label><input id="endpoint" type="url" required placeholder="https://your-domain.example/mcp"></div>',
+      '<div class="field"><label for="endpoint">Public MCP endpoint</label><input id="endpoint" type="url" required placeholder="https://your-domain.example/mcp"></div><div class="grid"><div class="field"><label for="websiteUrl">Public website</label><input id="websiteUrl" type="url" placeholder="https://example.com"></div><div class="field"><label for="githubUrl">Public GitHub repository</label><input id="githubUrl" type="url" placeholder="https://github.com/org/repo"></div><div class="field"><label for="docsUrl">Public documentation</label><input id="docsUrl" type="url" placeholder="https://docs.example.com"></div></div>',
+    )
+    .replace(
+      '<label class="field"><input id="terms" type="checkbox"',
+      '<div id="reviewScore" class="notice hidden"></div><label class="field"><input id="autoPublish" type="checkbox" style="width:auto"> Automatically publish after finalized payment if automated screening passes.</label><label class="field"><input id="terms" type="checkbox"',
+    )
+    .replace(
+      'state.tools=r.discovered_tools||[];',
+      'state.tools=r.discovered_tools||[];state.review=r.automated_review||null;',
+    )
+    .replace(
+      'renderTools();renderServiceEditor();step(2)',
+      'renderTools();renderServiceEditor();if(state.review){$("connectionResult").textContent+=" Automated quality score: "+String(state.review.quality_score)+" · security gate: "+String(state.review.security_gate)}step(2)',
+    )
+    .replace(
+      'accepted_assets:$("acceptedAssets").value.split(",").map(x=>x.trim()).filter(Boolean),payout:',
+      'accepted_assets:$("acceptedAssets").value.split(",").map(x=>x.trim()).filter(Boolean),website_url:$("websiteUrl").value.trim()||undefined,github_url:$("githubUrl").value.trim()||undefined,docs_url:$("docsUrl").value.trim()||undefined,auto_publish:$("autoPublish").checked,payout:',
+    )
+    .replace(
+      'accept_terms:true,terms_version:"seller-marketplace-v1"',
+      'accept_terms:true,terms_version:"seller-marketplace-v1",auto_publish:$("autoPublish").checked',
+    )
+    .replace(
+      `$("paymentResult").innerHTML='<div class="success notice">Payment independently verified. Publication is eligible; click Publish to make selected services public.</div>';$("publish").disabled=false`,
+      `$("paymentResult").innerHTML=state.listing.publication==="published"?'<div class="success notice">Payment verified and the listing was published automatically.</div>':'<div class="success notice">Payment verified. Publication is eligible; click Publish to make selected services public.</div>';$("publish").disabled=state.listing.publication!=="published"`,
+    );
 }
 async function githubWebhook(body, rawBody, signature, eventName) {
   if (!config.githubWebhookSecret) throw Object.assign(new Error("GitHub webhook secret is not configured"), { statusCode: 503 });
@@ -723,6 +755,7 @@ function openapi() {
     "/api/registry/agents/{agentId}/services": { patch: { operationId: "updateSellerServices" } },
     "/api/registry/agents/{agentId}/seller-readiness": { get: { operationId: "sellerReadiness" } },
     "/api/seller/dashboard/{agentId}": { get: { operationId: "sellerDashboard" } },
+    "/api/seller/security-review": { post: { operationId: "automatedSellerSecurityReview" } },
     "/api/seller/metadata/preview": { post: { operationId: "previewSellerMetadata" } },
     "/api/registry/agents/{agentId}/publish": { post: { operationId: "publishSeller" } },
     "/api/registry/agents/{agentId}/unpublish": { post: { operationId: "unpublishSeller" } },
@@ -1519,12 +1552,15 @@ function commercialHomePage() {
 </style></head><body><main><header><a class="brand" href="/">PrivateDAO Agent Exchange</a><nav class="nav"><a href="/marketplace">Marketplace</a><a href="/connect">Connect</a><a href="/mcp">MCP</a></nav></header><section class="hero"><div><p class="eyebrow">PrivateDAO Agent Exchange</p><h1>Services for agents.<br><em>Evidence for decisions.</em></h1><p class="lead">A commercial service layer for AI agents. Discover a capability, request the work, pay only when required, and receive evidence that can be checked independently.</p><div class="actions"><a class="button" href="/marketplace">Explore services →</a><a class="button alt" href="/connect">Connect an agent</a></div></div><p class="side-note"><strong>Free to start.</strong><br>Paid services are quote-first.<br>Payment is finalized on Solana Mainnet USDC.<br>Completed work returns a verifiable receipt.</p></section><section class="flow" aria-label="Agent Exchange lifecycle"><div><b>1. DISCOVER</b><span>Choose a capability.</span></div><div><b>2. REQUEST</b><span>Send structured input.</span></div><div><b>3. EXECUTE</b><span>Read-only evidence work.</span></div><div><b>4. PAY</b><span>Only when a quote requires it.</span></div><div><b>5. VERIFY</b><span>Inspect the receipt.</span></div></section><section class="section"><p class="eyebrow">What can an agent use?</p><h2>One exchange. Six clear service families.</h2><p>Start with verification, add intelligence and risk context, simulate transactions, or coordinate with other agents.</p><div class="category-grid">${categories}</div><p><a href="/marketplace">See every service, price and input →</a></p></section><section class="section"><p class="eyebrow">Connected ecosystem</p><h2>Enterprise AI and agent interoperability in one place.</h2><p>PrivateDAO connects commercial workflows to the tools and ecosystems agents already use, with relationship status stated clearly.</p><div class="integration-grid">${integrations}</div><p><a href="/api/integrations">View integration details →</a></p></section><section class="section"><p class="eyebrow">For autonomous agents</p><h2>Detailed enough for independent execution.</h2><p>Use the MCP endpoint to inspect the full catalog, get a task recommendation, understand payment, execute a job, retrieve a result and verify its receipt.</p><p><a href="/mcp">Open the MCP guide →</a> · <a href="/.well-known/agent-card.json">Read the Agent Card</a></p></section><footer class="footer"><span>PrivateDAO Agent Exchange · part of the PrivateDAO ecosystem</span><span><a href="/marketplace">Services</a> · <a href="/connect">Connect</a> · <a href="/openapi.json">OpenAPI</a></span></footer></main></body></html>`;
 }
 function commercialHomePageWithOffer() {
+  const proofServices = SERVICES.filter((service) => service.access === "free" || ["token.intelligence", "risk.score", "wallet.intelligence", "transaction.explain", "transaction.simulate", "receipt.verify"].includes(service.id)).slice(0, 8);
+  const proofRows = proofServices.map((service) => `<tr><th scope="row"><a href="${servicePath(service.id)}">${escapeHtml(service.id)}</a></th><td>${escapeHtml(service.access === "free" ? "Free" : String(service.price) + " " + service.currency)}</td><td>${escapeHtml(service.input)}</td><td>${escapeHtml(service.output)}</td></tr>`).join("");
+  const agentDishEvidence = `<section class="section" id="agent-evidence"><p class="eyebrow">Evidence for buyers and agents</p><h2>Concrete integration surface</h2><p>Use the public catalog to choose a capability, the OpenAPI contract to integrate it, or MCP/A2A discovery to let an agent inspect the same services. Pricing is server-defined and paid execution is quote-first.</p><div class="category-grid"><article class="category"><span>Live endpoints</span><h3>Read the contract before you call</h3><p><a href="/api/services">Service catalog</a> · <a href="/openapi.json">OpenAPI</a> · <a href="/mcp">MCP guide</a> · <a href="/.well-known/agent-card.json">Agent Card</a></p></article><article class="category"><span>Execution proof</span><h3>Request, pay, receive, verify</h3><p>Free checks can return a result immediately. Paid jobs return an exact quote, require finalized Solana Mainnet USDC payment, and return an ordered receipt.</p></article><article class="category"><span>Honest boundary</span><h3>Evidence, not certification</h3><p>Results are read-only evidence and decision context. They are not legal advice, security audits, custody, or a guarantee that an asset or agent is safe.</p></article></div><div style="overflow:auto;margin-top:22px"><table class="proof-table"><caption>Representative live service pricing and outputs</caption><thead><tr><th scope="col">Service</th><th scope="col">Price</th><th scope="col">Input</th><th scope="col">Output</th></tr></thead><tbody>${proofRows}</tbody></table></div><div class="example"><p class="eyebrow">Example request</p><pre>{ "service_id": "verify.basic", "input": { "evidence": { "subject": "example" } } }</pre><p class="eyebrow">Example result shape</p><pre>{ "status": "completed", "result": { "verification_status": "VERIFIED", "canonical_digest": "..." }, "receipt": { "receipt_id": "...", "integrity": "verifiable" } }</pre></div><p><strong>Available now:</strong> catalog discovery, free verification, quote-first paid read-only services, receipts, MCP/A2A discovery, and seller onboarding. <strong>Separate or gated:</strong> optional provider integrations, sponsorship, and future capabilities are labeled in the API and are never implied by a logo.</p></section>`;
   const offer = `<section class="section"><p class="eyebrow">Commercial model</p><h2>Built for a service economy.</h2><p>${escapeHtml(COMMERCIAL_HOLDER_OFFER)}</p><p>Developers list once, buyers pay only for completed work, and every commercial outcome carries a receipt and accounting trail.</p><div class="category-grid"><article class="category"><span>Seller onboarding</span><h3>$10 once per agent</h3><p>One listing fee covers the agent and its first five commercial services. It is separate from GitHub Marketplace billing.</p></article><article class="category"><span>Execution economics</span><h3>10% platform fee · 90% seller net</h3><p>Applied to successfully completed paid executions and shown in the quote, receipt, and settlement record.</p></article><article class="category"><span>Holder access</span><h3>30 days at $25 PDAO value</h3><p>The exact PDAO mint is checked from the signed wallet at every request. No transaction is sent for eligibility.</p></article></div></section>`;
   return commercialHomePage()
     .replace('<a href="/connect">Connect an agent</a>', '<a href="/products">Products</a><a href="/connect">Connect an agent</a>')
     .replace('<a href="/mcp">MCP</a>', '<a href="/mcp">MCP</a><a href="/a2a">A2A</a><a href="/sellers">Sell</a>')
     .replace('A commercial service layer for AI agents. Discover a capability, request the work, pay only when required, and receive evidence that can be checked independently.', 'A commercial service economy for people and autonomous agents. Discover a capability, request the work, use PDAO holder access when eligible or pay quoted USDC on Solana Mainnet, and receive independently verifiable evidence.')
-    .replace('<section class="section"><p class="eyebrow">What can an agent use?</p>', `${offer}<section class="section"><p class="eyebrow">What can an agent use?</p>`)
+    .replace('<section class="section"><p class="eyebrow">What can an agent use?</p>', `${offer}${agentDishEvidence}<section class="section"><p class="eyebrow">What can an agent use?</p>`)
     .replace('Use the MCP endpoint to inspect the full catalog, get a task recommendation, understand payment, execute a job, retrieve a result and verify its receipt.', 'Use A2A or MCP to inspect the catalog, request a quote or holder challenge, execute a service, retrieve a result and verify its receipt. Sellers can list through the self-service portal; investors can see the fee and settlement model clearly.')
     .replace('Paid services are quote-first.<br>Payment is finalized on Solana Mainnet USDC.', 'Paid services are quote-first.<br>Pay quoted USDC on Solana Mainnet or use verified PDAO holder access.')
     .replace('<a href="/connect">Connect an agent</a>', '<a href="/connect">Connect an agent</a><a href="/sellers">List your agent</a>');
@@ -2003,6 +2039,9 @@ async function sellerListingQuote(body) {
   if (body.accept_terms !== true || String(body.terms_version || "") !== SELLER_TERMS_VERSION)
     throw Object.assign(new Error(`seller terms acceptance is required (${SELLER_TERMS_VERSION})`), { statusCode: 400 });
   const policy = await marketplacePolicy();
+  const autoPublish = body.auto_publish === true || body.autoPublish === true;
+  if (autoPublish && agent.automated_review?.status !== "passed")
+    throw Object.assign(new Error("automated security screening must pass before auto-publication"), { statusCode: 409 });
   const tierId = String(body.tier || "free").toLowerCase();
   const tier = policy.seller_tiers[tierId];
   if (!tier) throw Object.assign(new Error("seller tier is not supported"), { statusCode: 400 });
@@ -2049,7 +2088,7 @@ async function sellerListingQuote(body) {
   const listing = {
     ...(existing || {}), id: listingId, agentId: agent.id, seller_agent_id: agent.id, provider: agent.name, type: "seller_listing",
     tier: tierId, service_ids: existing?.payment_status === "paid" ? existing.service_ids || [] : quote.seller_service_ids, pending_service_ids: quote.seller_service_ids, listing_fee_status: existing?.payment_status === "paid" ? "paid" : "awaiting_payment", payment_status: existing?.payment_status === "paid" ? "paid" : "pending",
-    status: existing?.payment_status === "paid" ? existing.status : "pending", commercial_publication_status: existing?.commercial_publication_status || "draft", quote_id: quote.quote_id, commercial_services_hash: quote.commercial_services_hash, terms_version: quote.terms_version, terms_accepted_at: quote.terms_accepted_at, created_at: existing?.created_at || now(), updated_at: now(),
+    status: existing?.payment_status === "paid" ? existing.status : "pending", commercial_publication_status: existing?.commercial_publication_status || "draft", auto_publish_requested: autoPublish || existing?.auto_publish_requested === true, quote_id: quote.quote_id, commercial_services_hash: quote.commercial_services_hash, terms_version: quote.terms_version, terms_accepted_at: quote.terms_accepted_at, created_at: existing?.created_at || now(), updated_at: now(),
   };
   await storage.put("Listings", listingId, listing);
   return { listing, quote, policy, tier, fee_plan: plan, status: "awaiting_payment" };
@@ -2105,10 +2144,11 @@ async function submitSellerListingPayment(id, body) {
   await storage.put("Revenue", `rev_${id}_${quote.quote_id}`, { id: `rev_${id}_${quote.quote_id}`, feeType, listingId: id, seller_agent_id: agent.id, seller_service_ids: quote.seller_service_ids, grossAmount: quote.amount, providerAmount: 0, protocolFee: quote.amount, platformFeeAmount: quote.amount, feeBps: 10000, asset: quote.currency, paymentSignature: body.signature, settlementStatus: "platform_collected", timestamp: now() });
   const paidServiceIds = [...new Set([...(listing.service_ids || []), ...quote.seller_service_ids])];
   const isAdditional = quote.payment_type === "seller_additional_service_fee";
-  const nextListing = { ...listing, payment_status: "paid", listing_fee_status: "paid", service_ids: paidServiceIds, pending_service_ids: [], commercial_publication_status: isAdditional ? listing.commercial_publication_status : "eligible", status: isAdditional ? listing.status : "eligible", payment_signature: body.signature, receipt_id: receipt.receipt_id, settlement_id: settlementId, paid_at: now(), updated_at: now() };
+  const autoPublished = !isAdditional && listing.auto_publish_requested === true && agent.automated_review?.status === "passed";
+  const nextListing = { ...listing, payment_status: "paid", listing_fee_status: "paid", service_ids: paidServiceIds, pending_service_ids: [], commercial_publication_status: isAdditional ? listing.commercial_publication_status : (autoPublished ? "published" : "eligible"), status: isAdditional ? listing.status : (autoPublished ? "active" : "eligible"), payment_signature: body.signature, receipt_id: receipt.receipt_id, settlement_id: settlementId, paid_at: now(), updated_at: now() };
   await storage.put("Listings", id, nextListing);
-  await storage.put("Registry", agent.id, { ...agent, commercial_publication_status: isAdditional ? agent.commercial_publication_status : "eligible", listing_fee_status: "paid", listing_fee_ledger: nextLedger, seller_tier: listing.tier, listing_fee_quote_id: quote.quote_id, listing_fee_payment_signature: body.signature, listing_fee_paid_at: now(), updated_at: now() });
-  return { status: "paid", listing: nextListing, receipt, settlement };
+  await storage.put("Registry", agent.id, { ...agent, commercial_publication_status: isAdditional ? agent.commercial_publication_status : (autoPublished ? "published" : "eligible"), listing_fee_status: "paid", listing_fee_ledger: nextLedger, seller_tier: listing.tier, listing_fee_quote_id: quote.quote_id, listing_fee_payment_signature: body.signature, listing_fee_paid_at: now(), updated_at: now() });
+  return { status: "paid", publication: autoPublished ? "published" : "eligible", listing: nextListing, receipt, settlement };
 }
 async function sellerListingPaymentIntent(id) {
   const listing = await (await store()).get("Listings", id);
@@ -3576,6 +3616,14 @@ async function previewSellerMetadata(body) {
   const acceptedAssets = sellerAcceptedAssets(body.accepted_assets || body.acceptedAssets);
   if (!acceptedAssets.length) errors.push({ field: "accepted_assets", message: "at least one accepted asset is required before publication" });
   if (!payout) errors.push({ field: "payout", message: "payout address, network, and asset are required before publication" });
+  const review = await reviewSellerSubmission({
+    endpoint: discovery.url,
+    websiteUrl: body.website_url || body.websiteUrl,
+    githubUrl: body.github_url || body.githubUrl,
+    docsUrl: body.docs_url || body.docsUrl,
+    discovery,
+    services,
+  });
   return {
     status: errors.length ? "action_required" : "ready_for_registration",
     endpoint: discovery.url,
@@ -3584,8 +3632,26 @@ async function previewSellerMetadata(body) {
     commercial_services: services,
     accepted_assets: acceptedAssets,
     payout,
+    automated_review: review,
     errors,
   };
+}
+
+async function automatedSellerReview(body) {
+  const endpoint = body.mcp_url || body.mcpUrl || body.endpoint;
+  if (!endpoint) throw Object.assign(new Error("mcp_url is required"), { statusCode: 400 });
+  const discovery = await discoverMcp(endpoint);
+  let services;
+  try { services = normalizeCommercialServices(body.commercial_services || body.commercialServices || []); }
+  catch (error) { throw Object.assign(new Error(`invalid commercial metadata: ${error.message}`), { statusCode: 400 }); }
+  return reviewSellerSubmission({
+    endpoint: discovery.url,
+    websiteUrl: body.website_url || body.websiteUrl,
+    githubUrl: body.github_url || body.githubUrl,
+    docsUrl: body.docs_url || body.docsUrl,
+    discovery,
+    services,
+  });
 }
 
 async function registerMcp(body) {
@@ -3596,6 +3662,10 @@ async function registerMcp(body) {
     allowedTools: body.allowedTools ?? body.allowed_tools,
     forceRefresh: body.forceRefresh ?? body.force_refresh,
     persistUnavailable: body.persistUnavailable ?? body.persist_unavailable,
+    autoPublish: body.autoPublish ?? body.auto_publish,
+    websiteUrl: body.websiteUrl ?? body.website_url,
+    githubUrl: body.githubUrl ?? body.github_url,
+    docsUrl: body.docsUrl ?? body.docs_url,
     commercialServices: body.commercialServices ?? body.commercial_services,
     acceptedAssets: body.acceptedAssets ?? body.accepted_assets,
   };
@@ -3611,7 +3681,7 @@ async function registerMcp(body) {
   const suppliedOwnerToken = body.ownerToken || body.owner_token || "";
   const hasSellerMutation = [
     "name", "allowedTools", "allowed_tools", "tags", "networks", "commercialServices", "commercial_services",
-    "acceptedAssets", "accepted_assets", "payout", "forceRefresh", "force_refresh", "persistUnavailable", "persist_unavailable",
+    "acceptedAssets", "accepted_assets", "payout", "forceRefresh", "force_refresh", "persistUnavailable", "persist_unavailable", "autoPublish", "auto_publish", "websiteUrl", "website_url", "githubUrl", "github_url", "docsUrl", "docs_url",
   ].some((key) => body[key] !== undefined);
   if (existing?.owner_token_hash && suppliedOwnerToken && !secretMatches(suppliedOwnerToken, existing.owner_token_hash))
     throw Object.assign(new Error("seller ownership token is invalid"), { statusCode: 403 });
@@ -3668,6 +3738,14 @@ async function registerMcp(body) {
   const discoveredNames = new Set(discovery.tools.map((tool) => tool.name));
   const safeByName = new Map(discovery.tools.map((tool) => [tool.name, tool]));
   validateMcpCommercialServices(discovery, commercialServices);
+  const automatedReview = await reviewSellerSubmission({
+    endpoint: discovery.url,
+    websiteUrl: body.websiteUrl || body.website_url || existing?.website_url,
+    githubUrl: body.githubUrl || body.github_url || existing?.github_url,
+    docsUrl: body.docsUrl || body.docs_url || existing?.docs_url,
+    discovery,
+    services: commercialServices,
+  });
   const allowedTools = (requested || existing?.allowed_tools || defaultMcpAllowlist(discovery.tools)).filter((name) => discoveredNames.has(name) && safeMcpTool(safeByName.get(name)));
   const agent = {
     id,
@@ -3703,6 +3781,11 @@ async function registerMcp(body) {
     owner_token_hash: existing?.owner_token_hash || hashSecret(ownerToken),
     networks: Array.isArray(body.networks) ? body.networks.map(normalizeNetworkId).filter(Boolean) : (existing?.networks || []),
     tags: body.tags || ["external", "mcp"],
+    website_url: body.websiteUrl || body.website_url || existing?.website_url || null,
+    github_url: body.githubUrl || body.github_url || existing?.github_url || null,
+    docs_url: body.docsUrl || body.docs_url || existing?.docs_url || null,
+    automated_review: automatedReview,
+    auto_publish_requested: body.autoPublish === true || body.auto_publish === true || existing?.auto_publish_requested === true,
     status: "connected",
     health: "connected",
     last_successful_connection: now(),
@@ -4043,7 +4126,7 @@ async function handle(e) {
   }
   if (method === "GET" && (path === "/sellers" || path === "/list-your-agent")) {
     trackFunnel("seller_portal_view");
-    const sellerPortal = sellerPortalPageV5()
+    const sellerPortal = sellerPortalPageAutomated()
       .replace('<section class="hero">', `${commercialOfferBanner()}<section class="hero">`)
       .replace("</style>", "@media(max-width:650px){.shell{padding:10px}}</style>")
       .replace('<input id="metadataFile" type="file" accept="application/json" hidden>', '<div class="actions" style="margin-top:12px"><button id="chooseMetadata" class="secondary" type="button">Import metadata JSON</button><input id="metadataFile" type="file" accept="application/json" hidden></div>')
@@ -4418,6 +4501,8 @@ async function handle(e) {
     );
   if (method === "POST" && path === "/api/registry/register")
     return json(await register(body), 201);
+  if (method === "POST" && path === "/api/seller/security-review")
+    return json(await automatedSellerReview(body));
   if (method === "POST" && path === "/api/seller/metadata/preview")
     return json(await previewSellerMetadata(body));
   const sellerTokenRotation = path.match(/^\/api\/registry\/agents\/([^/]+)\/owner-token\/rotate$/);
@@ -4661,6 +4746,14 @@ async function mcp(request) {
         commercial_services: { type: "array", maxItems: 64, items: { type: "object" }, description: "Snake-case compatibility alias for commercialServices." },
         acceptedAssets: { type: "array", maxItems: 20, items: { type: "string", maxLength: 20 } },
         accepted_assets: { type: "array", maxItems: 20, items: { type: "string", maxLength: 20 }, description: "Snake-case compatibility alias for acceptedAssets." },
+        websiteUrl: { type: "string", format: "uri", description: "Optional public HTTPS website used for automated screening." },
+        website_url: { type: "string", format: "uri", description: "Snake-case compatibility alias for websiteUrl." },
+        githubUrl: { type: "string", format: "uri", description: "Optional public GitHub repository used for automated screening." },
+        github_url: { type: "string", format: "uri", description: "Snake-case compatibility alias for githubUrl." },
+        docsUrl: { type: "string", format: "uri", description: "Optional public HTTPS documentation URL used for automated screening." },
+        docs_url: { type: "string", format: "uri", description: "Snake-case compatibility alias for docsUrl." },
+        autoPublish: { type: "boolean", description: "Request publication immediately after finalized listing payment if automated screening passes." },
+        auto_publish: { type: "boolean", description: "Snake-case compatibility alias for autoPublish." },
         payout: { type: "object", properties: { address: { type: "string" }, network: { type: "string" }, asset: { type: "string" } }, additionalProperties: false },
       },
       anyOf: [{ required: ["mcpUrl"] }, { required: ["mcp_url"] }, { required: ["endpoint"] }],

@@ -39,6 +39,7 @@ The human batch checkout and the automation contract are documented in
 - `/api/github/webhook` signed installation and Marketplace lifecycle webhook
 - `/api/github/context` authenticated read-only installation repository context
 - `/api/registry/services` external seller service discovery
+- `/api/seller/security-review` automated seller screening and quality score
 - `/api/external/jobs` quote-first external seller execution
 
 ## AI client compatibility
@@ -89,6 +90,15 @@ must be delivered to the seller through a separate secure channel. Registration
 updates without the token are rejected, while a healthy re-registration without
 seller mutations remains idempotent. Payment, commercial publication, and
 technical MCP verification remain separate states.
+
+Seller screening accepts optional public `website_url`, `github_url`, and
+`docs_url` metadata. It checks public HTTPS reachability, GitHub repository
+visibility, MCP identity, discovered tool safety, and selected service
+alignment. The result contains a bounded `quality_score` and a separate
+`security_gate`. A passed result is automated screening only, not a security
+audit, legal certification, or guarantee of safe behavior. `auto_publish` is
+honored only after finalized listing payment and a passed screening gate;
+otherwise the seller remains eligible for explicit publication.
 
 Use the endpoint as a custom remote MCP app in ChatGPT developer mode, as a
 remote HTTP MCP server in Claude, or as an OpenClaw `streamable-http` server.
