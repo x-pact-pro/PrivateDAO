@@ -12,6 +12,13 @@ const poseidonProviders = new Set(["@iden3/js-crypto", "@noble/hashes", "poseido
 
 assert.equal(rootPackage.dependencies["@iden3/js-crypto"], "1.3.3", "Poseidon provider must remain pinned");
 assert.equal(rootPackage.dependencies["@noble/hashes"], "2.2.0", "Poseidon hash peer must remain pinned");
+assert.equal(
+  JSON.parse(fs.readFileSync(new URL("../apps/web/package.json", import.meta.url), "utf8")).dependencies[
+    "@magicblock-labs/ephemeral-rollups-sdk"
+  ],
+  "0.17.3",
+  "MagicBlock must remain exact-pinned until its TEE dependency is re-audited",
+);
 assert.equal(rootPackages["node_modules/@iden3/js-crypto"]?.version, "1.3.3", "lockfile Poseidon provider drifted");
 assert.equal(rootPackages["node_modules/@noble/hashes"]?.version, "2.2.0", "lockfile hash peer drifted");
 

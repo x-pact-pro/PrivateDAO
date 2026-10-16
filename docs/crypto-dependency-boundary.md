@@ -12,6 +12,9 @@ PrivateDAO keeps the production ZK path separate from the browser TEE path.
 - The only remaining web `elliptic@6.6.1` path is:
   `@magicblock-labs/ephemeral-rollups-sdk@0.17.3` ->
   `@phala/dcap-qvl@0.3.9` -> `elliptic`.
+- MagicBlock is exact-pinned at `0.17.3`; caret upgrades are intentionally
+  disabled because a TEE dependency change requires attestation and browser
+  regression tests.
 
 ## Why this is not auto-downgraded
 
@@ -25,6 +28,10 @@ That change is intentionally not performed by an automated dependency fix.
 The current mitigation is containment: the residual is TEE-only, excluded from
 the Poseidon/Groth16 graph, and guarded by
 `scripts/test-zk-dependency-boundary.mjs`.
+
+This is a real upstream low-severity audit finding, not a claim that the web
+graph is vulnerability-free. It remains open until MagicBlock/Phala publish a
+compatible replacement or PrivateDAO completes a reviewed TEE migration.
 
 ## Acceptance rule
 

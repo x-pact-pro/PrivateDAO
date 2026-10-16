@@ -35,14 +35,15 @@ The remaining `mocha` finding cannot be fixed by the currently compatible `ts-mo
 ## Web Dependency Graph
 
 The web application has a separate `apps/web/package-lock.json` and must be
-audited independently. The current audit reports 16 findings in the full
-graph (13 high and 3 low), and 12 findings when dev dependencies are omitted
-(9 high and 3 low). The findings are not the removed Poseidon chain.
+audited independently. On 2026-10-16, the current audit reports 12 findings
+when dev dependencies are omitted (9 high and 3 low). The findings are not
+the removed Poseidon chain.
 
 - `elliptic` is pulled by `@phala/dcap-qvl@0.3.9`, which is pulled by
   `@magicblock-labs/ephemeral-rollups-sdk@0.17.3`. The current MagicBlock
-  release still declares that dependency; a lockfile override would change an
-  attestation dependency without an upstream compatibility guarantee.
+  release still declares that dependency. MagicBlock is exact-pinned in
+  `apps/web/package.json`; a lockfile override would change an attestation
+  dependency without an upstream compatibility guarantee.
 - `react-native`/Metro and `braces`/`micromatch` are transitive mobile-wallet
   and framework paths. They require a coordinated upstream upgrade and a full
   web build/browser regression run, not a selective lockfile substitution.
@@ -57,7 +58,7 @@ the root runtime graph; it must not be generalized to the web graph until the
 upstream fixes are released and validated.
 
 `npm audit fix --prefix apps/web --package-lock-only --dry-run --json` proposed
-zero lockfile changes and left the same 16 full-graph findings. The available
+no safe lockfile changes for the current graph. The available
 automated Next fix is a major downgrade to `eslint-config-next@14.2.35`, and
 the available MagicBlock fix is a major move to
 `@magicblock-labs/ephemeral-rollups-sdk@0.8.5`.
