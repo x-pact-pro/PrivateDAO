@@ -1,6 +1,6 @@
 # Enterprise Kernel Operational Security Review
 
-Date: 2026-10-15
+Date: 2026-10-16
 
 ## Scope
 
@@ -35,9 +35,18 @@ Testnet runner, and the Rust dependency graph used by the Zcash provider.
   unsoundness warnings recorded below.
 - Root `npm audit --omit=dev` reports zero production vulnerabilities. The full
   root audit has only low-severity development findings after the Mocha and
-  brace-expansion lockfile refresh. The separate `apps/web` production
-  lockfile reports 12 transitive findings (9 high and 3 low) in the React
-  Native/Metro/MagicBlock graph; those findings are not claimed as resolved.
+  brace-expansion lockfile refresh. The current `apps/web` production
+  lockfile reports three low findings, all in the MagicBlock/Phala/elliptic
+  graph; those findings are not claimed as resolved.
+- The enterprise evidence generator currently reports 60 rows across six
+  products and ten ecosystems: 53 verified and 7 planned. Agent Exchange is
+  excluded from those 60 rows. The generated native capability matrix is now
+  synchronized with the runtime registry (`238` entries; `91` testnet
+  verified, `10` devnet verified, `2` mainnet live).
+- The boundary and runtime checks pass: `verify:application-bindings`,
+  `test:enterprise-boundary`, `test:runtime`, `test:zcash:gateway-path`, and
+  `verify:zcash:network-evidence`. The Zcash evidence verifier still reports
+  `productLanesProven: false`.
 
 ## Remaining dependency findings
 
@@ -55,13 +64,27 @@ format dependencies requires an upstream SDK compatibility change and must be
 validated with the full Anchor and MagicBlock test suite. No keypairs were
 generated and no deployment was performed during this review.
 
-The web residuals are isolated to transitive packages pulled by the Solana
-wallet adapter and MagicBlock SDK: React Native/Metro, `micromatch`/`braces`,
-`@phala/dcap-qvl`, and `elliptic`. `next` and `eslint-config-next` are pinned
-to the current compatible 16.4.1 release. The remaining ESLint and React
-Native/Metro advisories have no compatible non-vulnerable upgrade identified
-in this review; the suggested downgrade to Next 14 is not compatible with the
-current application and was not applied.
+The web residual is isolated to `@phala/dcap-qvl` -> `elliptic`, pulled by the
+MagicBlock SDK. `next` and `eslint-config-next` are pinned to the current
+compatible 16.4.1 release, so the older Next.js and shell-quote alerts still
+visible on the default GitHub branch do not describe this review branch. No
+safe patched elliptic release is available for this dependency path; the
+suggested MagicBlock downgrade would be a major compatibility change and was
+not applied. The earlier ZK-related downgrade proposal remains rejected until
+upstream compatibility and proof-vector tests exist.
+
+## Evidence gaps
+
+- Zcash has no independent product receipts in the repository. The isolated
+  vault artifacts inspected on 2026-10-16 contain six failed product runs with
+  no transaction IDs or receipts, so all seven Zcash enterprise rows remain
+  planned rather than promoted.
+- Hyperliquid Payroll has no independent organizational payroll deployment
+  artifact, so that row remains planned. Existing HyperEVM evidence does not
+  prove HyperCore or Payroll execution.
+- The enterprise review branch is published as PR #149 and has passing
+  `ci-verify` and `agent-exchange-verify` checks. No merge or deployment was
+  performed.
 
 ## Release gate
 
