@@ -282,6 +282,48 @@ jobs:
 
           echo "Production smoke gate passed."
 
+      - name: Reconcile payout runtime configuration
+        id: payout_runtime
+        if: steps.deploy_code.outcome == 'success'
+        run: |
+          set -euo pipefail
+
+          config="$(aws lambda get-function-configuration --function-name "$FUNCTION_NAME" --output json)"
+          revision="$(jq -r '.RevisionId' <<< "$config")"
+          environment="$(jq -c '.Environment.Variables + {AGENT_EXCHANGE_PAYOUT_SECRET_ID: "pdao/agent-exchange/payout-signer", AGENT_EXCHANGE_PAYOUT_BATCH_LIMIT: "20"} | {Variables: .}' <<< "$config")"
+
+          aws lambda update-function-configuration \
+            --function-name "$FUNCTION_NAME" \
+            --revision-id "$revision" \
+            --environment "$environment" >/dev/null
+          aws lambda wait function-updated-v2 --function-name "$FUNCTION_NAME"
+          echo "Payout runtime configuration reconciled."
+
+      - name: Reconcile scheduled seller settlement trigger
+        id: settlement_schedule
+        if: steps.deploy_code.outcome == 'success'
+        run: |
+          set -euo pipefail
+
+          RULE_NAME="PrivateDAOAgentExchangeSettlementSchedule"
+          STATEMENT_ID="agent-exchange-settlement-schedule"
+          FUNCTION_ARN="$(aws lambda get-function --function-name "$FUNCTION_NAME" --query 'Configuration.FunctionArn' --output text)"
+          RULE_ARN="$(aws events put-rule --name "$RULE_NAME" --schedule-expression 'rate(5 minutes)' --state ENABLED --description 'PrivateDAO Agent Exchange seller settlement sweep' --query 'RuleArn' --output text)"
+
+          aws events put-targets --rule "$RULE_NAME" --targets "Id=agent-exchange-settlement,Arn=$FUNCTION_ARN" >/dev/null
+
+          if ! aws lambda add-permission \
+            --function-name "$FUNCTION_NAME" \
+            --statement-id "$STATEMENT_ID" \
+            --action lambda:InvokeFunction \
+            --principal events.amazonaws.com \
+            --source-arn "$RULE_ARN" >/dev/null 2>&1; then
+            aws lambda get-policy --function-name "$FUNCTION_NAME" \
+              | jq -e --arg sid "$STATEMENT_ID" '.Policy | fromjson | .Statement | any(.Sid == $sid)' >/dev/null
+          fi
+
+          echo "Settlement schedule reconciled: $RULE_NAME"
+
       - name: Roll back automatically on deployment or smoke failure
         id: rollback
         if: >-
@@ -289,7 +331,9 @@ jobs:
           steps.capture.outcome == 'success' &&
           (
             steps.deploy_code.outcome == 'failure' ||
-            steps.smoke.outcome == 'failure'
+            steps.smoke.outcome == 'failure' ||
+            steps.payout_runtime.outcome == 'failure' ||
+            steps.settlement_schedule.outcome == 'failure'
           )
         continue-on-error: true
         run: |
@@ -334,7 +378,9 @@ jobs:
           always() &&
           (
             steps.deploy_code.outcome == 'failure' ||
-            steps.smoke.outcome == 'failure'
+            steps.smoke.outcome == 'failure' ||
+            steps.payout_runtime.outcome == 'failure' ||
+            steps.settlement_schedule.outcome == 'failure'
           )
         run: |
           if [ "${{ steps.rollback.outcome }}" = "success" ]; then
@@ -345,7 +391,11 @@ jobs:
           exit 1
 
       - name: Record successful production release
-        if: steps.deploy_code.outcome == 'success' && steps.smoke.outcome == 'success'
+        if: >-
+          steps.deploy_code.outcome == 'success' &&
+          steps.smoke.outcome == 'success' &&
+          steps.payout_runtime.outcome == 'success' &&
+          steps.settlement_schedule.outcome == 'success'
         run: |
           {
             echo "### Production release healthy"
