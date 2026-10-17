@@ -6,7 +6,7 @@ import { SERVICES } from "../src/catalog.mjs";
 const request = (path, method = "GET", body, headers = {}) =>
   handler({
     requestContext: { http: { method, path } },
-    body: body ? JSON.stringify(body) : undefined,
+    body: body ? JSON.stringify(path === "/api/marketplace/seller-listings/quote" ? { external_tools_policy_acknowledged: true, ...body } : body) : undefined,
     headers,
   });
 
@@ -43,6 +43,20 @@ test("human root is HTML while machine surfaces remain available", async () => {
     assert.match(marketplace.body, new RegExp(productName));
   }
   assert.match(marketplace.body, /Open product and get a quote/);
+  const externalToolsPolicy = await request("/policies/external-tools");
+  assert.equal(externalToolsPolicy.statusCode, 200);
+  assert.match(externalToolsPolicy.body, /External tools have external owners/);
+  assert.match(externalToolsPolicy.body, /reasonable technical credibility check/);
+  assert.match(externalToolsPolicy.body, /support@privatedao\.org/);
+  assert.match(externalToolsPolicy.body, /External Tools Policy/);
+  const terms = await request("/terms");
+  assert.equal(terms.statusCode, 200);
+  assert.match(terms.body, /Marketplace Terms v1\.0/);
+  assert.match(terms.body, /Community listing conditions/);
+  assert.match(terms.body, /public social post URL/);
+  assert.match(terms.body, /exact configured mint/);
+  assert.match(terms.body, /support@privatedao\.org/);
+  assert.match(terms.body, /href="\/policies\/external-tools"/);
   const integrationPage = await request("/integrations");
   assert.equal(integrationPage.statusCode, 200);
   assert.match(integrationPage.body, /Recognize the stack at a glance/);
@@ -58,6 +72,9 @@ test("human root is HTML while machine surfaces remain available", async () => {
   assert.match(sellerPortal.body, /id="serviceLimit"/);
   assert.match(sellerPortal.body, /id="toolPicker"/);
   assert.match(sellerPortal.body, /id="metadataFile"/);
+  assert.match(sellerPortal.body, /id="externalToolsPolicyAcknowledged"/);
+  assert.match(sellerPortal.body, /id="communitySocialPostUrl"/);
+  assert.match(sellerPortal.body, /External Tools Policy/);
   assert.match(sellerPortal.body, /id="chooseMetadata"/);
   assert.match(sellerPortal.body, /metadataFile\.onchange=async/);
   assert.match(sellerPortal.body, /id="rotateCredential"/);
@@ -832,6 +849,9 @@ test("external seller ownership protects mutations and publishes declared servic
   assert.match(missingSellerId.body, /agent_id is required/);
   const missingTerms = await request("/api/marketplace/seller-listings/quote", "POST", { agent_id: record.id, owner_token: ownerToken, tier: "pro" });
   assert.equal(missingTerms.statusCode, 400);
+  const missingExternalPolicy = await request("/api/marketplace/seller-listings/quote", "POST", { agent_id: record.id, owner_token: ownerToken, tier: "pro", accept_terms: true, terms_version: "seller-marketplace-v1", external_tools_policy_acknowledged: false });
+  assert.equal(missingExternalPolicy.statusCode, 400);
+  assert.match(missingExternalPolicy.body, /external tools policy acceptance is required/);
   const missingPayoutTermsAccepted = await request("/api/marketplace/seller-listings/quote", "POST", { agent_id: record.id, owner_token: ownerToken, tier: "pro", accept_terms: true, terms_version: "seller-marketplace-v1" });
   assert.equal(missingPayoutTermsAccepted.statusCode, 400);
   assert.match(missingPayoutTermsAccepted.body, /payout configuration is required/);
