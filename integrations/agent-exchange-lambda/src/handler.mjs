@@ -3584,10 +3584,12 @@ async function recoverPaidJob(jobId, eventBody = {}) {
   const quote = await quoteForJob(storage, job);
   if (!claim || !quote) throw Object.assign(new Error("payment claim or quote is unavailable"), { statusCode: 409 });
   try {
-    await storage.claim("RecoveryClaims", jobId, {
-      claim_started_at: now(),
-      claim_expires_at: new Date(Date.now() + 5 * 60 * 1000).toISOString(),
-      claim_installation_id: `recovery_${randomUUID()}`,
+    // Keep the recovery lease on the job record so production does not require
+    // a separate table or an out-of-band migration.
+    await storage.claim("Jobs", jobId, {
+      recovery_claim_started_at: now(),
+      recovery_claim_expires_at: new Date(Date.now() + 5 * 60 * 1000).toISOString(),
+      recovery_claim_installation_id: `recovery_${randomUUID()}`,
     });
   } catch {
     throw Object.assign(new Error("recovery is already being processed"), { statusCode: 409 });
