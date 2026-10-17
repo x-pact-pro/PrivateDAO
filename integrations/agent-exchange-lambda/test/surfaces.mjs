@@ -43,6 +43,12 @@ test("human root is HTML while machine surfaces remain available", async () => {
     assert.match(marketplace.body, new RegExp(productName));
   }
   assert.match(marketplace.body, /Open product and get a quote/);
+  const externalToolsPolicy = await request("/policies/external-tools");
+  assert.equal(externalToolsPolicy.statusCode, 200);
+  assert.match(externalToolsPolicy.body, /External tools have external owners/);
+  assert.match(externalToolsPolicy.body, /reasonable technical credibility check/);
+  assert.match(externalToolsPolicy.body, /support@privatedao\.org/);
+  assert.match(externalToolsPolicy.body, /External Tools Policy/);
   const integrationPage = await request("/integrations");
   assert.equal(integrationPage.statusCode, 200);
   assert.match(integrationPage.body, /Recognize the stack at a glance/);
