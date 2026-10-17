@@ -64,9 +64,9 @@ export async function createStore(config) {
           TableName: table(collection),
           Key: { id: key },
           UpdateExpression: "SET #claimStartedAt = :claimStartedAt, #claimExpiresAt = :claimExpiresAt, #claimInstallationId = :claimInstallationId",
-          ConditionExpression: "attribute_not_exists(#claimExpiresAt) OR #claimExpiresAt < :now",
+          ConditionExpression: "attribute_not_exists(#claimExpiresAt) OR attribute_type(#claimExpiresAt, :nullType) OR #claimExpiresAt < :now",
           ExpressionAttributeNames: { "#claimStartedAt": "claim_started_at", "#claimExpiresAt": "claim_expires_at", "#claimInstallationId": "claim_installation_id" },
-          ExpressionAttributeValues: { ":claimStartedAt": claim.claim_started_at, ":claimExpiresAt": claim.claim_expires_at, ":claimInstallationId": claim.claim_installation_id, ":now": new Date().toISOString() },
+          ExpressionAttributeValues: { ":claimStartedAt": claim.claim_started_at, ":claimExpiresAt": claim.claim_expires_at, ":claimInstallationId": claim.claim_installation_id, ":now": new Date().toISOString(), ":nullType": "NULL" },
           ReturnValues: "ALL_NEW",
         }));
         return result.Attributes;

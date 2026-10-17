@@ -691,6 +691,7 @@ function openapi() {
     "/api/pricing": { get: { operationId: "pricing" } },
     "/api/jobs": { post: { operationId: "createJob", requestBody: { required: true, content: { "application/json": { schema: { $ref: "#/components/schemas/CreateJobRequest" } } } } } },
     "/api/jobs/{jobId}": { get: { operationId: "jobStatus", parameters: [{ $ref: "#/components/parameters/JobId" }], responses: { "200": { description: "Current job status" }, "409": { description: "Job requires non-replaying recovery" } } } },
+    "/api/admin/jobs/{jobId}/recovery": { post: { operationId: "recoverPaidJob", description: "Admin-gated recovery for payment-claimed read-only jobs; never replays side-effecting services.", parameters: [{ $ref: "#/components/parameters/JobId" }], responses: { "200": { description: "Recovered job with receipt" }, "404": { description: "Job not found" }, "409": { description: "Recovery is unsafe or already in progress" } } } },
     "/api/jobs/{jobId}/payment": { post: { operationId: "submitPayment", parameters: [{ $ref: "#/components/parameters/JobId" }], responses: { "200": { description: "Payment accepted or job completed" }, "202": { description: "Payment verification or processing is still in progress" }, "409": { description: "Payment was accepted but execution requires non-replaying recovery" } }, requestBody: { required: true, content: { "application/json": { schema: { $ref: "#/components/schemas/PaymentRequest" } } } } } },
     "/api/receipts/{receiptId}": { get: { operationId: "getReceipt", parameters: [{ $ref: "#/components/parameters/ReceiptId" }] } },
     "/api/network/health": { get: { operationId: "networkHealth", parameters: [{ name: "network", in: "query", schema: { type: "string" } }] } },
@@ -1302,9 +1303,6 @@ function publicReceiptPage(receipt, verified = false) {
 }
 async function marketplacePage() {
   const policy = await marketplacePolicy();
-  const autoPublish = body.auto_publish === true || body.autoPublish === true;
-  if (autoPublish && agent.automated_review?.status !== "passed")
-    throw Object.assign(new Error("automated security screening must pass before auto-publication"), { statusCode: 409 });
   const grouped = SERVICE_CATEGORIES.map((category) => ({ ...category, services: SERVICES.filter((service) => serviceDetails(service).category === category.id) })).filter((category) => category.services.length);
   const cards = grouped.map((category) => {
     const serviceCards = category.services.map((service) => {
@@ -1843,6 +1841,7 @@ async function publishListing(body) {
 }
 async function sellerListingQuote(body) {
   const agentId = String(body.agent_id || body.agentId || "").trim();
+  const autoPublish = body.auto_publish === true || body.autoPublish === true;
   const { storage, agent } = await ownedSeller(agentId, body.owner_token || body.ownerToken);
   if (body.accept_terms !== true || String(body.terms_version || "") !== SELLER_TERMS_VERSION)
     throw Object.assign(new Error(`seller terms acceptance is required (${SELLER_TERMS_VERSION})`), { statusCode: 400 });
@@ -2936,6 +2935,52 @@ async function submitPayment(jobId, body) {
   }, execution.telemetry);
 }
 
+const RECOVERY_SAFE_SERVICES = new Set([
+  "token.intelligence", "risk.score", "wallet.intelligence", "contract.inspect",
+  "launch.check", "market.snapshot", "research.asset", "research.wallet",
+  "contract.explain", "transaction.explain", "anomaly.detect", "agent.research.report",
+  "portfolio.intelligence", "swap.quote", "transaction.simulate", "decision.context",
+  "github.repository", "forensics.trace", "agent.match", "intelligence.synthesize",
+]);
+
+async function recoverPaidJob(jobId) {
+  const storage = await store();
+  const job = await storage.get("Jobs", jobId);
+  if (!job) throw Object.assign(new Error("job not found"), { statusCode: 404 });
+  if (job.status === "completed" && job.receipt_id) return publicJobStatus(job);
+  if (job.status !== "recovery_required")
+    throw Object.assign(new Error("job is not awaiting recovery"), { statusCode: 409 });
+  if (!RECOVERY_SAFE_SERVICES.has(job.service_id))
+    throw Object.assign(new Error("service requires manual review before recovery"), { statusCode: 409 });
+  const payment = (await storage.list("Payments")).find((item) => item.job_id === jobId);
+  const quote = await quoteForJob(storage, job);
+  if (!payment || !quote)
+    throw Object.assign(new Error("payment claim or quote is unavailable"), { statusCode: 409 });
+  try {
+    await storage.claim("Jobs", jobId, {
+      claim_started_at: now(),
+      claim_expires_at: new Date(Date.now() + 120000).toISOString(),
+      claim_installation_id: `admin-recovery-${process.env.AWS_LAMBDA_FUNCTION_VERSION || "local"}`,
+    });
+  } catch {
+    throw Object.assign(new Error("recovery is already being processed"), { statusCode: 409 });
+  }
+  const current = await storage.get("Jobs", jobId);
+  if (current?.status === "completed" && current.receipt_id) return publicJobStatus(current);
+  const executionInput = job.execution_input || {};
+  if (digest(executionInput) !== job.input_hash)
+    throw Object.assign(new Error("quoted job input is unavailable or changed"), { statusCode: 409 });
+  job.execution_started_at = now();
+  await storage.put("Jobs", jobId, job);
+  try {
+    const execution = await executeMeasuredService(job.service_id, executionInput);
+    return completeJob(job, execution.result, { signature: payment.signature, currency: quote.currency, amount: quote.amount }, execution.telemetry);
+  } catch (error) {
+    await storage.put("Jobs", jobId, { ...job, status: "recovery_required", recovery_error: error.message, updated_at: now() });
+    throw error;
+  }
+}
+
 async function register(body) {
   if (body.mcpUrl || body.mcp_url || String(body.protocol || "").toUpperCase() === "MCP")
     return registerMcp(body);
@@ -3762,6 +3807,11 @@ async function handle(e) {
   if (method === "GET" && job) {
     const item = await (await store()).get("Jobs", job[1]);
     return item ? json(publicJobStatus(item)) : json({ error: "not_found" }, 404);
+  }
+  const adminRecovery = path.match(/^\/api\/admin\/jobs\/([^/]+)\/recovery$/);
+  if (method === "POST" && adminRecovery) {
+    if (!adminTokenAuthorized(e)) return json({ error: "not_found" }, 404);
+    return json(await recoverPaidJob(decodeURIComponent(adminRecovery[1])));
   }
   const paymentIntent = path.match(/^\/api\/jobs\/([^/]+)\/payment-intent$/);
   if (method === "GET" && paymentIntent) {
