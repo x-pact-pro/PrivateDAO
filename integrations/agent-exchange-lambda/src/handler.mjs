@@ -3572,6 +3572,14 @@ async function submitPayment(jobId, body) {
   }, execution.telemetry);
 }
 
+const RECOVERY_SAFE_SERVICES = new Set([
+  "token.intelligence", "risk.score", "wallet.intelligence", "contract.inspect",
+  "launch.check", "market.snapshot", "research.asset", "research.wallet",
+  "contract.explain", "transaction.explain", "anomaly.detect", "agent.research.report",
+  "portfolio.intelligence", "swap.quote", "transaction.simulate", "decision.context",
+  "github.repository", "forensics.trace", "agent.match", "intelligence.synthesize",
+]);
+
 async function recoverPaidJob(jobId, eventBody = {}) {
   const storage = await store();
   const job = await storage.get("Jobs", jobId);
@@ -3579,6 +3587,7 @@ async function recoverPaidJob(jobId, eventBody = {}) {
   if (job.kind === "external") throw Object.assign(new Error("external seller recovery requires seller-side review"), { statusCode: 409 });
   if (job.status === "completed" && job.receipt_id) return completeJob(job, job.result, null);
   if (job.status !== "recovery_required") throw Object.assign(new Error("job is not awaiting recovery"), { statusCode: 409 });
+  if (!RECOVERY_SAFE_SERVICES.has(job.service_id)) throw Object.assign(new Error("service requires manual review before recovery"), { statusCode: 409 });
   if (String(eventBody.action || "retry") !== "retry") throw Object.assign(new Error("recovery action must be retry"), { statusCode: 400 });
   const claim = (await storage.list("Payments")).find((item) => item.job_id === jobId);
   const quote = await quoteForJob(storage, job);
