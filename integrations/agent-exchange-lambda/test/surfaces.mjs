@@ -19,6 +19,12 @@ test("human root is HTML while machine surfaces remain available", async () => {
   assert.match(root.body, /Evidence for/);
   assert.match(root.body, /If you or your agent hold at least \$25 worth of PDAO token/);
   assert.match(root.body, /DISCOVER/);
+  assert.match(root.body, /I am looking for a tool/);
+  assert.match(root.body, /I am building a tool/);
+  assert.match(root.body, /pdao-token-title/);
+  assert.match(root.body, /https:\/\/privatedao\.org\/token/);
+  assert.match(root.body, /Community listing/);
+  assert.match(root.body, /Growth/);
   assert.match(root.body, /IBM watsonx/);
   assert.match(root.body, /pdao-language-picker/);
   assert.equal(root.headers["x-content-type-options"], "nosniff");
