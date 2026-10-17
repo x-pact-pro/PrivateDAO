@@ -34,7 +34,11 @@ const server = createServer(async (request, response) => {
 
 await new Promise((resolve) => server.listen(0, "127.0.0.1", resolve));
 const { port } = server.address();
-const browser = await chromium.launch({ executablePath: "/usr/bin/google-chrome", headless: true });
+const browser = await chromium.launch({
+  executablePath: process.env.PLAYWRIGHT_CHROME_PATH || "/usr/bin/google-chrome",
+  headless: true,
+  args: ["--no-sandbox", "--disable-dev-shm-usage", "--disable-gpu"],
+});
 
 async function runViewport(viewport, label) {
   resetForTests();
@@ -65,6 +69,8 @@ async function runViewport(viewport, label) {
     await page.fill("#payoutAddress", payout);
     await page.click("#to4");
     await page.check("#terms");
+    const basicTier = page.locator('input[name="listingTier"][value="basic"]');
+    if (await basicTier.count()) await basicTier.check();
     await page.click("#createQuote");
     await page.waitForSelector("#step5:not(.hidden)");
     assert.equal(await page.locator("#pay").isEnabled(), true);

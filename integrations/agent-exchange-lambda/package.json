@@ -8,7 +8,7 @@
   },
   "scripts": {
     "test:surfaces": "AGENT_EXCHANGE_TEST_MODE=true AGENT_EXCHANGE_ALLOW_TEST_STORAGE=true AGENT_EXCHANGE_MCP_FETCH_FIXTURE=true AGENT_EXCHANGE_RPC_FIXTURE=true node --test test/surfaces.mjs",
-    "test:browser": "AGENT_EXCHANGE_TEST_MODE=true AGENT_EXCHANGE_MCP_FETCH_FIXTURE=true AGENT_EXCHANGE_RPC_FIXTURE=true node test/e2e/browser-seller.mjs",
+    "test:browser": "AGENT_EXCHANGE_TEST_MODE=true AGENT_EXCHANGE_ALLOW_TEST_STORAGE=true AGENT_EXCHANGE_MCP_FETCH_FIXTURE=true AGENT_EXCHANGE_RPC_FIXTURE=true node test/e2e/browser-seller.mjs",
     "test": "AGENT_EXCHANGE_TEST_MODE=true AGENT_EXCHANGE_ALLOW_TEST_STORAGE=true AGENT_EXCHANGE_MCP_FETCH_FIXTURE=true AGENT_EXCHANGE_RPC_FIXTURE=true node --test --test-concurrency=1 test/*.mjs",
     "smoke": "AGENT_EXCHANGE_TEST_MODE=true AGENT_EXCHANGE_ALLOW_TEST_STORAGE=true AGENT_EXCHANGE_MCP_FETCH_FIXTURE=true AGENT_EXCHANGE_RPC_FIXTURE=true node test/smoke.mjs",
     "lint": "node --check src/*.mjs test/*.mjs",
@@ -18,15 +18,16 @@
     "@aws-sdk/client-dynamodb": "^3.1136.0",
     "@aws-sdk/client-secrets-manager": "^3.1106.0",
     "@aws-sdk/lib-dynamodb": "^3.1136.0",
-    "bigint-buffer": "file:vendor/bigint-buffer",
     "@solana/spl-token": "0.4.14",
     "@solana/web3.js": "1.98.4",
+    "bigint-buffer": "file:vendor/bigint-buffer",
     "mongodb": "^6.20.0",
     "tweetnacl": "^1.0.3"
   },
   "devDependencies": {
     "8004-solana": "0.8.3",
-    "esbuild": "0.28.2"
+    "esbuild": "0.28.2",
+    "playwright": "^1.64.1"
   },
   "overrides": {
     "bigint-buffer": "file:vendor/bigint-buffer",

@@ -818,6 +818,7 @@ function openapi() {
     "/api/checkout/batch": { post: { operationId: "createBatchCheckout", description: "Create one quote for up to ten first-party services; payment remains finalized USDC on Solana Mainnet.", requestBody: { required: true, content: { "application/json": { schema: { type: "object", required: ["items"], properties: { items: { type: "array", minItems: 1, maxItems: 10, items: { type: "object", required: ["service_id", "input"], properties: { service_id: { type: "string" }, input: { type: "object" } }, additionalProperties: false } } }, additionalProperties: false } } } } } },
     "/api/jobs/{jobId}": { get: { operationId: "jobStatus", parameters: [{ $ref: "#/components/parameters/JobId" }], responses: { "200": { description: "Current job status" }, "409": { description: "Job requires non-replaying recovery" } } } },
     "/api/jobs/{jobId}/payment": { post: { operationId: "submitPayment", parameters: [{ $ref: "#/components/parameters/JobId" }], responses: { "200": { description: "Payment accepted or job completed" }, "202": { description: "Payment verification or processing is still in progress" }, "409": { description: "Payment was accepted but execution requires non-replaying recovery" } }, requestBody: { required: true, content: { "application/json": { schema: { $ref: "#/components/schemas/PaymentRequest" } } } } } },
+    "/api/admin/jobs/{jobId}/recovery": { post: { operationId: "recoverPaidJob", parameters: [{ $ref: "#/components/parameters/JobId" }], responses: { "200": { description: "Recovered job and issued receipt" }, "202": { description: "Recovery is still processing" }, "409": { description: "Recovery is unavailable or already claimed" } } } },
     "/api/receipts/{receiptId}": { get: { operationId: "getReceipt", parameters: [{ $ref: "#/components/parameters/ReceiptId" }] } },
     "/api/network/health": { get: { operationId: "networkHealth", parameters: [{ name: "network", in: "query", schema: { type: "string" } }] } },
     "/api/registry/register": { post: { operationId: "registerAgent", requestBody: { required: true, content: { "application/json": { schema: { $ref: "#/components/schemas/RegisterAgentRequest" } } } } } },
@@ -1427,7 +1428,7 @@ function injectLanguageWidget(html) {
     .replace("</body>", `${languageWidget()}</body>`);
 }
 function commercialOfferBanner() {
-  return `<aside class="pdao-offer" aria-label="PDAO holder offer" style="margin:0 0 22px;padding:14px 16px;border:1px solid #b9d3f2;border-radius:14px;background:#f5f9ff;color:#174a83;line-height:1.5"><b style="display:block;margin-bottom:4px">PDAO holder offer</b><span>${escapeHtml(COMMERCIAL_HOLDER_OFFER)}</span></aside>`;
+  return `<aside class="pdao-offer" aria-label="PDAO holder offer" style="box-sizing:border-box;max-width:100%;overflow-wrap:anywhere;margin:0 0 22px;padding:14px 16px;border:1px solid #b9d3f2;border-radius:14px;background:#f5f9ff;color:#174a83;line-height:1.5"><b style="display:block;margin-bottom:4px">PDAO holder offer</b><span>${escapeHtml(COMMERCIAL_HOLDER_OFFER)}</span></aside>`;
 }
 function walletStandardBootstrap() {
   return `<script>(function(){const wallets=window.__pdaoStandardWallets=window.__pdaoStandardWallets||[];const register=wallet=>{if(wallet&&Array.isArray(wallet.chains)&&wallet.chains.includes("solana:mainnet-beta")&&!wallet.chains.includes("solana:mainnet"))wallet={...wallet,chains:[...wallet.chains,"solana:mainnet"]};if(wallet&&!wallets.includes(wallet))wallets.push(wallet)};const capture=event=>{try{event.detail?.({register})}catch(_error){}};window.addEventListener("wallet-standard:register-wallet",capture);window.addEventListener("wallet-standard:app-ready",capture)})();</script>`;
@@ -2620,6 +2621,20 @@ async function makeQuote(serviceId, jobId, admin = false, currency = "USDC", tar
   return quote;
 }
 
+async function preflightPaidService(serviceId, input) {
+  if (serviceId !== "swap.quote") return;
+  try {
+    const network = normalizeNetworkId(input?.network || "solana-mainnet-beta");
+    if (network === "solana-mainnet-beta") await swapQuote(config, input);
+    else await executeEvmService(config, serviceId, input);
+  } catch (error) {
+    throw Object.assign(error, {
+      statusCode: 503,
+      retryAfterSeconds: 30,
+    });
+  }
+}
+
 async function externalServiceById(serviceId) {
   return (await externalServiceManifests()).find((service) => service.id === serviceId);
 }
@@ -3106,6 +3121,7 @@ async function createJob(serviceId, input, admin = false, currency = "USDC", met
   const service = serviceById(serviceId);
   if (!service) throw new Error("unknown service");
   validateServiceInput(serviceId, input);
+  if (service.price) await preflightPaidService(serviceId, input);
   const pdaoEntitlement = service.price
     ? await verifyPdaoHolderAccess({ config, storage: await store(), access, serviceId, input })
     : null;
@@ -3554,6 +3570,52 @@ async function submitPayment(jobId, body) {
     currency: quote.currency,
     amount: quote.amount,
   }, execution.telemetry);
+}
+
+async function recoverPaidJob(jobId, eventBody = {}) {
+  const storage = await store();
+  const job = await storage.get("Jobs", jobId);
+  if (!job) throw Object.assign(new Error("job not found"), { statusCode: 404 });
+  if (job.kind === "external") throw Object.assign(new Error("external seller recovery requires seller-side review"), { statusCode: 409 });
+  if (job.status === "completed" && job.receipt_id) return completeJob(job, job.result, null);
+  if (job.status !== "recovery_required") throw Object.assign(new Error("job is not awaiting recovery"), { statusCode: 409 });
+  if (String(eventBody.action || "retry") !== "retry") throw Object.assign(new Error("recovery action must be retry"), { statusCode: 400 });
+  const claim = (await storage.list("Payments")).find((item) => item.job_id === jobId);
+  const quote = await quoteForJob(storage, job);
+  if (!claim || !quote) throw Object.assign(new Error("payment claim or quote is unavailable"), { statusCode: 409 });
+  try {
+    await storage.claim("RecoveryClaims", jobId, {
+      claim_started_at: now(),
+      claim_expires_at: new Date(Date.now() + 5 * 60 * 1000).toISOString(),
+      claim_installation_id: `recovery_${randomUUID()}`,
+    });
+  } catch {
+    throw Object.assign(new Error("recovery is already being processed"), { statusCode: 409 });
+  }
+  try {
+    await preflightPaidService(job.service_id, job.execution_input || {});
+    job.execution_started_at = now();
+    job.status = "running";
+    await storage.put("Jobs", job.id, job);
+    const execution = await executeMeasuredService(job.service_id, job.execution_input || {});
+    return completeJob(job, execution.result, { signature: claim.signature, currency: quote.currency, amount: quote.amount }, execution.telemetry);
+  } catch (error) {
+    const recoveryJob = {
+      ...job,
+      status: "recovery_required",
+      recovery_required_at: now(),
+      recovery_reason: "manual_recovery_execution_failed",
+      recovery_error: String(error.message || error).slice(0, 240),
+    };
+    await storage.put("Jobs", job.id, recoveryJob);
+    return {
+      job_id: job.id,
+      status: "recovery_required",
+      recovery_required: true,
+      message: "payment was accepted but recovery execution failed; no automatic replay will occur",
+      retryAfterSeconds: 30,
+    };
+  }
 }
 
 async function register(body) {
@@ -4444,6 +4506,12 @@ async function handle(e) {
   const payment = path.match(/^\/api\/jobs\/([^/]+)\/payment$/);
   if (method === "POST" && payment) {
     const result = await submitPayment(payment[1], body);
+    return json(result, paymentStatusCode(result));
+  }
+  const recovery = path.match(/^\/api\/admin\/jobs\/([^/]+)\/recovery$/);
+  if (method === "POST" && recovery) {
+    if (!adminTokenAuthorized(e)) return json({ error: "not_found" }, 404);
+    const result = await recoverPaidJob(decodeURIComponent(recovery[1]), body);
     return json(result, paymentStatusCode(result));
   }
   const paymentTransaction = path.match(/^\/api\/jobs\/([^/]+)\/payment-transaction$/);

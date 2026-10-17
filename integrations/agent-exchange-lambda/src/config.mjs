@@ -48,7 +48,13 @@ export function getConfig(env = process.env) {
     alchemyApiKey: env.ALCHEMY_API_KEY || "",
     alchemySecretId: env.AGENT_EXCHANGE_ALCHEMY_SECRET_ID || "",
     evmRpcUrls,
-    jupiterQuoteUrl: env.PDAO_JUPITER_QUOTE_URL || "https://quote-api.jup.ag/v6/quote",
+    jupiterQuoteUrl:
+      env.PDAO_JUPITER_QUOTE_URL ||
+      (env.PDAO_JUPITER_API_KEY
+        ? "https://api.jup.ag/swap/v1/quote"
+        : "https://lite-api.jup.ag/swap/v1/quote"),
+    jupiterQuoteFallbackUrl:
+      env.PDAO_JUPITER_QUOTE_FALLBACK_URL || "https://lite-api.jup.ag/swap/v1/quote",
     jupiterApiKey: env.PDAO_JUPITER_API_KEY || "",
     lifiQuoteUrl: env.PDAO_LIFI_QUOTE_URL || "https://li.quest/v1/quote",
     lifiApiKey: env.PDAO_LIFI_API_KEY || "",

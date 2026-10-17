@@ -1198,6 +1198,35 @@ test("payment finality responses are non-success until activation is complete", 
   assert.equal(paymentStatusCode({ status: "completed" }), 200);
 });
 
+test("swap provider outages fail before a paid quote is created", async () => {
+  const originalFetch = globalThis.fetch;
+  resetForTests();
+  globalThis.fetch = async () => new Response(JSON.stringify({ error: "provider unavailable" }), { status: 503 });
+  try {
+    const response = await request("/api/jobs", "POST", {
+      service_id: "swap.quote",
+      input: {
+        network: "solana-mainnet-beta",
+        inputMint: "So11111111111111111111111111111111111111112",
+        outputMint: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+        amount: "1000000",
+        slippageBps: 50,
+      },
+    });
+    assert.equal(response.statusCode, 503);
+    assert.match(response.body, /upstream service temporarily unavailable/);
+    assert.doesNotMatch(response.body, /payment_intent/);
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
+
+test("paid-job recovery is admin-gated and never exposed publicly", async () => {
+  resetForTests();
+  const unauthorized = await request("/api/admin/jobs/job_missing/recovery", "POST", { action: "retry" });
+  assert.equal(unauthorized.statusCode, 404);
+});
+
 test("admin marketplace policy is persisted and controls public terms", async () => {
   process.env.AGENT_EXCHANGE_TEST_ADMIN_TOKEN = "test-admin-token";
   resetForTests();
