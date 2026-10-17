@@ -2747,7 +2747,7 @@ dependencies = [
  "hex",
  "rand 0.8.6",
  "rustls",
- "secrecy",
+ "secrecy 0.10.3",
  "sha2 0.10.9",
  "tempfile",
  "time",
@@ -3344,6 +3344,15 @@ name = "secrecy"
 version = "0.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9bd1c54ea06cfd2f6b63219704de0b9b4f72dcc2b8fdef820be6cd799780e91e"
+dependencies = [
+ "zeroize",
+]
+
+[[package]]
+name = "secrecy"
+version = "0.10.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e891af845473308773346dc847b2c23ee78fe442e0472ac50e22a18a93d3ae5a"
 dependencies = [
  "zeroize",
 ]
@@ -6320,7 +6329,7 @@ dependencies = [
  "rayon",
  "sapling-crypto",
  "secp256k1",
- "secrecy",
+ "secrecy 0.8.0",
  "serde",
  "shardtree",
  "subtle",
@@ -6372,7 +6381,7 @@ dependencies = [
  "schemerz",
  "schemerz-rusqlite",
  "secp256k1",
- "secrecy",
+ "secrecy 0.8.0",
  "serde",
  "shardtree",
  "static_assertions",
@@ -6423,7 +6432,7 @@ dependencies = [
  "orchard",
  "rand_core 0.6.4",
  "sapling-crypto",
- "secrecy",
+ "secrecy 0.8.0",
  "subtle",
  "tracing",
  "zcash_address",
