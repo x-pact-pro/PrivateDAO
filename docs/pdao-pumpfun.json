@@ -1,0 +1,26 @@
+{
+  "name": "PrivateDAO",
+  "symbol": "PDAO",
+  "description": "PrivateDAO is privacy and verification infrastructure for organizations, with private governance, confidential payroll, treasury coordination, verification, agent infrastructure, and multichain operational tooling.",
+  "mint": "9isGuumtaqvJeJeyLF44fvfskk2cv5mYsopexMBfpump",
+  "chain": "solana",
+  "network": "mainnet-beta",
+  "website": "https://privatedao.org/",
+  "pump_fun": "https://pump.fun/coin/9isGuumtaqvJeJeyLF44fvfskk2cv5mYsopexMBfpump",
+  "twitter": "https://x.com/privateDAOOS",
+  "telegram": "https://t.me/PrivateDAOO",
+  "github": {
+    "organization": "x-pact-pro",
+    "repository": "x-pact-pro/PrivateDAO",
+    "member": "X-PACT"
+  },
+  "creator_rewards": {
+    "platform": "pump.fun",
+    "identity_type": "github_organization",
+    "organization": "x-pact-pro",
+    "public_member": "X-PACT",
+    "note": "Repository metadata for identifying the PDAO project and its GitHub organization. Pump.fun remains the authority for creator-reward entitlement and claim verification."
+  },
+  "showName": true,
+  "createdOn": "https://pump.fun"
+}
