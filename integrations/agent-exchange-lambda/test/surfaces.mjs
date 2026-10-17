@@ -17,7 +17,7 @@ test("human root is HTML while machine surfaces remain available", async () => {
   assert.match(root.headers["content-type"], /^text\/html/);
   assert.match(root.body, /PrivateDAO Agents/);
   assert.match(root.body, /Evidence for/);
-  assert.match(root.body, /If you or your agent hold at least \$25 worth of PDAO token/);
+    assert.match(root.body, /Eligible PDAO holders can unlock verification access/);
   assert.match(root.body, /DISCOVER/);
   assert.match(root.body, /I am looking for a tool/);
   assert.match(root.body, /I am building a tool/);
@@ -144,7 +144,7 @@ test("human root is HTML while machine surfaces remain available", async () => {
   assert.match(botPage.body, /onlyIfTrusted:false/);
   assert.match(botPage.body, /provider\.connect\(\)/);
   assert.match(botPage.body, /Target network/);
-  assert.match(botPage.body, /If you or your agent hold at least \$25 worth of PDAO token/);
+  assert.match(botPage.body, /Eligible PDAO holders can unlock verification access/);
   assert.match(botPage.body, /href="#service-checkout-title">Request this service/);
   assert.match(botPage.body, /if\(immediate\.length===1\)\{await connect\(immediate\[0\]\);return;\}/);
   assert.match(botPage.body, /Wallet found\. Click Use … to approve the connection/);
@@ -575,7 +575,7 @@ test("MCP and A2A machine entrypoints remain callable", async () => {
     assert.match(page.headers["content-type"], /^text\/html/, path);
     assert.match(page.body, /agents\.privatedao\.org\/mcp/, path);
     assert.match(page.body, /streamable-http/, path);
-    assert.match(page.body, /If you or your agent hold at least \$25 worth of PDAO token/, path);
+    assert.match(page.body, /Eligible PDAO holders can unlock verification access/, path);
   }
   const hub = await request("/connect");
   assert.match(hub.body, /ChatGPT/);
