@@ -60,6 +60,47 @@ export function auditPreparedPrivatePayTransfer(prepared, { payer = "", provider
   return audit;
 }
 
+function auditPrivatePayLeg(label, prepared) {
+  const encoded = String(prepared?.transaction_base64 || "");
+  if (!encoded) return { label, status: "not_audited", reason: "transaction bytes are missing" };
+  let transaction;
+  try {
+    transaction = VersionedTransaction.deserialize(Buffer.from(encoded, "base64"));
+  } catch {
+    return { label, status: "not_audited", reason: "transaction bytes could not be decoded as a Solana versioned transaction" };
+  }
+  const staticAccounts = transaction.message.staticAccountKeys.map((key) => key.toBase58());
+  return {
+    label,
+    status: "audited_boundary_only",
+    fee_payer: staticAccounts[0] || null,
+    static_account_count: staticAccounts.length,
+    instruction_count: transaction.message.compiledInstructions.length,
+    recent_blockhash_visible: true,
+    expiry_visible: prepared?.last_valid_block_height !== undefined && prepared?.last_valid_block_height !== null,
+    network_fee_visibility: prepared?.provider_fees?.lamports ? "quoted_fee_visible" : "not_observed",
+  };
+}
+
+export function auditPrivatePayTrace(trace = {}) {
+  const legs = ["deposit", "transfer", "withdrawal"].map((label) => auditPrivatePayLeg(label, trace[label]));
+  const complete = legs.every((leg) => leg.status === "audited_boundary_only");
+  return {
+    status: complete ? "audited_boundary_only" : "not_audited",
+    release_ready: false,
+    relationship_protected: false,
+    amount_protected: false,
+    timing_protected: false,
+    network_fee_correlation: "unproven",
+    legs,
+    reasons: [
+      "Deposits and withdrawals must be analyzed separately because public entry and exit can link a user to a private balance.",
+      "A visible fee payer, blockhash, expiry, or close timing can create a correlation signal even when transfer amounts are encrypted.",
+      "No trace is release-ready until an independent funded E2E run proves payer/provider unlinkability, amount confidentiality, and bounded timing correlation.",
+    ],
+  };
+}
+
 export async function preparePrivatePayTransfer(config, input = {}, fetchImpl = fetch) {
   if (config.privatePayEnabled !== true)
     throw Object.assign(new Error("PrivatePAY is disabled until the privacy rail is explicitly enabled"), { statusCode: 503, code: "PRIVATEPAY_NOT_READY" });

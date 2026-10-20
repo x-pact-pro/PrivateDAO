@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { decodePaymentRequiredHeader } from "@x402/core/http";
 import { PublicKey, TransactionMessage, VersionedTransaction } from "@solana/web3.js";
-import { auditPreparedPrivatePayTransfer, createPrivatePayChallenge, createPrivatePayRequirements, decodePrivatePaySignature, preparePrivatePayTransfer, privatePayFacilitatorRequest, privatePayStatus, probePrivatePayRail } from "../src/privatepay.mjs";
+import { auditPrivatePayTrace, auditPreparedPrivatePayTransfer, createPrivatePayChallenge, createPrivatePayRequirements, decodePrivatePaySignature, preparePrivatePayTransfer, privatePayFacilitatorRequest, privatePayStatus, probePrivatePayRail } from "../src/privatepay.mjs";
 
 test("PrivatePAY is fail-closed without a reviewed privacy rail", () => {
   const config = { privatePayEnabled: false };
@@ -195,4 +195,22 @@ test("PrivatePAY privacy audit marks the base fee payer and unproven amount as r
   assert.equal(audit.relationship_protected, false);
   assert.equal(audit.amount_protected, false);
   assert.equal(audit.release_ready, false);
+});
+
+test("PrivatePAY trace audit covers deposit, transfer, withdrawal, timing, and network-fee leakage", () => {
+  const payer = "11111111111111111111111111111111";
+  const message = new TransactionMessage({ payerKey: new PublicKey(payer), recentBlockhash: payer, instructions: [] }).compileToV0Message();
+  const encoded = Buffer.from(new VersionedTransaction(message).serialize()).toString("base64");
+  const leg = { transaction_base64: encoded, last_valid_block_height: 123, provider_fees: { lamports: "5000" } };
+  const audit = auditPrivatePayTrace({ deposit: leg, transfer: leg, withdrawal: leg });
+  assert.equal(audit.status, "audited_boundary_only");
+  assert.equal(audit.release_ready, false);
+  assert.equal(audit.legs.length, 3);
+  assert.deepEqual(audit.legs.map((item) => item.label), ["deposit", "transfer", "withdrawal"]);
+  assert.equal(audit.legs[0].fee_payer, payer);
+  assert.equal(audit.legs[2].expiry_visible, true);
+  assert.equal(audit.legs[1].network_fee_visibility, "quoted_fee_visible");
+  assert.equal(audit.relationship_protected, false);
+  assert.equal(audit.amount_protected, false);
+  assert.equal(audit.timing_protected, false);
 });
