@@ -19,7 +19,8 @@ test("human root is HTML while machine surfaces remain available", async () => {
   assert.match(root.body, /PrivateDAO Agents/);
   assert.match(root.body, /Evidence for/);
   assert.match(root.body, /PDAO holder rewards run on three tiers/);
-  assert.match(root.body, /pdao-value-rail/);
+  assert.match(root.body, /pdao-utility-band/);
+  assert.match(root.body, /pdao-benefit-card/);
   assert.match(root.body, /pdao-proof-panel/);
   assert.match(root.body, /prefers-reduced-motion/);
   assert.match(root.body, /DISCOVER/);
