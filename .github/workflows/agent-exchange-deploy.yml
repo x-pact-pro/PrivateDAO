@@ -275,12 +275,16 @@ jobs:
           retry_json "$PUBLIC_BASE_URL/api/services" /tmp/services.json
           retry_json "$PUBLIC_BASE_URL/.well-known/agent-card.json" /tmp/agent-card.json
           retry_json "$PUBLIC_BASE_URL/openapi.json" /tmp/openapi.json
+          retry_json "$PUBLIC_BASE_URL/api/providers/status" /tmp/providers.json
+          retry_json "$PUBLIC_BASE_URL/api/marketplace/policy" /tmp/marketplace-policy.json
 
           jq -e '.services | type == "array" and length >= 24' /tmp/services.json >/dev/null
           jq -e '[.services[].id] | index("verify.basic") != null' /tmp/services.json >/dev/null
           jq -e '.openapi != null and .paths != null' /tmp/openapi.json >/dev/null
+          jq -e '[.providers[] | select(.provider == "mongodb" and .role == "visitor-accounts-favorites-cart" and .status == "configured")] | length == 1' /tmp/providers.json >/dev/null
+          jq -e '.seller_tiers.free.listing_fee_usd == 0 and (.seller_tiers | has("basic") and has("pro"))' /tmp/marketplace-policy.json >/dev/null
 
-          echo "Production smoke gate passed."
+          echo "Production smoke gate passed, including MongoDB accounts and seller-tier policy."
 
       - name: Reconcile payout runtime configuration
         id: payout_runtime

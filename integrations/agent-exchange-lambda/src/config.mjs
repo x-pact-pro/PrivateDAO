@@ -103,8 +103,20 @@ export function getConfig(env = process.env) {
     rateLimitPerMinute: boundedNumber(env.AGENT_EXCHANGE_RATE_LIMIT_PER_MINUTE || 120, 120, 10, 1000),
     priceMultiplier: boundedNumber(env.AGENT_EXCHANGE_PRICE_MULTIPLIER || 1, 1, 0.000001, 1000),
     marketplaceFeeBps: boundedNumber(env.AGENT_EXCHANGE_MARKETPLACE_FEE_BPS || 1000, 1000, 0, 10000),
+    // Swap remains quote-only and gated until the configured provider has passed
+    // production verification. Tests opt in explicitly through test mode.
+    swapQuotesEnabled: bool(env.PDAO_SWAP_QUOTES_ENABLED) || env.AGENT_EXCHANGE_TEST_MODE === "true",
     sealReputationEnabled: bool(env.SEAL_REPUTATION_ENABLED),
     sealkeeperTimeoutMs: boundedNumber(env.SEALKEEPER_TIMEOUT_MS || 8000, 8000, 1000, 30000),
+    // Holder access is a privilege with explicit anti-abuse ceilings, not an
+    // unlimited execution lane. All three buckets are enforced server-side.
+    pdaoHolderPerMinuteLimit: boundedNumber(env.PDAO_HOLDER_PER_MINUTE_LIMIT || 10, 10, 1, 60),
+    pdaoHolderDailyLimit: boundedNumber(env.PDAO_HOLDER_DAILY_LIMIT || 100, 100, 1, 10000),
+    pdaoHolderMonthlyLimit: boundedNumber(env.PDAO_HOLDER_MONTHLY_LIMIT || 1000, 1000, 1, 100000),
+    // The holder proposal requires a seven-day qualifying balance window.
+    // Snapshots are recorded by the scheduled Lambda sweep and live access
+    // verification; access fails closed until the window is complete.
+    pdaoHolderQualificationDays: boundedNumber(env.PDAO_HOLDER_QUALIFICATION_DAYS || 7, 7, 0, 30),
   };
 }
 

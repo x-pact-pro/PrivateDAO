@@ -65,12 +65,27 @@ async function runViewport(viewport, label) {
     await page.fill("#payoutAddress", payout);
     await page.click("#to4");
     await page.check("#terms");
+    await page.selectOption("#listingTier", label === "mobile" ? "free" : "basic");
     await page.click("#createQuote");
     await page.waitForSelector("#step5:not(.hidden)");
-    assert.equal(await page.locator("#pay").isEnabled(), true);
-    assert.match(await page.locator("#paymentSummary").textContent(), /Quote ready/);
+    if (label === "mobile") {
+      await page.waitForFunction(() => document.querySelector("#paymentResult")?.textContent.includes("now published"));
+      assert.equal(await page.locator("#pay").isEnabled(), false);
+      assert.match(await page.locator("#paymentResult").textContent(), /now published/);
+    } else {
+      assert.equal(await page.locator("#pay").isEnabled(), true);
+      assert.match(await page.locator("#paymentSummary").textContent(), /Quote ready/);
+    }
     assert.equal(new URL(page.url()).search, "");
-    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1), true);
+    const overflow = await page.evaluate(() => ({
+      viewport: window.innerWidth,
+      scrollWidth: document.documentElement.scrollWidth,
+      offenders: [...document.querySelectorAll("body *")]
+        .filter((node) => node.getBoundingClientRect().right > window.innerWidth + 1)
+        .slice(0, 8)
+        .map((node) => ({ tag: node.tagName, id: node.id, className: node.className, text: node.textContent?.trim().slice(0, 100), parent: node.parentElement?.outerHTML.slice(0, 220), right: Math.round(node.getBoundingClientRect().right) })),
+    }));
+    assert.equal(overflow.scrollWidth <= overflow.viewport + 1, true, JSON.stringify(overflow));
     console.log(`Seller browser E2E ${label}: PASS`);
   } finally {
     await page.close();

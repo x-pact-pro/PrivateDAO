@@ -4,7 +4,7 @@ This directory is the canonical source for the independently deployed Agent
 Exchange Lambda. It is intentionally separate from the commercial website and
 the game runtime.
 
-Product boundaries, the internal-only Sealkeeper rule, and the controlled paid
+Product boundaries, the controlled read-only SealKeeper integration, and the controlled paid
 E2E release procedure are defined in
 [`docs/agent-exchange-scope-and-release-boundaries.md`](docs/agent-exchange-scope-and-release-boundaries.md).
 
@@ -188,11 +188,15 @@ obtains a USD price from the configured market-data source, and requires at
 least $25 of value. The exact mint is
 `9isGuumtaqvJeJeyLF44fvfskk2cv5mYsopexMBfpump`.
 
-Qualifying access activates for 30 days from the first successful verification
-and does not extend the window on later requests. The token balance and market
-price are rechecked on every request; if either check fails, the paid quote
-path remains available. A signed message proves wallet control and never
-authorizes a transaction. The entitlement is independent from the treasury,
+Qualifying access activates for 30 days after the wallet has maintained at
+least $25 of finalized PDAO value for seven consecutive days. The scheduled
+Lambda sweep records a balance snapshot every five minutes for each enrolled
+holder, and a live verification also records a fresh snapshot. The server
+requires a complete qualifying window with no snapshot gap over fifteen
+minutes; missing or stale history fails closed and leaves the paid quote path
+available. The token balance and market price are rechecked on every request;
+the tier is selected from the current verified value. A signed message proves
+wallet control and never authorizes a transaction. The entitlement is independent from the treasury,
 USDC payment verification, and seller settlement rails.
 
 Alchemy Data APIs are used opportunistically behind the EVM provider boundary

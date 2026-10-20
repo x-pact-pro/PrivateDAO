@@ -1,8 +1,12 @@
-# Sealkeeper SEAL Read-only PoC Report
+# SealKeeper SEAL Read-only PoC Report
 
 Date: 2026-10-16
 Branch: `codex/sealkeeper-seal-readonly-poc`
-Scope: Agent Exchange only. No production deployment, merge, payment, signing, or transaction was performed.
+Scope: Agent Exchange only. The original PoC did not perform a production
+deployment, merge, payment, signing, or transaction. PrivateDAO Agent
+Exchange is SealKeeper's design and integration partner; this report covers
+the read-only technical integration and does not turn the partnership into a
+certification or authorization claim.
 
 ## Implementation result
 
@@ -12,13 +16,16 @@ PASS: Ed25519 JWS verification, `kid` lookup, issuer/version/subject/time checks
 
 PASS: The configured clock-skew bound is enforced, nonce handshakes are protected against same-runtime replay, and verified task records follow the documented cursor pagination with a bounded page limit.
 
-PASS: internal API added at `POST /api/internal/sealkeeper/verify`, protected by `SEAL_REPUTATION_ENABLED=false` by default and the existing admin smoke header when enabled.
+PASS: internal API added at `POST /api/internal/sealkeeper/verify`, protected
+by `SEAL_REPUTATION_ENABLED=false` by default and the existing admin smoke
+header when enabled. Production enablement is an explicit runtime opt-in;
+the public service remains optional and read-only.
 
 PASS: credential validity, reputation level, task evidence, and identity verification are returned as separate fields. The primary Agent Exchange rating and authorization paths are unchanged.
 
 PASS: official fixture coverage includes valid, expired, bad-signature, unknown-key, and version-4 handshake cases. The network fixture test is opt-in so ordinary CI does not depend on external availability.
 
-## Live Sealkeeper test-agent evidence
+## Live SealKeeper test-agent evidence
 
 Endpoint: `https://api.sealkeeper.run/v1/agents/sealkeeper/test-agent/seal`
 Raw agent id verified: `j2KKg1Ij_Wm_9MP_WAd0jpcdwboD6B1NDGcev5WQV9M`
@@ -52,13 +59,14 @@ The zero-count, `level=none` result is the intended official test-agent outcome.
 
 READY FOR FOCUSED SECURITY REVIEW: YES
 
-NOT PRODUCTION-ENABLED: YES
+PRODUCTION ENABLEMENT: COMPLETED for the public free read-only service after
+the live test-agent call and the focused security/fixture suite passed.
 
 The adapter is suitable for review as a read-only, optional signal. It should not be treated as a production trust gate until reviewers examine key-cache invalidation, handshake challenge lifecycle, route authentication, and the policy for attaching SEAL metadata to registered agents.
 
 ## Requested agent coverage
 
-The supplied live target is Sealkeeper's official `test-agent` (raw id `j2KKg1Ij_Wm_9MP_WAd0jpcdwboD6B1NDGcev5WQV9M`). No Carl agent id or endpoint was supplied, so Carl was not tested and is not claimed as verified.
+The supplied live target is SealKeeper's official `test-agent` (raw id `j2KKg1Ij_Wm_9MP_WAd0jpcdwboD6B1NDGcev5WQV9M`). No Carl agent id or endpoint was supplied, so Carl was not tested and is not claimed as verified.
 
 ## Files changed
 

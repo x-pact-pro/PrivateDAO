@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { handler, paymentStatusCode, publicRegistryAgent, resetForTests } from "../src/handler.mjs";
 import { SERVICES } from "../src/catalog.mjs";
+import { curatedTools } from "../src/exchange-metadata.mjs";
 
 const request = (path, method = "GET", body, headers = {}) =>
   handler({
@@ -17,7 +18,7 @@ test("human root is HTML while machine surfaces remain available", async () => {
   assert.match(root.headers["content-type"], /^text\/html/);
   assert.match(root.body, /PrivateDAO Agents/);
   assert.match(root.body, /Evidence for/);
-  assert.match(root.body, /If you or your agent hold at least \$25 worth of PDAO token/);
+  assert.match(root.body, /PDAO holder rewards run on three tiers/);
   assert.match(root.body, /DISCOVER/);
   assert.match(root.body, /IBM watsonx/);
   assert.match(root.body, /pdao-language-picker/);
@@ -37,6 +38,33 @@ test("human root is HTML while machine surfaces remain available", async () => {
     assert.match(marketplace.body, new RegExp(productName));
   }
   assert.match(marketplace.body, /Open product and get a quote/);
+  assert.match(marketplace.body, /Popular tools for agents/);
+  assert.match(marketplace.body, /GitHub MCP Server/);
+  assert.match(marketplace.body, /Microsoft Learn MCP Server/);
+  assert.match(marketplace.body, /Curated external tools from their official maintainers/);
+  const curated = await request("/api/tools/curated");
+  assert.equal(curated.statusCode, 200);
+  assert.match(curated.headers["content-type"], /^application\/json/);
+  assert.equal(curatedTools().length, 6);
+  assert.deepEqual(JSON.parse(curated.body).tools.map((tool) => tool.id), curatedTools().map((tool) => tool.id));
+  assert.match(JSON.parse(curated.body).disclosure, /not PrivateDAO execution services/);
+  const holderPolicy = await request("/api/pdao/benefits");
+  assert.equal(holderPolicy.statusCode, 200);
+  assert.equal(holderPolicy.headers["content-type"], "application/json; charset=utf-8");
+  assert.deepEqual(JSON.parse(holderPolicy.body).tiers.map((tier) => tier.id), ["access", "plus", "pro"]);
+  assert.equal(JSON.parse(holderPolicy.body).qualification_mode, "historical_balance_required");
+  assert.match(marketplace.body, /SealKeeper read-only reputation verification/);
+  assert.match(marketplace.body, /PrivateDAO Agent Exchange is SealKeeper's design and integration partner/);
+  assert.match(marketplace.body, /https:\/\/sealkeeper\.run\/docs\/integrate/);
+  const serviceCatalog = await request("/api/services");
+  assert.match(serviceCatalog.body, /public_free_read_only/);
+  assert.match(marketplace.body, /optional external signal/);
+  const sealkeeperPage = await request("/services/sealkeeper-reputation");
+  assert.equal(sealkeeperPage.statusCode, 200);
+  assert.match(sealkeeperPage.body, /SealKeeper read-only reputation verification/);
+  assert.match(sealkeeperPage.body, /PrivateDAO Agent Exchange is SealKeeper's design and integration partner/);
+  assert.match(sealkeeperPage.body, /https:\/\/sealkeeper\.run\/docs\/integrate/);
+  assert.match(sealkeeperPage.body, /Optional gated read-only/);
   const integrationPage = await request("/integrations");
   assert.equal(integrationPage.statusCode, 200);
   assert.match(integrationPage.body, /Recognize the stack at a glance/);
@@ -51,6 +79,9 @@ test("human root is HTML while machine surfaces remain available", async () => {
   assert.match(sellerPortal.body, /id="platformFee"/);
   assert.match(sellerPortal.body, /id="serviceLimit"/);
   assert.match(sellerPortal.body, /id="toolPicker"/);
+  assert.match(sellerPortal.body, /option value="free"/);
+  assert.match(sellerPortal.body, /option value="basic"/);
+  assert.match(sellerPortal.body, /option value="pro"/);
   assert.match(sellerPortal.body, /id="metadataFile"/);
   assert.match(sellerPortal.body, /id="chooseMetadata"/);
   assert.match(sellerPortal.body, /metadataFile\.onchange=async/);
@@ -65,6 +96,10 @@ test("human root is HTML while machine surfaces remain available", async () => {
   assert.match(sellerPortal.body, /api\/marketplace\/policy/);
   assert.match(sellerPortal.body, /All services on this agent/);
   assert.match(sellerPortal.body, /response\.ok&&result\.status==="paid"/);
+  const robots = await request("/robots.txt");
+  assert.match(robots.body, /Allow: \/sellers/);
+  const sitemap = await request("/sitemap.xml");
+  assert.match(sitemap.body, /https:\/\/agents\.privatedao\.org\/sellers/);
   assert.match(sellerPortal.body, /Do not submit another payment/);
   assert.match(sellerPortal.body, /state\.paymentSignature=sent\.signature/);
   assert.match(sellerPortal.body, /Retry verification \(do not pay again\)/);
@@ -114,7 +149,7 @@ test("human root is HTML while machine surfaces remain available", async () => {
   assert.match(botPage.body, /onlyIfTrusted:false/);
   assert.match(botPage.body, /provider\.connect\(\)/);
   assert.match(botPage.body, /Target network/);
-  assert.match(botPage.body, /If you or your agent hold at least \$25 worth of PDAO token/);
+  assert.match(botPage.body, /PDAO holder rewards run on three tiers/);
   assert.match(botPage.body, /href="#service-checkout-title">Request this service/);
   assert.match(botPage.body, /if\(immediate\.length===1\)\{await connect\(immediate\[0\]\);return;\}/);
   assert.match(botPage.body, /Wallet found\. Click Use … to approve the connection/);
@@ -177,7 +212,14 @@ test("human root is HTML while machine surfaces remain available", async () => {
   assert.ok(JSON.parse(providers.body).providers.some((provider) => provider.provider === "github"));
   const integrations = await request("/api/integrations");
   assert.equal(integrations.statusCode, 200);
-  assert.equal(JSON.parse(integrations.body).integrations.length, 7);
+  assert.equal(JSON.parse(integrations.body).integrations.length, 9);
+    const integrationDirectory = JSON.parse(integrations.body).integrations;
+    assert.ok(integrationDirectory.some((item) => item.id === "cloudflare-workers-ai" && item.status === "Endpoint required" && item.source_url === "https://developers.cloudflare.com/workers-ai/"));
+    assert.ok(integrationDirectory.some((item) => item.id === "microsoft-azure-ai" && item.status === "Endpoint required" && item.source_url === "https://learn.microsoft.com/azure/ai-services/"));
+    for (const id of ["github", "mongodb", "intel-openvino", "amd-ai"]) {
+      const item = integrationDirectory.find((entry) => entry.id === id);
+      assert.ok(item?.source_url?.startsWith("https://"), `${id} must carry an official source URL`);
+    }
   const githubService = catalog.services.find((service) => service.id === "github.repository");
   assert.ok(githubService.input_schema.anyOf.some((branch) => branch.required.includes("repository")));
   assert.equal((await request("/api/revenue")).statusCode, 404);
@@ -530,7 +572,7 @@ test("MCP and A2A machine entrypoints remain callable", async () => {
     assert.match(page.headers["content-type"], /^text\/html/, path);
     assert.match(page.body, /agents\.privatedao\.org\/mcp/, path);
     assert.match(page.body, /streamable-http/, path);
-    assert.match(page.body, /If you or your agent hold at least \$25 worth of PDAO token/, path);
+    assert.match(page.body, /PDAO holder rewards run on three tiers/, path);
   }
   const hub = await request("/connect");
   assert.match(hub.body, /ChatGPT/);
@@ -1095,6 +1137,21 @@ test("external seller listing pricing is one payment per agent regardless of ser
     assert.equal(firstPartyBody.seller_net_amount, null);
     const registered = JSON.parse((await request("/api/registry/register", "POST", { name: "Pricing Fixture", mcp_url: "https://example.com/mcp" })).body);
     const serviceSet = (count) => Array.from({ length: count }, (_item, index) => ({ id: `service_${index + 1}`, tool: "read", title: `Service ${index + 1}`, price: 0.01, asset: "USDC", network: "solana-mainnet-beta" }));
+    const freeRegistered = JSON.parse((await request("/api/registry/register", "POST", { name: "Free Eligibility Fixture", mcp_url: "https://example.com/free-mcp" })).body);
+    const freeUpdated = await request(`/api/registry/agents/${freeRegistered.id}/services`, "PATCH", { owner_token: freeRegistered.owner_token, services: serviceSet(1), accepted_assets: ["USDC"], payout: { address: "2BJ4ezxqV9YJXc38D9duKBkdn4su4jE1beKUHwH663sL", network: "solana-mainnet-beta", asset: "USDC" } });
+    assert.equal(freeUpdated.statusCode, 200, freeUpdated.body);
+    const freeQuoteResponse = await request("/api/marketplace/seller-listings/quote", "POST", { agent_id: freeRegistered.id, owner_token: freeRegistered.owner_token, tier: "free", accept_terms: true, terms_version: "seller-marketplace-v1" });
+    assert.equal(freeQuoteResponse.statusCode, 201, freeQuoteResponse.body);
+    const freeQuote = JSON.parse(freeQuoteResponse.body);
+    assert.equal(freeQuote.status, "published");
+    assert.equal(freeQuote.free_listing, true);
+    assert.equal(freeQuote.quote.amount, 0);
+    assert.equal(freeQuote.listing.payment_method, "free_eligibility");
+    assert.equal(freeQuote.status, "published");
+    assert.equal(freeQuote.listing.commercial_publication_status, "published");
+    assert.equal(freeQuote.listing.status, "active");
+    const freeMarketplace = JSON.parse((await request("/api/marketplace/listings")).body).listings;
+    assert.equal(freeMarketplace.some((item) => item.agentId === freeRegistered.id), true);
     for (const [count, expected] of [[1, 12], [5, 12]]) {
       const updated = await request(`/api/registry/agents/${registered.id}/services`, "PATCH", { owner_token: registered.owner_token, services: serviceSet(count), accepted_assets: ["USDC"], payout: { address: "2BJ4ezxqV9YJXc38D9duKBkdn4su4jE1beKUHwH663sL", network: "solana-mainnet-beta", asset: "USDC" } });
       assert.equal(updated.statusCode, 200, updated.body);
@@ -1182,6 +1239,7 @@ test("admin marketplace policy is persisted and controls public terms", async ()
   try {
     const initial = JSON.parse((await request("/api/marketplace/policy")).body);
     assert.equal(initial.listing_fee_usd, 10);
+    assert.equal(initial.seller_tiers.free.listing_fee_usd, 0);
     assert.equal(initial.platform_fee_bps, 1000);
     assert.equal(initial.additional_service_fee_usd, 0);
     assert.equal(initial.max_services_per_seller, 5);
@@ -1193,6 +1251,7 @@ test("admin marketplace policy is persisted and controls public terms", async ()
     const publicPolicy = JSON.parse((await request("/api/marketplace/policy")).body);
     assert.equal(publicPolicy.listing_fee_usd, 12);
     assert.equal(publicPolicy.platform_fee_bps, 900);
+    assert.equal(publicPolicy.seller_tiers.free.listing_fee_usd, 0);
     assert.equal(publicPolicy.additional_service_fee_usd, 0);
     assert.equal(publicPolicy.promotion_packages.featured_listing.price_usd, 75);
   } finally {

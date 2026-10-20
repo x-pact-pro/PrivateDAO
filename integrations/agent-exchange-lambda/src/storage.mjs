@@ -19,6 +19,29 @@ export class MemoryStore {
     return next;
   }
   async update(collection, key, fn) { const current = await this.get(collection, key); const next = await fn(current); return this.put(collection, key, next); }
+  async consumePdaoCredit({ entitlementId, claimId, creditAppliedUsd, requestLimit, serviceId, servicePrice }) {
+    const map = this.map("Registry");
+    const current = map.get(entitlementId);
+    if (!current) throw new Error("PDAO entitlement record is unavailable");
+    const claimKey = `pdao_benefit_claim_${claimId}`;
+    if (map.has(claimKey)) return { consumed: false, reason: "already_consumed" };
+    const credit = Number(creditAppliedUsd);
+    const remaining = Number(current.credit_remaining_usd || 0);
+    const used = Number(current.credit_requests_used || 0);
+    if (!Number.isFinite(credit) || credit <= 0 || remaining < credit || used >= Number(requestLimit || 0))
+      return { consumed: false, reason: "credit_unavailable", credit_remaining_usd: remaining, credit_requests_used: used };
+    const next = {
+      ...current,
+      credit_remaining_usd: Number((remaining - credit).toFixed(6)),
+      credit_requests_used: used + 1,
+      last_benefit_service_id: serviceId || null,
+      last_benefit_price_usd: Number(servicePrice || 0),
+      last_benefit_consumed_at: new Date().toISOString(),
+    };
+    map.set(claimKey, { id: claimKey, kind: "pdao_benefit_claim", entitlement_id: entitlementId, created_at: new Date().toISOString() });
+    map.set(entitlementId, structuredClone(next));
+    return { consumed: true, credit_applied_usd: credit, credit_requests_used: next.credit_requests_used, credit_remaining_usd: next.credit_remaining_usd };
+  }
   async consumeRateLimit(key, limit, windowMs) {
     const now = Date.now();
     const current = this.rateLimits.get(key);
@@ -32,7 +55,7 @@ export class MemoryStore {
 export async function createStore(config) {
   if (config.allowTestStorage || (config.tablePrefix === "memory" && process.env.AGENT_EXCHANGE_TEST_MODE === "true")) return new MemoryStore();
   try {
-    const [{ DynamoDBClient }, { DynamoDBDocumentClient, PutCommand, GetCommand, ScanCommand, UpdateCommand }] = await Promise.all([
+    const [{ DynamoDBClient }, { DynamoDBDocumentClient, PutCommand, GetCommand, ScanCommand, UpdateCommand, TransactWriteCommand }] = await Promise.all([
       import("@aws-sdk/client-dynamodb"), import("@aws-sdk/lib-dynamodb")
     ]);
     const client = DynamoDBDocumentClient.from(new DynamoDBClient({ region: config.region }));
@@ -75,6 +98,39 @@ export async function createStore(config) {
         const current = await this.get(collection, key); const next = await fn(current);
         await this.put(collection, key, next);
         return next;
+      },
+      async consumePdaoCredit({ entitlementId, claimId, creditAppliedUsd, requestLimit, serviceId, servicePrice }) {
+        const credit = Number(creditAppliedUsd);
+        const claimKey = `pdao_benefit_claim_${claimId}`;
+        const nowIso = new Date().toISOString();
+        try {
+          await client.send(new TransactWriteCommand({
+            TransactItems: [
+              { Put: {
+                TableName: table("Registry"),
+                Item: { id: claimKey, kind: "pdao_benefit_claim", entitlement_id: entitlementId, created_at: nowIso },
+                ConditionExpression: "attribute_not_exists(id)",
+              } },
+              { Update: {
+                TableName: table("Registry"),
+                Key: { id: entitlementId },
+                UpdateExpression: "SET #remaining = #remaining - :credit, #lastService = :serviceId, #lastPrice = :servicePrice, #lastAt = :now ADD #used :one",
+                ConditionExpression: "attribute_exists(id) AND #remaining >= :credit AND #used < :requestLimit",
+                ExpressionAttributeNames: { "#remaining": "credit_remaining_usd", "#used": "credit_requests_used", "#lastService": "last_benefit_service_id", "#lastPrice": "last_benefit_price_usd", "#lastAt": "last_benefit_consumed_at" },
+                ExpressionAttributeValues: { ":credit": credit, ":one": 1, ":requestLimit": Number(requestLimit || 0), ":serviceId": serviceId || null, ":servicePrice": Number(servicePrice || 0), ":now": nowIso },
+              } },
+            ],
+          }));
+          const current = await client.send(new GetCommand({ TableName: table("Registry"), Key: { id: entitlementId }, ConsistentRead: true }));
+          return { consumed: true, credit_applied_usd: credit, credit_requests_used: Number(current.Item?.credit_requests_used || 0), credit_remaining_usd: Number(current.Item?.credit_remaining_usd || 0) };
+        } catch (error) {
+          const claim = await client.send(new GetCommand({ TableName: table("Registry"), Key: { id: claimKey }, ConsistentRead: true }));
+          if (claim.Item) return { consumed: false, reason: "already_consumed" };
+          const current = await client.send(new GetCommand({ TableName: table("Registry"), Key: { id: entitlementId }, ConsistentRead: true }));
+          if (Number(current.Item?.credit_remaining_usd || 0) < credit || Number(current.Item?.credit_requests_used || 0) >= Number(requestLimit || 0))
+            return { consumed: false, reason: "credit_unavailable", credit_remaining_usd: Number(current.Item?.credit_remaining_usd || 0), credit_requests_used: Number(current.Item?.credit_requests_used || 0) };
+          throw error;
+        }
       },
       async consumeRateLimit(key, limit, windowMs) {
         const bucket = Math.floor(Date.now() / windowMs);

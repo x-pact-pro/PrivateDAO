@@ -207,6 +207,17 @@ export const SERVICES = Object.freeze([
     supportedNetworks: UNIVERSAL_READ_NETWORKS,
   },
   {
+    id: "sealkeeper.reputation",
+    title: "SealKeeper read-only reputation verification",
+    price: 0,
+    currency: "USDC",
+    access: "free",
+    input: "SealKeeper agent ID and optional handshake",
+    output: "verified credential validity, neutral reputation signal and bounded task evidence",
+    supportedNetworks: [],
+    availability: "public_free_read_only",
+  },
+  {
     id: "github.repository",
     title: "GitHub repository evidence",
     price: 0.08,
