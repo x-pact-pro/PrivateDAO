@@ -4,7 +4,7 @@ This directory is the canonical source for the independently deployed Agent
 Exchange Lambda. It is intentionally separate from the commercial website and
 the game runtime.
 
-Product boundaries, the internal-only Sealkeeper rule, and the controlled paid
+Product boundaries, the controlled read-only SealKeeper integration, and the controlled paid
 E2E release procedure are defined in
 [`docs/agent-exchange-scope-and-release-boundaries.md`](docs/agent-exchange-scope-and-release-boundaries.md).
 
@@ -39,7 +39,6 @@ The human batch checkout and the automation contract are documented in
 - `/api/github/webhook` signed installation and Marketplace lifecycle webhook
 - `/api/github/context` authenticated read-only installation repository context
 - `/api/registry/services` external seller service discovery
-- `/api/seller/security-review` automated seller screening and quality score
 - `/api/external/jobs` quote-first external seller execution
 
 ## AI client compatibility
@@ -90,40 +89,6 @@ must be delivered to the seller through a separate secure channel. Registration
 updates without the token are rejected, while a healthy re-registration without
 seller mutations remains idempotent. Payment, commercial publication, and
 technical MCP verification remain separate states.
-
-Seller screening accepts optional public `website_url`, `github_url`, and
-`docs_url` metadata. It checks public HTTPS reachability, GitHub repository
-visibility, MCP identity, discovered tool safety, and selected service
-alignment. The result contains a bounded `quality_score` and a separate
-`security_gate`. A passed result is automated screening only, not a security
-audit, legal certification, or guarantee of safe behavior. `auto_publish` is
-honored only after finalized listing payment and a passed screening gate;
-otherwise the seller remains eligible for explicit publication.
-
-### Seller listing packages
-
-The seller portal at `/sellers` exposes these first-party packages:
-
-- **Community Listing** — no listing payment, up to 3 read-only services, only
-  when automated screening passes and the submitted public website contains the
-  exact PrivateDAO Agent Exchange badge/backlink marker. The API records this as
-  `payment_status: waived` and `payment_type: community_badge`.
-- **Basic Listing** — `$10` one-time, up to 5 read-only services.
-- **Growth Listing** — `$49` one-time, up to 5 read-only services.
-- **Featured Listing** and **Ecosystem Campaign** — optional sponsored packages
-  with separate campaign records and disclosure. They do not create technical
-  verification, partnership, endorsement, or third-party acceptance.
-
-The community badge embed is intentionally simple and auditable:
-
-```html
-<a href="https://agents.privatedao.org/" rel="nofollow" data-privatedao-agent-exchange="community-listing">Listed on PrivateDAO Agent Exchange</a>
-```
-
-The server checks the live website through the same public-HTTPS/SSRF-safe
-boundary used by seller screening, refuses redirects, bounds the response to
-64 KiB, and verifies the HTML at the time of the free-listing request. A passed
-screening result remains automated screening only, not a security audit.
 
 Use the endpoint as a custom remote MCP app in ChatGPT developer mode, as a
 remote HTTP MCP server in Claude, or as an OpenClaw `streamable-http` server.
@@ -182,10 +147,7 @@ Program resources are used for AI workload validation, and GitHub Developer
 Program resources support repository evidence and tooling. GitHub
 repository evidence uses the public GitHub API (with an optional secret-backed
 token for higher API limits). Provider identity and evidence persistence status
-are included in completed results without returning credentials. DigitalOcean
-infrastructure access is documented separately as a compute, storage, and
-deployment experimentation relationship; it is not presented as a product
-endorsement or external marketplace placement.
+are included in completed results without returning credentials.
 
 The GitHub App runtime additionally reads the JSON secret
 `pdao/agent-exchange/github` through `AGENT_EXCHANGE_GITHUB_SECRET_ID`. Its
@@ -226,11 +188,15 @@ obtains a USD price from the configured market-data source, and requires at
 least $25 of value. The exact mint is
 `9isGuumtaqvJeJeyLF44fvfskk2cv5mYsopexMBfpump`.
 
-Qualifying access activates for 30 days from the first successful verification
-and does not extend the window on later requests. The token balance and market
-price are rechecked on every request; if either check fails, the paid quote
-path remains available. A signed message proves wallet control and never
-authorizes a transaction. The entitlement is independent from the treasury,
+Qualifying access activates for 30 days after the wallet has maintained at
+least $25 of finalized PDAO value for seven consecutive days. The scheduled
+Lambda sweep records a balance snapshot every five minutes for each enrolled
+holder, and a live verification also records a fresh snapshot. The server
+requires a complete qualifying window with no snapshot gap over fifteen
+minutes; missing or stale history fails closed and leaves the paid quote path
+available. The token balance and market price are rechecked on every request;
+the tier is selected from the current verified value. A signed message proves
+wallet control and never authorizes a transaction. The entitlement is independent from the treasury,
 USDC payment verification, and seller settlement rails.
 
 Alchemy Data APIs are used opportunistically behind the EVM provider boundary

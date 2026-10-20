@@ -5,7 +5,7 @@ import {
   createAssociatedTokenAccountIdempotentInstruction,
   createTransferCheckedInstruction,
   getAssociatedTokenAddressSync,
-} from "@solana/spl-token";
+} from "./spl-token.mjs";
 import { assertMainnetConfig, derivedTreasuryTokenAccount } from "./solana.mjs";
 
 const USDC_DECIMALS = 6;

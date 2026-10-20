@@ -73,9 +73,18 @@ test("reads live-shaped reputation independently from credential validity", asyn
 
 test("blocks non-Sealkeeper URLs and degrades to an optional signal", async () => {
   await assert.rejects(() => readSealReputation({ agentId, sealUrl: "https://example.com/v1/agents/x/seal" }), (error) => error.code === "ssrf_blocked");
+  await assert.rejects(() => readSealReputation({ agentId, sealUrl: "https://api.sealkeeper.run/v1/agents/x/seal?redirect=https://example.com" }), (error) => error.code === "ssrf_blocked");
+  await assert.rejects(() => readSealReputation({ agentId, sealUrl: "https://api.sealkeeper.run/v1/agents/x/not-a-seal" }), (error) => error.code === "ssrf_blocked");
   const result = sealkeeperFailure(new SealkeeperError("not_found"));
   assert.equal(result.accepted, false);
   assert.equal(result.error, "not_found");
+});
+
+test("remote handshake verification rejects an untrusted verifier URL", async () => {
+  await assert.rejects(
+    () => readSealReputation({ agentId, handshake: "handshake", nonce: "nonce", aud: "exchange", sealUrl: "https://example.com/v1/agents/x/seal" }),
+    (error) => error.code === "ssrf_blocked",
+  );
 });
 
 test("rejects a reused nonce handshake in the same runtime", async () => {

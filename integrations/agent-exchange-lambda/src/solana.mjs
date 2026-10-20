@@ -78,10 +78,10 @@ export async function treasuryTokenAccount(config) {
   return derivedTreasuryTokenAccount(config);
 }
 
-export async function derivedTokenAccount(config, mintAddress) {
+export async function derivedTreasuryTokenAccount(config) {
   const { PublicKey } = await import("@solana/web3.js");
   const owner = new PublicKey(config.treasury);
-  const mint = new PublicKey(mintAddress);
+  const mint = new PublicKey(config.usdcMint);
   const tokenProgram = new PublicKey(
     "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
   );
@@ -92,10 +92,6 @@ export async function derivedTokenAccount(config, mintAddress) {
     [owner.toBuffer(), tokenProgram.toBuffer(), mint.toBuffer()],
     associatedProgram,
   )[0].toBase58();
-}
-
-export async function derivedTreasuryTokenAccount(config) {
-  return derivedTokenAccount(config, config.usdcMint);
 }
 
 export async function readRpc(config, method, params = []) {
@@ -121,11 +117,10 @@ export async function verifyPayment(config, payment, quote) {
     assertMainnetConfig(config);
     if (quote.network !== "solana-mainnet-beta")
       return { ok: false, reason: "payment network does not match Solana Mainnet" };
-    if (quote.currency === "USDC" || quote.currency === "PDAO") {
-      const expectedMint = quote.currency === "PDAO" ? config.pdaoMint : config.usdcMint;
-      if (quote.mint !== expectedMint || quote.treasuryOwner !== config.treasury)
+    if (quote.currency === "USDC") {
+      if (quote.mint !== config.usdcMint || quote.treasuryOwner !== config.treasury)
         return { ok: false, reason: "payment treasury or USDC mint does not match production configuration" };
-      const canonicalAta = await derivedTokenAccount(config, expectedMint);
+      const canonicalAta = await derivedTreasuryTokenAccount(config);
       if (quote.treasuryTokenAccount !== canonicalAta)
         return { ok: false, reason: "payment treasury token account is not canonical" };
     } else if (quote.currency === "SOL") {
@@ -169,7 +164,7 @@ export async function verifyPayment(config, payment, quote) {
   if (!paymentReferenceMatches(instructions, quote.paymentReference))
     return { ok: false, reason: "payment reference does not match quote" };
   const expected = Number(quote.amountAtomic);
-  if (quote.currency === "USDC" || quote.currency === "PDAO") {
+  if (quote.currency === "USDC") {
     const treasuryOwner = quote.treasuryOwner || quote.recipient;
     if (!treasuryOwner)
       return { ok: false, reason: "quote treasury owner is missing" };
@@ -190,8 +185,8 @@ export async function verifyPayment(config, payment, quote) {
       };
     }
     const info = account.result?.value?.data?.parsed?.info;
-    if (!info || info.mint !== quote.mint || info.owner !== treasuryOwner)
-      return { ok: false, reason: "treasury token account is not initialized or does not match" };
+    if (!info || info.mint !== config.usdcMint || info.owner !== treasuryOwner)
+      return { ok: false, reason: "treasury USDC token account is not initialized or does not match" };
   }
   const distribution = Array.isArray(quote.distribution) ? quote.distribution : null;
   let match = false;
@@ -336,38 +331,18 @@ export async function swapQuote(config, input = {}) {
   if (!/^[1-9][0-9]*$/.test(amount)) throw new Error("positive base-unit amount is required");
   if (![inputMint, outputMint].every((value) => /^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(value || "")))
     throw new Error("valid Solana inputMint and outputMint are required");
-  const endpoints = [...new Set([
-    config.jupiterQuoteUrl,
-    config.jupiterQuoteFallbackUrl,
-  ].filter(Boolean))];
-  let quote;
-  let lastError;
-  for (const endpoint of endpoints) {
-    try {
-      const url = new URL(endpoint);
-      url.searchParams.set("inputMint", inputMint);
-      url.searchParams.set("outputMint", outputMint);
-      url.searchParams.set("amount", amount);
-      url.searchParams.set("slippageBps", String(Math.min(5000, Math.max(1, Number(input.slippageBps || 50)))));
-      // Swap API v1 requires instructionVersion=V2 for current token-program
-      // compatibility. Lite API accepts the same parameter without an API key.
-      url.searchParams.set("instructionVersion", "V2");
-      const response = await fetch(url, {
-        headers: config.jupiterApiKey ? { "x-api-key": config.jupiterApiKey } : {},
-        signal: AbortSignal.timeout(10000),
-      });
-      if (!response.ok) {
-        lastError = new Error(`Jupiter quote HTTP ${response.status}`);
-        continue;
-      }
-      quote = await response.json();
-      if (quote.error) throw new Error(String(quote.error));
-      break;
-    } catch (error) {
-      lastError = error;
-    }
-  }
-  if (!quote) throw lastError || new Error("Jupiter quote provider unavailable");
+  const url = new URL(config.jupiterQuoteUrl);
+  url.searchParams.set("inputMint", inputMint);
+  url.searchParams.set("outputMint", outputMint);
+  url.searchParams.set("amount", amount);
+  url.searchParams.set("slippageBps", String(Math.min(5000, Math.max(1, Number(input.slippageBps || 50)))));
+  const response = await fetch(url, {
+    headers: config.jupiterApiKey ? { "x-api-key": config.jupiterApiKey } : {},
+    signal: AbortSignal.timeout(10000),
+  });
+  if (!response.ok) throw new Error(`Jupiter quote HTTP ${response.status}`);
+  const quote = await response.json();
+  if (quote.error) throw new Error(String(quote.error));
   return {
     network: "solana-mainnet-beta",
     provider: "Jupiter quote API",

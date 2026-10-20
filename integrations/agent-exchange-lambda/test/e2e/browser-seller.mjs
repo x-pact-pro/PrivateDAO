@@ -34,11 +34,7 @@ const server = createServer(async (request, response) => {
 
 await new Promise((resolve) => server.listen(0, "127.0.0.1", resolve));
 const { port } = server.address();
-const browser = await chromium.launch({
-  executablePath: process.env.PLAYWRIGHT_CHROME_PATH || "/usr/bin/google-chrome",
-  headless: true,
-  args: ["--no-sandbox", "--disable-dev-shm-usage", "--disable-gpu"],
-});
+const browser = await chromium.launch({ executablePath: "/usr/bin/google-chrome", headless: true });
 
 async function runViewport(viewport, label) {
   resetForTests();
@@ -69,14 +65,27 @@ async function runViewport(viewport, label) {
     await page.fill("#payoutAddress", payout);
     await page.click("#to4");
     await page.check("#terms");
-    const basicTier = page.locator('input[name="listingTier"][value="basic"]');
-    if (await basicTier.count()) await basicTier.check();
+    await page.selectOption("#listingTier", label === "mobile" ? "free" : "basic");
     await page.click("#createQuote");
     await page.waitForSelector("#step5:not(.hidden)");
-    assert.equal(await page.locator("#pay").isEnabled(), true);
-    assert.match(await page.locator("#paymentSummary").textContent(), /Quote ready/);
+    if (label === "mobile") {
+      await page.waitForFunction(() => document.querySelector("#paymentResult")?.textContent.includes("now published"));
+      assert.equal(await page.locator("#pay").isEnabled(), false);
+      assert.match(await page.locator("#paymentResult").textContent(), /now published/);
+    } else {
+      assert.equal(await page.locator("#pay").isEnabled(), true);
+      assert.match(await page.locator("#paymentSummary").textContent(), /Quote ready/);
+    }
     assert.equal(new URL(page.url()).search, "");
-    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1), true);
+    const overflow = await page.evaluate(() => ({
+      viewport: window.innerWidth,
+      scrollWidth: document.documentElement.scrollWidth,
+      offenders: [...document.querySelectorAll("body *")]
+        .filter((node) => node.getBoundingClientRect().right > window.innerWidth + 1)
+        .slice(0, 8)
+        .map((node) => ({ tag: node.tagName, id: node.id, className: node.className, text: node.textContent?.trim().slice(0, 100), parent: node.parentElement?.outerHTML.slice(0, 220), right: Math.round(node.getBoundingClientRect().right) })),
+    }));
+    assert.equal(overflow.scrollWidth <= overflow.viewport + 1, true, JSON.stringify(overflow));
     console.log(`Seller browser E2E ${label}: PASS`);
   } finally {
     await page.close();

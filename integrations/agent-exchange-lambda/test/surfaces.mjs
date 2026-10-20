@@ -2,11 +2,12 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { handler, paymentStatusCode, publicRegistryAgent, resetForTests } from "../src/handler.mjs";
 import { SERVICES } from "../src/catalog.mjs";
+import { curatedTools } from "../src/exchange-metadata.mjs";
 
 const request = (path, method = "GET", body, headers = {}) =>
   handler({
     requestContext: { http: { method, path } },
-    body: body ? JSON.stringify(path === "/api/marketplace/seller-listings/quote" ? { external_tools_policy_acknowledged: true, ...body } : body) : undefined,
+    body: body ? JSON.stringify(body) : undefined,
     headers,
   });
 
@@ -17,14 +18,8 @@ test("human root is HTML while machine surfaces remain available", async () => {
   assert.match(root.headers["content-type"], /^text\/html/);
   assert.match(root.body, /PrivateDAO Agents/);
   assert.match(root.body, /Evidence for/);
-    assert.match(root.body, /Eligible PDAO holders can unlock verification access/);
+  assert.match(root.body, /PDAO holder rewards run on three tiers/);
   assert.match(root.body, /DISCOVER/);
-  assert.match(root.body, /I am looking for a tool/);
-  assert.match(root.body, /I am building a tool/);
-  assert.match(root.body, /pdao-token-title/);
-  assert.match(root.body, /https:\/\/privatedao\.org\/token/);
-  assert.match(root.body, /Community listing/);
-  assert.match(root.body, /Growth/);
   assert.match(root.body, /IBM watsonx/);
   assert.match(root.body, /pdao-language-picker/);
   assert.equal(root.headers["x-content-type-options"], "nosniff");
@@ -43,20 +38,33 @@ test("human root is HTML while machine surfaces remain available", async () => {
     assert.match(marketplace.body, new RegExp(productName));
   }
   assert.match(marketplace.body, /Open product and get a quote/);
-  const externalToolsPolicy = await request("/policies/external-tools");
-  assert.equal(externalToolsPolicy.statusCode, 200);
-  assert.match(externalToolsPolicy.body, /External tools have external owners/);
-  assert.match(externalToolsPolicy.body, /reasonable technical credibility check/);
-  assert.match(externalToolsPolicy.body, /support@privatedao\.org/);
-  assert.match(externalToolsPolicy.body, /External Tools Policy/);
-  const terms = await request("/terms");
-  assert.equal(terms.statusCode, 200);
-  assert.match(terms.body, /Marketplace Terms v1\.0/);
-  assert.match(terms.body, /Community listing conditions/);
-  assert.match(terms.body, /public social post URL/);
-  assert.match(terms.body, /exact configured mint/);
-  assert.match(terms.body, /support@privatedao\.org/);
-  assert.match(terms.body, /href="\/policies\/external-tools"/);
+  assert.match(marketplace.body, /Popular tools for agents/);
+  assert.match(marketplace.body, /GitHub MCP Server/);
+  assert.match(marketplace.body, /Microsoft Learn MCP Server/);
+  assert.match(marketplace.body, /Curated external tools from their official maintainers/);
+  const curated = await request("/api/tools/curated");
+  assert.equal(curated.statusCode, 200);
+  assert.match(curated.headers["content-type"], /^application\/json/);
+  assert.equal(curatedTools().length, 6);
+  assert.deepEqual(JSON.parse(curated.body).tools.map((tool) => tool.id), curatedTools().map((tool) => tool.id));
+  assert.match(JSON.parse(curated.body).disclosure, /not PrivateDAO execution services/);
+  const holderPolicy = await request("/api/pdao/benefits");
+  assert.equal(holderPolicy.statusCode, 200);
+  assert.equal(holderPolicy.headers["content-type"], "application/json; charset=utf-8");
+  assert.deepEqual(JSON.parse(holderPolicy.body).tiers.map((tier) => tier.id), ["access", "plus", "pro"]);
+  assert.equal(JSON.parse(holderPolicy.body).qualification_mode, "historical_balance_required");
+  assert.match(marketplace.body, /SealKeeper read-only reputation verification/);
+  assert.match(marketplace.body, /PrivateDAO Agent Exchange is SealKeeper's design and integration partner/);
+  assert.match(marketplace.body, /https:\/\/sealkeeper\.run\/docs\/integrate/);
+  const serviceCatalog = await request("/api/services");
+  assert.match(serviceCatalog.body, /public_free_read_only/);
+  assert.match(marketplace.body, /optional external signal/);
+  const sealkeeperPage = await request("/services/sealkeeper-reputation");
+  assert.equal(sealkeeperPage.statusCode, 200);
+  assert.match(sealkeeperPage.body, /SealKeeper read-only reputation verification/);
+  assert.match(sealkeeperPage.body, /PrivateDAO Agent Exchange is SealKeeper's design and integration partner/);
+  assert.match(sealkeeperPage.body, /https:\/\/sealkeeper\.run\/docs\/integrate/);
+  assert.match(sealkeeperPage.body, /Optional gated read-only/);
   const integrationPage = await request("/integrations");
   assert.equal(integrationPage.statusCode, 200);
   assert.match(integrationPage.body, /Recognize the stack at a glance/);
@@ -71,10 +79,11 @@ test("human root is HTML while machine surfaces remain available", async () => {
   assert.match(sellerPortal.body, /id="platformFee"/);
   assert.match(sellerPortal.body, /id="serviceLimit"/);
   assert.match(sellerPortal.body, /id="toolPicker"/);
+  assert.match(sellerPortal.body, /option value="free"/);
+  assert.match(sellerPortal.body, /option value="basic"/);
+  assert.match(sellerPortal.body, /option value="pro"/);
+  assert.match(sellerPortal.body, /tier:\$\("#listingTier"\)\?\.value\|\|"basic"/);
   assert.match(sellerPortal.body, /id="metadataFile"/);
-  assert.match(sellerPortal.body, /id="externalToolsPolicyAcknowledged"/);
-  assert.match(sellerPortal.body, /id="communitySocialPostUrl"/);
-  assert.match(sellerPortal.body, /External Tools Policy/);
   assert.match(sellerPortal.body, /id="chooseMetadata"/);
   assert.match(sellerPortal.body, /metadataFile\.onchange=async/);
   assert.match(sellerPortal.body, /id="rotateCredential"/);
@@ -88,12 +97,16 @@ test("human root is HTML while machine surfaces remain available", async () => {
   assert.match(sellerPortal.body, /api\/marketplace\/policy/);
   assert.match(sellerPortal.body, /All services on this agent/);
   assert.match(sellerPortal.body, /response\.ok&&result\.status==="paid"/);
+  const robots = await request("/robots.txt");
+  assert.match(robots.body, /Allow: \/sellers/);
+  const sitemap = await request("/sitemap.xml");
+  assert.match(sitemap.body, /https:\/\/agents\.privatedao\.org\/sellers/);
   assert.match(sellerPortal.body, /Do not submit another payment/);
   assert.match(sellerPortal.body, /state\.paymentSignature=sent\.signature/);
   assert.match(sellerPortal.body, /Retry verification \(do not pay again\)/);
   assert.match(sellerPortal.body, /retry\.dataset\.retryBound/);
   assert.match(sellerPortal.body, /new MutationObserver\(bindPaymentRetry\)/);
-  for (const asset of ["ibm-watsonx.svg", "openvino.svg", "mongodb.svg", "github.svg", "digitalocean.svg"]) {
+  for (const asset of ["ibm-watsonx.svg", "openvino.svg", "mongodb.svg", "github.svg"]) {
     assert.match(root.body, new RegExp(`/assets/ecosystem/${asset}`), asset);
     assert.match(marketplace.body, new RegExp(`/assets/ecosystem/${asset}`), asset);
     assert.match(integrationPage.body, new RegExp(`/assets/ecosystem/${asset}`), asset);
@@ -101,13 +114,6 @@ test("human root is HTML while machine surfaces remain available", async () => {
     assert.equal(response.statusCode, 200, asset);
     assert.match(response.body, /<svg\b/, asset);
   }
-  assert.match(root.body, /\/assets\/ecosystem\/amd-official\.png/);
-  assert.match(marketplace.body, /\/assets\/ecosystem\/amd-official\.png/);
-  assert.match(integrationPage.body, /\/assets\/ecosystem\/amd-official\.png/);
-  const amdLogo = await request("/assets/ecosystem/amd-official.png");
-  assert.equal(amdLogo.statusCode, 200, "amd-official.png");
-  assert.equal(amdLogo.headers["content-type"], "image/png", "amd-official.png");
-  assert.equal(amdLogo.isBase64Encoded, true, "amd-official.png");
   for (const surface of [root.body, marketplace.body, integrationPage.body])
     assert.match(surface, /\/assets\/brand\/privatedao-official-logo\.jpg/);
   assert.match(integrationPage.body, /\/assets\/brand\/privatedao-official-banner\.jpg/);
@@ -144,7 +150,7 @@ test("human root is HTML while machine surfaces remain available", async () => {
   assert.match(botPage.body, /onlyIfTrusted:false/);
   assert.match(botPage.body, /provider\.connect\(\)/);
   assert.match(botPage.body, /Target network/);
-  assert.match(botPage.body, /Eligible PDAO holders can unlock verification access/);
+  assert.match(botPage.body, /PDAO holder rewards run on three tiers/);
   assert.match(botPage.body, /href="#service-checkout-title">Request this service/);
   assert.match(botPage.body, /if\(immediate\.length===1\)\{await connect\(immediate\[0\]\);return;\}/);
   assert.match(botPage.body, /Wallet found\. Click Use … to approve the connection/);
@@ -207,10 +213,14 @@ test("human root is HTML while machine surfaces remain available", async () => {
   assert.ok(JSON.parse(providers.body).providers.some((provider) => provider.provider === "github"));
   const integrations = await request("/api/integrations");
   assert.equal(integrations.statusCode, 200);
-  const integrationPayload = JSON.parse(integrations.body);
-  assert.equal(integrationPayload.integrations.length, 8);
-  assert.ok(integrationPayload.integrations.some((integration) => integration.id === "amd-ai"));
-  assert.ok(integrationPayload.integrations.some((integration) => integration.id === "digitalocean"));
+  assert.equal(JSON.parse(integrations.body).integrations.length, 9);
+    const integrationDirectory = JSON.parse(integrations.body).integrations;
+    assert.ok(integrationDirectory.some((item) => item.id === "cloudflare-workers-ai" && item.status === "Endpoint required" && item.source_url === "https://developers.cloudflare.com/workers-ai/"));
+    assert.ok(integrationDirectory.some((item) => item.id === "microsoft-azure-ai" && item.status === "Endpoint required" && item.source_url === "https://learn.microsoft.com/azure/ai-services/"));
+    for (const id of ["github", "mongodb", "intel-openvino", "amd-ai"]) {
+      const item = integrationDirectory.find((entry) => entry.id === id);
+      assert.ok(item?.source_url?.startsWith("https://"), `${id} must carry an official source URL`);
+    }
   const githubService = catalog.services.find((service) => service.id === "github.repository");
   assert.ok(githubService.input_schema.anyOf.some((branch) => branch.required.includes("repository")));
   assert.equal((await request("/api/revenue")).statusCode, 404);
@@ -223,8 +233,6 @@ test("human root is HTML while machine surfaces remain available", async () => {
   const productsPage = await request("/products");
   assert.equal(productsPage.statusCode, 200);
   assert.match(productsPage.body, /Treasury Guard Scan/);
-  assert.match(productsPage.body, /Base64 unsigned transaction/);
-  assert.doesNotMatch(productsPage.body, /JSON\.parse\(transaction\.value/);
   const pricing = await request("/api/pricing");
   assert.equal(pricing.statusCode, 200);
   const pricingPayload = JSON.parse(pricing.body);
@@ -245,16 +253,6 @@ test("product quote packages existing services without trusting client pricing",
   assert.equal(intent.items.length, 4);
   const invalid = await request("/api/products/unknown/quote", "POST", { input: {} });
   assert.equal(invalid.statusCode, 404);
-  const invalidTransaction = await request("/api/products/transaction-safety-check/quote", "POST", {
-    input: { network: "solana-mainnet-beta", transaction: { instructions: [] } },
-  });
-  assert.equal(invalidTransaction.statusCode, 400);
-  assert.match(invalidTransaction.body, /base64 serialized unsigned Solana transaction/);
-  const transactionQuote = await request("/api/products/transaction-safety-check/quote", "POST", {
-    input: { network: "solana-mainnet-beta", transaction: "AA==" },
-  });
-  assert.equal(transactionQuote.statusCode, 402);
-  assert.equal(JSON.parse(transactionQuote.body).payment_intent.product_price, 0.17);
 });
 
 test("agreements require the declared buyer and the production USDC rail", async () => {
@@ -575,7 +573,7 @@ test("MCP and A2A machine entrypoints remain callable", async () => {
     assert.match(page.headers["content-type"], /^text\/html/, path);
     assert.match(page.body, /agents\.privatedao\.org\/mcp/, path);
     assert.match(page.body, /streamable-http/, path);
-    assert.match(page.body, /Eligible PDAO holders can unlock verification access/, path);
+    assert.match(page.body, /PDAO holder rewards run on three tiers/, path);
   }
   const hub = await request("/connect");
   assert.match(hub.body, /ChatGPT/);
@@ -849,9 +847,6 @@ test("external seller ownership protects mutations and publishes declared servic
   assert.match(missingSellerId.body, /agent_id is required/);
   const missingTerms = await request("/api/marketplace/seller-listings/quote", "POST", { agent_id: record.id, owner_token: ownerToken, tier: "pro" });
   assert.equal(missingTerms.statusCode, 400);
-  const missingExternalPolicy = await request("/api/marketplace/seller-listings/quote", "POST", { agent_id: record.id, owner_token: ownerToken, tier: "pro", accept_terms: true, terms_version: "seller-marketplace-v1", external_tools_policy_acknowledged: false });
-  assert.equal(missingExternalPolicy.statusCode, 400);
-  assert.match(missingExternalPolicy.body, /external tools policy acceptance is required/);
   const missingPayoutTermsAccepted = await request("/api/marketplace/seller-listings/quote", "POST", { agent_id: record.id, owner_token: ownerToken, tier: "pro", accept_terms: true, terms_version: "seller-marketplace-v1" });
   assert.equal(missingPayoutTermsAccepted.statusCode, 400);
   assert.match(missingPayoutTermsAccepted.body, /payout configuration is required/);
@@ -860,7 +855,7 @@ test("external seller ownership protects mutations and publishes declared servic
   const listingQuote = await request("/api/marketplace/seller-listings/quote", "POST", { agent_id: record.id, owner_token: ownerToken, tier: "pro", accept_terms: true, terms_version: "seller-marketplace-v1" });
   assert.equal(listingQuote.statusCode, 201);
   const listingQuoteBody = JSON.parse(listingQuote.body);
-  assert.equal(listingQuoteBody.quote.amount, 49);
+  assert.equal(listingQuoteBody.quote.amount, 10);
   assert.equal(listingQuoteBody.status, "awaiting_payment");
   const changedAfterQuote = await request(`/api/registry/agents/${record.id}/services`, "PATCH", { owner_token: ownerToken, services: [{ id: "read", title: "Read evidence v2", description: "Changed after quote", price: 0.03, asset: "USDC", network: "solana-mainnet-beta" }], accepted_assets: ["USDC"] });
   assert.equal(changedAfterQuote.statusCode, 200);
@@ -1143,7 +1138,22 @@ test("external seller listing pricing is one payment per agent regardless of ser
     assert.equal(firstPartyBody.seller_net_amount, null);
     const registered = JSON.parse((await request("/api/registry/register", "POST", { name: "Pricing Fixture", mcp_url: "https://example.com/mcp" })).body);
     const serviceSet = (count) => Array.from({ length: count }, (_item, index) => ({ id: `service_${index + 1}`, tool: "read", title: `Service ${index + 1}`, price: 0.01, asset: "USDC", network: "solana-mainnet-beta" }));
-    for (const [count, expected] of [[1, 49], [5, 49]]) {
+    const freeRegistered = JSON.parse((await request("/api/registry/register", "POST", { name: "Free Eligibility Fixture", mcp_url: "https://example.com/free-mcp" })).body);
+    const freeUpdated = await request(`/api/registry/agents/${freeRegistered.id}/services`, "PATCH", { owner_token: freeRegistered.owner_token, services: serviceSet(1), accepted_assets: ["USDC"], payout: { address: "2BJ4ezxqV9YJXc38D9duKBkdn4su4jE1beKUHwH663sL", network: "solana-mainnet-beta", asset: "USDC" } });
+    assert.equal(freeUpdated.statusCode, 200, freeUpdated.body);
+    const freeQuoteResponse = await request("/api/marketplace/seller-listings/quote", "POST", { agent_id: freeRegistered.id, owner_token: freeRegistered.owner_token, tier: "free", accept_terms: true, terms_version: "seller-marketplace-v1" });
+    assert.equal(freeQuoteResponse.statusCode, 201, freeQuoteResponse.body);
+    const freeQuote = JSON.parse(freeQuoteResponse.body);
+    assert.equal(freeQuote.status, "published");
+    assert.equal(freeQuote.free_listing, true);
+    assert.equal(freeQuote.quote.amount, 0);
+    assert.equal(freeQuote.listing.payment_method, "free_eligibility");
+    assert.equal(freeQuote.status, "published");
+    assert.equal(freeQuote.listing.commercial_publication_status, "published");
+    assert.equal(freeQuote.listing.status, "active");
+    const freeMarketplace = JSON.parse((await request("/api/marketplace/listings")).body).listings;
+    assert.equal(freeMarketplace.some((item) => item.agentId === freeRegistered.id), true);
+    for (const [count, expected] of [[1, 12], [5, 12]]) {
       const updated = await request(`/api/registry/agents/${registered.id}/services`, "PATCH", { owner_token: registered.owner_token, services: serviceSet(count), accepted_assets: ["USDC"], payout: { address: "2BJ4ezxqV9YJXc38D9duKBkdn4su4jE1beKUHwH663sL", network: "solana-mainnet-beta", asset: "USDC" } });
       assert.equal(updated.statusCode, 200, updated.body);
       const quoteResponse = await request("/api/marketplace/seller-listings/quote", "POST", { agent_id: registered.id, owner_token: registered.owner_token, tier: "pro", accept_terms: true, terms_version: "seller-marketplace-v1" });
@@ -1224,54 +1234,17 @@ test("payment finality responses are non-success until activation is complete", 
   assert.equal(paymentStatusCode({ status: "completed" }), 200);
 });
 
-test("swap provider outages fail before a paid quote is created", async () => {
-  const originalFetch = globalThis.fetch;
-  resetForTests();
-  globalThis.fetch = async () => new Response(JSON.stringify({ error: "provider unavailable" }), { status: 503 });
-  try {
-    const response = await request("/api/jobs", "POST", {
-      service_id: "swap.quote",
-      input: {
-        network: "solana-mainnet-beta",
-        inputMint: "So11111111111111111111111111111111111111112",
-        outputMint: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
-        amount: "1000000",
-        slippageBps: 50,
-      },
-    });
-    assert.equal(response.statusCode, 503);
-    assert.match(response.body, /upstream service temporarily unavailable/);
-    assert.doesNotMatch(response.body, /payment_intent/);
-  } finally {
-    globalThis.fetch = originalFetch;
-  }
-});
-
-test("paid-job recovery is admin-gated and never exposed publicly", async () => {
-  resetForTests();
-  const unauthorized = await request("/api/admin/jobs/job_missing/recovery", "POST", { action: "retry" });
-  assert.equal(unauthorized.statusCode, 404);
-});
-
 test("admin marketplace policy is persisted and controls public terms", async () => {
   process.env.AGENT_EXCHANGE_TEST_ADMIN_TOKEN = "test-admin-token";
   resetForTests();
   try {
     const initial = JSON.parse((await request("/api/marketplace/policy")).body);
     assert.equal(initial.listing_fee_usd, 10);
+    assert.equal(initial.seller_tiers.free.listing_fee_usd, 0);
     assert.equal(initial.platform_fee_bps, 1000);
     assert.equal(initial.additional_service_fee_usd, 0);
     assert.equal(initial.max_services_per_seller, 5);
     assert.equal(initial.promotion_packages.featured_listing.price_usd, 75);
-    assert.equal(initial.promotion_packages.premium_promotion.price_usd, 250);
-    assert.equal(initial.pdao_pricing.payment_discount_bps, 2000);
-    assert.deepEqual(initial.pdao_pricing.holder_tiers.map((tier) => tier.discount_bps), [0, 500, 1000, 1500]);
-    const pdaoBenefits = JSON.parse((await request("/api/marketplace/pdao-benefits")).body);
-    assert.equal(pdaoBenefits.token, "9isGuumtaqvJeJeyLF44fvfskk2cv5mYsopexMBfpump");
-    const usdcQuote = await request("/api/marketplace/pricing/quote", "POST", { amount_usd: 49, payment_asset: "USDC" });
-    assert.equal(usdcQuote.statusCode, 201);
-    assert.equal(JSON.parse(usdcQuote.body).quote.amount, 49);
-    assert.equal(JSON.parse(usdcQuote.body).quote.currency, "USDC");
     const updated = await request("/api/admin/marketplace/policy", "PATCH", { listing_fee_usd: 12, platform_fee_bps: 900 }, { "x-pdao-admin-smoke": "test-admin-token" });
     assert.equal(updated.statusCode, 200);
     assert.equal(JSON.parse(updated.body).listing_fee_usd, 12);
@@ -1279,6 +1252,7 @@ test("admin marketplace policy is persisted and controls public terms", async ()
     const publicPolicy = JSON.parse((await request("/api/marketplace/policy")).body);
     assert.equal(publicPolicy.listing_fee_usd, 12);
     assert.equal(publicPolicy.platform_fee_bps, 900);
+    assert.equal(publicPolicy.seller_tiers.free.listing_fee_usd, 0);
     assert.equal(publicPolicy.additional_service_fee_usd, 0);
     assert.equal(publicPolicy.promotion_packages.featured_listing.price_usd, 75);
   } finally {

@@ -4,6 +4,7 @@ const DETAILS = Object.freeze({
   "verify.basic": detail("Verification", "Create a canonical digest and a receipt for a record or public evidence.", "A fast, free proof starting point."),
   "verify.deep": detail("Verification", "Apply deeper verification checks and return the evidence behind the decision.", "Higher-confidence review before an important action."),
   "receipt.verify": detail("Verification", "Check a PrivateDAO receipt and compare its canonical digest.", "Independent proof that a result has not changed."),
+  "sealkeeper.reputation": detail("Verification", "Verify a SealKeeper credential and read its bounded reputation evidence.", "An optional external signal for discovery; never a certification or authorization gate."),
   "token.intelligence": detail("Intelligence", "Read public token facts, metadata and available on-chain evidence.", "A compact asset brief for an agent or analyst."),
   "wallet.intelligence": detail("Intelligence", "Summarize public wallet balances, activity and asset evidence.", "Context before a wallet-level decision."),
   "research.asset": detail("Intelligence", "Combine public asset facts, labeled signals and evidence references.", "Research without requiring a custom data pipeline."),
@@ -40,18 +41,34 @@ export const SERVICE_CATEGORIES = Object.freeze([
 ]);
 
 export const INTEGRATIONS = Object.freeze([
-  { id: "ibm-watsonx", name: "IBM watsonx", eyebrow: "IBM Partner Plus", value: "Enterprise agent workflows", status: "Integration path", note: "Available when the watsonx endpoint and project credentials are configured; program participation does not imply endorsement of every capability." },
-  { id: "intel-openvino", name: "Intel OpenVINO", eyebrow: "Intel Partner Plus", value: "Local and optimized inference", status: "Provider path supported", note: "Used when an OpenVINO endpoint is configured; credentials remain environment-only." },
-  { id: "amd-ai", name: "AMD AI Developer Program", eyebrow: "AI performance", value: "AI workload validation", status: "Validation relationship", note: "Program resources support performance and accelerator evaluation; no provider secret is exposed." },
-  { id: "mongodb", name: "MongoDB Atlas", eyebrow: "MongoDB Partner Program", value: "Persistent agent evidence", status: "Evidence history path supported", note: "Production persistence is optional and scoped to evidence history; DynamoDB remains canonical for jobs and payments." },
-  { id: "github", name: "GitHub", eyebrow: "GitHub Developer Program", value: "Repository provenance", status: "Public API evidence", note: "Repository evidence is read-only and provenance-labeled." },
-  { id: "digitalocean", name: "DigitalOcean", eyebrow: "Developer infrastructure", value: "Cloud compute and deployment", status: "Infrastructure access", note: "DigitalOcean access supports infrastructure experimentation; it does not imply endorsement, sponsorship, or a marketplace listing." },
+  { id: "ibm-watsonx", name: "IBM watsonx", eyebrow: "IBM Partner Plus", value: "Enterprise agent workflows", status: "Integration path", source_url: "https://www.ibm.com/watsonx", note: "Available when the watsonx endpoint and project credentials are configured; program participation does not imply endorsement of every capability." },
+  { id: "microsoft-azure-ai", name: "Microsoft Azure AI", eyebrow: "Curated provider", value: "Enterprise model and agent services", status: "Endpoint required", source_url: "https://learn.microsoft.com/azure/ai-services/", note: "Curated for seller submissions using an official Azure AI endpoint; no Microsoft partnership, certification or endorsement is implied." },
+  { id: "cloudflare-workers-ai", name: "Cloudflare Workers AI", eyebrow: "Curated provider", value: "Edge agent infrastructure", status: "Endpoint required", source_url: "https://developers.cloudflare.com/workers-ai/", note: "Curated for verified Workers AI or MCP-compatible endpoints; Cloudflare branding does not mean a Cloudflare partnership." },
+  { id: "intel-openvino", name: "Intel OpenVINO", eyebrow: "Intel Partner Plus", value: "Local and optimized inference", status: "Provider path supported", source_url: "https://docs.openvino.ai/", note: "Used when an OpenVINO endpoint is configured; credentials remain environment-only." },
+  { id: "amd-ai", name: "AMD AI Developer Program", eyebrow: "AI performance", value: "AI workload validation", status: "Validation relationship", source_url: "https://developer.amd.com/", note: "Program resources support performance and accelerator evaluation; no provider secret is exposed." },
+  { id: "mongodb", name: "MongoDB Atlas", eyebrow: "MongoDB Partner Program", value: "Persistent agent evidence", status: "Evidence history path supported", source_url: "https://www.mongodb.com/docs/atlas/", note: "Production persistence is optional and scoped to evidence history; DynamoDB remains canonical for jobs and payments." },
+  { id: "github", name: "GitHub", eyebrow: "GitHub Developer Program", value: "Repository provenance", status: "Public API evidence", source_url: "https://docs.github.com/en/rest", note: "Repository evidence is read-only and provenance-labeled." },
   { id: "mcp-clients", name: "ChatGPT · Claude · Grok · OpenClaw", eyebrow: "Agent interoperability", value: "One MCP endpoint", status: "Client-level interoperability tested", note: "Testing does not imply partnership, certification or directory placement." },
   { id: "kernel", name: "PrivateDAO Kernel", eyebrow: "Execution foundation", value: "Policy-controlled routing", status: "PrivateDAO runtime boundary", note: "The Kernel is the internal routing and lifecycle boundary; it is not a separate vendor claim." },
 ]);
 
 export function integrationDirectory() {
   return INTEGRATIONS.map((integration) => ({ ...integration }));
+}
+
+// Curated discovery only: these tools remain hosted and operated by their
+// original maintainers. They are not PrivateDAO execution services.
+export const CURATED_TOOLS = Object.freeze([
+  { id: "github-mcp-server", name: "GitHub MCP Server", provider: "GitHub", category: "Developer tools", summary: "Official open-source MCP server for repository, issue and pull-request context.", official_url: "https://github.com/github/github-mcp-server", source_url: "https://github.com/github/github-mcp-server", access: "Free / open source" },
+  { id: "playwright-mcp", name: "Playwright MCP", provider: "Microsoft", category: "Browser automation", summary: "Official Playwright MCP server for browser automation and web testing workflows.", official_url: "https://github.com/microsoft/playwright-mcp", source_url: "https://github.com/microsoft/playwright-mcp", access: "Free / open source" },
+  { id: "aws-labs-mcp", name: "AWS Labs MCP Servers", provider: "Amazon Web Services", category: "Cloud infrastructure", summary: "Open-source MCP servers for AWS documentation, infrastructure and developer workflows.", official_url: "https://github.com/awslabs/mcp", source_url: "https://github.com/awslabs/mcp", access: "Free / open source" },
+  { id: "cloudflare-mcp-server", name: "Cloudflare MCP Server", provider: "Cloudflare", category: "Edge infrastructure", summary: "Official Cloudflare MCP tooling for building and operating agent-connected edge workflows.", official_url: "https://github.com/cloudflare/mcp-server-cloudflare", source_url: "https://github.com/cloudflare/mcp-server-cloudflare", access: "Free / open source" },
+  { id: "mongodb-mcp-server", name: "MongoDB MCP Server", provider: "MongoDB", category: "Data and databases", summary: "Official MongoDB MCP server for connecting compatible agents to MongoDB workflows.", official_url: "https://github.com/mongodb-js/mongodb-mcp-server", source_url: "https://github.com/mongodb-js/mongodb-mcp-server", access: "Free / open source" },
+  { id: "microsoft-learn-mcp", name: "Microsoft Learn MCP Server", provider: "Microsoft", category: "Documentation and research", summary: "Official Microsoft Learn MCP access for searching and fetching current technical documentation.", official_url: "https://learn.microsoft.com/en-us/training/support/mcp-get-started", source_url: "https://learn.microsoft.com/en-us/training/support/mcp-get-started", access: "Free to use" },
+]);
+
+export function curatedTools() {
+  return CURATED_TOOLS.map((tool) => ({ ...tool }));
 }
 
 export function serviceRecommendation(task = "") {
