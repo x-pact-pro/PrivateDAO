@@ -242,13 +242,31 @@ export function privatePayStatus(config) {
   };
   const configured = nonEmpty(privacyRail) && nonEmpty(facilitatorUrl) && nonEmpty(confidentialMint);
   const privacyAuditVerified = Object.values(privacyChecks).every(Boolean);
+  const activationBlockers = [];
+  if (!nonEmpty(privacyRail)) activationBlockers.push("privacy rail is not configured");
+  if (!nonEmpty(facilitatorUrl)) activationBlockers.push("x402 facilitator URL is not configured");
+  if (!nonEmpty(confidentialMint)) activationBlockers.push("confidential payment asset is not configured");
+  if (!conformanceVerified) activationBlockers.push("x402 v2 verify/settle conformance is not independently verified");
+  if (!privacyChecks.relationship) activationBlockers.push("payer/provider unlinkability evidence is missing");
+  if (!privacyChecks.amount) activationBlockers.push("amount confidentiality evidence is missing");
+  if (!privacyChecks.timing) activationBlockers.push("timing and network-fee correlation evidence is missing");
+  if (!privacyChecks.e2e) activationBlockers.push("funded deposit/private-transfer/withdrawal E2E evidence is missing");
+  if (config.privatePayEnabled !== true) activationBlockers.push("explicit production activation is disabled");
+  const status = !configured
+    ? "not_ready"
+    : activationBlockers.length === 1 && activationBlockers[0] === "explicit production activation is disabled"
+      ? "ready_pending_explicit_enable"
+      : privacyAuditVerified && conformanceVerified
+        ? "configured_pending_explicit_enable"
+        : "configured_pending_verification";
   return {
     service_id: PRIVATEPAY_SERVICE_ID,
     protocol: "x402-v2",
-    status: configured ? "configured_pending_live_conformance" : "not_ready",
+    status,
     conformance_verified: conformanceVerified,
     privacy_audit_verified: privacyAuditVerified,
     privacy_checks: privacyChecks,
+    activation_blockers: activationBlockers,
     enabled: configured && conformanceVerified && privacyAuditVerified && config.privatePayEnabled === true,
     privacy_rail: privacyRail || null,
     facilitator_configured: nonEmpty(facilitatorUrl),

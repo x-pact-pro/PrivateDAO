@@ -9,6 +9,7 @@ test("PrivatePAY is fail-closed without a reviewed privacy rail", () => {
   const status = privatePayStatus(config);
   assert.equal(status.status, "not_ready");
   assert.equal(status.enabled, false);
+  assert.ok(status.activation_blockers.includes("privacy rail is not configured"));
   assert.throws(
     () => createPrivatePayChallenge(config, { resource: "api://example", provider_id: "provider-1", amount_base_units: "1000" }),
     (error) => error.code === "PRIVATEPAY_NOT_READY" && error.statusCode === 503,
@@ -87,6 +88,8 @@ test("PrivatePAY remains fail-closed until relationship, amount, timing, and E2E
   assert.equal(status.privacy_checks.timing, false);
   assert.equal(status.privacy_checks.e2e, false);
   assert.equal(status.enabled, false);
+  assert.ok(status.activation_blockers.includes("timing and network-fee correlation evidence is missing"));
+  assert.ok(status.activation_blockers.includes("funded deposit/private-transfer/withdrawal E2E evidence is missing"));
 });
 
 test("PrivatePAY facilitator adapter rejects verify and settle before making a network call", async () => {
