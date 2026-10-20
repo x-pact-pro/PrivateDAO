@@ -19,6 +19,9 @@ test("human root is HTML while machine surfaces remain available", async () => {
   assert.match(root.body, /PrivateDAO Agents/);
   assert.match(root.body, /Evidence for/);
   assert.match(root.body, /PDAO holder rewards run on three tiers/);
+  assert.match(root.body, /pdao-value-rail/);
+  assert.match(root.body, /pdao-proof-panel/);
+  assert.match(root.body, /prefers-reduced-motion/);
   assert.match(root.body, /DISCOVER/);
   assert.match(root.body, /IBM watsonx/);
   assert.match(root.body, /pdao-language-picker/);
@@ -82,6 +85,9 @@ test("human root is HTML while machine surfaces remain available", async () => {
   assert.match(sellerPortal.body, /option value="free"/);
   assert.match(sellerPortal.body, /option value="basic"/);
   assert.match(sellerPortal.body, /option value="pro"/);
+  assert.match(sellerPortal.body, /seller-tier-showcase/);
+  assert.match(sellerPortal.body, /Free listing/);
+  assert.match(sellerPortal.body, /Priority/);
   assert.match(sellerPortal.body, /tier:\$\("#listingTier"\)\?\.value\|\|"basic"/);
   assert.match(sellerPortal.body, /id="metadataFile"/);
   assert.match(sellerPortal.body, /id="chooseMetadata"/);
