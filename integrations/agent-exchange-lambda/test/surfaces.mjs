@@ -253,6 +253,9 @@ test("human root is HTML while machine surfaces remain available", async () => {
   const githubService = catalog.services.find((service) => service.id === "github.repository");
   assert.ok(githubService.input_schema.anyOf.some((branch) => branch.required.includes("repository")));
   assert.equal(githubService.status, "Mainnet Live · read-only");
+  const swapStatus = catalog.services.find((service) => service.id === "swap.quote").status;
+  assert.equal(swapStatus, process.env.AGENT_EXCHANGE_TEST_MODE === "true" ? "Mainnet Read-only" : "Disabled pending provider verification");
+  assert.equal(catalog.services.find((service) => service.id === "privatepay.x402").status, "Implementation");
   assert.equal((await request("/api/revenue")).statusCode, 404);
   assert.equal((await request("/api/treasury/status")).statusCode, 404);
   const products = await request("/api/products");
