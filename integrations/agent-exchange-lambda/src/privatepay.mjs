@@ -1,5 +1,6 @@
 import { digest } from "./canonical.mjs";
 import { decodePaymentSignatureHeader, encodePaymentRequiredHeader } from "@x402/core/http";
+import { VersionedTransaction } from "@solana/web3.js";
 
 const PRIVATEPAY_SERVICE_ID = "privatepay.x402";
 const SOLANA_ADDRESS = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/;
@@ -24,6 +25,39 @@ function privatePayProviderUrl(config, path) {
 function clientRefId(requestId) {
   const value = BigInt(`0x${digest(requestId).slice(0, 15)}`) % 1000000000000000n;
   return String(value || 1n);
+}
+
+export function auditPreparedPrivatePayTransfer(prepared, { payer = "", provider = "" } = {}) {
+  const encoded = String(prepared?.transaction_base64 || "");
+  if (!encoded) return { status: "not_audited", release_ready: false, reason: "unsigned transaction bytes are missing" };
+  let transaction;
+  try {
+    transaction = VersionedTransaction.deserialize(Buffer.from(encoded, "base64"));
+  } catch {
+    return { status: "not_audited", release_ready: false, reason: "transaction bytes could not be decoded as a Solana versioned transaction" };
+  }
+  const staticAccounts = transaction.message.staticAccountKeys.map((key) => key.toBase58());
+  const feePayer = staticAccounts[0] || null;
+  const audit = {
+    status: "audited_boundary_only",
+    release_ready: false,
+    fee_payer: feePayer,
+    payer_account_visible: Boolean(payer && staticAccounts.includes(payer)),
+    provider_account_visible: Boolean(provider && staticAccounts.includes(provider)),
+    relationship_protected: false,
+    amount_protected: false,
+    amount_visibility: "unproven_custom_program_data",
+    timing_visibility: "recent_blockhash_and_expiry_are_visible",
+    network_fee_visibility: prepared.provider_fees?.lamports ? "quoted_fee_visible" : "not_observed",
+    static_account_count: staticAccounts.length,
+    instruction_count: transaction.message.compiledInstructions.length,
+    reasons: [
+      "The payer is the base transaction fee payer and is therefore publicly observable.",
+      "Custom private-program instruction data was not independently decoded into a zero-knowledge privacy proof.",
+      "A prepared transaction cannot prove withdrawal unlinkability or timing resistance.",
+    ],
+  };
+  return audit;
 }
 
 export async function preparePrivatePayTransfer(config, input = {}, fetchImpl = fetch) {
@@ -69,7 +103,7 @@ export async function preparePrivatePayTransfer(config, input = {}, fetchImpl = 
     throw Object.assign(new Error(`PrivatePAY provider rejected transfer preparation (${response.status})`), { statusCode: 503, code: "PRIVATEPAY_PROVIDER_REJECTED", provider_status: response.status });
   if (payload.kind !== "transfer" || typeof payload.transactionBase64 !== "string" || !Array.isArray(payload.requiredSigners))
     throw Object.assign(new Error("PrivatePAY provider returned an invalid transfer transaction"), { statusCode: 503, code: "PRIVATEPAY_INVALID_PROVIDER_RESPONSE" });
-  return {
+  const prepared = {
     request_id: requestId,
     transaction_base64: payload.transactionBase64,
     version: payload.version,
@@ -83,6 +117,7 @@ export async function preparePrivatePayTransfer(config, input = {}, fetchImpl = 
     provider_fees: payload.fees || null,
     privacy_boundary: "The base-chain deposit and fee payer remain observable; the private rollup transfer is not a public payer-to-provider transfer. Do not claim full unlinkability until a funded deposit, private transfer, and withdrawal have been independently analyzed.",
   };
+  return { ...prepared, privacy_audit: auditPreparedPrivatePayTransfer(prepared, { payer, provider: recipient }) };
 }
 
 export function createPrivatePayRequirements(config, input = {}) {
@@ -158,13 +193,22 @@ export function privatePayStatus(config) {
   const facilitatorUrl = String(config.privatePayFacilitatorUrl || "").trim();
   const confidentialMint = String(config.privatePayConfidentialMint || "").trim();
   const conformanceVerified = config.privatePayConformanceVerified === true;
+  const privacyChecks = {
+    relationship: config.privatePayRelationshipPrivacyVerified === true,
+    amount: config.privatePayAmountPrivacyVerified === true,
+    timing: config.privatePayTimingPrivacyVerified === true,
+    e2e: config.privatePayE2eVerified === true,
+  };
   const configured = nonEmpty(privacyRail) && nonEmpty(facilitatorUrl) && nonEmpty(confidentialMint);
+  const privacyAuditVerified = Object.values(privacyChecks).every(Boolean);
   return {
     service_id: PRIVATEPAY_SERVICE_ID,
     protocol: "x402-v2",
     status: configured ? "configured_pending_live_conformance" : "not_ready",
     conformance_verified: conformanceVerified,
-    enabled: configured && conformanceVerified && config.privatePayEnabled === true,
+    privacy_audit_verified: privacyAuditVerified,
+    privacy_checks: privacyChecks,
+    enabled: configured && conformanceVerified && privacyAuditVerified && config.privatePayEnabled === true,
     privacy_rail: privacyRail || null,
     facilitator_configured: nonEmpty(facilitatorUrl),
     confidential_mint_configured: nonEmpty(confidentialMint),
@@ -175,6 +219,10 @@ export function privatePayStatus(config) {
       "MagicBlock Private Ephemeral Rollup or another reviewed shielded/pooled rail with provider audit access",
       "real x402 v2 facilitator verify/settle conformance test",
       "funded testnet end-to-end proof",
+      "independent evidence that payer/provider relationship is not linkable",
+      "independent evidence that amount is not observable",
+      "independent evidence that timing and network-fee correlation are bounded",
+      "independent evidence for deposit, private transfer, and withdrawal",
       "provider audit access and abuse/AML policy",
     ],
   };

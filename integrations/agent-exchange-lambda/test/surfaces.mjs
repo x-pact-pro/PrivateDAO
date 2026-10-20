@@ -252,6 +252,7 @@ test("human root is HTML while machine surfaces remain available", async () => {
     }
   const githubService = catalog.services.find((service) => service.id === "github.repository");
   assert.ok(githubService.input_schema.anyOf.some((branch) => branch.required.includes("repository")));
+  assert.equal(githubService.status, "Mainnet Live · read-only");
   assert.equal((await request("/api/revenue")).statusCode, 404);
   assert.equal((await request("/api/treasury/status")).statusCode, 404);
   const products = await request("/api/products");

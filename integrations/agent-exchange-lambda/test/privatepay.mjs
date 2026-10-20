@@ -1,7 +1,8 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { decodePaymentRequiredHeader } from "@x402/core/http";
-import { createPrivatePayChallenge, createPrivatePayRequirements, decodePrivatePaySignature, preparePrivatePayTransfer, privatePayFacilitatorRequest, privatePayStatus, probePrivatePayRail } from "../src/privatepay.mjs";
+import { PublicKey, TransactionMessage, VersionedTransaction } from "@solana/web3.js";
+import { auditPreparedPrivatePayTransfer, createPrivatePayChallenge, createPrivatePayRequirements, decodePrivatePaySignature, preparePrivatePayTransfer, privatePayFacilitatorRequest, privatePayStatus, probePrivatePayRail } from "../src/privatepay.mjs";
 
 test("PrivatePAY is fail-closed without a reviewed privacy rail", () => {
   const config = { privatePayEnabled: false };
@@ -20,6 +21,10 @@ test("PrivatePAY challenge has commitments only and no payment metadata", () => 
     privatePayPrivacyRail: "token-2022-confidential-balances",
     privatePayFacilitatorUrl: "https://facilitator.example/",
     privatePayConformanceVerified: true,
+    privatePayRelationshipPrivacyVerified: true,
+    privatePayAmountPrivacyVerified: true,
+    privatePayTimingPrivacyVerified: true,
+    privatePayE2eVerified: true,
     privatePayConfidentialMint: "mint-commitment",
   };
   const result = createPrivatePayChallenge(config, { resource: "api://example", provider_id: "provider-1", amount_base_units: "1000", nonce: "n1" });
@@ -64,6 +69,26 @@ test("PrivatePAY remains fail-closed when x402 conformance is not verified", () 
   );
 });
 
+test("PrivatePAY remains fail-closed until relationship, amount, timing, and E2E privacy evidence exist", () => {
+  const config = {
+    privatePayEnabled: true,
+    privatePayPrivacyRail: "reviewed-private-rail",
+    privatePayFacilitatorUrl: "https://facilitator.example/",
+    privatePayConfidentialMint: "mint-commitment",
+    privatePayConformanceVerified: true,
+    privatePayRelationshipPrivacyVerified: true,
+    privatePayAmountPrivacyVerified: true,
+    privatePayTimingPrivacyVerified: false,
+    privatePayE2eVerified: false,
+  };
+  const status = privatePayStatus(config);
+  assert.equal(status.conformance_verified, true);
+  assert.equal(status.privacy_audit_verified, false);
+  assert.equal(status.privacy_checks.timing, false);
+  assert.equal(status.privacy_checks.e2e, false);
+  assert.equal(status.enabled, false);
+});
+
 test("PrivatePAY facilitator adapter rejects verify and settle before making a network call", async () => {
   let calls = 0;
   const payload = { x402Version: 2, paymentPayload: {}, paymentRequirements: {} };
@@ -81,7 +106,7 @@ test("PrivatePAY facilitator adapter rejects verify and settle before making a n
 test("PrivatePAY facilitator adapter forwards only after the explicit conformance gate", async () => {
   const seen = [];
   const payload = { x402Version: 2, paymentPayload: { scheme: "privatepay" }, paymentRequirements: { scheme: "privatepay" } };
-  const result = await privatePayFacilitatorRequest({ privatePayEnabled: true, privatePayConformanceVerified: true, privatePayPrivacyRail: "rail", privatePayFacilitatorUrl: "https://facilitator.example/", privatePayConfidentialMint: "mint" }, "verify", payload, async (url, init) => {
+  const result = await privatePayFacilitatorRequest({ privatePayEnabled: true, privatePayConformanceVerified: true, privatePayRelationshipPrivacyVerified: true, privatePayAmountPrivacyVerified: true, privatePayTimingPrivacyVerified: true, privatePayE2eVerified: true, privatePayPrivacyRail: "rail", privatePayFacilitatorUrl: "https://facilitator.example/", privatePayConfidentialMint: "mint" }, "verify", payload, async (url, init) => {
     seen.push({ url, body: JSON.parse(init.body) });
     return { ok: true, status: 200, async json() { return { isValid: true }; } };
   });
@@ -153,4 +178,21 @@ test("PrivatePAY prepares a real provider transaction without exposing provider 
   assert.equal(result.request_id, "pp_0123456789abcdef0123456789abcdef");
   assert.equal(result.required_signers[0], "11111111111111111111111111111111");
   assert.equal(result.provider_fees.lamports, "2039280");
+  assert.equal(result.privacy_audit.status, "not_audited");
+  assert.equal(result.privacy_audit.release_ready, false);
+});
+
+test("PrivatePAY privacy audit marks the base fee payer and unproven amount as release blockers", () => {
+  const payer = "11111111111111111111111111111111";
+  const provider = "So11111111111111111111111111111111111111112";
+  const message = new TransactionMessage({ payerKey: new PublicKey(payer), recentBlockhash: payer, instructions: [] }).compileToV0Message();
+  const transaction = new VersionedTransaction(message);
+  const audit = auditPreparedPrivatePayTransfer({ transaction_base64: Buffer.from(transaction.serialize()).toString("base64"), provider_fees: { lamports: "1" } }, { payer, provider });
+  assert.equal(audit.status, "audited_boundary_only");
+  assert.equal(audit.fee_payer, payer);
+  assert.equal(audit.payer_account_visible, true);
+  assert.equal(audit.provider_account_visible, false);
+  assert.equal(audit.relationship_protected, false);
+  assert.equal(audit.amount_protected, false);
+  assert.equal(audit.release_ready, false);
 });

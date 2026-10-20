@@ -1105,6 +1105,7 @@ function capabilityStatus(serviceId) {
   if (serviceId === "swap.quote" && !config.swapQuotesEnabled) return "Disabled pending provider verification";
   if (serviceId === "sealkeeper.reputation" && !config.sealReputationEnabled) return "Optional gated read-only";
   if (serviceId === "sealkeeper.reputation") return "Mainnet Live · read-only";
+  if (serviceId === "github.repository") return "Mainnet Live · read-only";
   const service = serviceById(serviceId);
   if (service?.supportedNetworks?.some((network) => network !== "solana-mainnet-beta")) return "Mainnet Read-only";
   return "Implementation";

@@ -123,6 +123,10 @@ export function getConfig(env = process.env) {
     // This is a release gate, not a health check. It may only be set after
     // the exact x402 v2 verify/settle contract has been independently tested.
     privatePayConformanceVerified: bool(env.PRIVATEPAY_CONFORMANCE_VERIFIED),
+    privatePayRelationshipPrivacyVerified: bool(env.PRIVATEPAY_RELATIONSHIP_PRIVACY_VERIFIED),
+    privatePayAmountPrivacyVerified: bool(env.PRIVATEPAY_AMOUNT_PRIVACY_VERIFIED),
+    privatePayTimingPrivacyVerified: bool(env.PRIVATEPAY_TIMING_PRIVACY_VERIFIED),
+    privatePayE2eVerified: bool(env.PRIVATEPAY_E2E_VERIFIED),
     privatePayConfidentialMint: env.PRIVATEPAY_CONFIDENTIAL_MINT || "",
     privatePayProviderUrl: env.PRIVATEPAY_PROVIDER_URL || "https://payments.magicblock.app",
     privatePayProviderWallet: env.PRIVATEPAY_PROVIDER_WALLET || "",
