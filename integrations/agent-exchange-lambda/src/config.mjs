@@ -48,7 +48,7 @@ export function getConfig(env = process.env) {
     alchemyApiKey: env.ALCHEMY_API_KEY || "",
     alchemySecretId: env.AGENT_EXCHANGE_ALCHEMY_SECRET_ID || "",
     evmRpcUrls,
-    jupiterQuoteUrl: env.PDAO_JUPITER_QUOTE_URL || "https://quote-api.jup.ag/v6/quote",
+    jupiterQuoteUrl: env.PDAO_JUPITER_QUOTE_URL || "https://api.jup.ag/swap/v1/quote",
     jupiterApiKey: env.PDAO_JUPITER_API_KEY || "",
     lifiQuoteUrl: env.PDAO_LIFI_QUOTE_URL || "https://li.quest/v1/quote",
     lifiApiKey: env.PDAO_LIFI_API_KEY || "",
@@ -170,6 +170,8 @@ export async function hydrateConfig(config, env = process.env) {
     config.alchemyApiKey = values.ALCHEMY_API_KEY;
     if (!config.rpcSecondary) config.rpcSecondary = alchemySolanaRpcUrl(values.ALCHEMY_API_KEY);
   }
+  if (values.JUPITER_API_KEY) config.jupiterApiKey = values.JUPITER_API_KEY;
+  if (values.PDAO_JUPITER_API_KEY) config.jupiterApiKey = values.PDAO_JUPITER_API_KEY;
   for (const [network, key] of [
     ["ethereum-mainnet", "PDAO_EVM_ETHEREUM_MAINNET_RPC_URL"],
     ["base-mainnet", "PDAO_EVM_BASE_MAINNET_RPC_URL"],
