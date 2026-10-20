@@ -19,6 +19,7 @@ test("PrivatePAY challenge has commitments only and no payment metadata", () => 
     privatePayEnabled: true,
     privatePayPrivacyRail: "token-2022-confidential-balances",
     privatePayFacilitatorUrl: "https://facilitator.example/",
+    privatePayConformanceVerified: true,
     privatePayConfidentialMint: "mint-commitment",
   };
   const result = createPrivatePayChallenge(config, { resource: "api://example", provider_id: "provider-1", amount_base_units: "1000", nonce: "n1" });
@@ -44,6 +45,23 @@ test("PrivatePAY challenge has commitments only and no payment metadata", () => 
 
 test("PrivatePAY rejects malformed payment signatures before any settlement", () => {
   assert.throws(() => decodePrivatePaySignature("not-base64"), (error) => error.code === "PRIVATEPAY_INVALID_PAYMENT_HEADER");
+});
+
+test("PrivatePAY remains fail-closed when x402 conformance is not verified", () => {
+  const config = {
+    privatePayEnabled: true,
+    privatePayPrivacyRail: "reviewed-private-rail",
+    privatePayFacilitatorUrl: "https://facilitator.example/",
+    privatePayConfidentialMint: "mint-commitment",
+    privatePayConformanceVerified: false,
+  };
+  const status = privatePayStatus(config);
+  assert.equal(status.conformance_verified, false);
+  assert.equal(status.enabled, false);
+  assert.throws(
+    () => createPrivatePayRequirements(config, { resource: "api://example", provider_id: "provider-1", amount_base_units: "1000" }),
+    (error) => error.code === "PRIVATEPAY_NOT_READY" && error.statusCode === 503,
+  );
 });
 
 test("PrivatePAY remains unavailable when the provider health or confidential mint check fails", async () => {

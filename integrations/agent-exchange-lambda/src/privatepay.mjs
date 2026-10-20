@@ -128,12 +128,14 @@ export function privatePayStatus(config) {
   const privacyRail = String(config.privatePayPrivacyRail || "").trim();
   const facilitatorUrl = String(config.privatePayFacilitatorUrl || "").trim();
   const confidentialMint = String(config.privatePayConfidentialMint || "").trim();
+  const conformanceVerified = config.privatePayConformanceVerified === true;
   const configured = nonEmpty(privacyRail) && nonEmpty(facilitatorUrl) && nonEmpty(confidentialMint);
   return {
     service_id: PRIVATEPAY_SERVICE_ID,
     protocol: "x402-v2",
     status: configured ? "configured_pending_live_conformance" : "not_ready",
-    enabled: configured && config.privatePayEnabled === true,
+    conformance_verified: conformanceVerified,
+    enabled: configured && conformanceVerified && config.privatePayEnabled === true,
     privacy_rail: privacyRail || null,
     facilitator_configured: nonEmpty(facilitatorUrl),
     confidential_mint_configured: nonEmpty(confidentialMint),
