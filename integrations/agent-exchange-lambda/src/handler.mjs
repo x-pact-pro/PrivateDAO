@@ -40,7 +40,7 @@ import { PRODUCTS, productById, publicProduct } from "./products.mjs";
 import { issuePdaoChallenge, publicPdaoBenefitPolicy, pdaoPromotionStatus, consumePdaoBenefit, runPdaoHolderBalanceSnapshots, verifyPdaoHolderAccess, PDAO_TOKEN_MINT, PDAO_DEVELOPER_ALLOCATION, PDAO_DEVELOPER_LOCK_UNTIL, PDAO_DEVELOPER_LOCK_CONTRACT } from "./pdao-entitlement.mjs";
 import { runScheduledSellerSettlements } from "./settlement.mjs";
 import { HandshakeReplayCache, readSealReputation, sealkeeperFailure } from "./sealkeeper.mjs";
-import { createPrivatePayChallenge, createPrivatePayRequirements, decodePrivatePaySignature, privatePayStatus, probePrivatePayRail, PRIVATEPAY_SERVICE_ID } from "./privatepay.mjs";
+import { createPrivatePayChallenge, createPrivatePayRequirements, decodePrivatePaySignature, preparePrivatePayTransfer, privatePayStatus, probePrivatePayRail, PRIVATEPAY_SERVICE_ID } from "./privatepay.mjs";
 
 const config = getConfig();
 let storePromise;
@@ -792,6 +792,10 @@ function openapi() {
     "/api/treasury/status": { get: { operationId: "treasuryStatus" } },
     "/api/providers/status": { get: { operationId: "providerStatus" } },
     "/api/integrations": { get: { operationId: "integrations" } },
+    "/api/privatepay/status": { get: { operationId: "privatePayStatus" } },
+    "/api/privatepay/x402": { post: { operationId: "privatePayX402", description: "Return HTTP 402 PrivatePAY requirements or fail closed until a reviewed facilitator supports the exact scheme and network." } },
+    "/api/privatepay/x402/requirements": { post: { operationId: "privatePayRequirements", description: "Return x402 V2 requirements after the configured private rail is enabled." } },
+    "/api/privatepay/x402/prepare": { post: { operationId: "privatePayPrepare", description: "Prepare an unsigned MagicBlock private transfer. The client signs locally; this endpoint never signs or broadcasts." } },
     "/receipts/{receiptId}": { get: { operationId: "humanReceipt" } },
     "/verify/receipt/{receiptId}": { get: { operationId: "verifyHumanReceipt" } },
     "/partners": { get: { operationId: "featuredPartnersPage" } },
@@ -873,6 +877,9 @@ MCP: https://${config.domain}/mcp
 A2A: https://${config.domain}/a2a
 OpenAPI: https://${config.domain}/openapi.json
 Services: GET https://${config.domain}/api/services
+PrivatePAY status: GET https://${config.domain}/api/privatepay/status
+PrivatePAY x402: POST https://${config.domain}/api/privatepay/x402 (fail-closed until exact facilitator conformance)
+PrivatePAY transfer preparation: POST https://${config.domain}/api/privatepay/x402/prepare (returns an unsigned private transfer for local wallet signing; never send a private key)
 Pricing: GET https://${config.domain}/api/pricing
 Integrations: GET https://${config.domain}/api/integrations
 Receipts: GET https://${config.domain}/api/receipts/{receiptId}
@@ -4518,6 +4525,8 @@ async function handle(e) {
   }
   if (method === "POST" && path === "/api/privatepay/x402/requirements")
     return json(createPrivatePayRequirements(config, body));
+  if (method === "POST" && path === "/api/privatepay/x402/prepare")
+    return json(await preparePrivatePayTransfer(config, body));
   if (method === "GET" && path === "/api/providers/status")
     return json({ providers: [intelProviderStatus(config), ibmProviderStatus(config), mongoProviderStatus(config), accountProviderStatus(config), githubProviderStatus(config)] });
   if (method === "GET" && path === "/api/acquisition") {
@@ -4829,6 +4838,7 @@ async function mcp(request) {
     execution_guide: { type: "object", properties: {}, additionalProperties: false, description: "Return the endpoints and state transitions needed to request, execute, poll and verify a service." },
     privatepay_status: { type: "object", properties: {}, additionalProperties: false, description: "Return the fail-closed readiness and privacy boundaries for PrivatePAY x402." },
     privatepay_challenge: { type: "object", properties: { resource: { type: "string", minLength: 1, maxLength: 500 }, provider_id: { type: "string", minLength: 1, maxLength: 200 }, amount_base_units: { type: "string", pattern: "^[0-9]+$" }, mime_type: { type: "string", maxLength: 100 }, nonce: { type: "string", maxLength: 200 } }, required: ["resource", "provider_id", "amount_base_units"], additionalProperties: false, description: "Request a PrivatePAY x402 V2 PaymentRequired object. This is unavailable until a reviewed confidential privacy rail is configured." },
+    privatepay_prepare: { type: "object", properties: { request_id: { type: "string", pattern: "^pp_[a-f0-9]{32}$" }, payer: { type: "string", pattern: "^[1-9A-HJ-NP-Za-km-z]{32,44}$" }, amount_base_units: { type: "string", pattern: "^[0-9]+$" }, split: { type: "integer", minimum: 1, maximum: 15 }, gasless: { type: "boolean" } }, required: ["request_id", "payer", "amount_base_units"], additionalProperties: false, description: "Prepare a real MagicBlock private transfer transaction for the buyer to inspect and sign. This does not sign or broadcast." },
     verify_basic: {
       type: "object",
       properties: {
@@ -4956,6 +4966,7 @@ async function mcp(request) {
     execution_guide: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     privatepay_status: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     privatepay_challenge: { readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+    privatepay_prepare: { readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     verify_basic: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     receipt_verify: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     create_paid_job: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
@@ -4982,6 +4993,7 @@ async function mcp(request) {
     "execution_guide",
     "privatepay_status",
     "privatepay_challenge",
+    "privatepay_prepare",
     "verify_basic",
     "receipt_verify",
     "create_paid_job",
@@ -5010,6 +5022,7 @@ async function mcp(request) {
       execution_guide: "Explain how to create a free or paid job, interpret 402 payment_intent, submit finalized payment proof, poll status, retrieve a receipt and verify it.",
       privatepay_status: "Show whether PrivatePAY x402 has a configured confidential privacy rail, facilitator, and confidential mint. Explain the public-chain privacy boundary without claiming anonymity.",
       privatepay_challenge: "Request a PrivatePAY x402 privacy-preserving challenge. This operation fails closed until the reviewed rail is configured and enabled.",
+      privatepay_prepare: "Prepare a real unsigned MagicBlock private transfer after a PrivatePAY challenge. The agent must inspect it and sign locally; PrivateDAO never receives a private key and this tool never broadcasts.",
       agent_match: "Free registry discovery and capability matching. Use create_paid_job for the paid agent.match service.",
       receipt_verify: "Verify a PrivateDAO receipt digest and return a machine-readable verification result. This is free and read-only.",
     }[name] || `PrivateDAO ${name}`),
@@ -5049,6 +5062,7 @@ async function mcp(request) {
       };
       else if (name === "privatepay_status") result = await probePrivatePayRail(config);
       else if (name === "privatepay_challenge") result = createPrivatePayChallenge(config, a);
+      else if (name === "privatepay_prepare") result = await preparePrivatePayTransfer(config, a);
       else if (name === "execution_guide") result = {
         states: ["awaiting_payment", "running", "completed", "recovery_required"],
         create: `POST https://${config.domain}/api/jobs`,

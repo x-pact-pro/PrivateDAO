@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { decodePaymentRequiredHeader } from "@x402/core/http";
-import { createPrivatePayChallenge, createPrivatePayRequirements, decodePrivatePaySignature, privatePayStatus, probePrivatePayRail } from "../src/privatepay.mjs";
+import { createPrivatePayChallenge, createPrivatePayRequirements, decodePrivatePaySignature, preparePrivatePayTransfer, privatePayStatus, probePrivatePayRail } from "../src/privatepay.mjs";
 
 test("PrivatePAY is fail-closed without a reviewed privacy rail", () => {
   const config = { privatePayEnabled: false };
@@ -88,4 +88,25 @@ test("PrivatePAY requires facilitator support for the exact custom scheme and ne
   assert.equal(result.mint_status, "initialized");
   assert.equal(result.facilitator_status, "privatepay_not_supported");
   assert.equal(result.operational, false);
+});
+
+test("PrivatePAY prepares a real provider transaction without exposing provider internals to the client contract", async () => {
+  const config = {
+    privatePayEnabled: true,
+    privatePayProviderUrl: "https://payments.magicblock.app",
+    privatePayProviderWallet: "4Nd1mYx6x8vJ1c6b4mP9bYxQm8mJ3WfGxqk9dYhT6pR2",
+    privatePayConfidentialMint: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+    privatePayCluster: "mainnet",
+  };
+  const result = await preparePrivatePayTransfer(config, {
+    request_id: "pp_0123456789abcdef0123456789abcdef",
+    payer: "11111111111111111111111111111111",
+    amount_base_units: "10000",
+  }, async () => ({
+    ok: true,
+    async json() { return { kind: "transfer", version: "v0", transactionBase64: "AQ==", requiredSigners: ["11111111111111111111111111111111"], validator: "MAS1Dt9qreoRMQ14YQuhg8UTZMMzDdKhmkZMECCzk57", fees: { lamports: "2039280", tokens: "10" } }; },
+  }));
+  assert.equal(result.request_id, "pp_0123456789abcdef0123456789abcdef");
+  assert.equal(result.required_signers[0], "11111111111111111111111111111111");
+  assert.equal(result.provider_fees.lamports, "2039280");
 });

@@ -122,6 +122,8 @@ export function getConfig(env = process.env) {
     privatePayFacilitatorUrl: env.PRIVATEPAY_FACILITATOR_URL || "",
     privatePayConfidentialMint: env.PRIVATEPAY_CONFIDENTIAL_MINT || "",
     privatePayProviderUrl: env.PRIVATEPAY_PROVIDER_URL || "https://payments.magicblock.app",
+    privatePayProviderWallet: env.PRIVATEPAY_PROVIDER_WALLET || "",
+    privatePayRpcUrl: env.PRIVATEPAY_RPC_URL || "",
     privatePayCluster: env.PRIVATEPAY_CLUSTER || "mainnet-beta",
   };
 }

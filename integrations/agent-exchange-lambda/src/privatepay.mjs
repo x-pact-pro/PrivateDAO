@@ -2,6 +2,7 @@ import { digest } from "./canonical.mjs";
 import { decodePaymentSignatureHeader, encodePaymentRequiredHeader } from "@x402/core/http";
 
 const PRIVATEPAY_SERVICE_ID = "privatepay.x402";
+const SOLANA_ADDRESS = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/;
 
 function nonEmpty(value) {
   return typeof value === "string" && value.trim().length > 0;
@@ -14,6 +15,74 @@ function amountBaseUnits(input) {
   if (!/^\d+$/.test(value) || BigInt(value) <= 0n || BigInt(value) > 1000000000000n)
     throw Object.assign(new Error("a bounded positive amount_base_units value is required"), { statusCode: 400 });
   return value;
+}
+
+function privatePayProviderUrl(config, path) {
+  return `${String(config.privatePayProviderUrl || "").replace(/\/$/, "")}${path}`;
+}
+
+function clientRefId(requestId) {
+  const value = BigInt(`0x${digest(requestId).slice(0, 15)}`) % 1000000000000000n;
+  return String(value || 1n);
+}
+
+export async function preparePrivatePayTransfer(config, input = {}, fetchImpl = fetch) {
+  if (config.privatePayEnabled !== true)
+    throw Object.assign(new Error("PrivatePAY is disabled until the privacy rail is explicitly enabled"), { statusCode: 503, code: "PRIVATEPAY_NOT_READY" });
+  const payer = String(input.payer || "").trim();
+  const recipient = String(config.privatePayProviderWallet || "").trim();
+  const mint = String(config.privatePayConfidentialMint || "").trim();
+  const requestId = String(input.request_id || "").trim();
+  if (!SOLANA_ADDRESS.test(payer))
+    throw Object.assign(new Error("payer must be a valid Solana address"), { statusCode: 400, code: "PRIVATEPAY_INVALID_PAYER" });
+  if (!SOLANA_ADDRESS.test(recipient))
+    throw Object.assign(new Error("PrivatePAY provider wallet is not configured"), { statusCode: 503, code: "PRIVATEPAY_PROVIDER_WALLET_NOT_CONFIGURED" });
+  if (!SOLANA_ADDRESS.test(mint))
+    throw Object.assign(new Error("PrivatePAY confidential mint is not configured"), { statusCode: 503, code: "PRIVATEPAY_MINT_NOT_CONFIGURED" });
+  if (!/^pp_[a-f0-9]{32}$/.test(requestId))
+    throw Object.assign(new Error("request_id from a valid PrivatePAY challenge is required"), { statusCode: 400, code: "PRIVATEPAY_INVALID_REQUEST" });
+  const amount = amountBaseUnits(input);
+  const body = {
+    from: payer,
+    to: recipient,
+    mint,
+    amount: Number(amount),
+    visibility: "private",
+    fromBalance: "base",
+    toBalance: "base",
+    cluster: config.privatePayCluster || "mainnet",
+    initIfMissing: false,
+    initAtasIfMissing: false,
+    initVaultIfMissing: false,
+    clientRefId: clientRefId(requestId),
+    split: Math.min(15, Math.max(1, Number(input.split || 1))),
+    gasless: input.gasless === true,
+  };
+  const response = await fetchImpl(privatePayProviderUrl(config, "/v1/spl/transfer"), {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify(body),
+    signal: AbortSignal.timeout(8000),
+  });
+  const payload = await response.json().catch(() => ({}));
+  if (!response.ok)
+    throw Object.assign(new Error(`PrivatePAY provider rejected transfer preparation (${response.status})`), { statusCode: 503, code: "PRIVATEPAY_PROVIDER_REJECTED", provider_status: response.status });
+  if (payload.kind !== "transfer" || typeof payload.transactionBase64 !== "string" || !Array.isArray(payload.requiredSigners))
+    throw Object.assign(new Error("PrivatePAY provider returned an invalid transfer transaction"), { statusCode: 503, code: "PRIVATEPAY_INVALID_PROVIDER_RESPONSE" });
+  return {
+    request_id: requestId,
+    transaction_base64: payload.transactionBase64,
+    version: payload.version,
+    send_to: payload.sendTo,
+    from_balance: body.fromBalance,
+    to_balance: body.toBalance,
+    required_signers: payload.requiredSigners,
+    validator: payload.validator || null,
+    recent_blockhash: payload.recentBlockhash || null,
+    last_valid_block_height: payload.lastValidBlockHeight || null,
+    provider_fees: payload.fees || null,
+    privacy_boundary: "The base-chain deposit and fee payer remain observable; the private rollup transfer is not a public payer-to-provider transfer. Do not claim full unlinkability until a funded deposit, private transfer, and withdrawal have been independently analyzed.",
+  };
 }
 
 export function createPrivatePayRequirements(config, input = {}) {
@@ -72,7 +141,7 @@ export function privatePayStatus(config) {
     provider_visibility: "provider_only_after_authenticated_access",
     buyer_visibility: "public response contains only a request commitment and settlement status",
     required_before_activation: [
-      "Token-2022 Confidential Balances or another reviewed privacy rail",
+      "MagicBlock Private Ephemeral Rollup or another reviewed shielded/pooled rail with provider audit access",
       "real x402 v2 facilitator verify/settle conformance test",
       "funded testnet end-to-end proof",
       "provider audit access and abuse/AML policy",
