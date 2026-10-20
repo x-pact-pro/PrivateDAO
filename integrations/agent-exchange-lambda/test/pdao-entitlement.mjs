@@ -3,7 +3,7 @@ import test from "node:test";
 import nacl from "tweetnacl";
 import { Keypair } from "@solana/web3.js";
 import { MemoryStore } from "../src/storage.mjs";
-import { calculatePdaoBenefit, consumePdaoBenefit, createPdaoChallengeMessage, issuePdaoChallenge, pdaoTierForValue, publicPdaoBenefitPolicy, runPdaoHolderBalanceSnapshots, verifyPdaoHolderAccess } from "../src/pdao-entitlement.mjs";
+import { calculatePdaoBenefit, consumePdaoBenefit, createPdaoChallengeMessage, issuePdaoChallenge, pdaoPromotionStatus, pdaoTierForValue, publicPdaoBenefitPolicy, runPdaoHolderBalanceSnapshots, verifyPdaoHolderAccess } from "../src/pdao-entitlement.mjs";
 
 const config = {
   domain: "agents.privatedao.org",
@@ -99,6 +99,24 @@ test("holder policy is explicit and credit settlement is idempotent", async () =
   assert.equal((await storage.get("Registry", "pdao_access_entitlement_wallet")).credit_remaining_usd, 0.9);
 });
 
+test("fixed promotion is server-windowed and makes eligible services free", () => {
+  assert.equal(pdaoPromotionStatus(new Date("2026-10-20T12:00:00Z")).active, true);
+  assert.equal(pdaoPromotionStatus(new Date("2026-11-20T00:00:00Z")).active, false);
+  assert.equal(publicPdaoBenefitPolicy(7, new Date("2026-10-21T00:00:00Z")).promotion.qualification_days, 0);
+  assert.equal(publicPdaoBenefitPolicy(7, new Date("2026-10-21T00:00:00Z")).qualification_days, 7);
+  assert.deepEqual(calculatePdaoBenefit({ tier: pdaoTierForValue(25), servicePrice: 0.1, creditRemainingUsd: 0, creditRequestsUsed: 25, promotionActive: true }), {
+    eligible: true,
+    reason: "eligible_fixed_platform_promotion",
+    tier_id: "access",
+    credit_applied_usd: 0,
+    discount_bps: 0,
+    discount_percent: 0,
+    charge_usd: 0,
+    fully_covered: true,
+    promotion_id: "pdao-holder-promotion-2026-10",
+  });
+});
+
 test("historical holder qualification fails closed before seven days of snapshots", async () => {
   const previousFetch = global.fetch;
   const wallet = Keypair.generate();
@@ -115,10 +133,11 @@ test("historical holder qualification fails closed before seven days of snapshot
   try {
     const storage = new MemoryStore();
     const input = { network: "solana-mainnet-beta" };
-    const challenge = await issuePdaoChallenge({ config: historicalConfig, storage, wallet: wallet.publicKey.toBase58(), serviceId: "wallet.intelligence", input });
+    const afterPromotion = new Date("2026-12-01T00:00:00Z");
+    const challenge = await issuePdaoChallenge({ config: historicalConfig, storage, wallet: wallet.publicKey.toBase58(), serviceId: "wallet.intelligence", input, now: afterPromotion });
     const signature = nacl.sign.detached(new TextEncoder().encode(challenge.message), wallet.secretKey);
     await assert.rejects(
-      () => verifyPdaoHolderAccess({ config: historicalConfig, storage, serviceId: "wallet.intelligence", input, access: { wallet: challenge.wallet, message: challenge.message, nonce: challenge.nonce, signature: Buffer.from(signature).toString("base64") } }),
+      () => verifyPdaoHolderAccess({ config: historicalConfig, storage, serviceId: "wallet.intelligence", input, now: afterPromotion, access: { wallet: challenge.wallet, message: challenge.message, nonce: challenge.nonce, signature: Buffer.from(signature).toString("base64") } }),
       /requires 7 consecutive days/,
     );
     assert.equal((await storage.list("Registry")).filter((item) => item.kind === "pdao_holder_balance_snapshot").length, 1);

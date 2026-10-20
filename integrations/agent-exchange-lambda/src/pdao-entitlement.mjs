@@ -10,6 +10,8 @@ export const PDAO_DEVELOPER_LOCK_UNTIL = "2026-11-30";
 export const PDAO_DEVELOPER_LOCK_CONTRACT = "3s5gg6upQXd4USTUQKdrWPBexEa2sZwzoD4P3HLA4tUK";
 export const PDAO_HOLDER_THRESHOLD_USD = 25;
 export const PDAO_HOLDER_WINDOW_MS = 30 * 24 * 60 * 60 * 1000;
+export const PDAO_PROMOTION_START_AT = "2026-10-20T00:00:00.000Z";
+export const PDAO_PROMOTION_END_AT = "2026-11-20T00:00:00.000Z";
 export const PDAO_ELIGIBLE_SERVICE_MAX_USD = 0.10;
 export const PDAO_HOLDER_TIERS = Object.freeze([
   { id: "access", name: "Access", threshold_usd: 25, monthly_credit_usd: 1, credit_request_limit: 25, discount_bps: 500 },
@@ -25,12 +27,32 @@ const base58Pattern = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/;
 const challengeId = (nonce) => `pdao_access_challenge_${nonce}`;
 const entitlementId = (wallet) => `pdao_access_entitlement_${wallet}`;
 
+export function pdaoPromotionStatus(at = new Date()) {
+  const observedAt = at instanceof Date ? at.getTime() : Date.parse(at);
+  const start = Date.parse(PDAO_PROMOTION_START_AT);
+  const end = Date.parse(PDAO_PROMOTION_END_AT);
+  return {
+    id: "pdao-holder-promotion-2026-10",
+    active: Number.isFinite(observedAt) && observedAt >= start && observedAt < end,
+    starts_at: PDAO_PROMOTION_START_AT,
+    ends_at: PDAO_PROMOTION_END_AT,
+    display_ends_on: "2026-11-19",
+    qualification_mode: "current_balance_at_each_service_execution",
+    qualification_days: 0,
+    threshold_usd: PDAO_HOLDER_THRESHOLD_USD,
+    eligible_service_max_usd: PDAO_ELIGIBLE_SERVICE_MAX_USD,
+    payment_required: false,
+    wallet_link_date_does_not_extend_promotion: true,
+  };
+}
+
 export function pdaoTierForValue(valueUsd) {
   const value = Number(valueUsd);
   return [...PDAO_HOLDER_TIERS].reverse().find((tier) => value >= tier.threshold_usd) || null;
 }
 
-export function publicPdaoBenefitPolicy(qualificationDays = 0) {
+export function publicPdaoBenefitPolicy(qualificationDays = 0, at = new Date()) {
+  const promotion = pdaoPromotionStatus(at);
   return {
     version: PDAO_HOLDER_POLICY_VERSION,
     token_mint: PDAO_TOKEN_MINT,
@@ -44,6 +66,8 @@ export function publicPdaoBenefitPolicy(qualificationDays = 0) {
     duration_days: 30,
     qualification_days: qualificationDays,
     qualification_mode: qualificationDays > 0 ? "historical_balance_required" : "current_balance_pilot",
+    promotion,
+    promotion_note: "The fixed platform-wide promotion is separate from the seven-day Holder Rewards qualification window.",
     eligible_service_max_usd: PDAO_ELIGIBLE_SERVICE_MAX_USD,
     credits_apply_before_discounts: true,
     credits_expire_each_cycle: true,
@@ -53,7 +77,7 @@ export function publicPdaoBenefitPolicy(qualificationDays = 0) {
   };
 }
 
-export function calculatePdaoBenefit({ tier, servicePrice, creditRemainingUsd, creditRequestsUsed }) {
+export function calculatePdaoBenefit({ tier, servicePrice, creditRemainingUsd, creditRequestsUsed, promotionActive = false }) {
   const price = Number(servicePrice);
   const remaining = Math.max(0, Number(creditRemainingUsd || 0));
   const requestsUsed = Math.max(0, Number(creditRequestsUsed || 0));
@@ -67,6 +91,17 @@ export function calculatePdaoBenefit({ tier, servicePrice, creditRemainingUsd, c
     discount_percent: 0,
     charge_usd: Number.isFinite(price) ? Number(price.toFixed(6)) : 0,
     fully_covered: false,
+  };
+  if (promotionActive) return {
+    eligible: true,
+    reason: "eligible_fixed_platform_promotion",
+    tier_id: tier.id,
+    credit_applied_usd: 0,
+    discount_bps: 0,
+    discount_percent: 0,
+    charge_usd: 0,
+    fully_covered: true,
+    promotion_id: "pdao-holder-promotion-2026-10",
   };
   const creditAvailable = requestsUsed < tier.credit_request_limit;
   const creditApplied = creditAvailable ? Math.min(price, remaining) : 0;
@@ -129,11 +164,12 @@ export function createPdaoChallengeMessage({ domain, wallet, serviceId, inputHas
   ].join("\n");
 }
 
-export async function issuePdaoChallenge({ config, storage, wallet, serviceId, input }) {
+export async function issuePdaoChallenge({ config, storage, wallet, serviceId, input, now = new Date() }) {
   if (config.pdaoMint !== PDAO_TOKEN_MINT) throw Object.assign(new Error("PDAO holder access token configuration mismatch"), { statusCode: 503 });
   const normalizedWallet = asWallet(wallet);
   const inputHash = hashInput(input);
-  const expiresAt = new Date(Date.now() + challengeTtlMs).toISOString();
+  const currentTime = now instanceof Date ? now : new Date(now);
+  const expiresAt = new Date(currentTime.getTime() + challengeTtlMs).toISOString();
   const nonce = randomUUID();
   const message = createPdaoChallengeMessage({
     domain: config.domain,
@@ -151,7 +187,7 @@ export async function issuePdaoChallenge({ config, storage, wallet, serviceId, i
     input_hash: inputHash,
     message,
     expires_at: expiresAt,
-    created_at: new Date().toISOString(),
+    created_at: currentTime.toISOString(),
   }, true);
   return {
     purpose: PDAO_HOLDER_PURPOSE,
@@ -162,6 +198,7 @@ export async function issuePdaoChallenge({ config, storage, wallet, serviceId, i
     token_mint: config.pdaoMint,
     threshold_usd: PDAO_HOLDER_THRESHOLD_USD,
     duration_days: 30,
+    promotion: pdaoPromotionStatus(currentTime),
   };
 }
 
@@ -310,7 +347,7 @@ export async function runPdaoHolderBalanceSnapshots({ config, storage, limit = 1
   return result;
 }
 
-export async function verifyPdaoHolderAccess({ config, storage, access, serviceId, input, servicePrice = null }) {
+export async function verifyPdaoHolderAccess({ config, storage, access, serviceId, input, servicePrice = null, now = new Date() }) {
   if (!access || typeof access !== "object") return null;
   if (config.pdaoMint !== PDAO_TOKEN_MINT) throw Object.assign(new Error("PDAO holder access token configuration mismatch"), { statusCode: 503 });
   const wallet = asWallet(access.wallet);
@@ -319,7 +356,8 @@ export async function verifyPdaoHolderAccess({ config, storage, access, serviceI
   const challenge = await storage.get("Registry", challengeId(nonce));
   if (!challenge || challenge.kind !== "pdao_access_challenge" || challenge.wallet !== wallet || challenge.service_id !== serviceId || challenge.input_hash !== hashInput(input))
     throw Object.assign(new Error("token-holder access challenge is invalid or expired"), { statusCode: 401 });
-  if (Date.parse(challenge.expires_at) <= Date.now()) throw Object.assign(new Error("token-holder access challenge is expired"), { statusCode: 401 });
+  const currentTime = now instanceof Date ? now : new Date(now);
+  if (Date.parse(challenge.expires_at) <= currentTime.getTime()) throw Object.assign(new Error("token-holder access challenge is expired"), { statusCode: 401 });
   if (String(access.message || "") !== challenge.message) throw Object.assign(new Error("signed access message does not match the challenge"), { statusCode: 401 });
   try {
     if (!verifySignature(wallet, challenge.message, access.signature)) throw new Error("signature verification failed");
@@ -331,8 +369,11 @@ export async function verifyPdaoHolderAccess({ config, storage, access, serviceI
   const valueUsd = balance.amount * price.price_usd;
   if (!Number.isFinite(valueUsd) || valueUsd < PDAO_HOLDER_THRESHOLD_USD)
     throw Object.assign(new Error("wallet does not currently hold the required PDAO token value"), { statusCode: 403 });
-  await recordPdaoBalanceSnapshot({ config, storage, wallet, balance, price });
-  const historical = await pdaoHistoricalQualification({ config, storage, wallet });
+  await recordPdaoBalanceSnapshot({ config, storage, wallet, balance, price, observedAt: currentTime });
+  const promotion = pdaoPromotionStatus(currentTime);
+  const historical = promotion.active
+    ? { qualified: true, mode: "current_balance_at_each_service_execution", snapshot_count: 0, required_days: 0 }
+    : await pdaoHistoricalQualification({ config, storage, wallet, now: currentTime });
   if (!historical.qualified) {
     const error = Object.assign(new Error(`PDAO holder access requires ${historical.required_days} consecutive days of qualifying balance; ${historical.snapshot_count} verified snapshots are currently available`), { statusCode: 403 });
     error.pdaoQualification = historical;
@@ -352,10 +393,12 @@ export async function verifyPdaoHolderAccess({ config, storage, access, serviceI
     throw Object.assign(new Error("token-holder access challenge was already used"), { statusCode: 409 });
   }
   const existing = await storage.get("Registry", entitlementId(wallet));
-  const nowIso = new Date().toISOString();
-  const active = existing?.active_until && Date.parse(existing.active_until) > Date.now();
-  const cycleStartedAt = active ? existing.cycle_started_at : nowIso;
-  const activeUntil = active ? existing.active_until : new Date(Date.now() + PDAO_HOLDER_WINDOW_MS).toISOString();
+  const nowIso = currentTime.toISOString();
+  const active = promotion.active || (existing?.active_until && Date.parse(existing.active_until) > currentTime.getTime());
+  const cycleStartedAt = active ? (existing?.cycle_started_at || promotion.starts_at || nowIso) : nowIso;
+  const activeUntil = promotion.active
+    ? PDAO_PROMOTION_END_AT
+    : active ? existing.active_until : new Date(currentTime.getTime() + PDAO_HOLDER_WINDOW_MS).toISOString();
   const tier = pdaoTierForValue(valueUsd);
   const creditRemainingUsd = active && existing?.tier_id === tier?.id
     ? Number(existing.credit_remaining_usd || 0)
@@ -363,7 +406,7 @@ export async function verifyPdaoHolderAccess({ config, storage, access, serviceI
   const creditRequestsUsed = active && existing?.tier_id === tier?.id
     ? Number(existing.credit_requests_used || 0)
     : 0;
-  const benefit = calculatePdaoBenefit({ tier, servicePrice, creditRemainingUsd, creditRequestsUsed });
+  const benefit = calculatePdaoBenefit({ tier, servicePrice, creditRemainingUsd, creditRequestsUsed, promotionActive: promotion.active });
   const entitlement = {
     id: entitlementId(wallet),
     kind: "pdao_holder_entitlement",
@@ -381,8 +424,9 @@ export async function verifyPdaoHolderAccess({ config, storage, access, serviceI
     credit_requests_used: creditRequestsUsed,
     credit_request_limit: tier?.credit_request_limit || 0,
     discount_bps: tier?.discount_bps || 0,
-    qualification_days: config.pdaoHolderQualificationDays,
+    qualification_days: promotion.active ? 0 : config.pdaoHolderQualificationDays,
     qualification_mode: historical.mode,
+    promotion_id: promotion.active ? promotion.id : null,
     qualification_snapshot_count: historical.snapshot_count,
     qualification_first_snapshot_at: historical.first_snapshot_at || null,
     qualification_last_snapshot_at: historical.last_snapshot_at || null,

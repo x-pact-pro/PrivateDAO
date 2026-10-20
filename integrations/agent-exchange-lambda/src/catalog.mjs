@@ -266,6 +266,17 @@ export const SERVICES = Object.freeze([
     output: "structured synthesis and receipt",
     supportedNetworks: UNIVERSAL_READ_NETWORKS,
   },
+  {
+    id: "privatepay.x402",
+    title: "PrivatePAY x402 privacy rail",
+    price: 0,
+    currency: "USDC",
+    access: "gated",
+    input: "resource and provider commitment",
+    output: "privacy-preserving x402 payment challenge and settlement status",
+    supportedNetworks: ["solana-mainnet-beta"],
+    availability: "requires_configured_confidential_privacy_rail",
+  },
 ]);
 
 export function serviceById(id) {

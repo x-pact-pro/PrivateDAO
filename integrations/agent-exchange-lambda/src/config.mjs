@@ -117,6 +117,12 @@ export function getConfig(env = process.env) {
     // Snapshots are recorded by the scheduled Lambda sweep and live access
     // verification; access fails closed until the window is complete.
     pdaoHolderQualificationDays: boundedNumber(env.PDAO_HOLDER_QUALIFICATION_DAYS || 7, 7, 0, 30),
+    privatePayEnabled: bool(env.PRIVATEPAY_ENABLED),
+    privatePayPrivacyRail: env.PRIVATEPAY_PRIVACY_RAIL || "",
+    privatePayFacilitatorUrl: env.PRIVATEPAY_FACILITATOR_URL || "",
+    privatePayConfidentialMint: env.PRIVATEPAY_CONFIDENTIAL_MINT || "",
+    privatePayProviderUrl: env.PRIVATEPAY_PROVIDER_URL || "https://payments.magicblock.app",
+    privatePayCluster: env.PRIVATEPAY_CLUSTER || "mainnet-beta",
   };
 }
 
