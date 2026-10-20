@@ -1625,7 +1625,7 @@ function commercialHomePageWithOffer() {
     .replace('<section class="hero"><div>', `${utilityRail}<section class="hero"><div>`)
     .replace('<p class="side-note"><strong>Free to start.</strong><br>Paid services are quote-first.<br>Payment is finalized on Solana Mainnet USDC.<br>Completed work returns a verifiable receipt.</p>', proofPanel)
     .replace('class="category-grid">', 'class="category-grid pdao-lift">')
-    .replace('<footer class="footer">', `${ecosystemPartnerRail()}<footer class="footer">`)
+      .replace('<footer class="footer">', `${ecosystemPartnerRail()}<footer class="footer">`)
     .replace('<a href="/connect">Connect an agent</a>', '<a href="/products">Products</a><a href="/connect">Connect an agent</a>')
     .replace('<a href="/mcp">MCP</a>', '<a href="/mcp">MCP</a><a href="/a2a">A2A</a><a href="/sellers">Sell</a>')
     .replace('A commercial service layer for AI agents. Discover a capability, request the work, pay only when required, and receive evidence that can be checked independently.', 'A commercial service economy for people and autonomous agents. Discover a capability, request the work, use PDAO holder access when eligible or pay quoted USDC on Solana Mainnet, and receive independently verifiable evidence.')
