@@ -124,6 +124,35 @@ export function decodePrivatePaySignature(header) {
   }
 }
 
+function assertFacilitatorPayload(payload) {
+  if (!payload || typeof payload !== "object" || Array.isArray(payload))
+    throw Object.assign(new Error("x402 facilitator payload must be an object"), { statusCode: 400, code: "PRIVATEPAY_INVALID_FACILITATOR_PAYLOAD" });
+  if (payload.x402Version !== 2 || !payload.paymentPayload || !payload.paymentRequirements)
+    throw Object.assign(new Error("x402 v2 paymentPayload and paymentRequirements are required"), { statusCode: 400, code: "PRIVATEPAY_INVALID_FACILITATOR_PAYLOAD" });
+}
+
+export async function privatePayFacilitatorRequest(config, operation, payload, fetchImpl = fetch) {
+  if (!new Set(["verify", "settle"]).has(operation))
+    throw Object.assign(new Error("unsupported PrivatePAY facilitator operation"), { statusCode: 400, code: "PRIVATEPAY_INVALID_FACILITATOR_OPERATION" });
+  assertFacilitatorPayload(payload);
+  const status = privatePayStatus(config);
+  if (!status.enabled)
+    throw Object.assign(new Error("PrivatePAY facilitator is disabled until x402 conformance is verified"), { statusCode: 503, code: "PRIVATEPAY_NOT_READY", status });
+  const base = String(config.privatePayFacilitatorUrl || "").replace(/\/$/, "");
+  const response = await fetchImpl(`${base}/${operation}`, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify(payload),
+    signal: AbortSignal.timeout(8000),
+  });
+  const result = await response.json().catch(() => ({}));
+  if (!response.ok)
+    throw Object.assign(new Error(`PrivatePAY facilitator rejected ${operation} (${response.status})`), { statusCode: 503, code: "PRIVATEPAY_FACILITATOR_REJECTED", facilitator_status: response.status });
+  if (!result || typeof result !== "object" || Array.isArray(result))
+    throw Object.assign(new Error(`PrivatePAY facilitator returned an invalid ${operation} response`), { statusCode: 503, code: "PRIVATEPAY_INVALID_FACILITATOR_RESPONSE" });
+  return { operation, ...result };
+}
+
 export function privatePayStatus(config) {
   const privacyRail = String(config.privatePayPrivacyRail || "").trim();
   const facilitatorUrl = String(config.privatePayFacilitatorUrl || "").trim();

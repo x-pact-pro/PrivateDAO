@@ -226,6 +226,17 @@ test("human root is HTML while machine surfaces remain available", async () => {
   }
   const openapi = JSON.parse((await request("/openapi.json")).body);
   assert.ok(openapi.paths["/api/admin/registry/agents/{agentId}/owner-token/rotate"]);
+  assert.ok(openapi.paths["/api/privatepay/x402/verify"]);
+  assert.ok(openapi.paths["/api/privatepay/x402/settle"]);
+  const privatePayStatus = await request("/api/privatepay/status");
+  assert.equal(privatePayStatus.statusCode, 200);
+  assert.equal(JSON.parse(privatePayStatus.body).operational, false);
+  const privatePayPayload = { x402Version: 2, paymentPayload: {}, paymentRequirements: {} };
+  for (const operation of ["verify", "settle"]) {
+    const response = await request(`/api/privatepay/x402/${operation}`, "POST", privatePayPayload);
+    assert.equal(response.statusCode, 503, `PrivatePAY ${operation} must fail closed`);
+    assert.match(response.body, /temporarily unavailable|request_failed/i);
+  }
   const providers = await request("/api/providers/status");
   assert.equal(providers.statusCode, 200);
   assert.ok(JSON.parse(providers.body).providers.some((provider) => provider.provider === "github"));
@@ -665,8 +676,10 @@ test("MCP lifecycle, schemas, errors, and network aliases are protocol-safe", as
   assert.equal(cancelled.body, "");
 
   const listed = JSON.parse((await request("/mcp", "POST", { jsonrpc: "2.0", id: 2, method: "tools/list", params: {} })).body).result.tools;
-  assert.equal(listed.length, 25);
+  assert.equal(listed.length, 27);
   assert.ok(listed.some((tool) => tool.name === "privatepay_prepare"));
+  assert.ok(listed.some((tool) => tool.name === "privatepay_verify"));
+  assert.ok(listed.some((tool) => tool.name === "privatepay_settle"));
   for (const tool of listed) {
     assert.equal(tool.inputSchema.type, "object", tool.name);
     assert.ok(tool.inputSchema.properties, tool.name);

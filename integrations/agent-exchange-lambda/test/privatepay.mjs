@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { decodePaymentRequiredHeader } from "@x402/core/http";
-import { createPrivatePayChallenge, createPrivatePayRequirements, decodePrivatePaySignature, preparePrivatePayTransfer, privatePayStatus, probePrivatePayRail } from "../src/privatepay.mjs";
+import { createPrivatePayChallenge, createPrivatePayRequirements, decodePrivatePaySignature, preparePrivatePayTransfer, privatePayFacilitatorRequest, privatePayStatus, probePrivatePayRail } from "../src/privatepay.mjs";
 
 test("PrivatePAY is fail-closed without a reviewed privacy rail", () => {
   const config = { privatePayEnabled: false };
@@ -62,6 +62,32 @@ test("PrivatePAY remains fail-closed when x402 conformance is not verified", () 
     () => createPrivatePayRequirements(config, { resource: "api://example", provider_id: "provider-1", amount_base_units: "1000" }),
     (error) => error.code === "PRIVATEPAY_NOT_READY" && error.statusCode === 503,
   );
+});
+
+test("PrivatePAY facilitator adapter rejects verify and settle before making a network call", async () => {
+  let calls = 0;
+  const payload = { x402Version: 2, paymentPayload: {}, paymentRequirements: {} };
+  await assert.rejects(
+    () => privatePayFacilitatorRequest({ privatePayEnabled: true, privatePayPrivacyRail: "rail", privatePayFacilitatorUrl: "https://facilitator.example", privatePayConfidentialMint: "mint" }, "verify", payload, async () => { calls += 1; }),
+    (error) => error.code === "PRIVATEPAY_NOT_READY" && error.statusCode === 503,
+  );
+  await assert.rejects(
+    () => privatePayFacilitatorRequest({ privatePayEnabled: true, privatePayPrivacyRail: "rail", privatePayFacilitatorUrl: "https://facilitator.example", privatePayConfidentialMint: "mint" }, "settle", payload, async () => { calls += 1; }),
+    (error) => error.code === "PRIVATEPAY_NOT_READY" && error.statusCode === 503,
+  );
+  assert.equal(calls, 0);
+});
+
+test("PrivatePAY facilitator adapter forwards only after the explicit conformance gate", async () => {
+  const seen = [];
+  const payload = { x402Version: 2, paymentPayload: { scheme: "privatepay" }, paymentRequirements: { scheme: "privatepay" } };
+  const result = await privatePayFacilitatorRequest({ privatePayEnabled: true, privatePayConformanceVerified: true, privatePayPrivacyRail: "rail", privatePayFacilitatorUrl: "https://facilitator.example/", privatePayConfidentialMint: "mint" }, "verify", payload, async (url, init) => {
+    seen.push({ url, body: JSON.parse(init.body) });
+    return { ok: true, status: 200, async json() { return { isValid: true }; } };
+  });
+  assert.deepEqual(result, { operation: "verify", isValid: true });
+  assert.equal(seen[0].url, "https://facilitator.example/verify");
+  assert.deepEqual(seen[0].body, payload);
 });
 
 test("PrivatePAY remains unavailable when the provider health or confidential mint check fails", async () => {
