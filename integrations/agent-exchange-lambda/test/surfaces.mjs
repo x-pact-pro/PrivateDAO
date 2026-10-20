@@ -18,7 +18,9 @@ test("human root is HTML while machine surfaces remain available", async () => {
   assert.match(root.headers["content-type"], /^text\/html/);
   assert.match(root.body, /PrivateDAO Agents/);
   assert.match(root.body, /Evidence for/);
-  assert.match(root.body, /PDAO holder rewards run on three tiers/);
+  assert.match(root.body, /Limited-time PDAO Holder Promotion/);
+  assert.match(root.body, /not 30 days from wallet connection/);
+  assert.match(root.body, /pdao-promotion-countdown/);
   assert.match(root.body, /pdao-utility-band/);
   assert.match(root.body, /pdao-benefit-card/);
   assert.match(root.body, /pdao-proof-panel/);
@@ -46,6 +48,8 @@ test("human root is HTML while machine surfaces remain available", async () => {
   assert.match(marketplace.body, /GitHub MCP Server/);
   assert.match(marketplace.body, /Microsoft Learn MCP Server/);
   assert.match(marketplace.body, /Curated external tools from their official maintainers/);
+  assert.match(marketplace.body, /PDAO eligible/);
+  assert.match(marketplace.body, /fixed promotion window/);
   const curated = await request("/api/tools/curated");
   assert.equal(curated.statusCode, 200);
   assert.match(curated.headers["content-type"], /^application\/json/);
@@ -57,6 +61,13 @@ test("human root is HTML while machine surfaces remain available", async () => {
   assert.equal(holderPolicy.headers["content-type"], "application/json; charset=utf-8");
   assert.deepEqual(JSON.parse(holderPolicy.body).tiers.map((tier) => tier.id), ["access", "plus", "pro"]);
   assert.equal(JSON.parse(holderPolicy.body).qualification_mode, "historical_balance_required");
+  assert.equal(JSON.parse(holderPolicy.body).promotion.ends_at, "2026-11-20T00:00:00.000Z");
+  assert.equal(JSON.parse(holderPolicy.body).promotion.payment_required, false);
+  const holderBenefits = await request("/holder-benefits");
+  assert.equal(holderBenefits.statusCode, 200);
+  assert.match(holderBenefits.body, /30-Day PDAO Holder Promotion/);
+  assert.match(holderBenefits.body, /Separate Holder Rewards/);
+  assert.match(holderBenefits.body, /2026-11-20T00:00:00.000Z/);
   assert.match(marketplace.body, /SealKeeper read-only reputation verification/);
   assert.match(marketplace.body, /PrivateDAO Agent Exchange is SealKeeper's design and integration partner/);
   assert.match(marketplace.body, /https:\/\/sealkeeper\.run\/docs\/integrate/);
@@ -157,7 +168,7 @@ test("human root is HTML while machine surfaces remain available", async () => {
   assert.match(botPage.body, /onlyIfTrusted:false/);
   assert.match(botPage.body, /provider\.connect\(\)/);
   assert.match(botPage.body, /Target network/);
-  assert.match(botPage.body, /PDAO holder rewards run on three tiers/);
+  assert.match(botPage.body, /Limited-time PDAO Holder Promotion/);
   assert.match(botPage.body, /href="#service-checkout-title">Request this service/);
   assert.match(botPage.body, /if\(immediate\.length===1\)\{await connect\(immediate\[0\]\);return;\}/);
   assert.match(botPage.body, /Wallet found\. Click Use … to approve the connection/);
@@ -580,7 +591,7 @@ test("MCP and A2A machine entrypoints remain callable", async () => {
     assert.match(page.headers["content-type"], /^text\/html/, path);
     assert.match(page.body, /agents\.privatedao\.org\/mcp/, path);
     assert.match(page.body, /streamable-http/, path);
-    assert.match(page.body, /PDAO holder rewards run on three tiers/, path);
+    assert.match(page.body, /Limited-time PDAO Holder Promotion/, path);
   }
   const hub = await request("/connect");
   assert.match(hub.body, /ChatGPT/);
@@ -654,7 +665,7 @@ test("MCP lifecycle, schemas, errors, and network aliases are protocol-safe", as
   assert.equal(cancelled.body, "");
 
   const listed = JSON.parse((await request("/mcp", "POST", { jsonrpc: "2.0", id: 2, method: "tools/list", params: {} })).body).result.tools;
-  assert.equal(listed.length, 22);
+  assert.equal(listed.length, 24);
   for (const tool of listed) {
     assert.equal(tool.inputSchema.type, "object", tool.name);
     assert.ok(tool.inputSchema.properties, tool.name);

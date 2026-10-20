@@ -25,6 +25,7 @@ const DETAILS = Object.freeze({
   "swap.quote": detail("Financial Services", "Return a Solana swap quote, route, slippage and network cost.", "Price a possible swap without executing it."),
   "agent.match": detail("Agent Services", "Rank registered agents against requested capabilities and context.", "Find the next provider for a multi-agent workflow."),
   "sponsored.discovery": detail("Agent Services", "Create an explicitly disclosed sponsored placement for agent discovery.", "Reach agents through a transparent commercial channel."),
+  "privatepay.x402": detail("Financial Services", "Negotiate a privacy-preserving x402 payment challenge without exposing payer, recipient or amount in the public response.", "Let agents pay for APIs while preserving a provider-controlled audit boundary.", "gated_until_privacy_rail_conformance"),
 });
 
 export function serviceDetails(service) {
@@ -90,6 +91,9 @@ export function serviceRecommendation(task = "") {
     ["repository", ["github.repository"]],
     ["agent", ["agent.match", "sponsored.discovery"]],
     ["provider", ["agent.match"]],
+    ["privatepay", ["privatepay.x402"]],
+    ["x402", ["privatepay.x402"]],
+    ["privacy payment", ["privatepay.x402"]],
   ];
   const ids = terms.filter(([term]) => query.includes(term)).flatMap(([, matches]) => matches);
   return [...new Set(ids)].slice(0, 8);
