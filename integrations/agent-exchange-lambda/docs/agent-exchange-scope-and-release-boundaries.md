@@ -6,14 +6,20 @@ Status: canonical operating boundary, 2026-10-16
 
 ### PrivateDAO enterprise products
 
-The six institutional products remain part of the PrivateDAO Kernel product line:
+The six institutional products remain part of the PrivateDAO Kernel product line.
+Their canonical runtime IDs are the six non-agent entries in
+`packages/privatedao-runtime/src/catalog.ts`:
 
-- Confidential Payroll
-- Confidential Auctions
-- Private Governance
-- Treasury Coordination
-- Workflows
-- Blind Verification
+- Blind Verification (`blind-verification`)
+- Record Verification (`record-verification`)
+- Confidential Payroll (`payroll`)
+- Private Treasury (`treasury`)
+- Private Governance (`governance`)
+- Private Auctions (`auction`)
+
+"Workflows" is a commercial grouping used in some product language, not a
+seventh Kernel product ID. Agent Exchange is also not part of this six-product
+institutional set.
 
 Their organization identity, constitution, policy engine, institutional accounts,
 and PDAO Wallet roadmap are not Agent Exchange seller capabilities.
@@ -28,7 +34,7 @@ runtime is `https://agents.privatedao.org`. It owns:
 - Service catalog and quote-first paid jobs.
 - Solana Mainnet USDC payment verification.
 - Receipts, idempotency, settlement scheduling, and marketplace listings.
-- Optional internal integrations such as Sealkeeper read-only reputation.
+- Optional read-only integrations such as SealKeeper reputation verification.
 
 Agent Exchange does not own the Kernel constitution, institutional wallet
 authorization, or the PDAO Wallet account roadmap.
@@ -37,7 +43,7 @@ authorization, or the PDAO Wallet account roadmap.
 
 `https://privatedao.org/agents/` is a discovery and commercial entry surface.
 It is not a second Agent Exchange runtime and must not contain duplicate payment,
-registry, or Sealkeeper implementations.
+registry, or SealKeeper implementations.
 
 ### Kernel and PDAO Wallet roadmap
 
@@ -46,19 +52,23 @@ agility or post-quantum migration work belong under the Kernel roadmap. They may
 consume Agent Exchange receipts later, but they must not be copied into this
 Lambda or exposed as completed Agent Exchange capabilities.
 
-## Sealkeeper boundary
+## SealKeeper boundary
 
-Sealkeeper is a read-only technical PoC only. It is not a partnership, badge,
-seller permission, rating replacement, or public trust gate.
+PrivateDAO Agent Exchange is SealKeeper's design and integration partner. The
+integration remains an optional, read-only reputation signal: the partnership
+does not make SealKeeper a badge, seller permission, rating replacement, or
+public trust gate.
 
-- `SEAL_REPUTATION_ENABLED` must remain unset or `false`.
-- The verification route remains internal and requires the admin smoke header.
-- The route is intentionally omitted from public OpenAPI.
+- `SEAL_REPUTATION_ENABLED` defaults to `false` in new environments. The
+  production Lambda is explicitly enabled only after the focused security
+  review and exposes the service as a free, public, read-only capability.
+- The internal verification route remains protected by the admin smoke header.
+- The public service is read-only and never required for
+  listing, seller permission, marketplace publication, or agent invocation.
 - No public Agent Card, MCP tool, marketplace listing, or seller decision may
-  depend on Sealkeeper.
-- Any future enablement requires a separate approval and a focused security
-  review of key rotation, handshake lifecycle, route authentication, and agent
-  metadata attachment.
+  depend on SealKeeper.
+- Enablement requires review of key rotation, handshake lifecycle, route
+  authentication, bounded task evidence, and agent metadata attachment.
 
 ## Mainnet paid E2E approval path
 
@@ -89,4 +99,4 @@ must be added to an evidence report only after independent verification.
 This directory is the single source for Agent Exchange runtime code. Historical
 branches and worktrees are evidence or development history, not additional
 production implementations. Before deployment, the selected commit must contain
-the Sealkeeper source, tests, and this boundary document together.
+the SealKeeper source, tests, and this boundary document together.

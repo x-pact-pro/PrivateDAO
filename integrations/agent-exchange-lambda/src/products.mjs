@@ -41,7 +41,7 @@ export const PRODUCTS = Object.freeze([
     price: 0.17,
     currency: "USDC",
     networks: ["solana-mainnet-beta"],
-    input: "network and base64 serialized unsigned Solana transaction data",
+    input: "network and unsigned transaction data",
     included_services: ["transaction.explain", "transaction.simulate", "decision.context"],
     proof: "One ordered receipt with simulation output, explanation and decision context.",
     value: "Reduce approval mistakes by creating a readable, reproducible pre-sign record.",

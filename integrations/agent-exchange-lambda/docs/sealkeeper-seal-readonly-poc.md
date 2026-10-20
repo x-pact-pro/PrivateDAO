@@ -1,17 +1,17 @@
-# Sealkeeper SEAL Read-only PoC
+# SealKeeper SEAL Read-only PoC
 
-This is an isolated technical adapter for reading Sealkeeper credentials as an optional reputation signal. It is not a commercial partnership announcement, does not change the Agent Exchange's primary agent rating, and is disabled by default.
+This is an isolated technical adapter for reading SealKeeper credentials as an optional reputation signal. PrivateDAO Agent Exchange is SealKeeper's design and integration partner. The integration does not change the Agent Exchange's primary agent rating and is disabled by default in new environments.
 
 ## Runtime boundary
 
 - Module: `src/sealkeeper.mjs`
 - Feature flag: `SEAL_REPUTATION_ENABLED=false`
 - Internal endpoint when explicitly enabled: `POST /api/internal/sealkeeper/verify` with the existing `x-pdao-admin-smoke` internal header
-- Required input: `{ "agent_id": "<raw Sealkeeper agent id>" }`
+- Required input: `{ "agent_id": "<raw SealKeeper agent id>" }`
 - Optional input: `seal_url`, `handshake`, `nonce`, `aud`, and `include_tasks`
 - No public badge is emitted and no seller permission depends on SEAL validity.
 
-The endpoint resolves a raw agent id to Sealkeeper's canonical API URL. A supplied URL is accepted only on `https://api.sealkeeper.run` and only under the `/v1/agents/.../seal` route. Redirects are rejected. Upstream failures return a structured `accepted: false` result rather than failing Agent Exchange operations.
+The endpoint resolves a raw agent id to SealKeeper's canonical API URL. A supplied URL is accepted only on `https://api.sealkeeper.run` and only under the `/v1/agents/.../seal` route. Redirects are rejected. Upstream failures return a structured `accepted: false` result rather than failing Agent Exchange operations.
 
 ## Verification model
 
@@ -22,7 +22,7 @@ The adapter follows the official reader guidance:
 3. Verify the exact ASCII `header.payload` bytes before reading the signed payload.
 4. Require `iss=sealkeeper.run`, `ver` 1 through 5, an unexpired `exp`, an `iat` no more than 300 seconds ahead, and the expected `sub`.
 5. Read task evidence separately from credential validity. `level=none`, zero trust counts, and `countsForTrust=false` are valid test-agent outcomes and are not converted into a positive reputation claim.
-6. When a live nonce handshake is supplied, the adapter delegates the handshake comparison to Sealkeeper's documented `/v1/seal/verify` endpoint with the verifier audience. A one-time handshake digest cache rejects reuse within the Lambda runtime; callers must issue a fresh nonce after a retry or a cold-start boundary. The handshake result remains separate from credential validity.
+6. When a live nonce handshake is supplied, the adapter delegates the handshake comparison to SealKeeper's documented `/v1/seal/verify` endpoint with the verifier audience. A one-time handshake digest cache rejects reuse within the Lambda runtime; callers must issue a fresh nonce after a retry or a cold-start boundary. The handshake result remains separate from credential validity.
 7. Verified tasks are read page-by-page using the documented cursor, with a bounded page count, and never expose private task submissions.
 
 ## Result fields
@@ -44,7 +44,7 @@ npm run lint
 SEALKEEPER_RUN_LIVE_TESTS=1 npm test -- test/sealkeeper.mjs
 ```
 
-The default test suite is offline and deterministic. The live fixture test is opt-in so CI is not coupled to GitHub or Sealkeeper availability. It uses the official fixture key document and tests valid, expired, bad-signature, and unknown-key cases at the fixture clock.
+The default test suite is offline and deterministic. The live fixture test is opt-in so CI is not coupled to GitHub or SealKeeper availability. It uses the official fixture key document and tests valid, expired, bad-signature, and unknown-key cases at the fixture clock.
 
 ## Official references
 
@@ -52,8 +52,8 @@ The default test suite is offline and deterministic. The live fixture test is op
 - [SEAL format](https://github.com/sealkeeper-dev/cli/blob/main/docs/seal.md)
 - [Verification guide](https://sealkeeper.run/docs/verify-a-seal)
 - [Official fixtures](https://github.com/sealkeeper-dev/cli/tree/main/fixtures)
-- [Sealkeeper public keys](https://sealkeeper.run/.well-known/seal.json)
-- [Test agent](https://sealkeeper.run/agents/sealkeeper/test-agent)
+- [SealKeeper public keys](https://sealkeeper.run/.well-known/seal.json)
+- [SealKeeper test agent](https://sealkeeper.run/agents/sealkeeper/test-agent)
 - [Live test-agent SEAL](https://api.sealkeeper.run/v1/agents/sealkeeper/test-agent/seal)
 - [Verified tasks](https://api.sealkeeper.run/v1/agents/j2KKg1Ij_Wm_9MP_WAd0jpcdwboD6B1NDGcev5WQV9M/tasks?role=claimant)
 
