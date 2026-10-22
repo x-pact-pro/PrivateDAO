@@ -57,7 +57,17 @@ export function publicPdaoBenefitPolicy(_qualificationDays = 0, at = new Date())
   return {
     version: PDAO_HOLDER_POLICY_VERSION,
     token_mint: PDAO_TOKEN_MINT,
-    utility: ["commercial_payment_activation", "agent_exchange_holder_access", "governance_coordination"],
+    utility: [
+      "commercial_payment_activation",
+      "agent_exchange_holder_access",
+      "privatepay_fee_credits",
+      "eligible_service_credits",
+      "tiered_service_discounts",
+      "agent_spending_benefits",
+      "marketplace_seller_benefits",
+      "holder_reputation",
+      "governance_coordination",
+    ],
     payment_gate_url: "https://privatedao.org/payment-gate",
     token_surface_url: "https://privatedao.org/token",
     ordinary_agent_exchange_payment_asset: "USDC",
