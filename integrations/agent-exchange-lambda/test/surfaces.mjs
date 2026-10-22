@@ -24,6 +24,9 @@ test("human root is HTML while machine surfaces remain available", async () => {
   assert.match(root.body, /pdao-utility-band/);
   assert.match(root.body, /pdao-benefit-card/);
   assert.match(root.body, /pdao-proof-panel/);
+  assert.match(root.body, /Try an AI Agent/);
+  assert.match(root.body, /Free demo/);
+  assert.match(root.body, /Try It Now/);
   assert.match(root.body, /prefers-reduced-motion/);
   assert.match(root.body, /DISCOVER/);
   assert.match(root.body, /IBM watsonx/);
@@ -57,9 +60,14 @@ test("human root is HTML while machine surfaces remain available", async () => {
   assert.match(marketplace.body, /USDC remains the settlement asset/);
   assert.match(marketplace.body, /Try a live demo/);
   assert.match(marketplace.body, /Try now/);
+  assert.match(marketplace.body, /Token Safety Check/);
+  assert.match(marketplace.body, /No wallet connection required/);
   const demo = await request("/demo");
   assert.equal(demo.statusCode, 200);
   assert.match(demo.body, /See the agent work on real public data/);
+  assert.match(demo.body, /Try an AI Agent/);
+  assert.match(demo.body, /Sample token contract/);
+  assert.match(demo.body, /Try It Now/);
   assert.match(demo.body, new RegExp("9isGuumtaqvJeJeyLF44fvfskk2cv5mYsopexMBfpump"));
   const demoResult = await request("/api/demo/token");
   assert.equal(demoResult.statusCode, 200);
