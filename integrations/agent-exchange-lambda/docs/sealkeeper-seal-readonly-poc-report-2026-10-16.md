@@ -59,10 +59,17 @@ The zero-count, `level=none` result is the intended official test-agent outcome.
 
 READY FOR FOCUSED SECURITY REVIEW: YES
 
-PRODUCTION ENABLEMENT: COMPLETED for the public free read-only service after
-the live test-agent call and the focused security/fixture suite passed.
+PRODUCTION ENABLEMENT: NOT DEPLOYED. The feature flag remains off by default,
+and the live test-agent call plus focused security/fixture suite do not prove
+that the current production runtime has been configured or deployed.
 
-The adapter is suitable for review as a read-only, optional signal. It should not be treated as a production trust gate until reviewers examine key-cache invalidation, handshake challenge lifecycle, route authentication, and the policy for attaching SEAL metadata to registered agents.
+The adapter is suitable for focused review as a read-only, optional signal. It
+must not be treated as a production trust gate until reviewers examine
+key-cache invalidation, handshake challenge lifecycle, route authentication,
+and the policy for attaching SEAL metadata to registered agents. Deliberate
+production enablement still requires `SEAL_REPUTATION_ENABLED=true`, a
+reviewed live agent identity, deployment evidence, and a post-deployment smoke
+check.
 
 ## Requested agent coverage
 

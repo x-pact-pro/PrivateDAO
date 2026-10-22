@@ -60,7 +60,8 @@ test("human root is HTML while machine surfaces remain available", async () => {
   assert.equal(holderPolicy.statusCode, 200);
   assert.equal(holderPolicy.headers["content-type"], "application/json; charset=utf-8");
   assert.deepEqual(JSON.parse(holderPolicy.body).tiers.map((tier) => tier.id), ["access", "plus", "pro"]);
-  assert.equal(JSON.parse(holderPolicy.body).qualification_mode, "historical_balance_required");
+  assert.equal(JSON.parse(holderPolicy.body).qualification_mode, "current_balance_at_each_service_execution");
+  assert.equal(JSON.parse(holderPolicy.body).holder_rewards.qualification_days, 7);
   assert.equal(JSON.parse(holderPolicy.body).promotion.ends_at, "2026-11-20T00:00:00.000Z");
   assert.equal(JSON.parse(holderPolicy.body).promotion.payment_required, false);
   const holderBenefits = await request("/holder-benefits");
@@ -226,6 +227,30 @@ test("human root is HTML while machine surfaces remain available", async () => {
   }
   const openapi = JSON.parse((await request("/openapi.json")).body);
   assert.ok(openapi.paths["/api/admin/registry/agents/{agentId}/owner-token/rotate"]);
+  assert.ok(openapi.paths["/api/seller/dashboard/{agentId}/privatepay-audit"]);
+  assert.ok(openapi.paths["/api/external/jobs"].post.requestBody);
+  assert.ok(openapi.paths["/api/privatepay/x402/verify"]);
+  assert.ok(openapi.paths["/api/privatepay/x402/settle"]);
+  assert.ok(openapi.paths["/api/privatepay/x402/checkout"]);
+  const checkout = await request("/api/privatepay/x402/checkout", "POST", { phase: "create", payer: "11111111111111111111111111111111", amount_base_units: "1000", resource: "api://fixture", external_reference: "fixture-checkout" });
+  assert.equal(checkout.statusCode, 503);
+  assert.doesNotMatch(checkout.body, /merchant-api-key|privateKey|transaction/);
+  const privatePayStatus = await request("/api/privatepay/status");
+  assert.equal(privatePayStatus.statusCode, 200);
+  assert.equal(JSON.parse(privatePayStatus.body).operational, false);
+  const privatePayPayload = { x402Version: 2, paymentPayload: {}, paymentRequirements: {} };
+  for (const operation of ["verify", "settle"]) {
+    const response = await request(`/api/privatepay/x402/${operation}`, "POST", privatePayPayload);
+    assert.equal(response.statusCode, 503, `PrivatePAY ${operation} must fail closed`);
+    assert.match(response.body, /temporarily unavailable|request_failed/i);
+  }
+  const privateJob = await request("/api/jobs", "POST", {
+    service_id: "agent.research.report",
+    payment_mode: "privatepay",
+    input: { network: "ethereum-mainnet", asset: "0x0000000000000000000000000000000000000001" },
+  });
+  assert.equal(privateJob.statusCode, 503);
+  assert.doesNotMatch(privateJob.body, /payment_intent|treasuryOwner|treasuryTokenAccount/);
   const providers = await request("/api/providers/status");
   assert.equal(providers.statusCode, 200);
   assert.ok(JSON.parse(providers.body).providers.some((provider) => provider.provider === "github"));
@@ -241,6 +266,14 @@ test("human root is HTML while machine surfaces remain available", async () => {
     }
   const githubService = catalog.services.find((service) => service.id === "github.repository");
   assert.ok(githubService.input_schema.anyOf.some((branch) => branch.required.includes("repository")));
+  assert.equal(githubService.status, "Mainnet Live · read-only");
+  const swapStatus = catalog.services.find((service) => service.id === "swap.quote").status;
+  assert.equal(swapStatus, "Mainnet Live · quote-only");
+  assert.equal(catalog.services.find((service) => service.id === "privatepay.x402").status, "Implementation");
+  const privatePayService = catalog.services.find((service) => service.id === "privatepay.x402");
+  assert.equal(privatePayService.payment.flow, "gated_privatepay_x402_challenge");
+  assert.equal(privatePayService.runtime.read_only_execution, false);
+  assert.equal(privatePayService.estimated_completion_behavior, "gated_privatepay_x402_challenge");
   assert.equal((await request("/api/revenue")).statusCode, 404);
   assert.equal((await request("/api/treasury/status")).statusCode, 404);
   const products = await request("/api/products");
@@ -665,7 +698,12 @@ test("MCP lifecycle, schemas, errors, and network aliases are protocol-safe", as
   assert.equal(cancelled.body, "");
 
   const listed = JSON.parse((await request("/mcp", "POST", { jsonrpc: "2.0", id: 2, method: "tools/list", params: {} })).body).result.tools;
-  assert.equal(listed.length, 24);
+  assert.equal(listed.length, 29);
+  assert.ok(listed.some((tool) => tool.name === "privatepay_prepare"));
+  assert.ok(listed.some((tool) => tool.name === "privatepay_checkout"));
+  assert.ok(listed.some((tool) => tool.name === "privatepay_verify"));
+  assert.ok(listed.some((tool) => tool.name === "privatepay_settle"));
+  assert.ok(listed.some((tool) => tool.name === "privatepay_job_payment"));
   for (const tool of listed) {
     assert.equal(tool.inputSchema.type, "object", tool.name);
     assert.ok(tool.inputSchema.properties, tool.name);

@@ -40,7 +40,8 @@ import { PRODUCTS, productById, publicProduct } from "./products.mjs";
 import { issuePdaoChallenge, publicPdaoBenefitPolicy, pdaoPromotionStatus, consumePdaoBenefit, runPdaoHolderBalanceSnapshots, verifyPdaoHolderAccess, PDAO_TOKEN_MINT, PDAO_DEVELOPER_ALLOCATION, PDAO_DEVELOPER_LOCK_UNTIL, PDAO_DEVELOPER_LOCK_CONTRACT } from "./pdao-entitlement.mjs";
 import { runScheduledSellerSettlements } from "./settlement.mjs";
 import { HandshakeReplayCache, readSealReputation, sealkeeperFailure } from "./sealkeeper.mjs";
-import { createPrivatePayChallenge, createPrivatePayRequirements, decodePrivatePaySignature, privatePayStatus, probePrivatePayRail, PRIVATEPAY_SERVICE_ID } from "./privatepay.mjs";
+import { createPrivatePayChallenge, createPrivatePayCheckout, createPrivatePayRequirements, decodePrivatePaySignature, preparePrivatePayDeposit, preparePrivatePayTransfer, preparePrivatePayWithdrawal, privatePayFacilitatorRequest, privatePayStatus, probePrivatePayRail, publicPrivatePayFacilitatorResult, requestPrivatePayCheckoutChallenge, PRIVATEPAY_SERVICE_ID } from "./privatepay.mjs";
+import { encodePaymentResponseHeader } from "@x402/core/http";
 
 const config = getConfig();
 let storePromise;
@@ -66,7 +67,13 @@ const COMMERCIAL_HOLDER_OFFER = "Fixed platform-wide promotion: hold at least $2
 const PDAO_UTILITY = Object.freeze({
   token_mint: PDAO_TOKEN_MINT,
   network: "solana-mainnet-beta",
-  utility: ["commercial_payment_activation", "agent_exchange_holder_access", "governance_coordination"],
+  utility: [
+    "commercial_payment_activation",
+    "agent_exchange_holder_access",
+    "eligible_service_credits",
+    "tiered_service_discounts",
+    "governance_coordination",
+  ],
   payment_gate_url: "https://privatedao.org/payment-gate",
   token_surface_url: "https://privatedao.org/token",
   holder_benefits_endpoint: `https://${config.domain}/api/pdao/benefits`,
@@ -74,6 +81,24 @@ const PDAO_UTILITY = Object.freeze({
   developer_lock_until: PDAO_DEVELOPER_LOCK_UNTIL,
   developer_lock_contract: PDAO_DEVELOPER_LOCK_CONTRACT,
   ordinary_paid_execution_asset: "USDC",
+  holder_promotion: {
+    threshold_usd: 25,
+    qualification: "current_balance_at_each_service_execution",
+    payment_required: false,
+    fixed_window: "2026-10-20T00:00:00.000Z/2026-11-20T00:00:00.000Z",
+    eligible_service_max_usd: 0.10,
+  },
+  holder_rewards: {
+    qualification_days: 7,
+    purpose: "monthly credits and non_stackable_discounts",
+    tiers: ["access", "plus", "pro"],
+  },
+  guardrails: [
+    "PDAO never replaces ordinary USDC settlement",
+    "PDAO eligibility never applies to third_party_seller_services",
+    "wallet signature and live token balance are rechecked at execution",
+    "no treasury key or private key is requested",
+  ],
   note: "PDAO holder access is verified by signed wallet challenge and live balance checks; ordinary paid Agent Exchange settlement remains quote-first finalized USDC.",
 });
 const DEFAULT_MARKETPLACE_POLICY = {
@@ -538,7 +563,7 @@ const json = (body, status = 200, headers = {}) => ({
     "cache-control": "no-store",
     "access-control-allow-origin": config.corsOrigin,
     "access-control-allow-methods": "GET,POST,PUT,PATCH,DELETE,OPTIONS",
-    "access-control-allow-headers": "content-type, authorization, cookie, x-pdao-owner-token, mcp-protocol-version, mcp-session-id, x-github-event, x-hub-signature-256",
+    "access-control-allow-headers": "content-type, authorization, cookie, x-pdao-owner-token, mcp-protocol-version, mcp-session-id, payment-signature, x-github-event, x-hub-signature-256",
     ...headers,
   },
   body: JSON.stringify(body),
@@ -637,7 +662,7 @@ function card() {
       sellerListing: "USD 10 one-time per agent, not per service; up to five services in the basic tier",
       platformFee: "10% of each successfully completed paid execution; seller net is 90%",
       promotion: "Optional paid promotion is disclosed separately from technical verification or partnership status",
-      tokenHolderAccess: { tokenMint: PDAO_TOKEN_MINT, minimumUsd: 25, durationDays: 30, verification: "wallet signature, exact mint balance and live USD valuation rechecked on every request" },
+      tokenHolderAccess: { tokenMint: PDAO_TOKEN_MINT, minimumUsd: 25, durationDays: 30, window: "fixed platform window; not wallet-specific", verification: "wallet signature, exact mint balance and live USD valuation rechecked on every request" },
       pdaoUtility: PDAO_UTILITY,
       paymentRail: "USDC on Solana Mainnet for ordinary paid services; eligible token-holder access requires a wallet signature and sends no transaction",
     },
@@ -705,6 +730,7 @@ function openapi() {
     properties: {
       service_id: { type: "string", enum: SERVICES.map((service) => service.id) },
       input: { oneOf: Object.values(serviceInputRefs) },
+      payment_mode: { type: "string", enum: ["direct", "privatepay"], default: "direct", description: "Use privatepay only for a reviewed, enabled PrivatePAY x402 rail; ordinary direct payments remain unchanged." },
     },
     required: ["service_id", "input"],
     additionalProperties: false,
@@ -747,6 +773,7 @@ function openapi() {
     "/api/checkout/batch": { post: { operationId: "createBatchCheckout", description: "Create one quote for up to ten first-party services; payment remains finalized USDC on Solana Mainnet.", requestBody: { required: true, content: { "application/json": { schema: { type: "object", required: ["items"], properties: { items: { type: "array", minItems: 1, maxItems: 10, items: { type: "object", required: ["service_id", "input"], properties: { service_id: { type: "string" }, input: { type: "object" } }, additionalProperties: false } } }, additionalProperties: false } } } } } },
     "/api/jobs/{jobId}": { get: { operationId: "jobStatus", parameters: [{ $ref: "#/components/parameters/JobId" }], responses: { "200": { description: "Current job status" }, "409": { description: "Job requires non-replaying recovery" } } } },
     "/api/jobs/{jobId}/payment": { post: { operationId: "submitPayment", parameters: [{ $ref: "#/components/parameters/JobId" }], responses: { "200": { description: "Payment accepted or job completed" }, "202": { description: "Payment verification or processing is still in progress" }, "409": { description: "Payment was accepted but execution requires non-replaying recovery" } }, requestBody: { required: true, content: { "application/json": { schema: { $ref: "#/components/schemas/PaymentRequest" } } } } } },
+    "/api/jobs/{jobId}/privatepay": { post: { operationId: "submitPrivatePayPayment", description: "Verify and settle an x402 v2 PrivatePAY payment for an existing paid job. The route is fail-closed until Mainnet privacy and facilitator conformance are independently verified.", parameters: [{ $ref: "#/components/parameters/JobId" }, { name: "PAYMENT-SIGNATURE", in: "header", required: false, schema: { type: "string" } }], responses: { "200": { description: "Private payment settled and service completed" }, "402": { description: "PrivatePAY payment required" }, "409": { description: "Settlement was accepted but execution requires non-replaying recovery" } } } },
     "/api/receipts/{receiptId}": { get: { operationId: "getReceipt", parameters: [{ $ref: "#/components/parameters/ReceiptId" }] } },
     "/api/network/health": { get: { operationId: "networkHealth", parameters: [{ name: "network", in: "query", schema: { type: "string" } }] } },
     "/api/registry/register": { post: { operationId: "registerAgent", requestBody: { required: true, content: { "application/json": { schema: { $ref: "#/components/schemas/RegisterAgentRequest" } } } } } },
@@ -755,13 +782,35 @@ function openapi() {
     "/api/registry/agents/{agentId}/services": { patch: { operationId: "updateSellerServices" } },
     "/api/registry/agents/{agentId}/seller-readiness": { get: { operationId: "sellerReadiness" } },
     "/api/seller/dashboard/{agentId}": { get: { operationId: "sellerDashboard" } },
+    "/api/seller/dashboard/{agentId}/privatepay-audit": { get: { operationId: "sellerPrivatePayAudit", description: "Authenticated provider-only PrivatePAY audit; excludes raw payment signatures, payloads, payer identity, and execution input." } },
     "/api/seller/metadata/preview": { post: { operationId: "previewSellerMetadata" } },
     "/api/registry/agents/{agentId}/publish": { post: { operationId: "publishSeller" } },
     "/api/registry/agents/{agentId}/unpublish": { post: { operationId: "unpublishSeller" } },
     "/api/registry/agents/{agentId}/owner-token/rotate": { post: { operationId: "rotateSellerOwnerToken" } },
     "/api/registry/agents/{agentId}/replace": { post: { operationId: "replaceSellerEndpoint" } },
     "/api/registry/agents/{agentId}/retire": { post: { operationId: "retireSeller" } },
-    "/api/external/jobs": { post: { operationId: "createExternalJob" } },
+    "/api/external/jobs": {
+      post: {
+        operationId: "createExternalJob",
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                required: ["service_id"],
+                properties: {
+                  service_id: { type: "string" },
+                  input: { type: "object" },
+                  payment_mode: { type: "string", enum: ["direct", "privatepay"], default: "direct", description: "Use privatepay only when the reviewed PrivatePAY rail is explicitly enabled." },
+                },
+                additionalProperties: false,
+              },
+            },
+          },
+        },
+      },
+    },
     "/api/external/jobs/{jobId}/payment": { post: { operationId: "submitExternalPayment", responses: { "200": { description: "Payment accepted or job completed" }, "202": { description: "Payment verification or processing is still in progress" }, "409": { description: "Payment was accepted but execution requires non-replaying recovery" } } } },
     "/api/github/webhook": { post: { operationId: "githubWebhook" } },
     "/api/github/context": { post: { operationId: "githubRepositoryContext" } },
@@ -792,6 +841,13 @@ function openapi() {
     "/api/treasury/status": { get: { operationId: "treasuryStatus" } },
     "/api/providers/status": { get: { operationId: "providerStatus" } },
     "/api/integrations": { get: { operationId: "integrations" } },
+    "/api/privatepay/status": { get: { operationId: "privatePayStatus" } },
+    "/api/privatepay/x402": { post: { operationId: "privatePayX402", description: "Return HTTP 402 PrivatePAY requirements or fail closed until a reviewed facilitator supports the exact scheme and network." } },
+    "/api/privatepay/x402/requirements": { post: { operationId: "privatePayRequirements", description: "Return x402 V2 requirements after the configured private rail is enabled." } },
+    "/api/privatepay/x402/checkout": { post: { operationId: "privatePayCheckout", description: "Create an official MagicBlock private checkout or request its PAYMENT-REQUIRED challenge. Disabled until explicit merchant-checkout and privacy gates pass; never signs or broadcasts." } },
+    "/api/privatepay/x402/prepare": { post: { operationId: "privatePayPrepare", description: "Prepare an unsigned MagicBlock deposit, private transfer, or withdrawal. The client signs locally; this endpoint never signs or broadcasts." } },
+    "/api/privatepay/x402/verify": { post: { operationId: "privatePayVerify", description: "Forward an x402 v2 payment payload to the reviewed PrivatePAY facilitator. Disabled until conformance is verified." } },
+    "/api/privatepay/x402/settle": { post: { operationId: "privatePaySettle", description: "Forward an x402 v2 payment payload to the reviewed PrivatePAY facilitator for settlement. Disabled until conformance is verified." } },
     "/receipts/{receiptId}": { get: { operationId: "humanReceipt" } },
     "/verify/receipt/{receiptId}": { get: { operationId: "verifyHumanReceipt" } },
     "/partners": { get: { operationId: "featuredPartnersPage" } },
@@ -873,6 +929,9 @@ MCP: https://${config.domain}/mcp
 A2A: https://${config.domain}/a2a
 OpenAPI: https://${config.domain}/openapi.json
 Services: GET https://${config.domain}/api/services
+PrivatePAY status: GET https://${config.domain}/api/privatepay/status
+PrivatePAY x402: POST https://${config.domain}/api/privatepay/x402 (fail-closed until exact facilitator conformance)
+PrivatePAY transfer preparation: POST https://${config.domain}/api/privatepay/x402/prepare (returns an unsigned private transfer for local wallet signing; never send a private key)
 Pricing: GET https://${config.domain}/api/pricing
 Integrations: GET https://${config.domain}/api/integrations
 Receipts: GET https://${config.domain}/api/receipts/{receiptId}
@@ -1093,9 +1152,11 @@ function capabilityStatus(serviceId) {
   // Other catalog entries remain implementation-level until an execution
   // record proves their production path independently.
   if (serviceId === "verify.basic") return "Mainnet Live";
-  if (serviceId === "swap.quote" && !config.swapQuotesEnabled) return "Disabled pending provider verification";
+  if (serviceId === "swap.quote" && !config.swapQuotesEnabled) return "Disabled by operator";
+  if (serviceId === "swap.quote") return "Mainnet Live · quote-only";
   if (serviceId === "sealkeeper.reputation" && !config.sealReputationEnabled) return "Optional gated read-only";
   if (serviceId === "sealkeeper.reputation") return "Mainnet Live · read-only";
+  if (serviceId === "github.repository") return "Mainnet Live · read-only";
   const service = serviceById(serviceId);
   if (service?.supportedNetworks?.some((network) => network !== "solana-mainnet-beta")) return "Mainnet Read-only";
   return "Implementation";
@@ -1288,6 +1349,7 @@ function serviceManifest(service) {
   const inputSchema = serviceInputSchema(service);
   const details = serviceDetails(service);
   const targetNetworks = service.supportedNetworks || (service.id === "github.repository" ? [] : ["solana-mainnet-beta"]);
+  const isPrivatePay = service.id === PRIVATEPAY_SERVICE_ID;
   return {
     ...service,
     ...details,
@@ -1303,17 +1365,21 @@ function serviceManifest(service) {
       optional: Object.keys(inputSchema.properties || {}).filter((key) => !(inputSchema.required || []).includes(key)),
     },
     output_schema: { type: "object", description: service.output },
-    payment: service.access === "free"
+    payment: isPrivatePay
+      ? { required: false, price: 0, currency: service.currency, flow: "gated_privatepay_x402_challenge" }
+      : service.access === "free"
       ? { required: false, price: 0, currency: service.currency, flow: "execute_immediately" }
       : { required: true, price: service.price, currency: service.currency, flow: "quote_then_finalized_solana_payment_then_execute" },
     runtime: {
       status: capabilityStatus(service.id),
       target_networks: targetNetworks,
       payment_network: "solana-mainnet-beta",
-      read_only_execution: true,
+      read_only_execution: !isPrivatePay,
       kernel_routing: { status: "not_claimed", note: "This Lambda uses its explicit read-only provider boundary; PrivateDAO Kernel routes are documented separately when applicable." },
     },
-    estimated_completion_behavior: service.access === "free" ? "immediate_read_only" : "payment_required_then_read_only_execution",
+    estimated_completion_behavior: isPrivatePay
+      ? "gated_privatepay_x402_challenge"
+      : service.access === "free" ? "immediate_read_only" : "payment_required_then_read_only_execution",
   };
 }
 function validateServiceInput(serviceId, input = {}) {
@@ -2482,7 +2548,7 @@ async function treasuryStatus() {
 }
 async function recordRevenue(job, payment) {
   const quote = job.quote_id ? await (await store()).get("Quotes", job.quote_id) : null;
-  const grossAmount = Number(quote?.gross_amount ?? payment?.amount ?? 0);
+  const grossAmount = Number(quote?.gross_amount ?? payment?.accounting_amount ?? payment?.amount ?? 0);
   const policy = await marketplacePolicy();
   const firstParty = !job?.seller_agent_id;
   const feeBps = firstParty ? 0 : Number(job.platform_fee_bps ?? policy.platform_fee_bps);
@@ -2509,9 +2575,9 @@ async function recordRevenue(job, payment) {
       feeBps,
       processingFeeAmount: processingFee,
       processingFeeBps,
-      buyerAmount: Number(payment?.amount ?? quote?.amount ?? grossAmount),
+      buyerAmount: Number(payment?.accounting_amount ?? payment?.amount ?? quote?.amount ?? grossAmount),
       networkFeeLamports: Number(payment?.feeLamports || 0),
-      networkFeePolicy: "payer_direct",
+      networkFeePolicy: payment?.payment_mode === "privatepay" ? "private_rail_fee_payer_not_public" : "payer_direct",
       asset: payment?.currency || "USDC",
       paymentSignature: payment?.signature || null,
       timestamp: now(),
@@ -2536,20 +2602,69 @@ function errorResponse(error) {
       error: status === 402 ? "payment_required" : "request_failed",
       message,
       ...(error.payment_intent ? { payment_intent: error.payment_intent } : {}),
+      ...(error.payment_required ? { payment_required: error.payment_required } : {}),
+      ...(error.request_id ? { request_id: error.request_id } : {}),
       ...(error.quote ? { quote: error.quote } : {}),
       ...(error.retryAfterSeconds ? { retry_after_seconds: error.retryAfterSeconds } : {}),
     },
     status,
     {
-      ...(status === 402 ? { "www-authenticate": "Solana" } : {}),
+      ...(status === 402 ? { "www-authenticate": error.payment_required_header ? "PrivatePAY" : "Solana" } : {}),
+      ...(error.payment_required_header ? { "PAYMENT-REQUIRED": error.payment_required_header } : {}),
       ...(error.retryAfterSeconds ? { "retry-after": String(error.retryAfterSeconds) } : {}),
     },
   );
 }
 
+function publicPrivatePayReceipt(receipt) {
+  if (!receipt || receipt.payment_mode !== "privatepay") return receipt;
+  return {
+    receipt_id: receipt.receipt_id,
+    status: receipt.status,
+    payment_mode: "privatepay",
+    service: "privatepay.x402",
+    privacy_boundary: "payment_and_purchase_metadata_redacted_from_public_receipt",
+    job_id: null,
+    input_hash: null,
+    result_hash: null,
+    evidence_hash: null,
+    target_network: null,
+    seller_agent_id: null,
+    seller_service_id: null,
+    created_at: null,
+    completed_at: null,
+    payment_signature: null,
+    amount: 0,
+    gross_amount: 0,
+    buyer_amount: 0,
+    platform_fee_amount: 0,
+    processing_fee_amount: 0,
+    network_fee_lamports: 0,
+    asset: null,
+    network: null,
+  };
+}
+
 function publicJobStatus(job) {
   if (!job) return job;
-  const { execution_input: _privateInput, pdao_entitlement: _privateEntitlement, ...publicJob } = job;
+  if (job.payment_mode === "privatepay") {
+    return {
+      id: job.id,
+      status: job.status,
+      receipt_id: job.receipt_id || null,
+      payment_mode: "privatepay",
+      privacy_boundary: "service_identity_and_purchase_timing_redacted_from_public_job_status",
+      recovery_required: Boolean(job.recovery_required || job.status === "recovery_required"),
+    };
+  }
+  const {
+    execution_input: _privateInput,
+    pdao_entitlement: _privateEntitlement,
+    privatepay_requirements: _privateRequirements,
+    privatepay_payment_required_header: _privateHeader,
+    privatepay_settlement: _privateSettlement,
+    ...publicJob
+  } = job;
   return {
     ...publicJob,
     target_network: normalizeNetworkId(job.execution_input?.network || job.target_network || "") || null,
@@ -2613,15 +2728,22 @@ async function makeQuote(serviceId, jobId, admin = false, currency = "USDC", tar
 async function externalServiceById(serviceId) {
   return (await externalServiceManifests()).find((service) => service.id === serviceId);
 }
-async function createExternalJob(serviceId, input = {}, access = null) {
+async function createExternalJob(serviceId, input = {}, access = null, paymentMode = "direct") {
   const service = await externalServiceById(serviceId);
   if (!service) throw Object.assign(new Error("unknown external service"), { statusCode: 404 });
+  const normalizedPaymentMode = String(paymentMode || "direct").trim().toLowerCase();
+  if (!["direct", "privatepay"].includes(normalizedPaymentMode))
+    throw Object.assign(new Error("payment_mode must be direct or privatepay"), { statusCode: 400 });
+  if (normalizedPaymentMode === "privatepay" && !service.price)
+    throw Object.assign(new Error("privatepay is available only for paid services"), { statusCode: 400 });
+  if (normalizedPaymentMode === "privatepay" && !privatePayStatus(config).enabled)
+    throw Object.assign(new Error("PrivatePAY is not ready for service payment"), { statusCode: 503, code: "PRIVATEPAY_NOT_READY", privatepay_status: privatePayStatus(config) });
   // Holder rewards apply only to eligible first-party services. Third-party
   // seller tools remain quote-first and are never covered by holder credit.
   const pdaoEntitlement = null;
   const holderAccess = false;
   const id = `job_${randomUUID()}`;
-  const job = { id, kind: "external", service_id: service.id, seller_agent_id: service.seller_agent_id, seller_tool: service.tool, seller_service_id: service.service_id, seller_name: service.provider, input_hash: digest(input), execution_input: input, status: service.free || holderAccess ? "running" : "awaiting_payment", created_at: now(), payment_network: "solana-mainnet-beta", payment_asset: service.asset, target_network: normalizeNetworkId(service.network), ...(holderAccess ? { access_method: "pdao_holder_rewards", pdao_entitlement: pdaoEntitlement } : {}) };
+  const job = { id, kind: "external", service_id: service.id, seller_agent_id: service.seller_agent_id, seller_tool: service.tool, seller_service_id: service.service_id, seller_name: service.provider, input_hash: digest(input), execution_input: input, status: service.free || holderAccess ? "running" : "awaiting_payment", payment_mode: normalizedPaymentMode, created_at: now(), payment_network: "solana-mainnet-beta", payment_asset: service.asset, target_network: normalizeNetworkId(service.network), ...(holderAccess ? { access_method: "pdao_holder_rewards", pdao_entitlement: pdaoEntitlement } : {}) };
   const storage = await store();
   await storage.put("Jobs", id, job, true);
   if (service.free || holderAccess) return completeExternalJob(job, await invokeMcpAgent(await storage.get("Registry", service.seller_agent_id), service.tool, input), null);
@@ -2639,31 +2761,53 @@ async function createExternalJob(serviceId, input = {}, access = null) {
   await storage.put("Quotes", quote.quote_id, quote, true);
   job.quote_id = quote.quote_id;
   await storage.put("Jobs", id, job);
+  if (normalizedPaymentMode === "privatepay") {
+    const privatePayment = createPrivatePayRequirements(config, {
+      resource: `https://${config.domain}/api/jobs/${job.id}/privatepay`,
+      provider_id: service.id,
+      amount_base_units: String(quote.amountAtomic),
+      mime_type: "application/json",
+    });
+    job.privatepay_request_id = privatePayment.request_id;
+    job.privatepay_requirements = privatePayment.requirements;
+    job.privatepay_payment_required_header = privatePayment.header;
+    await storage.put("Jobs", job.id, job);
+    const privateError = new Error("PrivatePAY payment required");
+    privateError.statusCode = 402;
+    privateError.request_id = privatePayment.request_id;
+    privateError.payment_required = privatePayment.requirements;
+    privateError.payment_required_header = privatePayment.header;
+    throw privateError;
+  }
   return { job_id: id, status: "awaiting_payment", seller: { agent_id: service.seller_agent_id, name: service.provider }, payment_intent: { jobId: id, quoteId: quote.quote_id, amount: quote.amount.toFixed(6), amountBaseUnits: String(quote.amountAtomic), mint: quote.mint, network: quote.network, target_network: quote.target_network, treasuryOwner: quote.treasuryOwner, treasuryTokenAccount: quote.treasuryTokenAccount, paymentReference: quote.paymentReference, expiresAtUtc: quote.expires_at } };
 }
 async function completeExternalJob(job, execution, payment) {
   const storage = await store();
-  if (job.status === "completed" && job.receipt_id) return { job_id: job.id, status: job.status, result: job.result, receipt: await storage.get("Receipts", job.receipt_id) };
+  if (job.status === "completed" && job.receipt_id) return { job_id: job.id, status: job.status, result: job.result, receipt: publicPrivatePayReceipt(await storage.get("Receipts", job.receipt_id)) };
   const result = execution?.result || execution;
   const policy = await marketplacePolicy();
   const quote = job.quote_id ? await storage.get("Quotes", job.quote_id) : null;
   const feeBps = Number(quote?.platform_fee_bps ?? job.platform_fee_bps ?? policy.platform_fee_bps);
-  const grossAmount = Number(quote?.gross_amount ?? payment?.amount ?? 0);
+  // PrivatePAY deliberately redacts the public amount, so seller accounting
+  // must use the internal quote-bound amount when the public payment amount is
+  // zero.
+  const grossAmount = Number(quote?.gross_amount ?? payment?.accounting_amount ?? payment?.amount ?? quote?.amount ?? 0);
   const platformFee = Number(quote?.platform_fee_amount ?? ((grossAmount * feeBps) / 10000).toFixed(6));
   const processingFeeBps = Number(quote?.processing_fee_bps ?? policy.processing_fee_bps ?? 0);
   const processingFee = Number(quote?.processing_fee_amount ?? ((grossAmount * processingFeeBps) / 10000).toFixed(6));
   const sellerNet = Number((grossAmount - platformFee).toFixed(6));
+  const privatePayment = payment?.payment_mode === "privatepay";
   const persistence = await persistEvidence(config, { job_id: job.id, service: job.service_id, input_hash: job.input_hash, completed_at: now(), result });
-  const settlement = { id: `seller_settlement_${job.id}`, kind: "seller_settlement", job_id: job.id, seller_agent_id: job.seller_agent_id, gross_amount: grossAmount, buyer_amount: Number(payment?.amount || quote?.amount || grossAmount), platform_fee_amount: platformFee, platform_fee_bps: feeBps, processing_fee_amount: processingFee, processing_fee_bps: processingFeeBps, network_fee_lamports: Number(payment?.feeLamports || 0), network_fee_policy: "payer_direct", protocol_fee: platformFee, seller_net_amount: sellerNet, seller_amount: sellerNet, asset: payment?.currency || job.payment_asset, payout: (await storage.get("Registry", job.seller_agent_id))?.payout || null, status: "payable_pending_scheduled_settlement", created_at: now() };
+  const settlement = { id: `seller_settlement_${job.id}`, kind: "seller_settlement", job_id: job.id, seller_agent_id: job.seller_agent_id, gross_amount: grossAmount, buyer_amount: Number(payment?.accounting_amount ?? payment?.amount ?? quote?.amount ?? grossAmount), platform_fee_amount: platformFee, platform_fee_bps: feeBps, processing_fee_amount: processingFee, processing_fee_bps: processingFee, network_fee_lamports: Number(payment?.feeLamports || 0), network_fee_policy: privatePayment ? "private_rail_fee_payer_not_public" : "payer_direct", protocol_fee: platformFee, seller_net_amount: sellerNet, seller_amount: sellerNet, asset: payment?.currency || job.payment_asset, payout: (await storage.get("Registry", job.seller_agent_id))?.payout || null, status: "payable_pending_scheduled_settlement", created_at: now() };
   await storage.put("Registry", settlement.id, settlement, true);
-  const receipt = { receipt_id: receiptId({ job_id: job.id, service: job.service_id, result_hash: digest(result) }), job_id: job.id, service: job.service_id, input_hash: job.input_hash, result_hash: digest(result), evidence_hash: digest(result), payment_signature: payment?.signature || null, amount: payment?.amount || 0, gross_amount: grossAmount, buyer_amount: settlement.buyer_amount, platform_fee_amount: platformFee, platform_fee_bps: feeBps, processing_fee_amount: processingFee, processing_fee_bps: processingFeeBps, network_fee_lamports: settlement.network_fee_lamports, network_fee_policy: "payer_direct", seller_net_amount: sellerNet, asset: payment?.currency || null, treasury: config.treasury, network: "solana-mainnet-beta", target_network: job.target_network || null, seller_agent_id: job.seller_agent_id, seller_service_id: job.seller_service_id, seller_settlement: { id: settlement.id, gross_amount: settlement.gross_amount, buyer_amount: settlement.buyer_amount, protocol_fee: settlement.protocol_fee, platform_fee_amount: settlement.platform_fee_amount, platform_fee_bps: settlement.platform_fee_bps, processing_fee_amount: settlement.processing_fee_amount, processing_fee_bps: settlement.processing_fee_bps, network_fee_lamports: settlement.network_fee_lamports, seller_net_amount: settlement.seller_net_amount, seller_amount: settlement.seller_amount, status: settlement.status }, evidence_persistence: persistence.status, status: "VERIFIED", created_at: job.created_at, completed_at: now(), ...(job.pdao_entitlement ? { access_method: "pdao_holder_rewards", access_wallet: job.pdao_entitlement.wallet, access_token_mint: job.pdao_entitlement.token_mint, access_threshold_usd: job.pdao_entitlement.threshold_usd, access_verified_at: job.pdao_entitlement.verified_at, access_active_until: job.pdao_entitlement.active_until } : {}) };
+  const receipt = { receipt_id: receiptId({ job_id: job.id, service: job.service_id, result_hash: digest(result) }), job_id: job.id, service: job.service_id, payment_mode: privatePayment ? "privatepay" : "direct", input_hash: job.input_hash, result_hash: digest(result), evidence_hash: digest(result), payment_signature: privatePayment ? null : payment?.signature || null, amount: privatePayment ? 0 : payment?.amount || 0, gross_amount: privatePayment ? 0 : grossAmount, buyer_amount: privatePayment ? 0 : settlement.buyer_amount, platform_fee_amount: privatePayment ? 0 : platformFee, platform_fee_bps: feeBps, processing_fee_amount: privatePayment ? 0 : processingFee, processing_fee_bps: processingFeeBps, network_fee_lamports: privatePayment ? 0 : settlement.network_fee_lamports, network_fee_policy: settlement.network_fee_policy, seller_net_amount: privatePayment ? null : sellerNet, asset: privatePayment ? null : payment?.currency || null, treasury: config.treasury, network: "solana-mainnet-beta", target_network: job.target_network || null, seller_agent_id: job.seller_agent_id, seller_service_id: job.seller_service_id, ...(privatePayment ? {} : { seller_settlement: { id: settlement.id, gross_amount: settlement.gross_amount, buyer_amount: settlement.buyer_amount, protocol_fee: settlement.protocol_fee, platform_fee_amount: settlement.platform_fee_amount, platform_fee_bps: settlement.platform_fee_bps, processing_fee_amount: settlement.processing_fee_amount, processing_fee_bps: settlement.processing_fee_bps, network_fee_lamports: settlement.network_fee_lamports, seller_net_amount: settlement.seller_net_amount, seller_amount: settlement.seller_amount, status: settlement.status } }), evidence_persistence: persistence.status, status: "VERIFIED", created_at: job.created_at, completed_at: now(), ...(job.pdao_entitlement ? { access_method: "pdao_holder_rewards", access_wallet: job.pdao_entitlement.wallet, access_token_mint: job.pdao_entitlement.token_mint, access_threshold_usd: job.pdao_entitlement.threshold_usd, access_verified_at: job.pdao_entitlement.verified_at, access_active_until: job.pdao_entitlement.active_until } : {}) };
   receipt.public_url = `https://${config.domain}/receipts/${encodeURIComponent(receipt.receipt_id)}`;
   receipt.verification_url = `https://${config.domain}/verify/receipt/${encodeURIComponent(receipt.receipt_id)}`;
   await storage.put("Receipts", receipt.receipt_id, receipt, true);
   job.status = "completed"; job.result = result; job.receipt_id = receipt.receipt_id; job.completed_at = receipt.completed_at;
   await storage.put("Jobs", job.id, job);
   await recordRevenue(job, payment);
-  return { job_id: job.id, status: job.status, result, receipt };
+  return { job_id: job.id, status: job.status, result, receipt: publicPrivatePayReceipt(receipt) };
 }
 async function submitExternalPayment(jobId, body) {
   const storage = await store();
@@ -2801,7 +2945,7 @@ async function classifyWalletBot(config, input = {}) {
   };
 }
 
-async function executeService(id, input) {
+export async function executeService(id, input) {
   if (id === PRIVATEPAY_SERVICE_ID) return createPrivatePayChallenge(config, input);
   if (id === "github.repository") return repositoryEvidence(config, input);
   if (id === "sealkeeper.reputation") {
@@ -2821,16 +2965,13 @@ async function executeService(id, input) {
   const requestedNetwork = input?.network ? normalizeNetworkId(input.network) : "";
   const normalizedInput = requestedNetwork ? { ...input, network: requestedNetwork } : input;
   const service = serviceById(id);
-  if (["research.asset", "research.wallet", "wallet.bot.classify", "forensics.trace", "contract.explain", "contract.inspect", "launch.check", "transaction.explain", "anomaly.detect", "agent.research.report", "portfolio.intelligence", "market.snapshot"].includes(id)) {
+  if (["research.asset", "research.wallet", "wallet.bot.classify", "contract.explain", "transaction.explain", "anomaly.detect", "agent.research.report", "portfolio.intelligence", "market.snapshot"].includes(id)) {
     if (!service?.supportedNetworks?.includes(requestedNetwork))
       throw new Error(`${id} is not supported on ${requestedNetwork || "this network"}`);
     if (id === "research.asset") return researchAsset(config, normalizedInput);
     if (id === "research.wallet") return researchWallet(config, normalizedInput);
     if (id === "wallet.bot.classify") return classifyWalletBot(config, normalizedInput);
-    if (id === "forensics.trace") return researchWallet(config, normalizedInput);
     if (id === "contract.explain") return explainContract(config, normalizedInput);
-    if (id === "contract.inspect") return explainContract(config, normalizedInput);
-    if (id === "launch.check") return researchAsset(config, normalizedInput);
     if (id === "transaction.explain") return explainTransaction(config, normalizedInput);
     if (id === "anomaly.detect") return detectAnomaly(config, normalizedInput);
     if (id === "agent.research.report") return researchReport(config, normalizedInput);
@@ -3107,9 +3248,14 @@ async function executeMeasuredService(id, input) {
   };
 }
 
-async function createJob(serviceId, input, admin = false, currency = "USDC", metadata = {}, access = null) {
+async function createJob(serviceId, input, admin = false, currency = "USDC", metadata = {}, access = null, paymentMode = "direct") {
   const service = serviceById(serviceId);
   if (!service) throw new Error("unknown service");
+  const normalizedPaymentMode = String(paymentMode || "direct").trim().toLowerCase();
+  if (!["direct", "privatepay"].includes(normalizedPaymentMode))
+    throw Object.assign(new Error("payment_mode must be direct or privatepay"), { statusCode: 400 });
+  if (normalizedPaymentMode === "privatepay" && !service.price)
+    throw Object.assign(new Error("privatepay is available only for paid services"), { statusCode: 400 });
   validateServiceInput(serviceId, input);
   const storage = await store();
   const pdaoEntitlement = service.price
@@ -3117,6 +3263,13 @@ async function createJob(serviceId, input, admin = false, currency = "USDC", met
     : null;
   const holderBenefit = pdaoEntitlement?.benefit || null;
   const holderAccess = Boolean(holderBenefit?.eligible && holderBenefit.fully_covered);
+  if (normalizedPaymentMode === "privatepay" && !holderAccess && !privatePayStatus(config).enabled) {
+    throw Object.assign(new Error("PrivatePAY is not ready for service payment"), {
+      statusCode: 503,
+      code: "PRIVATEPAY_NOT_READY",
+      privatepay_status: privatePayStatus(config),
+    });
+  }
   const persistForPaymentRetry = Boolean(service.price);
   const jobId = `job_${randomUUID()}`;
   const job = {
@@ -3124,6 +3277,7 @@ async function createJob(serviceId, input, admin = false, currency = "USDC", met
     service_id: serviceId,
     input_hash: digest(input),
     status: service.price && !holderAccess ? "awaiting_payment" : "running",
+    payment_mode: normalizedPaymentMode,
     created_at: now(),
     expires_at: new Date(Date.now() + 1800000).toISOString(),
     ...(persistForPaymentRetry ? { execution_input: input } : {}),
@@ -3146,6 +3300,24 @@ async function createJob(serviceId, input, admin = false, currency = "USDC", met
       await storage.put("Quotes", quote.quote_id, quote);
     }
     job.quote_id = quote.quote_id;
+    if (normalizedPaymentMode === "privatepay") {
+      const privatePayment = createPrivatePayRequirements(config, {
+        resource: `https://${config.domain}/api/jobs/${job.id}/privatepay`,
+        provider_id: serviceId,
+        amount_base_units: String(quote.amountAtomic),
+        mime_type: "application/json",
+      });
+      job.privatepay_request_id = privatePayment.request_id;
+      job.privatepay_requirements = privatePayment.requirements;
+      job.privatepay_payment_required_header = privatePayment.header;
+      await storage.put("Jobs", job.id, job);
+      const privateError = new Error("PrivatePAY payment required");
+      privateError.statusCode = 402;
+      privateError.request_id = privatePayment.request_id;
+      privateError.payment_required = privatePayment.requirements;
+      privateError.payment_required_header = privatePayment.header;
+      throw privateError;
+    }
     await storage.put("Jobs", job.id, job);
     const intent = {
       jobId: job.id,
@@ -3180,6 +3352,130 @@ async function createJob(serviceId, input, admin = false, currency = "USDC", met
   await (await store()).put("Jobs", job.id, job);
   const execution = await executeMeasuredService(serviceId, input);
   return await completeJob(job, execution.result, null, execution.telemetry);
+}
+
+function privatePayPaymentHeader(event, body = {}) {
+  return String(
+    event?.headers?.["PAYMENT-SIGNATURE"] ||
+    event?.headers?.["payment-signature"] ||
+    body.payment_signature ||
+    body.paymentSignature ||
+    "",
+  ).trim();
+}
+
+async function submitPrivatePayPayment(jobId, event, body = {}) {
+  const storage = await store();
+  const job = await storage.get("Jobs", jobId);
+  if (!job) throw Object.assign(new Error("job not found"), { statusCode: 404 });
+  if (job.payment_mode !== "privatepay")
+    throw Object.assign(new Error("job is not configured for privatepay"), { statusCode: 400 });
+  if (job.status === "completed" && job.receipt_id)
+    return completeJob(job, job.result, null);
+  if (job.status === "recovery_required")
+    return { job_id: jobId, status: "recovery_required", recovery_required: true, message: "private payment was accepted but execution requires non-replaying recovery", retryAfterSeconds: 30 };
+  if (job.status !== "awaiting_payment")
+    throw Object.assign(new Error("job is not awaiting private payment"), { statusCode: 409 });
+  if (!job.privatepay_requirements || !job.privatepay_payment_required_header)
+    throw Object.assign(new Error("private payment requirements are unavailable"), { statusCode: 503, code: "PRIVATEPAY_REQUIREMENTS_MISSING" });
+
+  const signatureHeader = privatePayPaymentHeader(event, body);
+  if (!signatureHeader) {
+    const required = new Error("PrivatePAY payment required");
+    required.statusCode = 402;
+    required.request_id = job.privatepay_request_id;
+    required.payment_required = job.privatepay_requirements;
+    required.payment_required_header = job.privatepay_payment_required_header;
+    throw required;
+  }
+  const paymentPayload = decodePrivatePaySignature(signatureHeader);
+  const facilitatorPayload = {
+    x402Version: 2,
+    paymentPayload,
+    paymentRequirements: job.privatepay_requirements.accepts[0],
+  };
+  const paymentId = `privatepay_${digest({ jobId, signatureHeader })}`;
+  const existingPayment = await storage.get("Payments", paymentId);
+  if (existingPayment && existingPayment.job_id !== jobId)
+    throw Object.assign(new Error("private payment was already used"), { statusCode: 402 });
+  if (existingPayment) {
+    const current = await storage.get("Jobs", jobId);
+    if (current?.status === "completed" && current.receipt_id)
+      return completeJob(current, current.result, null);
+    return { job_id: jobId, status: "recovery_required", recovery_required: true, message: "private payment claim already exists; execution requires non-replaying recovery", retryAfterSeconds: 30 };
+  }
+  const verification = await privatePayFacilitatorRequest(config, "verify", facilitatorPayload);
+  if (verification.isValid !== true) {
+    throw Object.assign(new Error("PrivatePAY payment was not accepted by the facilitator"), {
+      statusCode: 402,
+      code: "PRIVATEPAY_PAYMENT_INVALID",
+    });
+  }
+  const paymentClaim = {
+    id: paymentId,
+    job_id: jobId,
+    payment_mode: "privatepay",
+    request_id: job.privatepay_request_id,
+    payment_digest: digest(signatureHeader),
+    state: "settling",
+    consumed_at: now(),
+  };
+  try {
+    await storage.put("Payments", paymentId, paymentClaim, true);
+  } catch (error) {
+    const claimed = await storage.get("Payments", paymentId);
+    if (claimed) return { job_id: jobId, status: "recovery_required", recovery_required: true, message: "private payment claim already exists; execution requires non-replaying recovery", retryAfterSeconds: 30 };
+    throw error;
+  }
+  let settlement;
+  try {
+    settlement = await privatePayFacilitatorRequest(config, "settle", facilitatorPayload);
+    if (settlement.success !== true)
+      throw new Error("PrivatePAY settlement was not confirmed by the facilitator");
+    await storage.put("Payments", paymentId, { ...paymentClaim, state: "settled", settlement });
+  } catch (error) {
+    await storage.put("Payments", paymentId, { ...paymentClaim, state: "settlement_failed", settlement_error: String(error.message || error).slice(0, 240) });
+    throw Object.assign(new Error("PrivatePAY settlement was not confirmed by the facilitator"), { statusCode: 503, code: "PRIVATEPAY_SETTLEMENT_UNCONFIRMED" });
+  }
+  job.execution_started_at = now();
+  const executionJob = { ...job, privatepay_settlement: settlement };
+  await storage.put("Jobs", job.id, executionJob);
+  const executionInput = executionJob.execution_input || body.input || {};
+  if (digest(executionInput) !== executionJob.input_hash)
+    throw Object.assign(new Error("quoted job input is unavailable or changed"), { statusCode: 400 });
+  try {
+    if (job.kind === "external") {
+      const agent = await storage.get("Registry", job.seller_agent_id);
+      if (!activeRegistryAgent(agent)) throw new Error("seller is no longer active");
+      const execution = await invokeMcpAgent(agent, job.seller_tool, executionInput);
+      return completeExternalJob(executionJob, execution, {
+        payment_mode: "privatepay",
+        currency: "PRIVATEPAY",
+        amount: 0,
+        accounting_amount: Number((await quoteForJob(storage, job))?.amount || 0),
+        signature: null,
+        feeLamports: 0,
+      });
+    }
+    const execution = await executeMeasuredService(job.service_id, executionInput);
+    return completeJob(executionJob, execution.result, {
+      payment_mode: "privatepay",
+      currency: "PRIVATEPAY",
+      amount: 0,
+      accounting_amount: Number((await quoteForJob(storage, job))?.amount || 0),
+      signature: null,
+      feeLamports: 0,
+    }, execution.telemetry);
+  } catch (error) {
+    await storage.put("Jobs", job.id, {
+      ...executionJob,
+      status: "recovery_required",
+      recovery_required_at: now(),
+      recovery_reason: "private_payment_settled_before_service_execution",
+      recovery_error: String(error.message || error).slice(0, 240),
+    });
+    return { job_id: jobId, status: "recovery_required", recovery_required: true, message: "private payment was settled but service execution requires manual recovery; no automatic replay will occur", retryAfterSeconds: 30 };
+  }
 }
 
 function normalizeBatchItems(items) {
@@ -3345,7 +3641,7 @@ async function completeJob(job, result, payment, telemetry = {}) {
       job_id: job.id,
       status: "completed",
       result: job.result,
-      receipt: existingReceipt,
+      receipt: publicPrivatePayReceipt(existingReceipt),
     };
   }
   const recommendations = job.service_id === "verify.basic" || job.service_id === "risk.score"
@@ -3406,7 +3702,9 @@ async function completeJob(job, result, payment, telemetry = {}) {
     completed_at: now(),
   };
   const policy = await marketplacePolicy();
-  const grossAmount = Number(payment?.amount || 0);
+  const isPrivatePay = payment?.payment_mode === "privatepay";
+  const grossAmount = Number(payment?.accounting_amount ?? payment?.amount ?? 0);
+  const publicAmount = isPrivatePay ? 0 : Number(payment?.amount || 0);
   const firstParty = !job?.seller_agent_id;
   const receiptFeeBps = firstParty ? 0 : policy.platform_fee_bps;
   const platformFeeAmount = Number(((grossAmount * receiptFeeBps) / 10000).toFixed(6));
@@ -3414,16 +3712,17 @@ async function completeJob(job, result, payment, telemetry = {}) {
     receipt_id: receiptId(payload),
     ...payload,
     evidence_hash: digest(enrichedResult),
-    payment_signature: payment?.signature || null,
+    payment_signature: isPrivatePay ? null : payment?.signature || null,
     asset: payment?.currency || null,
-    amount: payment?.amount || 0,
-    gross_amount: grossAmount,
+    amount: publicAmount,
+    gross_amount: isPrivatePay ? 0 : grossAmount,
     revenue_class: firstParty ? "first_party_service" : "external_seller_service",
     seller_agent_id: job.seller_agent_id || null,
     platform_fee_bps: receiptFeeBps,
-    platform_fee_amount: platformFeeAmount,
-    private_dao_revenue_amount: firstParty ? grossAmount : platformFeeAmount,
-    seller_net_amount: firstParty ? null : Number((grossAmount - platformFeeAmount).toFixed(6)),
+    platform_fee_amount: isPrivatePay ? 0 : platformFeeAmount,
+    private_dao_revenue_amount: isPrivatePay ? 0 : firstParty ? grossAmount : platformFeeAmount,
+    seller_net_amount: isPrivatePay || firstParty ? null : Number((grossAmount - platformFeeAmount).toFixed(6)),
+    payment_mode: isPrivatePay ? "privatepay" : "direct",
     treasury: config.treasury,
     network: "solana-mainnet-beta",
     payment_network: "solana-mainnet-beta",
@@ -3455,7 +3754,7 @@ async function completeJob(job, result, payment, telemetry = {}) {
   job.receipt_id = receipt.receipt_id;
   job.completed_at = receipt.completed_at;
   await (await store()).put("Jobs", job.id, job);
-  return { job_id: job.id, status: job.status, result: enrichedResult, receipt };
+  return { job_id: job.id, status: job.status, result: enrichedResult, receipt: publicPrivatePayReceipt(receipt) };
 }
 
 async function submitPayment(jobId, body) {
@@ -3989,7 +4288,59 @@ async function sellerDashboard(agentId, ownerToken) {
   const sellerReceipts = receipts.filter((item) => item.seller_agent_id === agentId).map((item) => ({ receipt_id: item.receipt_id, job_id: item.job_id || null, service: item.service || null, gross_amount: item.gross_amount ?? item.amount ?? 0, platform_fee_amount: item.platform_fee_amount ?? 0, processing_fee_amount: item.processing_fee_amount ?? 0, network_fee_lamports: item.network_fee_lamports ?? 0, seller_net_amount: item.seller_net_amount ?? 0, asset: item.asset || null, status: item.status, verification_url: item.verification_url || null, completed_at: item.completed_at || null }));
   const sellerSettlements = settlements.filter((item) => item.kind === "seller_settlement" && item.seller_agent_id === agentId).map((item) => ({ id: item.id, job_id: item.job_id || null, gross_amount: item.gross_amount ?? 0, buyer_amount: item.buyer_amount ?? item.gross_amount ?? 0, platform_fee_amount: item.platform_fee_amount ?? 0, processing_fee_amount: item.processing_fee_amount ?? 0, network_fee_lamports: item.network_fee_lamports ?? 0, seller_net_amount: item.seller_net_amount ?? 0, asset: item.asset || null, payout: item.payout || null, payout_signature: item.payout_signature || null, status: item.status, created_at: item.created_at || null, settled_at: item.settled_at || null }));
   const sellerRevenue = revenue.filter((item) => item.seller_agent_id === agentId || item.jobId && item.seller_agent_id === agentId).map((item) => ({ id: item.id, gross_amount: item.grossAmount ?? 0, buyer_amount: item.buyerAmount ?? item.grossAmount ?? 0, platform_fee_amount: item.platformFeeAmount ?? item.protocolFee ?? 0, processing_fee_amount: item.processingFeeAmount ?? 0, network_fee_lamports: item.networkFeeLamports ?? 0, seller_net_amount: Number((Number(item.grossAmount || 0) - Number(item.platformFeeAmount ?? item.protocolFee ?? 0)).toFixed(6)), asset: item.asset || null, timestamp: item.timestamp || null }));
-  return { agent: publicRegistryAgent(agent), readiness, listing: listing ? { id: listing.id, status: listing.status, payment_status: listing.payment_status, listing_fee_status: listing.listing_fee_status, commercial_publication_status: listing.commercial_publication_status, service_ids: listing.service_ids || [], receipt_id: listing.receipt_id || null } : null, quote_count: sellerQuotes.length, sales: { receipt_count: sellerReceipts.length, gross_amount: sellerReceipts.reduce((n, item) => n + Number(item.gross_amount || 0), 0), platform_fee_amount: sellerReceipts.reduce((n, item) => n + Number(item.platform_fee_amount || 0), 0), processing_fee_amount: sellerReceipts.reduce((n, item) => n + Number(item.processing_fee_amount || 0), 0), network_fee_lamports: sellerReceipts.reduce((n, item) => n + Number(item.network_fee_lamports || 0), 0), seller_net_amount: sellerReceipts.reduce((n, item) => n + Number(item.seller_net_amount || 0), 0), receipts: sellerReceipts }, settlements: sellerSettlements, revenue: sellerRevenue };
+  const accountingSales = sellerSettlements;
+  return { agent: publicRegistryAgent(agent), readiness, listing: listing ? { id: listing.id, status: listing.status, payment_status: listing.payment_status, listing_fee_status: listing.listing_fee_status, commercial_publication_status: listing.commercial_publication_status, service_ids: listing.service_ids || [], receipt_id: listing.receipt_id || null } : null, quote_count: sellerQuotes.length, sales: { receipt_count: sellerReceipts.length, settlement_count: accountingSales.length, gross_amount: accountingSales.reduce((n, item) => n + Number(item.gross_amount || 0), 0), platform_fee_amount: accountingSales.reduce((n, item) => n + Number(item.platform_fee_amount || 0), 0), processing_fee_amount: accountingSales.reduce((n, item) => n + Number(item.processing_fee_amount || 0), 0), network_fee_lamports: accountingSales.reduce((n, item) => n + Number(item.network_fee_lamports || 0), 0), seller_net_amount: accountingSales.reduce((n, item) => n + Number(item.seller_net_amount || 0), 0), receipts: sellerReceipts }, settlements: sellerSettlements, revenue: sellerRevenue };
+}
+
+function providerVisiblePrivatePaySettlement(settlement = {}) {
+  const allowed = [
+    "success", "status", "transaction", "signature", "txHash", "network", "asset",
+    "amount", "amountAtomic", "feeLamports", "feePayer", "settledAt", "settled_at",
+  ];
+  return Object.fromEntries(allowed.filter((key) => Object.hasOwn(settlement, key)).map((key) => [key, settlement[key]]));
+}
+
+async function sellerPrivatePayAudit(agentId, ownerToken) {
+  const { storage } = await ownedSeller(agentId, ownerToken);
+  const [jobs, payments, receipts] = await Promise.all([
+    storage.list("Jobs"), storage.list("Payments"), storage.list("Receipts"),
+  ]);
+  const paymentsByJob = new Map(payments.filter((item) => item.payment_mode === "privatepay").map((item) => [item.job_id, item]));
+  const receiptsByJob = new Map(receipts.map((item) => [item.job_id, item]));
+  const records = jobs
+    .filter((job) => job.seller_agent_id === agentId && job.payment_mode === "privatepay")
+    .map((job) => {
+      const payment = paymentsByJob.get(job.id);
+      const receipt = receiptsByJob.get(job.id);
+      const settlement = payment?.settlement || job.privatepay_settlement || {};
+      return {
+        job_id: job.id,
+        service_id: job.service_id,
+        seller_service_id: job.seller_service_id || null,
+        seller_tool: job.seller_tool || null,
+        state: payment?.state || job.status,
+        request_id: payment?.request_id || job.privatepay_request_id || null,
+        created_at: job.created_at || null,
+        execution_started_at: job.execution_started_at || null,
+        completed_at: job.completed_at || receipt?.completed_at || null,
+        receipt_id: receipt?.receipt_id || null,
+        provider_visibility: "authenticated_provider_only",
+        settlement: providerVisiblePrivatePaySettlement(settlement),
+        privacy_boundary: {
+          public_receipt_redacted: true,
+          payment_signature_exposed: false,
+          payment_payload_exposed: false,
+          execution_input_exposed: false,
+          payer_identity_exposed: false,
+        },
+      };
+    });
+  return {
+    agent_id: agentId,
+    visibility: "provider_only",
+    note: "This authenticated view is limited to this seller's PrivatePAY jobs. Public receipts omit payment identity and amount fields.",
+    records,
+  };
 }
 
 // Recovery is deliberately admin-gated: the seller token is never recoverable from its hash.
@@ -4323,7 +4674,7 @@ async function handle(e) {
   if (method === "GET" && humanReceipt) {
     const receipt = await (await store()).get("Receipts", decodeURIComponent(humanReceipt[2]));
     if (!receipt) return json({ error: "not_found" }, 404);
-    return { statusCode: 200, headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store" }, body: publicReceiptPage(receipt, humanReceipt[1] === "verify/receipt") };
+    return { statusCode: 200, headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store" }, body: publicReceiptPage(publicPrivatePayReceipt(receipt), humanReceipt[1] === "verify/receipt") };
   }
   const humanJob = path.match(/^\/jobs\/([^/]+)$/);
   if (method === "GET" && humanJob) {
@@ -4332,7 +4683,7 @@ async function handle(e) {
     if (!job.receipt_id) return json({ job_id: job.id, status: job.status, message: job.status === "recovery_required" ? "payment was accepted but execution requires recovery; do not replay the service" : "receipt is not available yet" }, job.status === "recovery_required" ? 409 : 202);
     const receipt = await (await store()).get("Receipts", job.receipt_id);
     if (!receipt) return json({ error: "receipt_not_found" }, 404);
-    return { statusCode: 200, headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store" }, body: publicReceiptPage(receipt) };
+    return { statusCode: 200, headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store" }, body: publicReceiptPage(publicPrivatePayReceipt(receipt)) };
   }
   if (method === "GET" && ["/agent-registry/register", "/register/8004"].includes(path)) {
     const page = registryRegistrationPage();
@@ -4469,7 +4820,7 @@ async function handle(e) {
   const receipt = path.match(/^\/api\/receipts\/([^/]+)$/);
   if (method === "GET" && receipt) {
     const item = await (await store()).get("Receipts", receipt[1]);
-    return item ? json(item) : json({ error: "not_found" }, 404);
+    return item ? json(publicPrivatePayReceipt(item)) : json({ error: "not_found" }, 404);
   }
   const job = path.match(/^\/api\/jobs\/([^/]+)$/);
   if (method === "GET" && job) {
@@ -4479,6 +4830,18 @@ async function handle(e) {
   const paymentIntent = path.match(/^\/api\/jobs\/([^/]+)\/payment-intent$/);
   if (method === "GET" && paymentIntent) {
     const item = await (await store()).get("Jobs", paymentIntent[1]);
+    if (item?.payment_mode === "privatepay") {
+      if (!item.privatepay_requirements || !item.privatepay_payment_required_header)
+        return json({ error: "privatepay_not_ready" }, 503);
+      return json({
+        jobId: item.id,
+        status: item.status,
+        paymentMode: "privatepay",
+        paymentRequired: item.privatepay_requirements,
+        paymentRequiredHeader: item.privatepay_payment_required_header,
+        submitPaymentUrl: `https://${config.domain}/api/jobs/${item.id}/privatepay`,
+      });
+    }
     const quote = await quoteForJob(await store(), item);
     if (!item || !quote) return json({ error: "not_found" }, 404);
     return json({ jobId: item.id, status: item.status, paymentIntent: { jobId: item.id, amount: quote.amount.toFixed(6), amountBaseUnits: String(quote.amountAtomic), mint: quote.mint, network: quote.network, target_network: quote.target_network || item.execution_input?.network || "solana-mainnet-beta", treasuryOwner: quote.treasuryOwner, treasuryTokenAccount: quote.treasuryTokenAccount, paymentReference: quote.paymentReference, expiresAtUtc: quote.expires_at_utc || quote.expires_at, expiresAtEpochMs: quote.expires_at_epoch_ms || Date.parse(quote.expires_at) } });
@@ -4486,6 +4849,11 @@ async function handle(e) {
   const payment = path.match(/^\/api\/jobs\/([^/]+)\/payment$/);
   if (method === "POST" && payment) {
     const result = await submitPayment(payment[1], body);
+    return json(result, paymentStatusCode(result));
+  }
+  const privatePayment = path.match(/^\/api\/jobs\/([^/]+)\/privatepay$/);
+  if (method === "POST" && privatePayment) {
+    const result = await submitPrivatePayPayment(privatePayment[1], e, body);
     return json(result, paymentStatusCode(result));
   }
   const paymentTransaction = path.match(/^\/api\/jobs\/([^/]+)\/payment-transaction$/);
@@ -4513,11 +4881,47 @@ async function handle(e) {
     const paymentSignature = e.headers?.["PAYMENT-SIGNATURE"] || e.headers?.["payment-signature"];
     if (!paymentSignature)
       return json({ error: "payment_required", x402: requirements.requirements, request_id: requirements.request_id }, 402, { "PAYMENT-REQUIRED": requirements.header });
-    decodePrivatePaySignature(paymentSignature);
-    return json({ error: "privatepay_facilitator_not_ready", request_id: requirements.request_id, message: "Payment signature received, but PrivatePAY settlement is disabled until the facilitator proves support for the privatepay scheme." }, 503);
+    const paymentPayload = decodePrivatePaySignature(paymentSignature);
+    const facilitatorPayload = {
+      x402Version: 2,
+      paymentPayload,
+      paymentRequirements: requirements.requirements.accepts[0],
+    };
+    const verification = await privatePayFacilitatorRequest(config, "verify", facilitatorPayload);
+    if (verification.isValid !== true)
+      return json({ error: "privatepay_payment_invalid", request_id: requirements.request_id, status: "rejected" }, 402);
+    const settlement = await privatePayFacilitatorRequest(config, "settle", facilitatorPayload);
+    if (settlement.success !== true)
+      return json({ error: "privatepay_settlement_unconfirmed", request_id: requirements.request_id, status: "pending" }, 503);
+    const paymentResponse = {
+      success: true,
+      transaction: `privatepay:${digest({ request_id: requirements.request_id, settlement: settlement.transaction || null }).slice(0, 32)}`,
+      network: requirements.requirements.accepts[0].network,
+      extensions: { privacy_boundary: "provider_audit_only", request_id: requirements.request_id },
+    };
+    return json({ status: "paid", request_id: requirements.request_id, payment_response: paymentResponse, provider_visibility: "authenticated_provider_only" }, 200, { "PAYMENT-RESPONSE": encodePaymentResponseHeader(paymentResponse) });
   }
   if (method === "POST" && path === "/api/privatepay/x402/requirements")
     return json(createPrivatePayRequirements(config, body));
+  if (method === "POST" && path === "/api/privatepay/x402/checkout") {
+    const phase = String(body.phase || "create").trim().toLowerCase();
+    return json(phase === "challenge"
+      ? await requestPrivatePayCheckoutChallenge(config, body)
+      : await createPrivatePayCheckout(config, body));
+  }
+  if (method === "POST" && path === "/api/privatepay/x402/prepare") {
+    const phase = String(body.phase || "transfer").trim().toLowerCase();
+    const prepared = phase === "deposit"
+      ? await preparePrivatePayDeposit(config, body)
+      : phase === "withdraw"
+        ? await preparePrivatePayWithdrawal(config, body)
+        : await preparePrivatePayTransfer(config, body);
+    return json(prepared);
+  }
+  if (method === "POST" && path === "/api/privatepay/x402/verify")
+    return json(publicPrivatePayFacilitatorResult("verify", await privatePayFacilitatorRequest(config, "verify", body), body.paymentPayload?.accepted?.extra?.request_id || body.paymentRequirements?.extra?.request_id));
+  if (method === "POST" && path === "/api/privatepay/x402/settle")
+    return json(publicPrivatePayFacilitatorResult("settle", await privatePayFacilitatorRequest(config, "settle", body), body.paymentPayload?.accepted?.extra?.request_id || body.paymentRequirements?.extra?.request_id));
   if (method === "GET" && path === "/api/providers/status")
     return json({ providers: [intelProviderStatus(config), ibmProviderStatus(config), mongoProviderStatus(config), accountProviderStatus(config), githubProviderStatus(config)] });
   if (method === "GET" && path === "/api/acquisition") {
@@ -4652,11 +5056,11 @@ async function handle(e) {
     return json(await issuePdaoChallenge({ config, storage: await store(), wallet: body.wallet, serviceId: body.service_id, input: body.input || {} }));
   }
   if (method === "POST" && path === "/api/jobs")
-    return json(await createJob(body.service_id, body.input || {}, false, "USDC", requestMetadata(e), body.pdao_access || body.token_holder_access || null));
+    return json(await createJob(body.service_id, body.input || {}, false, "USDC", requestMetadata(e), body.pdao_access || body.token_holder_access || null, body.payment_mode || "direct"));
   if (method === "POST" && path === "/api/checkout/batch")
     return json(await createBatchJob(body.items));
   if (method === "POST" && path === "/api/external/jobs")
-    return json(await createExternalJob(body.service_id, body.input || {}, body.pdao_access || body.token_holder_access || null), 201);
+    return json(await createExternalJob(body.service_id, body.input || {}, body.pdao_access || body.token_holder_access || null, body.payment_mode || "direct"), 201);
   const externalPayment = path.match(/^\/api\/external\/jobs\/([^/]+)\/payment$/);
   if (method === "POST" && externalPayment) {
     const result = await submitExternalPayment(decodeURIComponent(externalPayment[1]), body);
@@ -4700,6 +5104,9 @@ async function handle(e) {
   const sellerDashboardRoute = path.match(/^\/api\/seller\/dashboard\/([^/]+)$/);
   if (method === "GET" && sellerDashboardRoute)
     return json(await sellerDashboard(decodeURIComponent(sellerDashboardRoute[1]), e.headers?.["x-pdao-owner-token"] || e.headers?.["X-Pdao-Owner-Token"] || ""));
+  const sellerPrivatePayAuditRoute = path.match(/^\/api\/seller\/dashboard\/([^/]+)\/privatepay-audit$/);
+  if (method === "GET" && sellerPrivatePayAuditRoute)
+    return json(await sellerPrivatePayAudit(decodeURIComponent(sellerPrivatePayAuditRoute[1]), e.headers?.["x-pdao-owner-token"] || e.headers?.["X-Pdao-Owner-Token"] || ""));
   const sellerPublishRoute = path.match(/^\/api\/registry\/agents\/([^/]+)\/(publish|unpublish)$/);
   if (method === "POST" && sellerPublishRoute)
     return json(await setSellerPublication(decodeURIComponent(sellerPublishRoute[1]), { ...body, owner_token: body.owner_token || e.headers?.["x-pdao-owner-token"] || e.headers?.["X-Pdao-Owner-Token"] || "" }, sellerPublishRoute[2] === "publish"));
@@ -4829,6 +5236,10 @@ async function mcp(request) {
     execution_guide: { type: "object", properties: {}, additionalProperties: false, description: "Return the endpoints and state transitions needed to request, execute, poll and verify a service." },
     privatepay_status: { type: "object", properties: {}, additionalProperties: false, description: "Return the fail-closed readiness and privacy boundaries for PrivatePAY x402." },
     privatepay_challenge: { type: "object", properties: { resource: { type: "string", minLength: 1, maxLength: 500 }, provider_id: { type: "string", minLength: 1, maxLength: 200 }, amount_base_units: { type: "string", pattern: "^[0-9]+$" }, mime_type: { type: "string", maxLength: 100 }, nonce: { type: "string", maxLength: 200 } }, required: ["resource", "provider_id", "amount_base_units"], additionalProperties: false, description: "Request a PrivatePAY x402 V2 PaymentRequired object. This is unavailable until a reviewed confidential privacy rail is configured." },
+    privatepay_checkout: { type: "object", properties: { phase: { type: "string", enum: ["create", "challenge"], default: "create" }, payment_id: { type: "string", pattern: "^[a-f0-9]{64}$" }, payer: { type: "string", pattern: "^[1-9A-HJ-NP-Za-km-z]{32,44}$" }, resource: { type: "string", minLength: 1, maxLength: 2048 }, amount_base_units: { type: "string", pattern: "^[0-9]+$" }, external_reference: { type: "string", minLength: 1, maxLength: 128 }, description: { type: "string", maxLength: 256 }, expires_in_seconds: { type: "integer", minimum: 60, maximum: 86400 } }, additionalProperties: false, description: "Create an official MagicBlock private checkout or request its x402 challenge. No wallet signing or broadcasting occurs." },
+    privatepay_prepare: { type: "object", properties: { phase: { type: "string", enum: ["deposit", "transfer", "withdraw"], default: "transfer" }, request_id: { type: "string", pattern: "^pp_[a-f0-9]{32}$" }, payer: { type: "string", pattern: "^[1-9A-HJ-NP-Za-km-z]{32,44}$" }, owner: { type: "string", pattern: "^[1-9A-HJ-NP-Za-km-z]{32,44}$" }, amount_base_units: { type: "string", pattern: "^[0-9]+$" }, split: { type: "integer", minimum: 1, maximum: 15 }, gasless: { type: "boolean" } }, required: ["request_id", "amount_base_units"], additionalProperties: false, description: "Prepare an unsigned MagicBlock deposit, private transfer, or withdrawal for local wallet signing. This does not sign or broadcast." },
+    privatepay_verify: { type: "object", properties: { x402Version: { type: "integer", const: 2 }, paymentPayload: { type: "object" }, paymentRequirements: { type: "object" } }, required: ["x402Version", "paymentPayload", "paymentRequirements"], additionalProperties: false, description: "Forward an x402 v2 PrivatePAY payload to the reviewed facilitator. This fails closed until conformance is verified." },
+    privatepay_settle: { type: "object", properties: { x402Version: { type: "integer", const: 2 }, paymentPayload: { type: "object" }, paymentRequirements: { type: "object" } }, required: ["x402Version", "paymentPayload", "paymentRequirements"], additionalProperties: false, description: "Request x402 v2 PrivatePAY settlement through the reviewed facilitator. This may move funds only after explicit production activation." },
     verify_basic: {
       type: "object",
       properties: {
@@ -4856,10 +5267,21 @@ async function mcp(request) {
       properties: {
         service_id: { type: "string", enum: SERVICES.filter((service) => service.access === "paid").map((service) => service.id) },
         input: { type: "object", description: "Service-specific JSON input." },
+        payment_mode: { type: "string", enum: ["direct", "privatepay"], default: "direct", description: "Select privatepay only when the PrivatePAY x402 status is enabled." },
         pdao_access: { type: "object", description: "Optional signed PDAO holder challenge from /api/access/challenge.", properties: { wallet: { type: "string" }, message: { type: "string" }, signature: { type: "string" }, nonce: { type: "string" } }, required: ["wallet", "message", "signature", "nonce"], additionalProperties: false },
       },
       required: ["service_id"],
       additionalProperties: false,
+    },
+    privatepay_job_payment: {
+      type: "object",
+      properties: {
+        job_id: { type: "string", pattern: "^job_[A-Za-z0-9-]+$" },
+        payment_signature: { type: "string", minLength: 1, description: "The x402 PAYMENT-SIGNATURE value returned by the paying agent wallet." },
+      },
+      required: ["job_id", "payment_signature"],
+      additionalProperties: false,
+      description: "Verify and settle a PrivatePAY x402 payment for a job. The signature is forwarded only to the configured facilitator and is never exposed in the public receipt.",
     },
     submit_payment: {
       type: "object",
@@ -4956,6 +5378,11 @@ async function mcp(request) {
     execution_guide: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     privatepay_status: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     privatepay_challenge: { readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+    privatepay_checkout: { readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+    privatepay_prepare: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+    privatepay_verify: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+    privatepay_settle: { readOnlyHint: false, destructiveHint: true, idempotentHint: false, openWorldHint: false },
+    privatepay_job_payment: { readOnlyHint: false, destructiveHint: true, idempotentHint: false, openWorldHint: false },
     verify_basic: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     receipt_verify: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     create_paid_job: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
@@ -4982,6 +5409,11 @@ async function mcp(request) {
     "execution_guide",
     "privatepay_status",
     "privatepay_challenge",
+    "privatepay_checkout",
+    "privatepay_prepare",
+    "privatepay_verify",
+    "privatepay_settle",
+    "privatepay_job_payment",
     "verify_basic",
     "receipt_verify",
     "create_paid_job",
@@ -5010,6 +5442,11 @@ async function mcp(request) {
       execution_guide: "Explain how to create a free or paid job, interpret 402 payment_intent, submit finalized payment proof, poll status, retrieve a receipt and verify it.",
       privatepay_status: "Show whether PrivatePAY x402 has a configured confidential privacy rail, facilitator, and confidential mint. Explain the public-chain privacy boundary without claiming anonymity.",
       privatepay_challenge: "Request a PrivatePAY x402 privacy-preserving challenge. This operation fails closed until the reviewed rail is configured and enabled.",
+      privatepay_checkout: "Create an official MagicBlock private checkout or request its PAYMENT-REQUIRED challenge. This never signs, broadcasts, or moves funds.",
+      privatepay_prepare: "Prepare an unsigned MagicBlock deposit, private transfer, or withdrawal after a PrivatePAY challenge. The agent must inspect it and sign locally; PrivateDAO never receives a private key and this tool never broadcasts.",
+      privatepay_verify: "Verify an x402 v2 PrivatePAY payload through the configured facilitator. This is fail-closed until exact scheme and network conformance is independently verified.",
+      privatepay_settle: "Settle an x402 v2 PrivatePAY payload through the configured facilitator. This tool is destructive and remains disabled until production activation is explicitly approved.",
+      privatepay_job_payment: "Verify and settle a PrivatePAY x402 payment for a paid service job, then execute the service once. This remains fail-closed until the reviewed Mainnet privacy rail and facilitator are enabled.",
       agent_match: "Free registry discovery and capability matching. Use create_paid_job for the paid agent.match service.",
       receipt_verify: "Verify a PrivateDAO receipt digest and return a machine-readable verification result. This is free and read-only.",
     }[name] || `PrivateDAO ${name}`),
@@ -5049,6 +5486,20 @@ async function mcp(request) {
       };
       else if (name === "privatepay_status") result = await probePrivatePayRail(config);
       else if (name === "privatepay_challenge") result = createPrivatePayChallenge(config, a);
+      else if (name === "privatepay_checkout") result = String(a.phase || "create").trim().toLowerCase() === "challenge"
+        ? await requestPrivatePayCheckoutChallenge(config, a)
+        : await createPrivatePayCheckout(config, a);
+      else if (name === "privatepay_prepare") {
+        const phase = String(a.phase || "transfer").trim().toLowerCase();
+        result = phase === "deposit"
+          ? await preparePrivatePayDeposit(config, a)
+          : phase === "withdraw"
+            ? await preparePrivatePayWithdrawal(config, a)
+            : await preparePrivatePayTransfer(config, a);
+      }
+      else if (name === "privatepay_verify") result = publicPrivatePayFacilitatorResult("verify", await privatePayFacilitatorRequest(config, "verify", a), a.paymentPayload?.accepted?.extra?.request_id || a.paymentRequirements?.extra?.request_id);
+      else if (name === "privatepay_settle") result = publicPrivatePayFacilitatorResult("settle", await privatePayFacilitatorRequest(config, "settle", a), a.paymentPayload?.accepted?.extra?.request_id || a.paymentRequirements?.extra?.request_id);
+      else if (name === "privatepay_job_payment") result = await submitPrivatePayPayment(a.job_id, { headers: { "PAYMENT-SIGNATURE": a.payment_signature } }, a);
       else if (name === "execution_guide") result = {
         states: ["awaiting_payment", "running", "completed", "recovery_required"],
         create: `POST https://${config.domain}/api/jobs`,
@@ -5064,19 +5515,21 @@ async function mcp(request) {
         result = await executeService("receipt.verify", a);
       else if (name === "create_paid_job") {
         try {
-          result = await createJob(a.service_id, a.input || {}, false, "USDC", {}, a.pdao_access || null);
+          result = await createJob(a.service_id, a.input || {}, false, "USDC", {}, a.pdao_access || null, a.payment_mode || "direct");
         } catch (error) {
           if (error.statusCode === 402)
             result = {
               status: "awaiting_payment",
               payment_intent: error.payment_intent,
+              payment_mode: error.payment_required ? "privatepay" : "direct",
+              ...(error.payment_required ? { payment_required: error.payment_required, payment_required_header: error.payment_required_header, request_id: error.request_id } : {}),
             };
           else throw error;
         }
       } else if (name === "job_status")
         result = publicJobStatus(await (await store()).get("Jobs", a.job_id));
       else if (name === "get_receipt")
-        result = await (await store()).get("Receipts", a.receipt_id);
+        result = publicPrivatePayReceipt(await (await store()).get("Receipts", a.receipt_id));
       else if (name === "search_agents") {
         const query = String(a.q || "").toLowerCase();
         const capability = a.capability ? String(a.capability) : null;

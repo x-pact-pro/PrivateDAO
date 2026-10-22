@@ -12,6 +12,7 @@
     "test": "AGENT_EXCHANGE_TEST_MODE=true AGENT_EXCHANGE_ALLOW_TEST_STORAGE=true AGENT_EXCHANGE_MCP_FETCH_FIXTURE=true AGENT_EXCHANGE_RPC_FIXTURE=true node --test --test-concurrency=1 test/*.mjs",
     "smoke": "AGENT_EXCHANGE_TEST_MODE=true AGENT_EXCHANGE_ALLOW_TEST_STORAGE=true AGENT_EXCHANGE_MCP_FETCH_FIXTURE=true AGENT_EXCHANGE_RPC_FIXTURE=true node test/smoke.mjs",
     "verify:live-surface": "node scripts/verify-live-surface.mjs",
+    "privatepay:audit": "node scripts/privatepay-conformance.mjs",
     "lint": "node --check src/*.mjs test/*.mjs scripts/*.mjs",
     "package": "bash scripts/package-lambda.sh"
   },
@@ -21,7 +22,6 @@
     "@aws-sdk/lib-dynamodb": "^3.1136.0",
     "@solana/web3.js": "1.98.4",
     "@x402/core": "^2.28.0",
-    "@x402/svm": "^2.28.0",
     "mongodb": "^6.20.0",
     "tweetnacl": "^1.0.3"
   },

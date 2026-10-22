@@ -10,6 +10,7 @@ export const PDAO_DEVELOPER_LOCK_UNTIL = "2026-11-30";
 export const PDAO_DEVELOPER_LOCK_CONTRACT = "3s5gg6upQXd4USTUQKdrWPBexEa2sZwzoD4P3HLA4tUK";
 export const PDAO_HOLDER_THRESHOLD_USD = 25;
 export const PDAO_HOLDER_WINDOW_MS = 30 * 24 * 60 * 60 * 1000;
+export const PDAO_HOLDER_REWARD_QUALIFICATION_DAYS = 7;
 export const PDAO_PROMOTION_START_AT = "2026-10-20T00:00:00.000Z";
 export const PDAO_PROMOTION_END_AT = "2026-11-20T00:00:00.000Z";
 export const PDAO_ELIGIBLE_SERVICE_MAX_USD = 0.10;
@@ -51,7 +52,7 @@ export function pdaoTierForValue(valueUsd) {
   return [...PDAO_HOLDER_TIERS].reverse().find((tier) => value >= tier.threshold_usd) || null;
 }
 
-export function publicPdaoBenefitPolicy(qualificationDays = 0, at = new Date()) {
+export function publicPdaoBenefitPolicy(_qualificationDays = 0, at = new Date()) {
   const promotion = pdaoPromotionStatus(at);
   return {
     version: PDAO_HOLDER_POLICY_VERSION,
@@ -63,11 +64,20 @@ export function publicPdaoBenefitPolicy(qualificationDays = 0, at = new Date()) 
     developer_allocation: PDAO_DEVELOPER_ALLOCATION,
     developer_lock_until: PDAO_DEVELOPER_LOCK_UNTIL,
     developer_lock_contract: PDAO_DEVELOPER_LOCK_CONTRACT,
+    // The platform-wide promotion is fixed by server dates. Connecting a
+    // wallet never starts a personal 30-day window.
     duration_days: 30,
-    qualification_days: qualificationDays,
-    qualification_mode: qualificationDays > 0 ? "historical_balance_required" : "current_balance_pilot",
+    qualification_days: 0,
+    qualification_mode: "current_balance_at_each_service_execution",
     promotion,
     promotion_note: "The fixed platform-wide promotion is separate from the seven-day Holder Rewards qualification window.",
+    holder_rewards: {
+      qualification_days: PDAO_HOLDER_REWARD_QUALIFICATION_DAYS,
+      qualification_mode: "historical_balance_required",
+      window_days: 30,
+      purpose: "monthly credits and non_stackable_discounts",
+      starts_after_promotion: true,
+    },
     eligible_service_max_usd: PDAO_ELIGIBLE_SERVICE_MAX_USD,
     credits_apply_before_discounts: true,
     credits_expire_each_cycle: true,
