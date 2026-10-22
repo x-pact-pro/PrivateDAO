@@ -21,6 +21,7 @@ process.env.PRIVATEPAY_RELATIONSHIP_PRIVACY_VERIFIED = "true";
 process.env.PRIVATEPAY_AMOUNT_PRIVACY_VERIFIED = "true";
 process.env.PRIVATEPAY_TIMING_PRIVACY_VERIFIED = "true";
 process.env.PRIVATEPAY_E2E_VERIFIED = "true";
+process.env.PRIVATEPAY_TREASURY_SPLIT_VERIFIED = "true";
 
 const { handler, resetForTests } = await import("../src/handler.mjs");
 

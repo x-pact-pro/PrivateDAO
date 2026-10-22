@@ -611,6 +611,7 @@ export function privatePayStatus(config) {
   if (!stealthHandleConfigured) activationBlockers.push("MagicBlock provider stealth handle is not configured");
   if (!stealthHandleVerified) activationBlockers.push("MagicBlock provider stealth handle initialization has not been independently verified");
   if (!paymentIngressConfigured) activationBlockers.push("MagicBlock x402 payment ingress must be a separate valid Solana account");
+  if (config.privatePayTreasurySplitVerified === false) activationBlockers.push("PrivatePAY commercial fee split to the PrivateDAO treasury is not independently verified");
   if (!mainnetVerified) activationBlockers.push("Mainnet privacy-rail conformance is not independently verified");
   if (!privacyChecks.relationship) activationBlockers.push("payer/provider unlinkability evidence is missing");
   if (!privacyChecks.amount) activationBlockers.push("amount confidentiality evidence is missing");
@@ -636,7 +637,8 @@ export function privatePayStatus(config) {
     privacy_audit_verified: privacyAuditVerified,
     privacy_checks: privacyChecks,
     activation_blockers: activationBlockers,
-    enabled: configured && conformanceVerified && mainnetVerified && privacyAuditVerified && facilitatorCredentialReady && stealthHandleConfigured && stealthHandleVerified && paymentIngressConfigured && config.privatePayEnabled === true,
+    enabled: configured && conformanceVerified && mainnetVerified && privacyAuditVerified && facilitatorCredentialReady && stealthHandleConfigured && stealthHandleVerified && paymentIngressConfigured && config.privatePayTreasurySplitVerified !== false && config.privatePayEnabled === true,
+    commercial_fee_model: { type: "percentage_with_minimum", fee_bps: config.privatePayFeeBps, minimum_usd: config.privatePayMinimumFeeUsd, treasury_split_verified: config.privatePayTreasurySplitVerified === true },
     privacy_rail: privacyRail || null,
     facilitator_configured: nonEmpty(facilitatorUrl),
     provider_handle_configured: stealthHandleConfigured,

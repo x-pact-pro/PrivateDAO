@@ -1375,7 +1375,7 @@ function serviceManifest(service) {
     },
     output_schema: { type: "object", description: service.output },
     payment: isPrivatePay
-      ? { required: false, price: 0, currency: service.currency, flow: "gated_privatepay_x402_challenge" }
+      ? { required: false, price: 0, currency: service.currency, flow: "gated_privatepay_x402_challenge", commercial_fee_model: "2.5% of the quoted service subtotal, minimum 0.05 USDC, separate from PDAO promotions and seller commissions", commercial_fee_bps: config.privatePayFeeBps, commercial_fee_minimum_usd: config.privatePayMinimumFeeUsd, treasury_split_required: true }
       : service.access === "free"
       ? { required: false, price: 0, currency: service.currency, flow: "execute_immediately" }
       : { required: true, price: service.price, currency: service.currency, flow: "quote_then_finalized_solana_payment_then_execute" },
@@ -1594,8 +1594,8 @@ async function marketplacePage() {
   const policy = await marketplacePolicy();
   const curatedToolCards = curatedTools().map((tool) => `<article class="card curated-tool" data-curated-tool="${escapeHtml(tool.id)}"><div class="card-top"><div class="tag">${escapeHtml(tool.category)}</div><span class="price">${escapeHtml(tool.access)}</span></div><h3>${escapeHtml(tool.name)}</h3><p>${escapeHtml(tool.summary)}</p><p class="value">External tool · discovery listing</p><dl><div><dt>Provider</dt><dd>${escapeHtml(tool.provider)}</dd></div><div><dt>Use</dt><dd>Open official source</dd></div></dl><div class="card-actions" style="display:flex;align-items:center;gap:10px;margin-top:auto;padding-top:14px"><button class="icon-action" style="width:38px;height:38px;border:1px solid #dbe5f0;border-radius:11px;background:#fff;color:#1769e0;font-size:1.25rem;cursor:pointer" type="button" data-favorite="${escapeHtml(tool.id)}" aria-label="Save ${escapeHtml(tool.name)} to favorites">☆</button><a class="action" style="flex:1;color:#1769e0;font-weight:750" href="${escapeHtml(tool.official_url)}" target="_blank" rel="noreferrer noopener">Open official tool <span aria-hidden="true">↗</span></a></div></article>`).join("");
   const grouped = SERVICE_CATEGORIES.map((category) => ({ ...category, services: SERVICES.filter((service) => serviceDetails(service).category === category.id) })).filter((category) => category.services.length);
-  const featuredProduct = `<section class="pdao-featured-product" aria-label="Featured PDAO utility product" style="display:grid;grid-template-columns:minmax(0,1.4fr) minmax(220px,.6fr);gap:20px;margin:0 0 18px;padding:24px;border:2px solid #1769e0;border-radius:18px;background:#f5f9ff;box-shadow:0 16px 32px rgba(14,42,78,.08)"><div><p class="eyebrow">Featured utility</p><h2 style="margin:6px 0 8px">PDAO Holder Access + Service Credits</h2><p style="color:#52657c;max-width:620px">Use PDAO for access, credits, discounts and marketplace benefits while ordinary execution remains quote-first USDC.</p><div class="pdao-featured-actions" style="display:flex;gap:12px;flex-wrap:wrap;margin-top:18px"><a style="display:inline-flex;padding:10px 14px;border-radius:999px;background:#071a32;color:#fff" href="/demo?service=token.intelligence">Try a live demo <span aria-hidden="true">→</span></a><a style="display:inline-flex;padding:10px 14px;border-radius:999px;background:#fff;color:#1769e0;border:1px solid #cfe0f5" href="/holder-benefits">View holder benefits <span aria-hidden="true">↗</span></a></div></div><div class="pdao-featured-rail" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;align-content:center"><strong style="font-size:1.4rem;color:#087f5b">$25</strong><span style="color:#52657c">Access threshold</span><strong style="font-size:1.4rem;color:#087f5b">7 days</strong><span style="color:#52657c">Holder Rewards</span><strong style="font-size:1.4rem;color:#087f5b">USDC</strong><span style="color:#52657c">Ordinary settlement</span></div></section>`;
-  const productCards = PRODUCTS.map((product) => `<article class="card" data-catalog-id="${escapeHtml(product.id)}"><div class="card-top"><div class="tag">${escapeHtml(product.category)}</div><span class="price">${product.price.toFixed(2)} USDC</span></div><h3>${escapeHtml(product.name)}</h3><p>${escapeHtml(product.tagline)}</p><p class="value">${escapeHtml(product.value)}</p><dl><div><dt>Includes</dt><dd>${escapeHtml(product.included_services.join(", "))}</dd></div><div><dt>Works on</dt><dd>${escapeHtml(product.networks.map((network) => network.replaceAll("-mainnet", "").replaceAll("-", " ")).join(", "))}</dd></div></dl><div class="card-actions"><a class="try-action" style="display:inline-flex;align-items:center;width:max-content;padding:9px 12px;border-radius:999px;background:#1769e0;color:#fff;font-weight:800" href="/demo?service=${encodeURIComponent(product.included_services[0])}">Try now <span aria-hidden="true">→</span></a><a class="action" href="/products">Open product and get a quote <span aria-hidden="true">↗</span></a></div></article>`).join("");
+  const featuredProduct = `<section class="pdao-featured-product" aria-label="Featured PDAO utility product" style="display:grid;grid-template-columns:minmax(0,1.4fr) minmax(220px,.6fr);gap:20px;margin:0 0 18px;padding:24px;border:2px solid #1769e0;border-radius:18px;background:#f5f9ff;box-shadow:0 16px 32px rgba(14,42,78,.08)"><div><p class="eyebrow">Featured utility</p><h2 style="margin:6px 0 8px">PDAO Holder Access + Service Credits</h2><p style="color:#52657c;max-width:620px">Use PDAO for access, credits, discounts and marketplace benefits while ordinary execution remains quote-first USDC.</p><div class="pdao-featured-actions" style="display:flex;gap:12px;flex-wrap:wrap;margin-top:18px"><a style="display:inline-flex;padding:10px 14px;border-radius:999px;background:#071a32;color:#fff" href="/demo">Try a live demo <span aria-hidden="true">→</span></a><a style="display:inline-flex;padding:10px 14px;border-radius:999px;background:#fff;color:#1769e0;border:1px solid #cfe0f5" href="/holder-benefits">View holder benefits <span aria-hidden="true">↗</span></a></div></div><div class="pdao-featured-rail" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;align-content:center"><strong style="font-size:1.4rem;color:#087f5b">$25</strong><span style="color:#52657c">Access threshold</span><strong style="font-size:1.4rem;color:#087f5b">7 days</strong><span style="color:#52657c">Holder Rewards</span><strong style="font-size:1.4rem;color:#087f5b">USDC</strong><span style="color:#52657c">Ordinary settlement</span></div></section>`;
+  const productCards = PRODUCTS.map((product) => `<article class="card" data-catalog-id="${escapeHtml(product.id)}"><div class="card-top"><div class="tag">${escapeHtml(product.category)}</div><span class="price">${product.price.toFixed(2)} USDC</span></div><h3>${escapeHtml(product.name)}</h3><p>${escapeHtml(product.tagline)}</p><p class="value">${escapeHtml(product.value)}</p><dl><div><dt>Includes</dt><dd>${escapeHtml(product.included_services.join(", "))}</dd></div><div><dt>Works on</dt><dd>${escapeHtml(product.networks.map((network) => network.replaceAll("-mainnet", "").replaceAll("-", " ")).join(", "))}</dd></div></dl><div class="card-actions"><a class="try-action" style="display:inline-flex;align-items:center;width:max-content;padding:9px 12px;border-radius:999px;background:#1769e0;color:#fff;font-weight:800" href="/demo">Try now <span aria-hidden="true">→</span></a><a class="action" href="/products">Open product and get a quote <span aria-hidden="true">↗</span></a></div></article>`).join("");
   let cards = grouped.map((category) => {
     const serviceCards = category.services.map((service) => {
       const details = serviceDetails(service);
@@ -1603,7 +1603,7 @@ async function marketplacePage() {
       const networks = (service.supportedNetworks || (service.id === "github.repository" ? ["Network independent"] : ["Solana Mainnet"])).map((network) => network.replaceAll("-mainnet", "").replaceAll("-", " ")).join(", ");
       const promotionEligible = service.access === "paid" && Number(service.price || 0) > 0 && Number(service.price || 0) <= 0.10 && !service.seller_agent_id;
       const promotionBadge = promotionEligible ? `<span style="display:inline-flex;align-items:center;gap:5px;color:#087f5b;font-size:.72rem;font-weight:850;letter-spacing:.06em;text-transform:uppercase">PDAO eligible</span>` : "";
-      return `<article class="card" data-catalog-id="${escapeHtml(service.id)}"><div class="card-top"><div class="tag">${escapeHtml(service.access === "free" ? "Free" : "Paid")}</div><span class="price">${escapeHtml(price)}</span></div><h3>${escapeHtml(service.title)}</h3><p>${escapeHtml(details.summary)}</p><p class="value">${escapeHtml(details.customer_value)}</p>${promotionBadge ? `<p style="margin:2px 0 8px">${promotionBadge} <span style="color:#52657c;font-size:.82rem">during the fixed promotion window</span></p>` : ""}<dl><div><dt>For</dt><dd>${escapeHtml(service.input)}</dd></div><div><dt>Works on</dt><dd>${escapeHtml(networks)}</dd></div></dl><div class="card-actions" style="display:flex;align-items:center;gap:10px;margin-top:auto;padding-top:14px"><button class="icon-action" style="width:38px;height:38px;border:1px solid #dbe5f0;border-radius:11px;background:#fff;color:#1769e0;font-size:1.25rem;cursor:pointer" type="button" data-favorite="${escapeHtml(service.id)}" aria-label="Save ${escapeHtml(service.title)} to favorites">☆</button><button class="save-action" style="border:0;border-radius:999px;background:#081b33;color:#fff;padding:9px 12px;font-weight:750;cursor:pointer" type="button" data-cart="${escapeHtml(service.id)}">Add to workspace</button><a class="try-action" style="display:inline-flex;align-items:center;padding:9px 12px;border-radius:999px;background:#1769e0;color:#fff;font-weight:800;white-space:nowrap" href="/demo?service=${encodeURIComponent(service.id)}">Try now <span aria-hidden="true">→</span></a><a class="action" style="flex:1;color:#1769e0;font-weight:750" href="${servicePath(service.id)}">View capability <span aria-hidden="true">↗</span></a></div></article>`;
+      return `<article class="card" data-catalog-id="${escapeHtml(service.id)}"><div class="card-top"><div class="tag">${escapeHtml(service.access === "free" ? "Free" : "Paid")}</div><span class="price">${escapeHtml(price)}</span></div><h3>${escapeHtml(service.title)}</h3><p>${escapeHtml(details.summary)}</p><p class="value">${escapeHtml(details.customer_value)}</p>${promotionBadge ? `<p style="margin:2px 0 8px">${promotionBadge} <span style="color:#52657c;font-size:.82rem">during the fixed promotion window</span></p>` : ""}<dl><div><dt>For</dt><dd>${escapeHtml(service.input)}</dd></div><div><dt>Works on</dt><dd>${escapeHtml(networks)}</dd></div></dl><div class="card-actions" style="display:flex;align-items:center;gap:10px;margin-top:auto;padding-top:14px"><button class="icon-action" style="width:38px;height:38px;border:1px solid #dbe5f0;border-radius:11px;background:#fff;color:#1769e0;font-size:1.25rem;cursor:pointer" type="button" data-favorite="${escapeHtml(service.id)}" aria-label="Save ${escapeHtml(service.title)} to favorites">☆</button><button class="save-action" style="border:0;border-radius:999px;background:#081b33;color:#fff;padding:9px 12px;font-weight:750;cursor:pointer" type="button" data-cart="${escapeHtml(service.id)}">Add to workspace</button><a class="try-action" style="display:inline-flex;align-items:center;padding:9px 12px;border-radius:999px;background:#1769e0;color:#fff;font-weight:800;white-space:nowrap" href="/demo">Try now <span aria-hidden="true">→</span></a><a class="action" style="flex:1;color:#1769e0;font-weight:750" href="${servicePath(service.id)}">View capability <span aria-hidden="true">↗</span></a></div></article>`;
     }).join("");
     return `<section id="category-${escapeHtml(category.id.toLowerCase().replaceAll(" ", "-"))}" class="category"><div class="category-head"><div><p class="eyebrow">${escapeHtml(category.id)}</p><h2>${escapeHtml(category.id)}</h2></div><p>${escapeHtml(category.description)}</p></div><div class="grid">${serviceCards}</div></section>`;
   }).join("");
@@ -1733,8 +1733,8 @@ async function run(){try{const {PublicKey,Transaction,TransactionInstruction,Sys
 </script></body></html>`;
 }
 
-function demoPage(requestedService = "token.intelligence") {
-  const service = serviceById(requestedService) || serviceById("token.intelligence");
+function demoPage() {
+  const service = serviceById("token.intelligence");
   const sample = { network: "solana-mainnet-beta", mint: PDAO_TOKEN_MINT };
   return injectLanguageWidget(`<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Try a live PrivateDAO agent demo</title><meta name="description" content="Run a real read-only PrivateDAO agent check against the public PDAO token on Solana Mainnet before connecting a wallet."><style>:root{--ink:#071a32;--muted:#52657b;--line:#dbe5ef;--blue:#1769e0;--green:#087f5b;--pale:#f5f9ff}*{box-sizing:border-box}body{margin:0;color:var(--ink);font:16px/1.55 Inter,system-ui,sans-serif;background:#fff}main{max-width:980px;margin:auto;padding:28px 24px 72px}header{display:flex;justify-content:space-between;gap:20px;padding-bottom:70px}.brand,a{color:var(--blue);font-weight:800;text-decoration:none}.brand{color:var(--ink)}.nav{display:flex;gap:18px}.eyebrow{color:var(--blue);font-size:.72rem;font-weight:850;letter-spacing:.12em;text-transform:uppercase}.hero{max-width:740px}.hero h1{font-size:clamp(2.8rem,7vw,5.4rem);line-height:.96;letter-spacing:-.055em;margin:14px 0}.lead{color:var(--muted);font-size:1.12rem}.grid{display:grid;grid-template-columns:1.1fr .9fr;gap:16px;margin-top:38px}.panel{border:1px solid var(--line);border-radius:18px;padding:24px;background:#fff;box-shadow:0 12px 30px rgba(14,42,78,.06)}.panel.dark{background:var(--ink);color:#fff;border-color:var(--ink)}.panel.dark .eyebrow{color:#8db8ff}.panel.dark p{color:#c6d5e9}.facts{display:grid;gap:12px;margin:22px 0}.fact{display:flex;justify-content:space-between;gap:16px;border-bottom:1px solid var(--line);padding-bottom:10px}.fact span{color:var(--muted)}.fact code{overflow-wrap:anywhere;text-align:right}.button{display:inline-flex;border:0;border-radius:999px;padding:12px 18px;background:var(--blue);color:#fff;font:inherit;font-weight:850;cursor:pointer}.button.alt{background:#fff;color:var(--ink);border:1px solid var(--line)}.actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:22px}pre{min-height:180px;margin:18px 0 0;padding:16px;white-space:pre-wrap;overflow-wrap:anywhere;border-radius:12px;background:#f5f9ff;color:var(--ink);font-size:.82rem}.note{color:var(--muted);font-size:.9rem}.badge{display:inline-flex;margin-top:10px;padding:6px 10px;border-radius:999px;background:#effbf7;color:var(--green);font-weight:800;font-size:.8rem}@media(max-width:760px){main{padding:20px 16px 56px}header{padding-bottom:45px}.nav{gap:10px;font-size:.82rem}.grid{grid-template-columns:1fr}}</style></head><body><main><header><a class="brand" href="/">PrivateDAO Agent Exchange</a><nav class="nav"><a href="/marketplace">Marketplace</a><a href="/products">Products</a><a href="/connect">Build</a></nav></header><section class="hero"><p class="eyebrow">Try before you connect</p><h1>See the agent work on real public data.</h1><p class="lead">Run a live, read-only token intelligence check against the public PDAO mint. No wallet, PDAO balance, payment, or account is required for this demonstration.</p></section><section class="grid"><section class="panel dark"><p class="eyebrow">Live demonstration</p><h2>What the agent checks</h2><p>It reads finalized Solana Mainnet evidence, including token account presence, supply, decimals, authorities, largest accounts, provider source, and observation time.</p><div class="facts"><div class="fact"><span>Agent capability</span><strong>${escapeHtml(service.title)}</strong></div><div class="fact"><span>Network</span><strong>Solana Mainnet</strong></div><div class="fact"><span>Subject</span><code>${escapeHtml(PDAO_TOKEN_MINT)}</code></div></div><span class="badge">No transaction signed</span></section><section class="panel"><p class="eyebrow">Run it now</p><h2>Example report</h2><p class="note">This is live read-only execution, not a mock result and not a paid receipt.</p><div class="actions"><button id="run" class="button" type="button">Run live demo</button><a class="button alt" href="/marketplace">Try the actual service</a></div><pre id="report" aria-live="polite">Ready. Click Run live demo to fetch current evidence.</pre></section></section><section class="panel" style="margin-top:16px"><p class="eyebrow">Next step</p><h2>Move from understanding to execution.</h2><p class="note">The actual marketplace service uses the same verified capability with quote-first USDC payment on Solana Mainnet. PDAO holder access is checked separately and never replaces the settlement rail.</p><div class="actions"><a class="button" href="/marketplace">Browse services</a><a class="button alt" href="/holder-benefits">View PDAO holder benefits</a></div></section><footer style="border-top:1px solid var(--line);margin-top:60px;padding-top:18px;color:var(--muted)">PrivateDAO Agent Exchange · public read-only demo · USDC remains the ordinary payment asset.</footer></main><script>const report=document.querySelector("#report"),run=document.querySelector("#run");run.onclick=async()=>{run.disabled=true;report.textContent="Reading finalized Solana Mainnet evidence…";try{const response=await fetch("/api/demo/token",{cache:"no-store"}),payload=await response.json();if(!response.ok)throw new Error(payload.message||payload.error||"demo unavailable");report.textContent=JSON.stringify(payload,null,2)}catch(error){report.textContent="DEMO ERROR: "+(error.message||String(error))}finally{run.disabled=false}};</script></body></html>`);
 }
@@ -2594,6 +2594,7 @@ async function recordRevenue(job, payment) {
   );
   const processingFeeBps = Number(quote?.processing_fee_bps ?? policy.processing_fee_bps ?? 0);
   const processingFee = Number(quote?.processing_fee_amount ?? ((grossAmount * processingFeeBps) / 10000).toFixed(6));
+  const privatePayFee = Number(quote?.privatepay_fee_amount ?? 0);
   await (
     await store()
   ).put(
@@ -2612,6 +2613,9 @@ async function recordRevenue(job, payment) {
       feeBps,
       processingFeeAmount: processingFee,
       processingFeeBps,
+      privatePayFeeAmount: privatePayFee,
+      privatePayFeeBps: Number(quote?.privatepay_fee_bps ?? 0),
+      treasuryRevenueAmount: Number((protocolFee + privatePayFee).toFixed(6)),
       buyerAmount: Number(payment?.accounting_amount ?? payment?.amount ?? quote?.amount ?? grossAmount),
       networkFeeLamports: Number(payment?.feeLamports || 0),
       networkFeePolicy: payment?.payment_mode === "privatepay" ? "private_rail_fee_payer_not_public" : "payer_direct",
@@ -2708,7 +2712,13 @@ function publicJobStatus(job) {
   };
 }
 
-async function makeQuote(serviceId, jobId, admin = false, currency = "USDC", targetNetwork = null) {
+function privatePayCommercialFee(amount) {
+  const subtotal = Math.max(0, Number(amount) || 0);
+  if (!subtotal) return 0;
+  return Number(Math.max(config.privatePayMinimumFeeUsd, subtotal * config.privatePayFeeBps / 10000).toFixed(6));
+}
+
+async function makeQuote(serviceId, jobId, admin = false, currency = "USDC", targetNetwork = null, paymentMode = "direct") {
   const service = serviceById(serviceId);
   if (!service) throw new Error("unknown service");
   const amount = admin && currency === "SOL"
@@ -2717,6 +2727,8 @@ async function makeQuote(serviceId, jobId, admin = false, currency = "USDC", tar
       ? 0.01
       : Number((service.price * config.priceMultiplier).toFixed(6));
   const policy = await marketplacePolicy();
+  const privatePayFeeAmount = paymentMode === "privatepay" && currency === "USDC" ? privatePayCommercialFee(amount) : 0;
+  const buyerAmount = Number((amount + privatePayFeeAmount).toFixed(6));
   const platformFeeAmount = 0;
   let ata = null;
   let ataExists = null;
@@ -2736,14 +2748,16 @@ async function makeQuote(serviceId, jobId, admin = false, currency = "USDC", tar
     quote_id: `q_${randomUUID()}`,
     job_id: jobId,
     service_id: serviceId,
-    amount,
+    amount: buyerAmount,
     gross_amount: amount,
     revenue_class: "first_party_service",
     platform_fee_bps: 0,
     platform_fee_amount: platformFeeAmount,
-    private_dao_revenue_amount: amount,
+    private_dao_revenue_amount: buyerAmount,
+    privatepay_fee_bps: paymentMode === "privatepay" ? config.privatePayFeeBps : 0,
+    privatepay_fee_amount: privatePayFeeAmount,
     seller_net_amount: null,
-    amountAtomic: Math.round(amount * (currency === "SOL" ? 1e9 : 1e6)),
+    amountAtomic: Math.round(buyerAmount * (currency === "SOL" ? 1e9 : 1e6)),
     currency,
     network: "solana-mainnet-beta",
     target_network: normalizeNetworkId(targetNetwork || "solana-mainnet-beta"),
@@ -2755,7 +2769,7 @@ async function makeQuote(serviceId, jobId, admin = false, currency = "USDC", tar
     expires_at: expiresAt.toISOString(),
     expires_at_utc: expiresAt.toISOString(),
     expires_at_epoch_ms: expiresAt.getTime(),
-    payment_required: Boolean(service.price),
+    payment_required: Boolean(buyerAmount),
     ata_required: ataExists === false,
   };
   await (await store()).put("Quotes", quote.quote_id, quote, true);
@@ -2788,12 +2802,13 @@ async function createExternalJob(serviceId, input = {}, access = null, paymentMo
   const policy = await marketplacePolicy();
   const platformFee = Number(((grossAmount * policy.platform_fee_bps) / 10000).toFixed(6));
   const processingFee = Number(((grossAmount * policy.processing_fee_bps) / 10000).toFixed(6));
+  const privatePayFee = normalizedPaymentMode === "privatepay" ? privatePayCommercialFee(grossAmount) : 0;
   const sellerNet = Number((grossAmount - platformFee).toFixed(6));
   const ata = await treasuryTokenAccount(config);
   const sellerPayoutConfig = service.payout || (await storage.get("Registry", service.seller_agent_id))?.payout || null;
   if (!sellerPayoutConfig?.address) throw Object.assign(new Error("seller payout is not configured"), { statusCode: 409 });
-  const buyerTotal = Number((grossAmount + processingFee).toFixed(6));
-  const quote = { created_at: now(), quote_id: `q_${randomUUID()}`, job_id: id, service_id: service.id, external: true, seller_agent_id: service.seller_agent_id, seller_service_id: service.service_id, seller_tool: service.tool, amount: buyerTotal, amountAtomic: Math.round(buyerTotal * 1e6), gross_amount: grossAmount, platform_fee_bps: policy.platform_fee_bps, platform_fee_amount: platformFee, processing_fee_bps: policy.processing_fee_bps, processing_fee_amount: processingFee, network_fee_policy: "payer_direct", protocol_fee: platformFee, seller_net_amount: sellerNet, seller_amount: sellerNet, currency: service.asset, network: "solana-mainnet-beta", target_network: service.network, mint: config.usdcMint, treasuryOwner: config.treasury, treasuryTokenAccount: ata, recipient: config.treasury, paymentReference: `PDAOJOB:${id}`, expires_at: new Date(Date.now() + 1800000).toISOString(), payment_required: true, seller_payout: sellerPayoutConfig };
+  const buyerTotal = Number((grossAmount + processingFee + privatePayFee).toFixed(6));
+  const quote = { created_at: now(), quote_id: `q_${randomUUID()}`, job_id: id, service_id: service.id, external: true, seller_agent_id: service.seller_agent_id, seller_service_id: service.service_id, seller_tool: service.tool, amount: buyerTotal, amountAtomic: Math.round(buyerTotal * 1e6), gross_amount: grossAmount, platform_fee_bps: policy.platform_fee_bps, platform_fee_amount: platformFee, processing_fee_bps: policy.processing_fee_bps, processing_fee_amount: processingFee, privatepay_fee_bps: normalizedPaymentMode === "privatepay" ? config.privatePayFeeBps : 0, privatepay_fee_amount: privatePayFee, network_fee_policy: "payer_direct", protocol_fee: platformFee, seller_net_amount: sellerNet, seller_amount: sellerNet, currency: service.asset, network: "solana-mainnet-beta", target_network: service.network, mint: config.usdcMint, treasuryOwner: config.treasury, treasuryTokenAccount: ata, recipient: config.treasury, paymentReference: `PDAOJOB:${id}`, expires_at: new Date(Date.now() + 1800000).toISOString(), payment_required: true, seller_payout: sellerPayoutConfig };
   job.platform_fee_bps = policy.platform_fee_bps;
   await storage.put("Quotes", quote.quote_id, quote, true);
   job.quote_id = quote.quote_id;
@@ -2832,10 +2847,11 @@ async function completeExternalJob(job, execution, payment) {
   const platformFee = Number(quote?.platform_fee_amount ?? ((grossAmount * feeBps) / 10000).toFixed(6));
   const processingFeeBps = Number(quote?.processing_fee_bps ?? policy.processing_fee_bps ?? 0);
   const processingFee = Number(quote?.processing_fee_amount ?? ((grossAmount * processingFeeBps) / 10000).toFixed(6));
+  const privatePayFee = Number(quote?.privatepay_fee_amount ?? 0);
   const sellerNet = Number((grossAmount - platformFee).toFixed(6));
   const privatePayment = payment?.payment_mode === "privatepay";
   const persistence = await persistEvidence(config, { job_id: job.id, service: job.service_id, input_hash: job.input_hash, completed_at: now(), result });
-  const settlement = { id: `seller_settlement_${job.id}`, kind: "seller_settlement", job_id: job.id, seller_agent_id: job.seller_agent_id, gross_amount: grossAmount, buyer_amount: Number(payment?.accounting_amount ?? payment?.amount ?? quote?.amount ?? grossAmount), platform_fee_amount: platformFee, platform_fee_bps: feeBps, processing_fee_amount: processingFee, processing_fee_bps: processingFee, network_fee_lamports: Number(payment?.feeLamports || 0), network_fee_policy: privatePayment ? "private_rail_fee_payer_not_public" : "payer_direct", protocol_fee: platformFee, seller_net_amount: sellerNet, seller_amount: sellerNet, asset: payment?.currency || job.payment_asset, payout: (await storage.get("Registry", job.seller_agent_id))?.payout || null, status: "payable_pending_scheduled_settlement", created_at: now() };
+  const settlement = { id: `seller_settlement_${job.id}`, kind: "seller_settlement", job_id: job.id, seller_agent_id: job.seller_agent_id, gross_amount: grossAmount, buyer_amount: Number(payment?.accounting_amount ?? payment?.amount ?? quote?.amount ?? grossAmount), platform_fee_amount: platformFee, platform_fee_bps: feeBps, processing_fee_amount: processingFee, processing_fee_bps: processingFee, privatepay_fee_amount: privatePayFee, privatepay_fee_bps: Number(quote?.privatepay_fee_bps ?? 0), network_fee_lamports: Number(payment?.feeLamports || 0), network_fee_policy: privatePayment ? "private_rail_fee_payer_not_public" : "payer_direct", protocol_fee: platformFee, treasury_revenue_amount: Number((platformFee + privatePayFee).toFixed(6)), seller_net_amount: sellerNet, seller_amount: sellerNet, asset: payment?.currency || job.payment_asset, payout: (await storage.get("Registry", job.seller_agent_id))?.payout || null, status: "payable_pending_scheduled_settlement", created_at: now() };
   await storage.put("Registry", settlement.id, settlement, true);
   const receipt = { receipt_id: receiptId({ job_id: job.id, service: job.service_id, result_hash: digest(result) }), job_id: job.id, service: job.service_id, payment_mode: privatePayment ? "privatepay" : "direct", input_hash: job.input_hash, result_hash: digest(result), evidence_hash: digest(result), payment_signature: privatePayment ? null : payment?.signature || null, amount: privatePayment ? 0 : payment?.amount || 0, gross_amount: privatePayment ? 0 : grossAmount, buyer_amount: privatePayment ? 0 : settlement.buyer_amount, platform_fee_amount: privatePayment ? 0 : platformFee, platform_fee_bps: feeBps, processing_fee_amount: privatePayment ? 0 : processingFee, processing_fee_bps: processingFeeBps, network_fee_lamports: privatePayment ? 0 : settlement.network_fee_lamports, network_fee_policy: settlement.network_fee_policy, seller_net_amount: privatePayment ? null : sellerNet, asset: privatePayment ? null : payment?.currency || null, treasury: config.treasury, network: "solana-mainnet-beta", target_network: job.target_network || null, seller_agent_id: job.seller_agent_id, seller_service_id: job.seller_service_id, ...(privatePayment ? {} : { seller_settlement: { id: settlement.id, gross_amount: settlement.gross_amount, buyer_amount: settlement.buyer_amount, protocol_fee: settlement.protocol_fee, platform_fee_amount: settlement.platform_fee_amount, platform_fee_bps: settlement.platform_fee_bps, processing_fee_amount: settlement.processing_fee_amount, processing_fee_bps: settlement.processing_fee_bps, network_fee_lamports: settlement.network_fee_lamports, seller_net_amount: settlement.seller_net_amount, seller_amount: settlement.seller_amount, status: settlement.status } }), evidence_persistence: persistence.status, status: "VERIFIED", created_at: job.created_at, completed_at: now(), ...(job.pdao_entitlement ? { access_method: "pdao_holder_rewards", access_wallet: job.pdao_entitlement.wallet, access_token_mint: job.pdao_entitlement.token_mint, access_threshold_usd: job.pdao_entitlement.threshold_usd, access_verified_at: job.pdao_entitlement.verified_at, access_active_until: job.pdao_entitlement.active_until } : {}) };
   receipt.public_url = `https://${config.domain}/receipts/${encodeURIComponent(receipt.receipt_id)}`;
@@ -3323,11 +3339,12 @@ async function createJob(serviceId, input, admin = false, currency = "USDC", met
   await storage.put("Jobs", job.id, job, true);
   trackFunnel("job_created", { service: serviceId, ...metadata });
   if (service.price && !holderAccess) {
-    const quote = await makeQuote(serviceId, job.id, admin, currency, input?.network || null);
+    const quote = await makeQuote(serviceId, job.id, admin, currency, input?.network || null, normalizedPaymentMode);
     if (holderBenefit?.eligible) {
-      quote.amount = holderBenefit.charge_usd;
       quote.gross_amount = holderBenefit.charge_usd;
-      quote.amountAtomic = Math.round(holderBenefit.charge_usd * (currency === "SOL" ? 1e9 : 1e6));
+      quote.privatepay_fee_amount = normalizedPaymentMode === "privatepay" && currency === "USDC" ? privatePayCommercialFee(holderBenefit.charge_usd) : 0;
+      quote.amount = Number((quote.gross_amount + quote.privatepay_fee_amount).toFixed(6));
+      quote.amountAtomic = Math.round(quote.amount * (currency === "SOL" ? 1e9 : 1e6));
       quote.holder_tier_id = holderBenefit.tier_id;
       quote.holder_credit_applied_usd = holderBenefit.credit_applied_usd;
       quote.holder_discount_bps = holderBenefit.discount_bps;
