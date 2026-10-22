@@ -400,8 +400,22 @@ test("PrivatePAY probes an initialized MagicBlock stealth pool read-only", async
   });
   assert.equal(result.status, "initialized");
   assert.equal(result.exists, true);
-  assert.equal(seen[0].url, "https://payments.example/v1/spl/stealth-pool?handle=provider%40magicblock.id");
+  assert.equal(seen[0].url, "https://payments.example/v1/spl/stealth-pool?handle=provider%40magicblock.id&cluster=mainnet-private");
   assert.equal(seen[0].init.headers.authorization, "Bearer bearer-fixture");
+});
+
+test("PrivatePAY probes a public MagicBlock stealth pool without a bearer token", async () => {
+  const result = await probePrivatePayStealthHandle({
+    privatePayPrivacyRail: "magicblock-private-ephemeral-rollup",
+    privatePayProviderUrl: "https://payments.example",
+    privatePayProviderHandle: "provider@magicblock.id",
+  }, async (url, init) => {
+    assert.equal(url, "https://payments.example/v1/spl/stealth-pool?handle=provider%40magicblock.id&cluster=mainnet-private");
+    assert.equal(init.headers, undefined);
+    return { ok: true, status: 200, async json() { return { exists: true }; } };
+  });
+  assert.equal(result.status, "initialized");
+  assert.equal(result.exists, true);
 });
 
 test("PrivatePAY probes MagicBlock mainnet-private x402 support without a Token-2022 mint probe", async () => {

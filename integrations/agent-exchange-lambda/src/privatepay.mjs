@@ -691,15 +691,15 @@ export async function probePrivatePayStealthHandle(config, fetchImpl = fetch) {
   const handle = String(config.privatePayProviderHandle || "").trim();
   if (!validStealthHandle(handle)) return { status: "invalid_handle", exists: false };
   const token = String(config.privatePayStealthPoolToken || "").trim();
-  if (!token) return { status: "not_checked", exists: false, reason: "stealth-pool bearer token is not configured" };
   const base = String(config.privatePayProviderUrl || "").replace(/\/$/, "");
-  const url = `${base}/v1/spl/stealth-pool?handle=${encodeURIComponent(handle)}`;
+  const url = `${base}/v1/spl/stealth-pool?handle=${encodeURIComponent(handle)}&cluster=${encodeURIComponent(MAGICBLOCK_PRIVATE_CLUSTER)}`;
   try {
-    const response = await fetchImpl(url, {
+    const init = {
       method: "GET",
-      headers: { authorization: `Bearer ${token}` },
       signal: AbortSignal.timeout(5000),
-    });
+    };
+    if (token) init.headers = { authorization: `Bearer ${token}` };
+    const response = await fetchImpl(url, init);
     const body = await response.json().catch(() => ({}));
     if (!response.ok) return { status: `http_${response.status}`, exists: false };
     const exists = body?.exists === true;
