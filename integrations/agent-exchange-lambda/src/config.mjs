@@ -156,6 +156,9 @@ export function getConfig(env = process.env) {
     privatePayRequireGasless: bool(env.PRIVATEPAY_REQUIRE_GASLESS, true),
     privatePayMinDelayMs: boundedNumber(env.PRIVATEPAY_MIN_DELAY_MS || 0, 0, 0, 600000),
     privatePayMaxDelayMs: boundedNumber(env.PRIVATEPAY_MAX_DELAY_MS || 0, 0, 0, 600000),
+    privatePayFeeBps: boundedNumber(env.PRIVATEPAY_FEE_BPS || 250, 250, 0, 10000),
+    privatePayMinimumFeeUsd: boundedNumber(env.PRIVATEPAY_MINIMUM_FEE_USD || 0.05, 0.05, 0, 1000),
+    privatePayTreasurySplitVerified: bool(env.PRIVATEPAY_TREASURY_SPLIT_VERIFIED),
   };
 }
 

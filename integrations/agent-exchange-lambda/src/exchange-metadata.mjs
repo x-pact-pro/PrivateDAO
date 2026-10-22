@@ -25,7 +25,7 @@ const DETAILS = Object.freeze({
   "swap.quote": detail("Financial Services", "Return a Solana swap quote, route, slippage and network cost.", "Price a possible swap without executing it."),
   "agent.match": detail("Agent Services", "Rank registered agents against requested capabilities and context.", "Find the next provider for a multi-agent workflow."),
   "sponsored.discovery": detail("Agent Services", "Create an explicitly disclosed sponsored placement for agent discovery.", "Reach agents through a transparent commercial channel."),
-  "privatepay.x402": detail("Financial Services", "Negotiate a privacy-preserving x402 payment challenge without exposing payer, recipient or amount in the public response.", "Let agents pay for APIs while preserving a provider-controlled audit boundary.", "gated_until_privacy_rail_conformance"),
+  "privatepay.x402": detail("Financial Services", "Negotiate a privacy-preserving x402 payment challenge without exposing payer, recipient or amount in the public response.", "Let agents pay for APIs while preserving a provider-controlled audit boundary.", "commercial_fee: 2.5% of the quoted service subtotal, minimum $0.05 USDC, routed to the PrivateDAO treasury; separate from PDAO holder promotions and seller commissions; enabled only after treasury-split verification"),
 });
 
 export function serviceDetails(service) {

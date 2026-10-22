@@ -50,6 +50,18 @@ test("human root is HTML while machine surfaces remain available", async () => {
   assert.match(marketplace.body, /Curated external tools from their official maintainers/);
   assert.match(marketplace.body, /PDAO eligible/);
   assert.match(marketplace.body, /fixed promotion window/);
+  assert.match(marketplace.body, /PDAO Holder Access \+ Service Credits/);
+  assert.match(marketplace.body, /Try a live demo/);
+  assert.match(marketplace.body, /Try now/);
+  const demo = await request("/demo");
+  assert.equal(demo.statusCode, 200);
+  assert.match(demo.body, /See the agent work on real public data/);
+  assert.match(demo.body, new RegExp("9isGuumtaqvJeJeyLF44fvfskk2cv5mYsopexMBfpump"));
+  const demoResult = await request("/api/demo/token");
+  assert.equal(demoResult.statusCode, 200);
+  assert.equal(JSON.parse(demoResult.body).payment_required, false);
+  assert.equal(JSON.parse(demoResult.body).wallet_required, false);
+  assert.equal(JSON.parse(demoResult.body).mint, "9isGuumtaqvJeJeyLF44fvfskk2cv5mYsopexMBfpump");
   const curated = await request("/api/tools/curated");
   assert.equal(curated.statusCode, 200);
   assert.match(curated.headers["content-type"], /^application\/json/);
