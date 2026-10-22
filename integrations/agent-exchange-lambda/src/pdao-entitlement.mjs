@@ -93,6 +93,14 @@ export function publicPdaoBenefitPolicy(_qualificationDays = 0, at = new Date())
     credits_expire_each_cycle: true,
     discounts_stackable: false,
     excluded: ["high-cost services", "premium services", "third-party seller services"],
+    privacy_premium: {
+      status: "governance_pending",
+      applies_to: ["privatepay.x402", "confidential_payroll", "sealed_auctions", "private_governance_rooms"],
+      settlement_asset: "USDC",
+      pdao_requirement: "not_enforced_until_governance_approval_and_on_chain_payment_verification",
+      public_path_pdao_required: false,
+      cost_layers_separate: true,
+    },
     tiers: PDAO_HOLDER_TIERS.map((tier) => ({ ...tier, discount_percent: tier.discount_bps / 100 })),
   };
 }

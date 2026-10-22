@@ -88,6 +88,12 @@ test("human root is HTML while machine surfaces remain available", async () => {
   assert.equal(JSON.parse(holderPolicy.body).holder_rewards.qualification_days, 7);
   assert.equal(JSON.parse(holderPolicy.body).promotion.ends_at, "2026-11-20T00:00:00.000Z");
   assert.equal(JSON.parse(holderPolicy.body).promotion.payment_required, false);
+  assert.equal(JSON.parse(holderPolicy.body).privacy_premium.status, "governance_pending");
+  assert.equal(JSON.parse(holderPolicy.body).privacy_premium.settlement_asset, "USDC");
+  const agentCard = JSON.parse((await request("/.well-known/agent-card.json")).body);
+  assert.ok(agentCard.pdaoUtility.utility.includes("privacy_premium_for_confidential_workflows"));
+  assert.equal(agentCard.pdaoUtility.privacy_premium.status, "governance_pending");
+  assert.equal(agentCard.pdaoUtility.privacy_premium.private_path_settlement_asset, "USDC");
   const holderBenefits = await request("/holder-benefits");
   assert.equal(holderBenefits.statusCode, 200);
   assert.match(holderBenefits.body, /30-Day PDAO Holder Promotion/);
