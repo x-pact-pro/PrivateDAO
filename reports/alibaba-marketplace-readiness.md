@@ -51,6 +51,7 @@ The focused release checks completed with 30/30 surface tests and 38/38 PrivateP
 - Verified the live Marketplace contains 30 unique catalog cards and 30 matching `Try now` actions. Curated external tools retain an `Open official tool` action because they are discovery listings, not PrivateDAO-executed services.
 - Verified live product quotes for `treasury-guard-scan` ($0.20), `token-safety-brief` ($0.09), and `transaction-safety-check` ($0.17). Each returned USDC on Solana Mainnet and the configured production treasury owner `2BJ4...H663sL` plus its canonical USDC token account; no PDAO purchase was required.
 - Read-only chain evidence now confirms the MagicBlock setup transaction finalized on Solana Mainnet and the supplied Private Rollup transaction finalized on `mainnet-tee.magicblock.app`; the provider's public `v1/x402/supported` response also advertises x402 v2 `exact-magicblock` for `mainnet-private`. These facts prove setup/provider availability, not a complete funded deposit-to-withdrawal privacy audit, so the release gate remains closed.
+- Production dependency audit for `integrations/agent-exchange-lambda` reports 0 informational, low, moderate, high, or critical vulnerabilities across 160 production dependencies. The GitHub default-branch warning is broader than this deployed Lambda package and was not silently treated as a product-path result.
 
 ## Pricing proposal
 
