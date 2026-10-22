@@ -78,6 +78,7 @@ export function getConfig(env = process.env) {
     githubRepository: env.GITHUB_REPOSITORY || "",
     payoutSecretId: env.AGENT_EXCHANGE_PAYOUT_SECRET_ID || "",
     privatePaySecretId: env.AGENT_EXCHANGE_PRIVATEPAY_SECRET_ID || "",
+    alibabaMarketplaceSecretId: env.AGENT_EXCHANGE_ALIBABA_SECRET_ID || "",
     payoutSignerSecret: "",
     payoutBatchLimit: boundedNumber(env.AGENT_EXCHANGE_PAYOUT_BATCH_LIMIT || 20, 20, 1, 100),
     marketDataUrl: env.PDAO_MARKET_DATA_URL || "https://api.dexscreener.com/latest/dex",
@@ -97,6 +98,7 @@ export function getConfig(env = process.env) {
       Revenue: env.AGENT_EXCHANGE_REVENUE_TABLE || "",
       Telemetry: env.AGENT_EXCHANGE_TELEMETRY_TABLE || "",
       RateLimits: env.AGENT_EXCHANGE_RATE_LIMITS_TABLE || "",
+      AlibabaInstances: env.AGENT_EXCHANGE_ALIBABA_INSTANCES_TABLE || "",
     },
     // Test storage must be explicitly enabled in a test process. A stray
     // storage flag in Lambda must never silently replace DynamoDB with memory.
@@ -159,11 +161,13 @@ export function getConfig(env = process.env) {
     privatePayFeeBps: boundedNumber(env.PRIVATEPAY_FEE_BPS || 250, 250, 0, 10000),
     privatePayMinimumFeeUsd: boundedNumber(env.PRIVATEPAY_MINIMUM_FEE_USD || 0.05, 0.05, 0, 1000),
     privatePayTreasurySplitVerified: bool(env.PRIVATEPAY_TREASURY_SPLIT_VERIFIED),
+    alibabaMarketplaceEnabled: bool(env.ALIBABA_MARKETPLACE_ENABLED),
+    alibabaMarketplaceSpiSecret: env.ALIBABA_MARKETPLACE_SPI_SECRET || "",
   };
 }
 
 export async function hydrateConfig(config, env = process.env) {
-  if (!env.AGENT_EXCHANGE_SOLANA_RPC_SECRET_ID && !config.alchemySecretId && !config.mongoSecretId && !config.ibmSecretId && !config.githubSecretId && !config.payoutSecretId && !config.privatePaySecretId && !env.AGENT_EXCHANGE_ADMIN_SECRET_ID) return config;
+  if (!env.AGENT_EXCHANGE_SOLANA_RPC_SECRET_ID && !config.alchemySecretId && !config.mongoSecretId && !config.ibmSecretId && !config.githubSecretId && !config.payoutSecretId && !config.privatePaySecretId && !config.alibabaMarketplaceSecretId && !env.AGENT_EXCHANGE_ADMIN_SECRET_ID) return config;
   const [{ SecretsManagerClient, GetSecretValueCommand }] = await Promise.all([
     import("@aws-sdk/client-secrets-manager"),
   ]);
@@ -234,6 +238,7 @@ export async function hydrateConfig(config, env = process.env) {
     [config.githubSecretId, (values) => { if (values.GITHUB_TOKEN) config.githubToken = values.GITHUB_TOKEN; if (values.GITHUB_REPOSITORY) config.githubRepository = values.GITHUB_REPOSITORY; if (values.GITHUB_APP_ID) config.githubAppId = Number(values.GITHUB_APP_ID); if (values.GITHUB_APP_PRIVATE_KEY) config.githubAppPrivateKey = values.GITHUB_APP_PRIVATE_KEY; if (values.GITHUB_WEBHOOK_SECRET) config.githubWebhookSecret = values.GITHUB_WEBHOOK_SECRET; if (values.GITHUB_APP_SLUG) config.githubAppSlug = values.GITHUB_APP_SLUG; }],
     [config.payoutSecretId, (values, raw) => { config.payoutSignerSecret = values.SOLANA_PAYOUT_PRIVATE_KEY || values.PAYOUT_SIGNER_PRIVATE_KEY || values.secretKey || values.privateKey || raw || ""; }],
     [config.privatePaySecretId, (values) => { if (values.PRIVATEPAY_FACILITATOR_API_KEY) config.privatePayFacilitatorApiKey = values.PRIVATEPAY_FACILITATOR_API_KEY; if (values.PRIVATEPAY_MERCHANT_ID) config.privatePayMerchantId = values.PRIVATEPAY_MERCHANT_ID; if (values.PRIVATEPAY_STEALTH_POOL_TOKEN) config.privatePayStealthPoolToken = values.PRIVATEPAY_STEALTH_POOL_TOKEN; }],
+    [config.alibabaMarketplaceSecretId, (values) => { if (values.ALIBABA_MARKETPLACE_SPI_SECRET) config.alibabaMarketplaceSpiSecret = values.ALIBABA_MARKETPLACE_SPI_SECRET; }],
   ];
   for (const [secretId, apply] of optionalSecrets) {
     if (!secretId) continue;

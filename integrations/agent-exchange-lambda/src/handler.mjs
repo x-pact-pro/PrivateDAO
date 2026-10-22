@@ -41,6 +41,7 @@ import { issuePdaoChallenge, publicPdaoBenefitPolicy, pdaoPromotionStatus, consu
 import { runScheduledSellerSettlements } from "./settlement.mjs";
 import { HandshakeReplayCache, readSealReputation, sealkeeperFailure } from "./sealkeeper.mjs";
 import { createPrivatePayChallenge, createPrivatePayCheckout, createPrivatePayRequirements, decodePrivatePaySignature, preparePrivatePayDeposit, preparePrivatePayTransfer, preparePrivatePayWithdrawal, privatePayFacilitatorRequest, privatePayStatus, probePrivatePayRail, publicPrivatePayFacilitatorResult, requestPrivatePayCheckoutChallenge, PRIVATEPAY_SERVICE_ID } from "./privatepay.mjs";
+import { handleAlibabaSpi } from "./alibaba-marketplace.mjs";
 import { encodePaymentResponseHeader } from "@x402/core/http";
 
 const config = getConfig();
@@ -4596,6 +4597,14 @@ async function handle(e) {
     path = pathOf(e),
     body = method === "GET" ? {} : parseBody(e);
   if (method === "OPTIONS") return json({}, 204);
+  if (method === "GET" && path === "/api/alibaba/spi") {
+    if (!config.alibabaMarketplaceEnabled) return json({ error: "not_found" }, 404);
+    try {
+      return json(await handleAlibabaSpi({ parameters: e.queryStringParameters || {}, secret: config.alibabaMarketplaceSpiSecret, store: await store() }));
+    } catch (error) {
+      return json({ error: error.statusCode === 401 ? "unauthorized" : "alibaba_spi_rejected", message: error.message }, error.statusCode || 400);
+    }
+  }
   if (method === "POST" && path === "/api/auth/register") {
     const result = await accounts.register(body.email, body.password);
     return json(result.state, 201, { "set-cookie": sessionCookie(result.token) });
