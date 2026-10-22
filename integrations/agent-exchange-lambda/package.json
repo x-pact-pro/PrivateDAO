@@ -26,7 +26,7 @@
     "tweetnacl": "^1.0.3"
   },
   "devDependencies": {
-    "8004-solana": "0.8.3",
+    "8004-solana": "0.8.5",
     "esbuild": "0.28.2",
     "playwright": "^1.64.1"
   },
