@@ -51,6 +51,10 @@ test("human root is HTML while machine surfaces remain available", async () => {
   assert.match(marketplace.body, /PDAO eligible/);
   assert.match(marketplace.body, /fixed promotion window/);
   assert.match(marketplace.body, /PDAO Holder Access \+ Service Credits/);
+  assert.match(marketplace.body, /PrivatePAY x402/);
+  assert.match(marketplace.body, /2\.5% fee/);
+  assert.match(marketplace.body, /Activation gated/);
+  assert.match(marketplace.body, /USDC remains the settlement asset/);
   assert.match(marketplace.body, /Try a live demo/);
   assert.match(marketplace.body, /Try now/);
   const demo = await request("/demo");
@@ -84,6 +88,9 @@ test("human root is HTML while machine surfaces remain available", async () => {
   assert.match(marketplace.body, /SealKeeper read-only reputation verification/);
   assert.match(marketplace.body, /PrivateDAO Agent Exchange is SealKeeper's design and integration partner/);
   assert.match(marketplace.body, /https:\/\/sealkeeper\.run\/docs\/integrate/);
+  assert.match(root.body, /PrivatePAY x402/);
+  assert.match(root.body, /same service treasury/);
+  assert.match(root.body, /No production activation claim/);
   const serviceCatalog = await request("/api/services");
   assert.match(serviceCatalog.body, /public_free_read_only/);
   assert.match(marketplace.body, /optional external signal/);
