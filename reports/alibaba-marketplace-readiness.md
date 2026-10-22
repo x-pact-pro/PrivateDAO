@@ -48,6 +48,7 @@ The focused release checks completed with 30/30 surface tests and 38/38 PrivateP
 - Added the commercial PrivatePay surface without changing USDC settlement or enabling the rail.
 - Added and deployed the wallet-free AI-agent demo spotlight to the root, marketplace, and `/demo` surfaces. Lambda version `266` is active behind both production API integrations; version `265` remains available for rollback.
 - Verified live HTTP 200 responses and the read-only `/api/demo/token` report after deployment. The live `/api/privatepay/status` response remains fail-closed with `enabled: false` and `status: not_ready`.
+- Verified the live Marketplace contains 30 unique catalog cards and 30 matching `Try now` actions. Curated external tools retain an `Open official tool` action because they are discovery listings, not PrivateDAO-executed services.
 
 ## Pricing proposal
 
