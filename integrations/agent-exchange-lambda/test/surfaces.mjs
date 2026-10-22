@@ -281,7 +281,7 @@ test("human root is HTML while machine surfaces remain available", async () => {
   assert.equal(githubService.status, "Mainnet Live · read-only");
   const swapStatus = catalog.services.find((service) => service.id === "swap.quote").status;
   assert.equal(swapStatus, "Mainnet Live · quote-only");
-  assert.equal(catalog.services.find((service) => service.id === "privatepay.x402").status, "Implementation");
+  assert.equal(catalog.services.find((service) => service.id === "privatepay.x402").status, "Activation gated");
   const privatePayService = catalog.services.find((service) => service.id === "privatepay.x402");
   assert.equal(privatePayService.payment.flow, "gated_privatepay_x402_challenge");
   assert.equal(privatePayService.runtime.read_only_execution, false);
