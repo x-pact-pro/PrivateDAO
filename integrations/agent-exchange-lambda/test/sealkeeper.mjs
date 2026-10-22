@@ -31,6 +31,21 @@ function cacheFor(key, fetchImpl) {
   return new PublicKeyCache({ fetchImpl, now: () => now(), keysUrl: "https://sealkeeper.run/.well-known/seal.json" });
 }
 
+async function fetchOfficialJson(url) {
+  let lastError;
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    try {
+      const result = await fetch(url, { signal: AbortSignal.timeout(8000) });
+      if (!result.ok) throw new Error(`official fixture returned HTTP ${result.status}`);
+      return await result.json();
+    } catch (error) {
+      lastError = error;
+      if (attempt < 2) await new Promise((resolve) => setTimeout(resolve, 150 * (attempt + 1)));
+    }
+  }
+  throw lastError;
+}
+
 test("verifies a signed SEAL without reading claims before signature verification", async () => {
   const { pair, jwk } = fixtureKey();
   const seal = makeSeal(pair.privateKey, { iss: "sealkeeper.run", sub: agentId, ver: 1, iat: now() / 1000, exp: now() / 1000 + 3600, level: "none", counts: { events: 0 } });
@@ -115,7 +130,7 @@ test("maps every official read fixture to a non-accepted result", async () => {
     ["rate_limited", 429], ["renamed", 404], ["validation_failed", 400], ["withheld", 404],
   ];
   for (const [name, status] of fixtures) {
-    const fixture = await (await fetch(`https://raw.githubusercontent.com/sealkeeper-dev/cli/main/fixtures/reads/${name}.json`)).json();
+    const fixture = await fetchOfficialJson(`https://raw.githubusercontent.com/sealkeeper-dev/cli/main/fixtures/reads/${name}.json`);
     const fetchImpl = async () => response(fixture.body, status, fixture.headers || {});
     await assert.rejects(() => readSealReputation({ agentId, fetchImpl, includeTasks: false }), (error) => error instanceof SealkeeperError && error.code === fixture.body.error.code, name);
   }

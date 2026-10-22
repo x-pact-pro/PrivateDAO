@@ -75,7 +75,8 @@ test("holder rewards select the highest tier and apply credit before a non-stack
 
 test("holder policy is explicit and credit settlement is idempotent", async () => {
   const policy = publicPdaoBenefitPolicy(0);
-  assert.equal(policy.qualification_mode, "current_balance_pilot");
+  assert.equal(policy.qualification_mode, "current_balance_at_each_service_execution");
+  assert.equal(policy.holder_rewards.qualification_mode, "historical_balance_required");
   assert.deepEqual(policy.tiers.map((tier) => tier.id), ["access", "plus", "pro"]);
   const storage = new MemoryStore();
   await storage.put("Registry", "pdao_access_entitlement_wallet", {
@@ -103,7 +104,8 @@ test("fixed promotion is server-windowed and makes eligible services free", () =
   assert.equal(pdaoPromotionStatus(new Date("2026-10-20T12:00:00Z")).active, true);
   assert.equal(pdaoPromotionStatus(new Date("2026-11-20T00:00:00Z")).active, false);
   assert.equal(publicPdaoBenefitPolicy(7, new Date("2026-10-21T00:00:00Z")).promotion.qualification_days, 0);
-  assert.equal(publicPdaoBenefitPolicy(7, new Date("2026-10-21T00:00:00Z")).qualification_days, 7);
+  assert.equal(publicPdaoBenefitPolicy(7, new Date("2026-10-21T00:00:00Z")).qualification_days, 0);
+  assert.equal(publicPdaoBenefitPolicy(7, new Date("2026-12-01T00:00:00Z")).holder_rewards.qualification_days, 7);
   assert.deepEqual(calculatePdaoBenefit({ tier: pdaoTierForValue(25), servicePrice: 0.1, creditRemainingUsd: 0, creditRequestsUsed: 25, promotionActive: true }), {
     eligible: true,
     reason: "eligible_fixed_platform_promotion",
