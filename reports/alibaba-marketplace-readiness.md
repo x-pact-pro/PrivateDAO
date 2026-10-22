@@ -49,6 +49,7 @@ The focused release checks completed with 30/30 surface tests and 38/38 PrivateP
 - Added and deployed the wallet-free AI-agent demo spotlight to the root, marketplace, and `/demo` surfaces. Lambda version `266` is active behind both production API integrations; version `265` remains available for rollback.
 - Verified live HTTP 200 responses and the read-only `/api/demo/token` report after deployment. The live `/api/privatepay/status` response remains fail-closed with `enabled: false` and `status: not_ready`.
 - Verified the live Marketplace contains 30 unique catalog cards and 30 matching `Try now` actions. Curated external tools retain an `Open official tool` action because they are discovery listings, not PrivateDAO-executed services.
+- Verified live product quotes for `treasury-guard-scan` ($0.20), `token-safety-brief` ($0.09), and `transaction-safety-check` ($0.17). Each returned USDC on Solana Mainnet and the configured production treasury owner `2BJ4...H663sL` plus its canonical USDC token account; no PDAO purchase was required.
 
 ## Pricing proposal
 
