@@ -19,6 +19,7 @@ function magicBlockCheckoutConfig(overrides = {}) {
     privatePayFacilitatorUrl: "https://payments.example",
     privatePayFacilitatorApiKey: "merchant-api-key-fixture",
     privatePayProviderUrl: "https://payments.example",
+    privatePayMerchantId: "merchant-fixture",
     privatePayMerchantCheckoutEnabled: true,
     privatePayConformanceVerified: true,
     privatePayMainnetVerified: true,
@@ -116,6 +117,7 @@ test("MagicBlock merchant checkout follows the official payments contract", asyn
   assert.equal(calls[0].url, "https://payments.example/v1/payments");
   assert.equal(calls[0].options.method, "POST");
   assert.equal(calls[0].options.headers.authorization, "Bearer merchant-api-key-fixture");
+  assert.equal(calls[0].options.headers["X-Merchant-Id"], "merchant-fixture");
   const body = JSON.parse(calls[0].options.body);
   assert.deepEqual({ amount: body.amount, cluster: body.cluster, payer: body.payer, externalReference: body.externalReference }, {
     amount: "1000", cluster: "mainnet-private", payer: TEST_PAYER, externalReference: "job_fixture_1",
@@ -134,6 +136,7 @@ test("MagicBlock checkout challenge returns the provider PAYMENT-REQUIRED header
   });
   assert.equal(calls[0].url, `https://payments.example/v1/x402/payments/${TEST_PAYMENT_ID}/pay`);
   assert.equal(calls[0].options.method, "POST");
+  assert.equal(calls[0].options.headers["X-Merchant-Id"], "merchant-fixture");
   assert.deepEqual(result, { payment_id: TEST_PAYMENT_ID, status: "payment_required", payment_required_header: header });
   assert.doesNotMatch(JSON.stringify(result), /privateKey|signature|transaction/);
 });
