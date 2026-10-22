@@ -390,10 +390,12 @@ function assertMerchantCheckoutReady(config) {
 }
 
 function merchantHeaders(config) {
-  return {
+  const headers = {
     "content-type": "application/json",
     authorization: `Bearer ${config.privatePayFacilitatorApiKey}`,
   };
+  if (nonEmpty(config.privatePayMerchantId)) headers["X-Merchant-Id"] = config.privatePayMerchantId;
+  return headers;
 }
 
 function readResponseHeader(response, name) {
