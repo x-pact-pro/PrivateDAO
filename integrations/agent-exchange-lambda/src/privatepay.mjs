@@ -367,6 +367,7 @@ export function createPrivatePayRequirements(config, input = {}) {
         privacy_rail: config.privatePayPrivacyRail,
         provider_commitment: digest(providerId),
         request_id: requestId,
+        paymentId: digest({ requestId, resource, providerId, amount }),
         ...(magicBlockRail ? { cluster: MAGICBLOCK_PRIVATE_CLUSTER, settlement: "ephemeral-rollup", paymentFlow: "upfront" } : {}),
       },
     }],

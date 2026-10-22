@@ -94,7 +94,15 @@ test("external PrivatePAY lifecycle keeps public receipts redacted and provider 
     assert.equal(created.statusCode, 402, created.body);
     const challenge = JSON.parse(created.body);
     const accepted = challenge.payment_required.accepts[0];
-    const signature = encodePaymentSignatureHeader({ x402Version: 2, resource: challenge.payment_required.resource, accepted, payload: { signedPayload: "fixture-private-transfer" } });
+    const signature = encodePaymentSignatureHeader({
+      x402Version: 2,
+      resource: challenge.payment_required.resource,
+      accepted,
+      payload: {
+        paymentId: accepted.extra.paymentId,
+        transaction: Buffer.from("fixture-private-transfer").toString("base64"),
+      },
+    });
     const completed = await request(`/api/jobs/${challenge.payment_required.resource.url.split("/api/jobs/")[1].split("/")[0]}/privatepay`, "POST", undefined, { "PAYMENT-SIGNATURE": signature });
     assert.equal(completed.statusCode, 200, completed.body);
     const body = JSON.parse(completed.body);
