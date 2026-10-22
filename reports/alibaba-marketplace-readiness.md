@@ -18,7 +18,7 @@ The canonical service catalog in `integrations/agent-exchange-lambda/src/catalog
 - A2A: `https://agents.privatedao.org/a2a`
 - Service catalog: `https://agents.privatedao.org/api/services`
 
-The catalog separates free read-only capabilities, paid quote-first services, seller services, and the gated PrivatePay capability. A live surface check previously returned HTTP 200 for the root, marketplace, demo, holder benefits, and PrivatePay pages. This is surface evidence, not proof that every paid provider path is production-live.
+The catalog separates free read-only capabilities, paid quote-first services, seller services, and the gated PrivatePay capability. After the latest release, live checks returned HTTP 200 for the root, marketplace, demo, holder benefits, and PrivatePay status surfaces. The root, marketplace, and demo also expose the wallet-free AI-agent demo card and its read-only token-safety flow. This is surface evidence, not proof that every paid provider path is production-live.
 
 ## E2E classification
 
@@ -31,10 +31,10 @@ The catalog separates free read-only capabilities, paid quote-first services, se
 | Quote, USDC payment binding, receipt verification | PASS in repository tests | `test/service-execution.mjs`, `test/settlement.mjs` |
 | Provider failure and retry behavior | PASS in repository tests | provider and service tests |
 | PrivatePay local lifecycle | PASS in repository tests | `test/privatepay-job.mjs`, `test/privatepay.mjs` |
-| PrivatePay provider verify/settle | BLOCKED for production claim | live provider response remained `pending`; release flags remain fail-closed |
+| PrivatePay provider verify/settle | BLOCKED for production claim | live status remains `not_ready`; release flags remain fail-closed because settled provider, privacy, timing, fee-correlation, and treasury-split evidence are incomplete |
 | Alibaba real Seller Portal callback | NOT RUN | Seller Portal secret and sandbox callback access are account-owned |
 
-The repository test suite most recently completed with 134 tests, 133 passed, 1 skipped, 0 failed. The skipped test is the explicitly gated official fixture path. Tests are not a substitute for funded production E2E evidence.
+The focused release checks completed with 30/30 surface tests and 38/38 PrivatePay tests passing. A broader repository gate was not completed because the root check requires unavailable TypeScript tooling and then enters unrelated long-running Rust checks; it was stopped without changing production. Tests are not a substitute for funded production E2E evidence.
 
 ## Implemented changes
 
@@ -46,6 +46,8 @@ The repository test suite most recently completed with 134 tests, 133 passed, 1 
 - Added copy-ready Agent Exchange and PrivatePay listing packages.
 - Added a catalog-derived service inventory; it records 26 ordinary capabilities plus gated PrivatePay without inflating the service count.
 - Added the commercial PrivatePay surface without changing USDC settlement or enabling the rail.
+- Added and deployed the wallet-free AI-agent demo spotlight to the root, marketplace, and `/demo` surfaces. Lambda version `266` is active behind both production API integrations; version `265` remains available for rollback.
+- Verified live HTTP 200 responses and the read-only `/api/demo/token` report after deployment. The live `/api/privatepay/status` response remains fail-closed with `enabled: false` and `status: not_ready`.
 
 ## Pricing proposal
 
