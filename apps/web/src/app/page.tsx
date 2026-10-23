@@ -5,6 +5,7 @@ import { ArrowUpRight } from "lucide-react";
 import { Suspense } from "react";
 
 import { LegacyEntryBridge } from "@/components/legacy-entry-bridge";
+import { AgentExchangeDemoPanel } from "@/components/agent-exchange-demo-panel";
 import { CommercialHeroCopy } from "@/components/commercial-hero-copy";
 import { NetworkMarquee } from "@/components/network-marquee";
 import { OrganizationFitSelector } from "@/components/organization-fit-selector";
@@ -61,6 +62,10 @@ export default function HomePage() {
         </section>
 
         <NetworkMarquee />
+
+        <section className="mx-auto w-full max-w-7xl px-4 pt-4 sm:px-6 lg:px-8">
+          <AgentExchangeDemoPanel />
+        </section>
 
         <section className="mx-auto w-full max-w-7xl px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
           <div className="grid gap-10 lg:grid-cols-[0.82fr_1.18fr] lg:items-start">
