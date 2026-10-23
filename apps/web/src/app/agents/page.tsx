@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ArrowUpRight, Bot, CheckCircle2, FileCheck2, Radio } from "lucide-react";
 
 import { OperationsShell } from "@/components/operations-shell";
+import { AgentExchangeDemoPanel } from "@/components/agent-exchange-demo-panel";
 import { buttonVariants } from "@/components/ui/button";
 import { buildRouteMetadata } from "@/lib/route-metadata";
 import { cn } from "@/lib/utils";
@@ -88,6 +89,8 @@ export default function AgentsPage() {
           </a>
         ))}
       </section>
+
+      <AgentExchangeDemoPanel />
 
       <details className="enterprise-advanced-details rounded-[28px] border border-[#dce5f0] bg-[#f7f9fc] p-5 sm:p-7">
         <summary className="cursor-pointer text-sm font-semibold text-[#10233f]">Developer resources</summary>

@@ -37,6 +37,7 @@ import { accountProviderStatus, createAccountService, sessionCookie } from "./ac
 import { assertPublicHttps, fetchPublicHttps } from "./url-safety.mjs";
 import { curatedTools, integrationDirectory, serviceDetails, serviceRecommendation, SERVICE_CATEGORIES } from "./exchange-metadata.mjs";
 import { PRODUCTS, productById, publicProduct } from "./products.mjs";
+import { publicMarketplacePackaging } from "./saas-modules.mjs";
 import { issuePdaoChallenge, publicPdaoBenefitPolicy, pdaoPromotionStatus, consumePdaoBenefit, runPdaoHolderBalanceSnapshots, verifyPdaoHolderAccess, PDAO_TOKEN_MINT, PDAO_DEVELOPER_ALLOCATION, PDAO_DEVELOPER_LOCK_UNTIL, PDAO_DEVELOPER_LOCK_CONTRACT } from "./pdao-entitlement.mjs";
 import { runScheduledSellerSettlements } from "./settlement.mjs";
 import { HandshakeReplayCache, readSealReputation, sealkeeperFailure } from "./sealkeeper.mjs";
@@ -101,6 +102,8 @@ const PDAO_UTILITY = Object.freeze({
     "no treasury key or private key is requested",
   ],
   note: "PDAO holder access is verified by signed wallet challenge and live balance checks; ordinary paid Agent Exchange settlement remains quote-first finalized USDC.",
+  ordinary_services_do_not_require_pdao: true,
+  treasury_keys_bound_to_pdao: false,
 });
 const DEFAULT_MARKETPLACE_POLICY = {
   version: 2,
@@ -776,6 +779,7 @@ function openapi() {
     "/api/health": { get: { operationId: "health" } },
     "/api/demo/token": { get: { operationId: "liveTokenDemo", description: "Run a rate-limited, read-only demo against the public PDAO Solana Mainnet mint. No wallet or payment is required." } },
     "/api/services": { get: { operationId: "services" } },
+    "/api/marketplace/packaging": { get: { operationId: "marketplacePackaging" } },
     "/api/products": { get: { operationId: "products" } },
     "/api/products/{productId}/quote": { post: { operationId: "productQuote" } },
     "/api/pricing": { get: { operationId: "pricing" } },
@@ -1619,9 +1623,10 @@ async function marketplacePage() {
     return `<section id="category-${escapeHtml(category.id.toLowerCase().replaceAll(" ", "-"))}" class="category"><div class="category-head"><div><p class="eyebrow">${escapeHtml(category.id)}</p><h2>${escapeHtml(category.id)}</h2></div><p>${escapeHtml(category.description)}</p></div><div class="grid">${serviceCards}</div></section>`;
   }).join("");
   const productCatalog = `<section id="products" class="category"><div class="category-head"><div><p class="eyebrow">Product workflows</p><h2>Decision-ready products</h2></div><p>Choose a bounded outcome, receive one exact quote, approve once, and get an ordered receipt.</p></div>${privatePayFeatured}${featuredProduct}<div class="grid">${productCards}</div></section>`;
+  const moduleCatalog = `<section id="pdao-cloud" class="category"><div class="category-head"><div><p class="eyebrow">PrivateDAO Cloud</p><h2>Buy the outcome your team needs.</h2></div><p>Five focused clouds turn complex blockchain work into clear, reviewable decisions. Start with one module and expand when the workflow proves its value.</p></div><div class="grid">${publicMarketplacePackaging().modules.map((module) => `<article class="card"><div class="card-top"><div class="tag">PDAO Cloud</div><span class="price">$${module.monthly_price_usd}/mo</span></div><h3>${escapeHtml(module.name)}</h3><p>${escapeHtml(module.description)}</p><p class="value">${escapeHtml(module.audience)}</p><dl><div><dt>Includes</dt><dd>${escapeHtml(module.services.join(", "))}</dd></div><div><dt>Upgrade</dt><dd>Enterprise Suite · $399/mo</dd></div></dl><div class="card-actions"><a class="action" href="/demo">See it in action <span aria-hidden="true">→</span></a></div></article>`).join("")}</div></section>`;
   const curatedCatalog = `<section id="free-tools" class="category curated-catalog"><div class="category-head"><div><p class="eyebrow">Free community tools</p><h2>Popular tools for agents</h2></div><p>Curated external tools from their official maintainers. They are free or open source where stated, and are not operated, executed or endorsed by PrivateDAO.</p></div><div class="grid">${curatedToolCards}</div></section>`;
-  const directoryNav = `<nav class="marketplace-nav" aria-label="Marketplace sections" style="display:flex;flex-wrap:wrap;gap:10px;margin:0 0 42px;padding:8px;border:1px solid #dbe5f0;border-radius:16px;background:#f5f9ff"><a href="#products" style="flex:1 1 180px;display:flex;flex-direction:column;gap:2px;padding:12px 14px;border-radius:11px;color:#081b33;text-decoration:none"><strong>Products</strong><span style="color:#52657c;font-size:.82rem">Outcome-based workflows</span></a><a href="#free-tools" style="flex:1 1 180px;display:flex;flex-direction:column;gap:2px;padding:12px 14px;border-radius:11px;color:#081b33;text-decoration:none"><strong>Free tools</strong><span style="color:#52657c;font-size:.82rem">Official external tools</span></a><a href="#category-verification" style="flex:1 1 180px;display:flex;flex-direction:column;gap:2px;padding:12px 14px;border-radius:11px;color:#081b33;text-decoration:none"><strong>Services</strong><span style="color:#52657c;font-size:.82rem">PrivateDAO capabilities</span></a></nav>`;
-  cards = directoryNav + productCatalog + curatedCatalog + cards;
+  const directoryNav = `<nav class="marketplace-nav" aria-label="Marketplace sections" style="display:flex;flex-wrap:wrap;gap:10px;margin:0 0 42px;padding:8px;border:1px solid #dbe5f0;border-radius:16px;background:#f5f9ff"><a href="#pdao-cloud" style="flex:1 1 180px;display:flex;flex-direction:column;gap:2px;padding:12px 14px;border-radius:11px;color:#081b33;text-decoration:none"><strong>PDAO Cloud</strong><span style="color:#52657c;font-size:.82rem">Business-ready modules</span></a><a href="#products" style="flex:1 1 180px;display:flex;flex-direction:column;gap:2px;padding:12px 14px;border-radius:11px;color:#081b33;text-decoration:none"><strong>Products</strong><span style="color:#52657c;font-size:.82rem">Outcome-based workflows</span></a><a href="#free-tools" style="flex:1 1 180px;display:flex;flex-direction:column;gap:2px;padding:12px 14px;border-radius:11px;color:#081b33;text-decoration:none"><strong>Free tools</strong><span style="color:#52657c;font-size:.82rem">Official external tools</span></a><a href="#category-verification" style="flex:1 1 180px;display:flex;flex-direction:column;gap:2px;padding:12px 14px;border-radius:11px;color:#081b33;text-decoration:none"><strong>Services</strong><span style="color:#52657c;font-size:.82rem">PrivateDAO capabilities</span></a></nav>`;
+  cards = directoryNav + moduleCatalog + productCatalog + curatedCatalog + cards;
   const terms = `<article class="integration"><div class="eyebrow">Seller Marketplace</div><h3>List, execute, promote</h3><strong>Listing fee: $${escapeHtml(String(policy.listing_fee_usd))} one time · up to ${escapeHtml(String(policy.max_services_per_seller))} services</strong><p>Platform fee: ${escapeHtml(String(policy.platform_fee_bps / 100))}% per paid execution · seller receives ${escapeHtml(String(100 - policy.platform_fee_bps / 100))}% net</p><small>Fixed PDAO promotion: qualifying wallets can access marked eligible first-party verification services without payment through 19 Nov 2026. This is not a wallet-specific 30-day window. Ordinary paid services remain quote-first finalized USDC. Featured Listing: $${escapeHtml(String(policy.promotion_packages.featured_listing.price_usd))} · Ecosystem Campaign: $${escapeHtml(String(policy.promotion_packages.ecosystem_campaign.price_usd))}.</small><small style="display:block;margin-top:10px">${escapeHtml(COMMERCIAL_HOLDER_OFFER)}</small></article>`;
   const integrations = integrationDirectory().map(integrationCard).join("") + terms;
   return injectLanguageWidget(`<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Agent Marketplace | PrivateDAO</title><meta name="description" content="Discover PrivateDAO services for verification, evidence and agent workflows."><style>
@@ -4837,6 +4842,7 @@ async function handle(e) {
       categories: SERVICE_CATEGORIES,
       services: SERVICES.map(serviceManifest),
       products: PRODUCTS.map(publicProduct),
+      marketplace_packaging: publicMarketplacePackaging(),
       integrations: integrationDirectory(),
       payment: { quote_first: true, network: "solana-mainnet-beta", asset: "USDC", finalized_transaction_required: true },
       pdao_utility: PDAO_UTILITY,
@@ -4859,8 +4865,10 @@ async function handle(e) {
     return json({ tools: curatedTools(), disclosure: "Curated external discovery only. These tools are not PrivateDAO execution services or partnership claims." });
   if (method === "GET" && path === "/api/pdao/benefits")
     return json(publicPdaoBenefitPolicy(config.pdaoHolderQualificationDays));
+  if (method === "GET" && path === "/api/marketplace/packaging")
+    return json(publicMarketplacePackaging());
   if (method === "GET" && path === "/api/products")
-    return json({ products: PRODUCTS.map(publicProduct), payment: { network: "solana-mainnet-beta", asset: "USDC", quote_first: true } });
+    return json({ products: PRODUCTS.map(publicProduct), marketplace_packaging: publicMarketplacePackaging(), payment: { network: "solana-mainnet-beta", asset: "USDC", quote_first: true } });
   const productQuoteRoute = path.match(/^\/api\/products\/([^/]+)\/quote$/);
   if (method === "POST" && productQuoteRoute)
     return json(await createProductQuote(decodeURIComponent(productQuoteRoute[1]), body));

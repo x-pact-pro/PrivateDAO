@@ -8,7 +8,7 @@
     "build:github": "PRIVATE_DAO_NEXT_OUTPUT_MODE=export NEXT_PUBLIC_LIVE_SITE_URL=https://privatedao.org NEXT_PUBLIC_BASE_PATH=/PrivateDAO next build",
     "build:root": "PRIVATE_DAO_NEXT_OUTPUT_MODE=export NEXT_PUBLIC_LIVE_SITE_URL=https://privatedao.org NEXT_PUBLIC_BASE_PATH= next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint src --cache"
   },
   "dependencies": {
     "@bonfida/spl-name-service": "^3.0.21",
@@ -40,7 +40,8 @@
     "recharts": "^3.3.0",
     "poseidon-lite": "0.2.1",
     "snarkjs": "^0.7.6",
-    "tailwind-merge": "^3.3.1"
+    "tailwind-merge": "^3.3.1",
+    "viem": "2.56.6"
   },
   "overrides": {
     "bigint-buffer": "file:../../vendor/bigint-buffer",
