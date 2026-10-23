@@ -251,9 +251,50 @@ jobs:
             echo "- Published rollback/reference version: `$VERSION`"
           } >> "$GITHUB_STEP_SUMMARY"
 
+      - name: Route API Gateway to current Lambda
+        id: route_api
+        if: steps.deploy_code.outcome == 'success'
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+
+          DOMAIN="${PUBLIC_BASE_URL#https://}"
+          DOMAIN="${DOMAIN%%/*}"
+          API_ID="$(aws apigatewayv2 get-api-mappings \
+            --domain-name "$DOMAIN" \
+            --region "$AWS_REGION" \
+            --query 'Items[0].ApiId' \
+            --output text)"
+          test -n "$API_ID" && test "$API_ID" != "None"
+
+          FUNCTION_ARN="$(aws lambda get-function \
+            --function-name "$FUNCTION_NAME" \
+            --region "$AWS_REGION" \
+            --query 'Configuration.FunctionArn' \
+            --output text)"
+          INTEGRATION_URI="arn:aws:apigateway:${AWS_REGION}:lambda:path/2015-03-31/functions/${FUNCTION_ARN}/invocations"
+
+          for INTEGRATION_ID in $(aws apigatewayv2 get-integrations \
+            --api-id "$API_ID" \
+            --region "$AWS_REGION" \
+            --query 'Items[].IntegrationId' \
+            --output text); do
+            aws apigatewayv2 update-integration \
+              --api-id "$API_ID" \
+              --integration-id "$INTEGRATION_ID" \
+              --region "$AWS_REGION" \
+              --integration-uri "$INTEGRATION_URI" \
+              --payload-format-version 2.0 \
+              --timeout-in-millis 30000 >/dev/null
+          done
+
+          echo "API Gateway $API_ID routed to unqualified Lambda $FUNCTION_NAME"
+
       - name: Production smoke gate
         id: smoke
-        if: steps.deploy_code.outcome == 'success'
+        if: >-
+          steps.deploy_code.outcome == 'success' &&
+          steps.route_api.outcome == 'success'
         continue-on-error: true
         run: |
           set -euo pipefail
@@ -335,6 +376,7 @@ jobs:
           steps.capture.outcome == 'success' &&
           (
             steps.deploy_code.outcome == 'failure' ||
+            steps.route_api.outcome == 'failure' ||
             steps.smoke.outcome == 'failure' ||
             steps.payout_runtime.outcome == 'failure' ||
             steps.settlement_schedule.outcome == 'failure'
@@ -382,6 +424,7 @@ jobs:
           always() &&
           (
             steps.deploy_code.outcome == 'failure' ||
+            steps.route_api.outcome == 'failure' ||
             steps.smoke.outcome == 'failure' ||
             steps.payout_runtime.outcome == 'failure' ||
             steps.settlement_schedule.outcome == 'failure'
@@ -397,6 +440,7 @@ jobs:
       - name: Record successful production release
         if: >-
           steps.deploy_code.outcome == 'success' &&
+          steps.route_api.outcome == 'success' &&
           steps.smoke.outcome == 'success' &&
           steps.payout_runtime.outcome == 'success' &&
           steps.settlement_schedule.outcome == 'success'
