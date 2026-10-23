@@ -34,3 +34,10 @@ test("Alibaba SPI rejects bad tokens before persistence", async () => {
   await assert.rejects(() => handleAlibabaSpi({ parameters: { action: "createInstance", orderBizId: "biz-3", productCode: "agent-exchange", token: "bad" }, secret: "seller-secret", store }), /authentication failed/);
   assert.equal(await store.get("AlibabaInstances", "alibaba:biz-3"), null);
 });
+
+test("Alibaba SPI accepts JSON POST parameters", async () => {
+  const store = new MemoryStore();
+  const parameters = signed({ action: "createInstance", aliUid: "ali-post", orderId: "order-post", orderBizId: "biz-post", productCode: "agent-exchange", skuId: "enterprise" });
+  const result = await handleAlibabaSpi({ parameters, secret: "seller-secret", store });
+  assert.deepEqual(result, { success: true, instanceId: "biz-post" });
+});

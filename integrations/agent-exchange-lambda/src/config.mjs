@@ -248,7 +248,12 @@ export async function hydrateConfig(config, env = process.env) {
     } catch (error) {
       // Settlement is deliberately inert until the operator provisions the
       // signer. A missing payout secret must not take down buyer-facing APIs.
-      if ((secretId === config.payoutSecretId || secretId === config.privatePaySecretId) && error?.name === "ResourceNotFoundException") continue;
+      if (
+        (secretId === config.payoutSecretId ||
+          secretId === config.privatePaySecretId ||
+          secretId === config.alibabaMarketplaceSecretId) &&
+        error?.name === "ResourceNotFoundException"
+      ) continue;
       throw error;
     }
   }
