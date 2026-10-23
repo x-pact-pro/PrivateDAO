@@ -13,7 +13,7 @@ const agentExchangeBase = "https://agents.privatedao.org";
 export const metadata: Metadata = buildRouteMetadata({
   title: "Agent Marketplace",
   description:
-    "Discover machine-ready PrivateDAO services for verification, governed execution, and verifiable receipts.",
+    "Give your team a faster way to verify assets, understand risk, and make better decisions with PrivateDAO Cloud.",
   path: "/agents",
   keywords: ["PrivateDAO Agent Marketplace", "A2A agents", "MCP services", "verifiable agent receipts"],
 });
@@ -34,8 +34,8 @@ export default function AgentsPage() {
   return (
     <OperationsShell
       eyebrow="Agent Marketplace"
-      title="Let software find, use, and verify useful services."
-      description="PrivateDAO Agent Exchange gives software teams a clear path from finding a service to receiving a useful result they can check later."
+      title="Turn complex blockchain work into a clear business decision."
+      description="PrivateDAO Cloud brings verification, risk, intelligence, transaction guidance, and agent discovery into one trusted service layer. Start with a live example, then choose the capability that fits your team."
       navigationMode="guided"
       badges={[
         { label: "Live service discovery", variant: "cyan" },
@@ -47,26 +47,26 @@ export default function AgentsPage() {
         <article className="rounded-[28px] border border-cyan-300/20 bg-cyan-300/[0.055] p-5 sm:p-7">
           <div className="flex items-center gap-3 text-cyan-100">
             <div className="rounded-2xl border border-cyan-200/20 bg-cyan-200/10 p-3"><Bot className="h-6 w-6" /></div>
-            <span className="text-xs font-semibold uppercase tracking-[0.22em]">For AI teams and autonomous agents</span>
+            <span className="text-xs font-semibold uppercase tracking-[0.22em]">For teams that need answers they can trust</span>
           </div>
           <h2 className="mt-6 max-w-2xl text-2xl font-semibold tracking-[-0.03em] text-white sm:text-4xl">
-            Turn a capability request into a trusted result.
+            Know what you are signing, buying, or approving.
           </h2>
           <p className="mt-4 max-w-2xl text-sm leading-7 text-white/65 sm:text-base">
-            Discover a service, run a free check, choose the right paid capability, and receive a result with a receipt your systems can verify.
+            Start with a free check, get the context your team is missing, and receive a result that can be reviewed later by colleagues, customers, or auditors.
           </p>
           <div className="mt-6 flex flex-wrap gap-3">
             <a href={`${agentExchangeBase}/connect`} className={cn(buttonVariants({ size: "sm" }))}>
-              Connect an agent <ArrowUpRight className="h-4 w-4" />
+              See the five PDAO Cloud modules <ArrowUpRight className="h-4 w-4" />
             </a>
             <a href={`${agentExchangeBase}/api/services`} className={cn(buttonVariants({ size: "sm", variant: "secondary" }))}>
-              Browse capabilities <ArrowUpRight className="h-4 w-4" />
+              Try a live example <ArrowUpRight className="h-4 w-4" />
             </a>
           </div>
         </article>
 
         <article className="rounded-[28px] border border-white/10 bg-white/[0.035] p-5 sm:p-7">
-          <div className="text-[11px] uppercase tracking-[0.25em] text-white/45">The operating loop</div>
+          <div className="text-[11px] uppercase tracking-[0.25em] text-white/45">A simple path to confidence</div>
           <div className="mt-5 grid gap-3">
             {operatingLoop.map(({ Icon, label, text }) => (
               <div key={label} className="flex gap-3 rounded-2xl border border-white/8 bg-black/20 p-4">
@@ -93,7 +93,7 @@ export default function AgentsPage() {
       <AgentExchangeDemoPanel />
 
       <details className="enterprise-advanced-details rounded-[28px] border border-[#dce5f0] bg-[#f7f9fc] p-5 sm:p-7">
-        <summary className="cursor-pointer text-sm font-semibold text-[#10233f]">Developer resources</summary>
+        <summary className="cursor-pointer text-sm font-semibold text-[#10233f]">Technical access for your team</summary>
         <div className="mt-5 flex flex-wrap gap-3">
           <a href={`${agentExchangeBase}/a2a`} className={cn(buttonVariants({ size: "sm", variant: "outline" }))}>A2A</a>
           <a href={`${agentExchangeBase}/mcp`} className={cn(buttonVariants({ size: "sm", variant: "outline" }))}>MCP</a>
