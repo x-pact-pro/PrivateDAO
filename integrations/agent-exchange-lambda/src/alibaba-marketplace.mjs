@@ -1,6 +1,6 @@
 import { createHash, timingSafeEqual } from "node:crypto";
 
-const ACTIONS = new Set(["createInstance", "renewInstance", "expireInstance", "releaseInstance", "orderPay"]);
+const ACTIONS = new Set(["createInstance", "renewInstance", "expireInstance", "expiredInstance", "releaseInstance", "orderPay"]);
 const text = (value) => String(value == null ? "" : value).trim();
 
 export function alibabaToken(parameters, secret) {
@@ -52,7 +52,7 @@ export async function handleAlibabaSpi({ parameters, secret, store, collection =
     return { success: true, instanceId: record.instance_id };
   }
   if (!current) return { success: false, instanceId: event.instance_id };
-  const status = event.action === "renewInstance" ? "active" : event.action === "expireInstance" ? "expired" : "released";
+  const status = event.action === "renewInstance" ? "active" : (event.action === "expireInstance" || event.action === "expiredInstance") ? "expired" : "released";
   const next = { ...current, ...event, status, updated_at: event.received_at };
   await store.put(collection, key, next);
   return { success: true, instanceId: next.instance_id };

@@ -1,7 +1,7 @@
 # PrivateDAO Agent Exchange: Alibaba Marketplace Listing Pack
 
-Status: draft for seller-portal review. This file is packaging and evidence, not a
-Marketplace submission or a legal acceptance of the Co-Sell Agreement.
+Status: seller-portal implementation pack. This file is packaging and evidence, not
+a Marketplace submission or a legal acceptance of the Co-Sell Agreement.
 
 ## Product
 
@@ -35,6 +35,25 @@ sample report.
 Prices above are proposed commercial packaging, not a claim about Alibaba's final
 customer price. Final marketplace pricing, taxes, billing records, and settlement
 follow the seller-portal configuration and executed agreement.
+
+## Buyer-facing positioning
+
+PrivateDAO is presented as a business control layer for teams that need confident
+decisions across wallets, transactions, and agent workflows. Customers buy a clear
+outcome: faster verification, lower operational risk, and evidence that can be
+reviewed by finance, security, and compliance teams. API, MCP, and A2A are delivery
+channels, not the product headline.
+
+The five offers are branded under the parent PrivateDAO name:
+
+- **PDAO Verify**: make evidence and transaction decisions reviewable.
+- **PDAO Forensics Cloud**: surface risk before capital or access is exposed.
+- **PDAO Multichain Intelligence**: turn fragmented wallet and market data into an
+  operating view.
+- **PDAO Decision & Transaction**: compare and prepare actions with a governed
+  decision trail.
+- **PDAO Agent Network**: discover capable agents with clearer reputation and
+  commercial context.
 
 ## Utility and settlement boundaries
 
@@ -76,5 +95,13 @@ belongs in this repository or this listing pack.
 - [x] Seven-day PDAO qualification default remains separate from the 30-day offer.
 - [ ] Frontend production build green on a clean dependency install.
 - [ ] Alibaba Cloud runtime deployment and health evidence.
+- [ ] Seller Portal SPI secret provisioned in `pdao/agent-exchange/alibaba-marketplace`
+      as `{"ALIBABA_MARKETPLACE_SPI_SECRET":"<seller-portal-secret>"}`.
+- [ ] Lambda runtime enabled with `ALIBABA_MARKETPLACE_ENABLED=true` and
+      `AGENT_EXCHANGE_ALIBABA_SECRET_ID=pdao/agent-exchange/alibaba-marketplace`.
+- [ ] SPI test evidence for `createInstance`, `orderPay`, `renewInstance`,
+      `expireInstance`, and `releaseInstance`.
+- [ ] Seller Center notification URL set to
+      `https://agents.privatedao.org/api/alibaba/spi`.
 - [ ] Seller Portal listing, approval, and legal acceptance.
 - [ ] Production marketplace subscription activation, tenant mapping, and metering.

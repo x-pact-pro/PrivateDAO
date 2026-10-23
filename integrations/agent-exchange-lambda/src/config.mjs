@@ -98,7 +98,12 @@ export function getConfig(env = process.env) {
       Revenue: env.AGENT_EXCHANGE_REVENUE_TABLE || "",
       Telemetry: env.AGENT_EXCHANGE_TELEMETRY_TABLE || "",
       RateLimits: env.AGENT_EXCHANGE_RATE_LIMITS_TABLE || "",
-      AlibabaInstances: env.AGENT_EXCHANGE_ALIBABA_INSTANCES_TABLE || "",
+      // Alibaba instance lifecycle records can share the existing Registry
+      // table until an operator provisions a dedicated table.
+      AlibabaInstances:
+        env.AGENT_EXCHANGE_ALIBABA_INSTANCES_TABLE ||
+        env.AGENT_EXCHANGE_REGISTRY_TABLE ||
+        "",
     },
     // Test storage must be explicitly enabled in a test process. A stray
     // storage flag in Lambda must never silently replace DynamoDB with memory.
@@ -248,7 +253,12 @@ export async function hydrateConfig(config, env = process.env) {
     } catch (error) {
       // Settlement is deliberately inert until the operator provisions the
       // signer. A missing payout secret must not take down buyer-facing APIs.
-      if ((secretId === config.payoutSecretId || secretId === config.privatePaySecretId) && error?.name === "ResourceNotFoundException") continue;
+      if (
+        (secretId === config.payoutSecretId ||
+          secretId === config.privatePaySecretId ||
+          secretId === config.alibabaMarketplaceSecretId) &&
+        error?.name === "ResourceNotFoundException"
+      ) continue;
       throw error;
     }
   }

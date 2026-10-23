@@ -29,8 +29,24 @@ test("Alibaba SPI renews, expires, and releases one instance without cross-tenan
   assert.equal((await store.get("AlibabaInstances", "alibaba:biz-2")).status, "released");
 });
 
+test("Alibaba SPI accepts the official expiredInstance action spelling", async () => {
+  const store = new MemoryStore();
+  const base = { aliUid: "ali-expired", orderId: "order-expired", orderBizId: "biz-expired", productCode: "agent-exchange", skuId: "basic" };
+  await handleAlibabaSpi({ parameters: signed({ ...base, action: "createInstance" }), secret: "seller-secret", store });
+  const result = await handleAlibabaSpi({ parameters: signed({ ...base, action: "expiredInstance", instanceId: "biz-expired" }), secret: "seller-secret", store });
+  assert.deepEqual(result, { success: true, instanceId: "biz-expired" });
+  assert.equal((await store.get("AlibabaInstances", "alibaba:biz-expired")).status, "expired");
+});
+
 test("Alibaba SPI rejects bad tokens before persistence", async () => {
   const store = new MemoryStore();
   await assert.rejects(() => handleAlibabaSpi({ parameters: { action: "createInstance", orderBizId: "biz-3", productCode: "agent-exchange", token: "bad" }, secret: "seller-secret", store }), /authentication failed/);
   assert.equal(await store.get("AlibabaInstances", "alibaba:biz-3"), null);
+});
+
+test("Alibaba SPI accepts JSON POST parameters", async () => {
+  const store = new MemoryStore();
+  const parameters = signed({ action: "createInstance", aliUid: "ali-post", orderId: "order-post", orderBizId: "biz-post", productCode: "agent-exchange", skuId: "enterprise" });
+  const result = await handleAlibabaSpi({ parameters, secret: "seller-secret", store });
+  assert.deepEqual(result, { success: true, instanceId: "biz-post" });
 });
