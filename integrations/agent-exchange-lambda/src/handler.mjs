@@ -1730,7 +1730,7 @@ function commercialHomePageWithOffer() {
   return commercialHomePage()
     .replace('</style>', `${visualLayer}</style>`)
     .replace('<section class="hero">', `${commercialOfferBanner()}<section class="hero">`)
-    .replace('<section class="flow" aria-label="Agent Exchange lifecycle">', `${utilityRail}${privatePaySpotlight}<section class="flow" aria-label="Agent Exchange lifecycle">`)
+    .replace('<section class="flow" aria-label="Agent Exchange lifecycle">', `${pdaoCloudFeatured}${utilityRail}${privatePaySpotlight}<section class="flow" aria-label="Agent Exchange lifecycle">`)
     .replace('<p class="side-note"><strong>Free to start.</strong><br>Paid services are quote-first.<br>Payment is finalized on Solana Mainnet USDC.<br>Completed work returns a verifiable receipt.</p>', proofPanel)
     .replace('class="category-grid">', 'class="category-grid pdao-lift">')
       .replace('<footer class="footer">', `${ecosystemPartnerRail()}<footer class="footer">`)
