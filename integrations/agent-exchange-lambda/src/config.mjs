@@ -178,6 +178,14 @@ export function getConfig(env = process.env) {
     privatePayFeeBps: boundedNumber(env.PRIVATEPAY_FEE_BPS || 250, 250, 0, 10000),
     privatePayMinimumFeeUsd: boundedNumber(env.PRIVATEPAY_MINIMUM_FEE_USD || 0.05, 0.05, 0, 1000),
     privatePayTreasurySplitVerified: bool(env.PRIVATEPAY_TREASURY_SPLIT_VERIFIED),
+    // The private rail has a separate PDAO utility gate. Public USDC
+    // services never read these fields or require the token.
+    privatePayPdaoGateEnabled: bool(env.PRIVATEPAY_PDAO_GATE_ENABLED, true),
+    privatePayPdaoMinHoldUsd: boundedNumber(env.PRIVATEPAY_PDAO_MIN_HOLD_USD || 25, 25, 25, 1000000),
+    privatePayPdaoFeeBps: boundedNumber(env.PRIVATEPAY_PDAO_FEE_BPS || 100, 100, 0, 10000),
+    privatePayPdaoFeeFloorUsd: boundedNumber(env.PRIVATEPAY_PDAO_FEE_FLOOR_USD || 0.05, 0.05, 0, 1000),
+    privatePayPdaoFeeSplit: env.PRIVATEPAY_PDAO_FEE_SPLIT || "50_burn_50_treasury",
+    privatePayPdaoTreasury: env.PRIVATEPAY_PDAO_TREASURY || env.SOLANA_TREASURY || "2BJ4ezxqV9YJXc38D9duKBkdn4su4jE1beKUHwH663sL",
     privatePayAutopilotEnabled: bool(env.PRIVATEPAY_AUTOPILOT_ENABLED),
     alibabaMarketplaceEnabled: bool(env.ALIBABA_MARKETPLACE_ENABLED),
     alibabaMarketplaceSpiSecret: env.ALIBABA_MARKETPLACE_SPI_SECRET || "",

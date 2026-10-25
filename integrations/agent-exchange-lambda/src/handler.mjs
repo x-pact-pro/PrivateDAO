@@ -41,7 +41,7 @@ import { publicMarketplacePackaging, SAAS_MODULES, ENTERPRISE_SUITE } from "./sa
 import { calculatePdaoSellerListingBenefit, issuePdaoChallenge, publicPdaoBenefitPolicy, pdaoPromotionStatus, consumePdaoBenefit, runPdaoHolderBalanceSnapshots, verifyPdaoHolderAccess, PDAO_SELLER_SERVICE_ID, PDAO_TOKEN_MINT, PDAO_DEVELOPER_ALLOCATION, PDAO_DEVELOPER_LOCK_UNTIL, PDAO_DEVELOPER_LOCK_CONTRACT } from "./pdao-entitlement.mjs";
 import { runScheduledSellerSettlements } from "./settlement.mjs";
 import { HandshakeReplayCache, readSealReputation, sealkeeperFailure } from "./sealkeeper.mjs";
-import { createPrivatePayChallenge, createPrivatePayCheckout, createPrivatePayRequirements, decodePrivatePaySignature, preparePrivatePayDeposit, preparePrivatePayTransfer, preparePrivatePayWithdrawal, privatePayFacilitatorRequest, privatePayStatus, probePrivatePayRail, publicPrivatePayFacilitatorResult, requestPrivatePayCheckoutChallenge, verifyPrivatePayMainnetSettlement, PRIVATEPAY_SERVICE_ID } from "./privatepay.mjs";
+import { buildPrivatePayPdaoFeeTransaction, createPrivatePayChallenge, createPrivatePayCheckout, createPrivatePayRequirements, decodePrivatePaySignature, preparePrivatePayDeposit, preparePrivatePayTransfer, preparePrivatePayWithdrawal, privatePayFacilitatorRequest, privatePayStatus, probePrivatePayRail, publicPrivatePayFacilitatorResult, requestPrivatePayCheckoutChallenge, verifyPrivatePayMainnetSettlement, verifyPrivatePayPdaoFee, PRIVATEPAY_SERVICE_ID } from "./privatepay.mjs";
 import { authorizePrivatePayAutopilotOperation, cancelPrivatePayAutopilotOperation, completePrivatePayAutopilotOperation, createPrivatePayAutopilotChallenge, createPrivatePayAutopilotOperationChallenge, createPrivatePayAutopilotPolicy, privatePayAutopilotStatus, validatePrivatePayAutopilotOperation } from "./privatepay-autopilot.mjs";
 import { handleAlibabaSpi } from "./alibaba-marketplace.mjs";
 import { encodePaymentResponseHeader } from "@x402/core/http";
@@ -909,6 +909,7 @@ function openapi() {
     "/api/privatepay/autopilot/cancel": { post: { operationId: "privatePayAutopilotCancel" } },
     "/api/privatepay/x402": { post: { operationId: "privatePayX402", description: "Return HTTP 402 PrivatePAY requirements or fail closed until a reviewed facilitator supports the exact scheme and network." } },
     "/api/privatepay/x402/requirements": { post: { operationId: "privatePayRequirements", description: "Return x402 V2 requirements after the configured private rail is enabled." } },
+    "/api/privatepay/x402/pdao-fee/transaction": { post: { operationId: "privatePayPdaoFeeTransaction", description: "Build an unsigned PDAO fee transaction for a private settlement. The wallet signs and submits it; PrivateDAO never receives a private key." } },
     "/api/privatepay/x402/checkout": { post: { operationId: "privatePayCheckout", description: "Create an official MagicBlock private checkout or request its PAYMENT-REQUIRED challenge. Disabled until explicit merchant-checkout and privacy gates pass; never signs or broadcasts." } },
     "/api/privatepay/x402/prepare": { post: { operationId: "privatePayPrepare", description: "Prepare an unsigned MagicBlock deposit, private transfer, or withdrawal. The client signs locally; this endpoint never signs or broadcasts." } },
     "/api/privatepay/x402/verify": { post: { operationId: "privatePayVerify", description: "Forward an x402 v2 payment payload to the reviewed PrivatePAY facilitator. Disabled until conformance is verified." } },
@@ -1584,10 +1585,15 @@ if(holderButton)holderButton.onclick=async()=>{holderButton.disabled=true;try{le
 if(payButton)payButton.onclick=async()=>{payButton.disabled=true;try{if(!jobId)throw new Error("Get a quote first");if(!payerAddress){if(!connectButton)throw new Error("Connect a Solana wallet first");await connectButton.onclick();if(!payerAddress)throw new Error("Wallet connection was not approved");}const payer=payerAddress,builtResponse=await fetch("/api/jobs/"+encodeURIComponent(jobId)+"/payment-transaction",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({payer})}),built=await builtResponse.json();if(!builtResponse.ok||!built.recentBlockhash)throw new Error(built.message||"payment transaction unavailable");const web3=await import("/assets/browser/solana-web3.mjs"),spl=await import("/assets/browser/spl-token.mjs"),payerKey=new web3.PublicKey(payer),mint=new web3.PublicKey(built.mint),source=new web3.PublicKey(built.sourceTokenAccount),destination=new web3.PublicKey(built.treasuryTokenAccount),owner=new web3.PublicKey(built.treasuryOwner),tx=new web3.Transaction();tx.add(spl.createAssociatedTokenAccountIdempotentInstruction(payerKey,destination,owner,mint,spl.TOKEN_PROGRAM_ID,spl.ASSOCIATED_TOKEN_PROGRAM_ID),spl.createTransferCheckedInstruction(source,mint,destination,payerKey,BigInt(built.amountBaseUnits),6,[],spl.TOKEN_PROGRAM_ID),new web3.TransactionInstruction({programId:new web3.PublicKey("MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr"),keys:[{pubkey:payerKey,isSigner:true,isWritable:false}],data:new TextEncoder().encode(built.paymentReference)}));tx.feePayer=payerKey;tx.recentBlockhash=built.recentBlockhash;const sent=await window.solana.signAndSendTransaction(tx);paymentSignature=sent.signature;show({status:"payment_submitted",signature:paymentSignature,message:"Payment submitted. Waiting for finalized backend verification. Do not submit another payment."});let result;for(let attempt=0;attempt<20;attempt++){const response=await fetch("/api/jobs/"+encodeURIComponent(jobId)+"/payment",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({signature:paymentSignature})});result=await response.json();if(response.ok&&result.receipt)break;if(response.status===409){show(result);return}if(!response.ok&&response.status!==202)throw new Error(result.message||result.error||"payment verification failed");await new Promise(resolve=>setTimeout(resolve,3000))}show(result)}catch(error){show("PAYMENT ERROR: "+(error.message||String(error)))}finally{payButton.disabled=false}};
 </script></section>`.replace("Your wallet signs either the access message first or the exact quoted USDC transaction.", "Your wallet signs the access message first or signs the exact quoted transaction (USDC on Solana Mainnet).");
 }
+function privatePayCheckoutPage() {
+  return `<section class="panel checkout" style="margin-top:14px;border-color:#b9dfcf;background:#f5fcf8" aria-labelledby="service-checkout-title"><p class="eyebrow" style="color:#087f5b">PrivatePAY x402 · private settlement</p><h2 id="service-checkout-title">Approve private payment access</h2><p class="muted">Private settlement requires a wallet holding at least $25 of PDAO. The private fee is 1% of the quoted USDC amount, with a $0.05 equivalent minimum, split 50% burned and 50% sent to the treasury. Public USDC services do not require PDAO.</p><label for="privatePayAmount" style="display:block;margin-top:16px;font-weight:750">Quoted service amount (USDC)</label><input id="privatePayAmount" value="0.50" inputmode="decimal" autocomplete="off" style="width:100%;box-sizing:border-box;padding:12px;border:1px solid var(--line);border-radius:12px;font-size:1.05rem"><div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px"><button id="privatePayChallenge" class="button" type="button">Connect wallet and prepare private fee</button><a class="button" href="/mcp" style="background:#fff;color:#071a32;border:1px solid #dbe5ef">Connect an agent</a></div><pre id="servicePaymentStatus" aria-live="polite" style="margin-top:14px">Your wallet remains local. No private key is requested.</pre><script>const button=document.querySelector('#privatePayChallenge'),amount=document.querySelector('#privatePayAmount'),status=document.querySelector('#servicePaymentStatus');const units=()=>{const value=Number(String(amount.value).trim());if(!Number.isFinite(value)||value<=0)throw Error('Enter a positive USDC amount');return {value,units:String(Math.round(value*1000000))}};const decodeBase64=value=>Uint8Array.from(atob(value),char=>char.charCodeAt(0));button.onclick=async()=>{button.disabled=true;try{const provider=window.solana||window.solflare?.solana;if(!provider)throw Error('Install Phantom, Solflare, or another Solana wallet');const connected=await provider.connect(),payer=connected.publicKey.toString(),v=units();const reqResponse=await fetch('/api/privatepay/x402/requirements',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({payer,resource:location.origin+'/services/privatepay-x402',provider_id:'privatepay.x402',amount_base_units:v.units})}),req=await reqResponse.json();if(!reqResponse.ok)throw Error(req.message||req.error||'PDAO entry requirement was not met');const fee=req.pdao||req.requirements?.accepts?.[0]?.extra||{};const builtResponse=await fetch('/api/privatepay/x402/pdao-fee/transaction',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({payer,resource:location.origin+'/services/privatepay-x402',provider_id:'privatepay.x402',amount_base_units:v.units,request_id:req.request_id,pdao_fee_base_units:fee.fee_base_units})}),built=await builtResponse.json();if(!builtResponse.ok)throw Error(built.message||built.error||'PDAO fee transaction unavailable');const web3=await import('/assets/browser/solana-web3.mjs'),tx=web3.Transaction.from(decodeBase64(built.transaction_base64));tx.feePayer=new web3.PublicKey(payer);tx.recentBlockhash=built.recent_blockhash;const sent=await provider.signAndSendTransaction(tx);const x402Response=await fetch('/api/privatepay/x402',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({payer,resource:location.origin+'/services/privatepay-x402',provider_id:'privatepay.x402',amount_base_units:v.units,pdao_fee_signature:sent.signature})}),x402=await x402Response.json();status.textContent=JSON.stringify({status:'pdao_fee_finalized_or_submitted',pdao_fee_signature:sent.signature,pdao_fee:{fee_base_units:fee.fee_base_units,fee_split:fee.fee_split||'50_burn_50_treasury'},x402_status:x402Response.status,payment_required:x402Response.headers.get('PAYMENT-REQUIRED')||null,next:'Use an x402-compatible agent or client to sign the exact USDC credential and retry with this payer and pdao_fee_signature.',details:x402},null,2)}catch(error){status.textContent='PRIVATE PAYMENT ERROR: '+(error.message||String(error))}finally{button.disabled=false}};</script></section>`;
+}
+
 function serviceCheckoutPageV2(service) {
   if (service.id === PRIVATEPAY_SERVICE_ID && !privatePayStatus(config).enabled) {
     return `<section class="panel checkout" style="margin-top:14px;border-color:#e2b04a;background:#fffaf0" aria-labelledby="service-checkout-title"><h2 id="service-checkout-title">PrivatePAY execution is activation-gated</h2><p class="muted">The public status and architecture are available for review. Payment execution remains disabled until the funded Mainnet privacy and x402 settlement evidence gates are independently verified.</p><p><a class="button" href="/api/privatepay/status" target="_blank" rel="noreferrer">View live readiness status <span aria-hidden="true">↗</span></a></p><pre id="servicePaymentStatus" aria-live="polite">No wallet connection, signature, or payment is requested while activation is gated.</pre></section>`;
   }
+  if (service.id === PRIVATEPAY_SERVICE_ID) return privatePayCheckoutPage();
   if (service.id === PRIVATEPAY_SERVICE_ID) {
     return `<section class="panel checkout" style="margin-top:14px;border-color:#b9dfcf;background:#f5fcf8" aria-labelledby="service-checkout-title"><p class="eyebrow" style="color:#087f5b">Live x402 rail</p><h2 id="service-checkout-title">Pay privately in a few steps</h2><p class="muted">Choose the service amount in USDC, review the fee, then request the exact payment instructions. Your wallet signs the payment; PrivateDAO never receives your private key.</p><div class="fee-strip"><b>Commercial terms</b><span>USDC on Solana Mainnet</span><span>PrivateDAO fee: ${config.privatePayFeeBps / 100}%</span><span>Minimum fee: ${config.privatePayMinimumFeeUsd.toFixed(2)} USDC</span><span>Private MagicBlock settlement</span></div><label for="privatePayAmount" style="display:block;margin-top:16px;font-weight:750">Amount for the service (USDC)</label><input id="privatePayAmount" value="0.50" inputmode="decimal" autocomplete="off" aria-describedby="privatePayAmountHelp" style="width:100%;box-sizing:border-box;padding:12px;border:1px solid var(--line);border-radius:12px;font-size:1.05rem"><p id="privatePayAmountHelp" class="muted" style="margin:6px 0 0">Enter a normal dollar amount. We calculate the blockchain units automatically.</p><p id="privatePayTotal" class="muted" style="margin:10px 0 0;font-weight:750">Service: 0.50 USDC · PrivateDAO fee: 0.05 USDC minimum · Estimated total: 0.55 USDC</p><div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px"><button id="privatePayChallenge" class="button" type="button">Get secure payment details</button><a class="button" href="/mcp" style="background:#fff;color:#071a32;border:1px solid #dbe5ef">Connect an agent</a></div><pre id="servicePaymentStatus" aria-live="polite" style="margin-top:14px">Step 1 of 2: review the amount, then request payment details.</pre><p class="muted">After this step, a compatible wallet or agent signs the exact payment and retries automatically with x402. The provider may observe authenticated payment metadata; network timing correlation remains possible.</p><script>const challengeButton=document.querySelector('#privatePayChallenge'),amountInput=document.querySelector('#privatePayAmount'),totalLine=document.querySelector('#privatePayTotal'),challengeStatus=document.querySelector('#servicePaymentStatus');const feeBps=${config.privatePayFeeBps},minimumFee=${config.privatePayMinimumFeeUsd};const amountToBaseUnits=()=>{const value=Number(String(amountInput.value).trim());if(!Number.isFinite(value)||value<=0)throw new Error('Enter a positive USDC amount');const units=Math.round(value*1000000);if(units<1)throw new Error('Enter a larger USDC amount');const fee=Math.max(value*feeBps/10000,minimumFee);return {value,units,fee,total:value+fee}};const refreshTotal=()=>{try{const v=amountToBaseUnits();totalLine.textContent='Service: '+v.value.toFixed(2)+' USDC · PrivateDAO fee: '+v.fee.toFixed(2)+' USDC · Estimated total: '+v.total.toFixed(2)+' USDC'}catch(error){totalLine.textContent=error.message}};amountInput.addEventListener('input',refreshTotal);refreshTotal();challengeButton.onclick=async()=>{challengeButton.disabled=true;challengeStatus.textContent='Step 2 of 2: requesting secure payment details…';try{const v=amountToBaseUnits();const response=await fetch('/api/privatepay/x402',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({resource:location.origin+'/services/privatepay-x402',provider_id:'privatepay.x402',amount_base_units:String(v.units)})});const payload=await response.json();challengeStatus.textContent=JSON.stringify({status:response.status,payment_required:response.headers.get('PAYMENT-REQUIRED')?'ready':'not returned',next:response.status===402?'Approve the exact amount in your wallet or connected agent, then retry the request.':'Review the returned status before continuing.',details:payload},null,2)}catch(error){challengeStatus.textContent='PAYMENT DETAILS ERROR: '+(error.message||String(error))}finally{challengeButton.disabled=false}};</script></section>`;
   }
@@ -2969,7 +2975,7 @@ async function createExternalJob(serviceId, input = {}, access = null, paymentMo
   job.quote_id = quote.quote_id;
   await storage.put("Jobs", id, job);
   if (normalizedPaymentMode === "privatepay") {
-    const privatePayment = createPrivatePayRequirements(config, {
+    const privatePayment = await createPrivatePayRequirements(config, {
       resource: `https://${config.domain}/api/jobs/${job.id}/privatepay`,
       provider_id: service.id,
       amount_base_units: String(quote.amountAtomic),
@@ -2977,6 +2983,7 @@ async function createExternalJob(serviceId, input = {}, access = null, paymentMo
     });
     job.privatepay_request_id = privatePayment.request_id;
     job.privatepay_requirements = privatePayment.requirements;
+    job.privatepay_pdao = privatePayment.pdao;
     job.privatepay_payment_required_header = privatePayment.header;
     await storage.put("Jobs", job.id, job);
     const privateError = new Error("PrivatePAY payment required");
@@ -3009,6 +3016,7 @@ async function completeExternalJob(job, execution, payment) {
   const settlement = { id: `seller_settlement_${job.id}`, kind: "seller_settlement", job_id: job.id, seller_agent_id: job.seller_agent_id, gross_amount: grossAmount, buyer_amount: Number(payment?.accounting_amount ?? payment?.amount ?? quote?.amount ?? grossAmount), platform_fee_amount: platformFee, platform_fee_bps: feeBps, processing_fee_amount: processingFee, processing_fee_bps: processingFee, privatepay_fee_amount: privatePayFee, privatepay_fee_bps: Number(quote?.privatepay_fee_bps ?? 0), network_fee_lamports: Number(payment?.feeLamports || 0), network_fee_policy: privatePayment ? "private_rail_fee_payer_not_public" : "payer_direct", protocol_fee: platformFee, treasury_revenue_amount: Number((platformFee + privatePayFee).toFixed(6)), seller_net_amount: sellerNet, seller_amount: sellerNet, asset: payment?.currency || job.payment_asset, payout: (await storage.get("Registry", job.seller_agent_id))?.payout || null, status: "payable_pending_scheduled_settlement", created_at: now() };
   await storage.put("Registry", settlement.id, settlement, true);
   const receipt = { receipt_id: receiptId({ job_id: job.id, service: job.service_id, result_hash: digest(result) }), job_id: job.id, service: job.service_id, payment_mode: privatePayment ? "privatepay" : "direct", input_hash: job.input_hash, result_hash: digest(result), evidence_hash: digest(result), payment_signature: privatePayment ? null : payment?.signature || null, amount: privatePayment ? 0 : payment?.amount || 0, gross_amount: privatePayment ? 0 : grossAmount, buyer_amount: privatePayment ? 0 : settlement.buyer_amount, platform_fee_amount: privatePayment ? 0 : platformFee, platform_fee_bps: feeBps, processing_fee_amount: privatePayment ? 0 : processingFee, processing_fee_bps: processingFeeBps, network_fee_lamports: privatePayment ? 0 : settlement.network_fee_lamports, network_fee_policy: settlement.network_fee_policy, seller_net_amount: privatePayment ? null : sellerNet, asset: privatePayment ? null : payment?.currency || null, treasury: config.treasury, network: "solana-mainnet-beta", target_network: job.target_network || null, seller_agent_id: job.seller_agent_id, seller_service_id: job.seller_service_id, ...(privatePayment ? {} : { seller_settlement: { id: settlement.id, gross_amount: settlement.gross_amount, buyer_amount: settlement.buyer_amount, protocol_fee: settlement.protocol_fee, platform_fee_amount: settlement.platform_fee_amount, platform_fee_bps: settlement.platform_fee_bps, processing_fee_amount: settlement.processing_fee_amount, processing_fee_bps: settlement.processing_fee_bps, network_fee_lamports: settlement.network_fee_lamports, seller_net_amount: settlement.seller_net_amount, seller_amount: settlement.seller_amount, status: settlement.status } }), evidence_persistence: persistence.status, status: "VERIFIED", created_at: job.created_at, completed_at: now(), ...(job.pdao_entitlement ? { access_method: "pdao_holder_rewards", access_wallet: job.pdao_entitlement.wallet, access_token_mint: job.pdao_entitlement.token_mint, access_threshold_usd: job.pdao_entitlement.threshold_usd, access_verified_at: job.pdao_entitlement.verified_at, access_active_until: job.pdao_entitlement.active_until } : {}) };
+  if (privatePayment) receipt.privatepay_pdao_fee = payment?.pdao_fee || job.privatepay_pdao_fee || null;
   receipt.public_url = `https://${config.domain}/receipts/${encodeURIComponent(receipt.receipt_id)}`;
   receipt.verification_url = `https://${config.domain}/verify/receipt/${encodeURIComponent(receipt.receipt_id)}`;
   await storage.put("Receipts", receipt.receipt_id, receipt, true);
@@ -3520,7 +3528,7 @@ async function createJob(serviceId, input, admin = false, currency = "USDC", met
     }
     job.quote_id = quote.quote_id;
     if (normalizedPaymentMode === "privatepay") {
-      const privatePayment = createPrivatePayRequirements(config, {
+      const privatePayment = await createPrivatePayRequirements(config, {
         resource: `https://${config.domain}/api/jobs/${job.id}/privatepay`,
         provider_id: serviceId,
         amount_base_units: String(quote.amountAtomic),
@@ -3528,6 +3536,7 @@ async function createJob(serviceId, input, admin = false, currency = "USDC", met
       });
       job.privatepay_request_id = privatePayment.request_id;
       job.privatepay_requirements = privatePayment.requirements;
+      job.privatepay_pdao = privatePayment.pdao;
       job.privatepay_payment_required_header = privatePayment.header;
       await storage.put("Jobs", job.id, job);
       const privateError = new Error("PrivatePAY payment required");
@@ -3625,6 +3634,15 @@ async function submitPrivatePayPayment(jobId, event, body = {}) {
     required.payment_required_header = job.privatepay_payment_required_header;
     throw required;
   }
+  const payer = String(body.payer || body.wallet || "").trim();
+  const pdaoFeeSignature = body.pdao_fee_signature || event.headers?.["X-PrivatePAY-PDAO-Fee-Signature"] || event.headers?.["x-privatepay-pdao-fee-signature"];
+  const pdaoFee = await verifyPrivatePayPdaoFee(config, {
+    payer,
+    signature: pdaoFeeSignature,
+    pdao_fee_base_units: job.privatepay_requirements.accepts?.[0]?.extra?.pdao_fee_base_units,
+    amount_base_units: job.privatepay_requirements.accepts?.[0]?.amount,
+    request_id: job.privatepay_request_id,
+  });
   const paymentPayload = decodePrivatePaySignature(signatureHeader);
   const facilitatorPayload = {
     x402Version: 2,
@@ -3654,6 +3672,8 @@ async function submitPrivatePayPayment(jobId, event, body = {}) {
     payment_mode: "privatepay",
     request_id: job.privatepay_request_id,
     payment_digest: digest(signatureHeader),
+    payer,
+    pdao_fee: pdaoFee,
     state: "settling",
     consumed_at: now(),
   };
@@ -3681,7 +3701,7 @@ async function submitPrivatePayPayment(jobId, event, body = {}) {
     throw Object.assign(new Error("PrivatePAY settlement was not confirmed by the facilitator"), { statusCode: 503, code: "PRIVATEPAY_SETTLEMENT_UNCONFIRMED" });
   }
   job.execution_started_at = now();
-  const executionJob = { ...job, privatepay_settlement: settlement };
+  const executionJob = { ...job, privatepay_settlement: settlement, privatepay_pdao_fee: pdaoFee };
   await storage.put("Jobs", job.id, executionJob);
   const executionInput = executionJob.execution_input || body.input || {};
   if (digest(executionInput) !== executionJob.input_hash)
@@ -3698,6 +3718,7 @@ async function submitPrivatePayPayment(jobId, event, body = {}) {
         accounting_amount: Number((await quoteForJob(storage, job))?.amount || 0),
         signature: null,
         feeLamports: 0,
+        pdao_fee: pdaoFee,
       });
     }
     const execution = await executeMeasuredService(job.service_id, executionInput);
@@ -3708,6 +3729,7 @@ async function submitPrivatePayPayment(jobId, event, body = {}) {
       accounting_amount: Number((await quoteForJob(storage, job))?.amount || 0),
       signature: null,
       feeLamports: 0,
+      pdao_fee: pdaoFee,
     }, execution.telemetry);
   } catch (error) {
     await storage.put("Jobs", job.id, {
@@ -3972,6 +3994,7 @@ async function completeJob(job, result, payment, telemetry = {}) {
     target_network: targetNetwork,
     evidence_persistence: persistence.status,
     status: "VERIFIED",
+    ...(isPrivatePay ? { privatepay_pdao_fee: payment?.pdao_fee || job.privatepay_pdao_fee || null } : {}),
     ...(job.pdao_entitlement ? {
       access_method: "pdao_holder_rewards",
       access_wallet: job.pdao_entitlement.wallet,
@@ -5161,7 +5184,7 @@ async function handle(e) {
     return json(await cancelPrivatePayAutopilotOperation(config, body));
   if (method === "POST" && path === "/api/privatepay/x402") {
     const x402Input = body.autopilot_operation_id && !body.nonce ? { ...body, nonce: body.autopilot_operation_id } : body;
-    const requirements = createPrivatePayRequirements(config, x402Input);
+    const requirements = await createPrivatePayRequirements(config, { ...x402Input, require_pdao_wallet: true });
     const autopilot = x402Input.autopilot_policy_id && x402Input.autopilot_operation_id
       ? await validatePrivatePayAutopilotOperation(config, {
         policy_id: x402Input.autopilot_policy_id,
@@ -5175,6 +5198,8 @@ async function handle(e) {
     const paymentSignature = e.headers?.["PAYMENT-SIGNATURE"] || e.headers?.["payment-signature"];
     if (!paymentSignature)
       return json({ error: "payment_required", x402: requirements.requirements, request_id: requirements.request_id }, 402, { "PAYMENT-REQUIRED": requirements.header });
+    const pdaoFeeSignature = x402Input.pdao_fee_signature || e.headers?.["X-PrivatePAY-PDAO-Fee-Signature"] || e.headers?.["x-privatepay-pdao-fee-signature"];
+    const pdaoFee = await verifyPrivatePayPdaoFee(config, { payer: x402Input.payer, signature: pdaoFeeSignature, pdao_fee_base_units: requirements.pdao.fee_base_units, amount_base_units: x402Input.amount_base_units, request_id: requirements.request_id });
     const paymentPayload = decodePrivatePaySignature(paymentSignature);
     const facilitatorPayload = {
       x402Version: 2,
@@ -5201,12 +5226,14 @@ async function handle(e) {
       success: true,
       transaction: `privatepay:${digest({ request_id: requirements.request_id, settlement: settlement.transaction || null }).slice(0, 32)}`,
       network: requirements.requirements.accepts[0].network,
-      extensions: { privacy_boundary: "provider_audit_only", request_id: requirements.request_id, onchain_verification: onchainVerification.status, ...(autopilot ? { autopilot_operation_id: x402Input.autopilot_operation_id } : {}) },
+      extensions: { privacy_boundary: "provider_audit_only", request_id: requirements.request_id, onchain_verification: onchainVerification.status, pdao_fee: pdaoFee, ...(autopilot ? { autopilot_operation_id: x402Input.autopilot_operation_id } : {}) },
     };
-    return json({ status: "paid", request_id: requirements.request_id, payment_response: paymentResponse, provider_visibility: "authenticated_provider_only" }, 200, { "PAYMENT-RESPONSE": encodePaymentResponseHeader(paymentResponse) });
+    return json({ status: "paid", request_id: requirements.request_id, payment_response: paymentResponse, pdao_fee: pdaoFee, provider_visibility: "authenticated_provider_only" }, 200, { "PAYMENT-RESPONSE": encodePaymentResponseHeader(paymentResponse) });
   }
   if (method === "POST" && path === "/api/privatepay/x402/requirements")
-    return json(createPrivatePayRequirements(config, body));
+    return json(await createPrivatePayRequirements(config, { ...body, require_pdao_wallet: true }));
+  if (method === "POST" && path === "/api/privatepay/x402/pdao-fee/transaction")
+    return json(await buildPrivatePayPdaoFeeTransaction(config, body));
   if (method === "POST" && path === "/api/privatepay/x402/checkout") {
     const phase = String(body.phase || "create").trim().toLowerCase();
     return json(phase === "challenge"
@@ -5994,7 +6021,7 @@ async function mcp(request) {
         rules: ["quote first", "do not pay an amount from catalog text alone", "do not send private keys or seed phrases", "target network is separate from payment network", "PDAO holder access uses a signed wallet challenge and sends no transaction", "do not substitute PDAO for the quoted USDC payment intent", "payment is not execution authorization for writes", "HTTP 409 recovery_required means do not replay the payment or service"],
       };
       else if (name === "privatepay_status") result = await probePrivatePayRail(config);
-      else if (name === "privatepay_challenge") result = createPrivatePayChallenge(config, a);
+      else if (name === "privatepay_challenge") result = await createPrivatePayChallenge(config, a);
       else if (name === "privatepay_checkout") result = String(a.phase || "create").trim().toLowerCase() === "challenge"
         ? await requestPrivatePayCheckoutChallenge(config, a)
         : await createPrivatePayCheckout(config, a);
