@@ -178,6 +178,7 @@ export function getConfig(env = process.env) {
     privatePayFeeBps: boundedNumber(env.PRIVATEPAY_FEE_BPS || 250, 250, 0, 10000),
     privatePayMinimumFeeUsd: boundedNumber(env.PRIVATEPAY_MINIMUM_FEE_USD || 0.05, 0.05, 0, 1000),
     privatePayTreasurySplitVerified: bool(env.PRIVATEPAY_TREASURY_SPLIT_VERIFIED),
+    privatePayAutopilotEnabled: bool(env.PRIVATEPAY_AUTOPILOT_ENABLED),
     alibabaMarketplaceEnabled: bool(env.ALIBABA_MARKETPLACE_ENABLED),
     alibabaMarketplaceSpiSecret: env.ALIBABA_MARKETPLACE_SPI_SECRET || "",
   };
