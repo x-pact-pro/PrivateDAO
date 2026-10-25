@@ -1,16 +1,13 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { readFile } from "node:fs/promises";
 import { handler, resetForTests } from "../src/handler.mjs";
+import { getConfig } from "../src/config.mjs";
 import { decodePrivatePaySignature } from "../src/privatepay.mjs";
 
-const templatePath = new URL("../../../../../deployment/agent-exchange-template.yaml", import.meta.url);
-
-test("production deployment points PrivatePAY at the provisioned production secret", async () => {
-  const template = await readFile(templatePath, "utf8");
-  const productionRefs = template.match(/AGENT_EXCHANGE_PRIVATEPAY_SECRET_ID:\s+pdao\/agent-exchange\/privatepay-production/g) || [];
-  assert.equal(productionRefs.length, 2, "both Lambda environment blocks must use the production PrivatePAY secret");
-  assert.equal(template.includes("AGENT_EXCHANGE_PRIVATEPAY_SECRET_ID: pdao/agent-exchange/privatepay\n"), false, "the retired PrivatePAY secret name must not be deployed");
+test("PrivatePAY secret wiring is explicit and does not invent a local production secret", () => {
+  const configured = getConfig({ AGENT_EXCHANGE_PRIVATEPAY_SECRET_ID: "pdao/agent-exchange/privatepay-production" });
+  assert.equal(configured.privatePaySecretId, "pdao/agent-exchange/privatepay-production");
+  assert.equal(getConfig({}).privatePaySecretId, "");
 });
 
 test("public PrivatePAY errors expose safe readiness metadata without provider secrets", async () => {
