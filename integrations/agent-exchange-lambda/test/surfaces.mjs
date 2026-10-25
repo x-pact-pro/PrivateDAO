@@ -618,6 +618,19 @@ test("MCP and A2A machine entrypoints remain callable", async () => {
   assert.equal(mcp.statusCode, 200);
   assert.match(mcp.body, /list_catalog/);
   const api = JSON.parse((await request("/openapi.json")).body);
+  assert.equal(api.info.version, "1.7.5");
+  for (const path of [
+    "/api/privatepay/status",
+    "/api/privatepay/x402/requirements",
+    "/api/privatepay/x402/verify",
+    "/api/privatepay/x402/settle",
+    "/api/privatepay/autopilot/policies",
+  ]) {
+    const method = path === "/api/privatepay/status" ? "get" : "post";
+    const operation = api.paths[path][method];
+    assert.ok(operation?.description, `${path} needs a public description`);
+    if (method === "post") assert.ok(operation.requestBody, `${path} needs a request schema`);
+  }
   assert.ok(api.components.schemas.CreateJobRequest);
   assert.ok(api.components.schemas.ServiceInput_token_intelligence);
   assert.deepEqual(api.components.schemas.PaymentRequest.required, ["signature"]);

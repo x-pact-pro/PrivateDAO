@@ -679,7 +679,7 @@ function card() {
     name: "PrivateDAO Agent Exchange",
     description: "Machine-native PrivateDAO services for verification, evidence and agent workflows. Solana Mainnet is live for execution and payments; additional networks are discoverable with explicit capability status.",
     provider: { organization: "PrivateDAO", url: "https://privatedao.org" },
-    version: "1.7.4",
+    version: "1.7.5",
     protocolVersion: "0.3.0",
     url: `https://${config.domain}/a2a`,
     documentationUrl: `https://${config.domain}/llms-full.txt`,
@@ -820,6 +820,58 @@ function openapi() {
     anyOf: [{ required: ["mcpUrl"] }, { required: ["mcp_url"] }, { required: ["endpoint"] }],
     additionalProperties: false,
   };
+  const privatePayRequirementsInput = {
+    type: "object",
+    properties: {
+      resource: { type: "string", minLength: 1, maxLength: 2048, format: "uri", description: "HTTPS resource or service identifier being purchased." },
+      provider_id: { type: "string", minLength: 1, maxLength: 200, description: "Merchant or provider identifier." },
+      amount_base_units: { type: "string", pattern: "^[0-9]+$", description: "Quoted USDC amount in token base units." },
+      payer: { type: "string", pattern: "^[1-9A-HJ-NP-Za-km-z]{32,44}$", description: "Solana wallet public key; never a private key." },
+      nonce: { type: "string", maxLength: 200, description: "Optional caller nonce used to bind a fresh challenge." },
+      require_pdao_wallet: { type: "boolean", default: true, description: "Require the PDAO private-settlement entry rule." },
+    },
+    required: ["resource", "provider_id", "amount_base_units"],
+    additionalProperties: false,
+  };
+  const privatePayCheckoutInput = {
+    type: "object",
+    properties: {
+      phase: { type: "string", enum: ["create", "challenge"], default: "create" },
+      payment_id: { type: "string", pattern: "^[a-f0-9]{64}$", description: "Existing checkout identifier when phase is challenge." },
+      payer: { type: "string", pattern: "^[1-9A-HJ-NP-Za-km-z]{32,44}$", description: "Solana payer wallet public key." },
+      resource: { type: "string", minLength: 1, maxLength: 2048, format: "uri" },
+      amount_base_units: { type: "string", pattern: "^[0-9]+$", description: "Quoted USDC amount in base units." },
+      external_reference: { type: "string", minLength: 1, maxLength: 128 },
+      description: { type: "string", maxLength: 256 },
+      expires_in_seconds: { type: "integer", minimum: 60, maximum: 86400, default: 900 },
+    },
+    additionalProperties: false,
+  };
+  const privatePayPrepareInput = {
+    type: "object",
+    properties: {
+      phase: { type: "string", enum: ["deposit", "transfer", "withdraw"], default: "transfer" },
+      request_id: { type: "string", pattern: "^pp_[a-f0-9]{32}$" },
+      payer: { type: "string", pattern: "^[1-9A-HJ-NP-Za-km-z]{32,44}$" },
+      owner: { type: "string", pattern: "^[1-9A-HJ-NP-Za-km-z]{32,44}$" },
+      amount_base_units: { type: "string", pattern: "^[0-9]+$", description: "Token amount in base units." },
+      split: { type: "integer", minimum: 1, maximum: 15, default: 1 },
+      gasless: { type: "boolean", default: false },
+    },
+    required: ["request_id", "amount_base_units"],
+    additionalProperties: false,
+  };
+  const privatePayPayloadInput = {
+    type: "object",
+    properties: {
+      x402Version: { type: "integer", const: 2 },
+      paymentPayload: { type: "object", additionalProperties: true, description: "Finalized x402 payment payload supplied by the payer." },
+      paymentRequirements: { type: "object", additionalProperties: true, description: "Unchanged requirements returned by the original challenge." },
+    },
+    required: ["x402Version", "paymentPayload", "paymentRequirements"],
+    additionalProperties: false,
+  };
+  const privatePayResponse = { type: "object", additionalProperties: true, description: "Structured PrivatePAY status, requirements, or redacted evidence." };
   const paths = {
     "/api/health": { get: { operationId: "health" } },
     "/api/demo/token": { get: { operationId: "liveTokenDemo", description: "Run a rate-limited, read-only demo against the public PDAO Solana Mainnet mint. No wallet or payment is required." } },
@@ -900,20 +952,20 @@ function openapi() {
     "/api/treasury/status": { get: { operationId: "treasuryStatus" } },
     "/api/providers/status": { get: { operationId: "providerStatus" } },
     "/api/integrations": { get: { operationId: "integrations" } },
-    "/api/privatepay/status": { get: { operationId: "privatePayStatus" } },
-    "/api/privatepay/autopilot/status": { get: { operationId: "privatePayAutopilotStatus" } },
-    "/api/privatepay/autopilot/challenge": { post: { operationId: "privatePayAutopilotChallenge" } },
-    "/api/privatepay/autopilot/policies": { post: { operationId: "privatePayAutopilotPolicy" } },
-    "/api/privatepay/autopilot/operation-challenge": { post: { operationId: "privatePayAutopilotOperationChallenge" } },
-    "/api/privatepay/autopilot/operations": { post: { operationId: "privatePayAutopilotOperation" } },
-    "/api/privatepay/autopilot/cancel": { post: { operationId: "privatePayAutopilotCancel" } },
-    "/api/privatepay/x402": { post: { operationId: "privatePayX402", description: "Return HTTP 402 PrivatePAY requirements or fail closed until a reviewed facilitator supports the exact scheme and network." } },
-    "/api/privatepay/x402/requirements": { post: { operationId: "privatePayRequirements", description: "Return x402 V2 requirements after the configured private rail is enabled." } },
-    "/api/privatepay/x402/pdao-fee/transaction": { post: { operationId: "privatePayPdaoFeeTransaction", description: "Build an unsigned PDAO fee transaction for a private settlement. The wallet signs and submits it; PrivateDAO never receives a private key." } },
-    "/api/privatepay/x402/checkout": { post: { operationId: "privatePayCheckout", description: "Create an official MagicBlock private checkout or request its PAYMENT-REQUIRED challenge. Disabled until explicit merchant-checkout and privacy gates pass; never signs or broadcasts." } },
-    "/api/privatepay/x402/prepare": { post: { operationId: "privatePayPrepare", description: "Prepare an unsigned MagicBlock deposit, private transfer, or withdrawal. The client signs locally; this endpoint never signs or broadcasts." } },
-    "/api/privatepay/x402/verify": { post: { operationId: "privatePayVerify", description: "Forward an x402 v2 payment payload to the reviewed PrivatePAY facilitator. Disabled until conformance is verified." } },
-    "/api/privatepay/x402/settle": { post: { operationId: "privatePaySettle", description: "Forward an x402 v2 payment payload to the reviewed PrivatePAY facilitator for settlement. Disabled until conformance is verified." } },
+    "/api/privatepay/status": { get: { operationId: "privatePayStatus", summary: "Read PrivatePAY readiness", description: "Read-only, fail-closed status for the Solana Mainnet PrivatePAY x402 rail, MagicBlock private settlement, PDAO entry rule, fees, and privacy boundary.", responses: { "200": { description: "Current readiness and privacy status", content: { "application/json": { schema: privatePayResponse } } } } } },
+    "/api/privatepay/autopilot/status": { get: { operationId: "privatePayAutopilotStatus", summary: "Read Autopilot status", description: "Read-only status for bounded PrivatePAY Autopilot policies. Session-wallet custody, limits, and explicit activation state are returned; reusable x402 credentials are never enabled.", responses: { "200": { description: "Autopilot configuration status", content: { "application/json": { schema: privatePayResponse } } } } } },
+    "/api/privatepay/autopilot/challenge": { post: { operationId: "privatePayAutopilotChallenge", summary: "Create an Autopilot challenge", description: "Create a fresh challenge before a user creates a bounded session policy. This does not move funds.", requestBody: { required: true, content: { "application/json": { schema: privatePayRequirementsInput } } }, responses: { "200": { description: "Fresh challenge" }, "403": { description: "Entry policy rejected" }, "503": { description: "Autopilot not explicitly activated" } } } },
+    "/api/privatepay/autopilot/policies": { post: { operationId: "privatePayAutopilotPolicy", summary: "Create a bounded Autopilot policy", description: "Create a session-wallet policy with maximum amount, budget, operation count, expiry, and allowed services. The main wallet key is never stored.", requestBody: { required: true, content: { "application/json": { schema: { type: "object", additionalProperties: false, required: ["session_public_key", "budget_base_units", "max_per_operation_base_units", "max_operations", "expires_at"], properties: { session_public_key: { type: "string" }, budget_base_units: { type: "string", pattern: "^[0-9]+$" }, max_per_operation_base_units: { type: "string", pattern: "^[0-9]+$" }, max_operations: { type: "integer", minimum: 1, maximum: 10000 }, expires_at: { type: "string", format: "date-time" }, allowed_services: { type: "array", items: { type: "string" } } } } } } }, responses: { "201": { description: "Policy created" }, "503": { description: "Autopilot not explicitly activated" } } } },
+    "/api/privatepay/autopilot/operation-challenge": { post: { operationId: "privatePayAutopilotOperationChallenge", summary: "Authorize one Autopilot operation", description: "Reserve one operation against an active policy after checking its service, budget, amount, expiry, and remaining count.", requestBody: { required: true, content: { "application/json": { schema: { type: "object", required: ["policy_id", "resource", "provider_id", "amount_base_units"], properties: { policy_id: { type: "string" }, resource: { type: "string", format: "uri" }, provider_id: { type: "string" }, amount_base_units: { type: "string", pattern: "^[0-9]+$" } }, additionalProperties: false } } } }, responses: { "200": { description: "Operation challenge" }, "409": { description: "Policy limit rejected" } } } },
+    "/api/privatepay/autopilot/operations": { post: { operationId: "privatePayAutopilotOperation", summary: "Authorize a bounded operation", description: "Accept a session signature for one previously challenged operation and return the exact x402 next-request context.", requestBody: { required: true, content: { "application/json": { schema: { type: "object", required: ["policy_id", "operation_id", "session_signature"], properties: { policy_id: { type: "string" }, operation_id: { type: "string" }, session_signature: { type: "string" } }, additionalProperties: false } } } }, responses: { "201": { description: "Operation authorized" }, "409": { description: "Operation rejected or already consumed" } } } },
+    "/api/privatepay/autopilot/cancel": { post: { operationId: "privatePayAutopilotCancel", summary: "Cancel an Autopilot policy or operation", description: "Stop future automated operations and release unused reservations. This does not reverse a completed settlement.", requestBody: { required: true, content: { "application/json": { schema: { type: "object", required: ["policy_id"], properties: { policy_id: { type: "string" }, operation_id: { type: "string" } }, additionalProperties: false } } } }, responses: { "200": { description: "Cancellation recorded" } } } },
+    "/api/privatepay/x402": { post: { operationId: "privatePayX402", summary: "Pay a PrivatePAY x402 request", description: "Return HTTP 402 requirements when payment is absent, or verify and settle a finalized x402 v2 payment through the reviewed MagicBlock private facilitator. The route is fail-closed and requires the PDAO private-settlement fee rule.", parameters: [{ name: "PAYMENT-SIGNATURE", in: "header", required: false, schema: { type: "string" } }], requestBody: { required: true, content: { "application/json": { schema: privatePayRequirementsInput } } }, responses: { "200": { description: "Private payment settled" }, "402": { description: "Fresh x402 payment requirements" }, "503": { description: "Settlement pending or private rail unavailable" } } } },
+    "/api/privatepay/x402/requirements": { post: { operationId: "privatePayRequirements", summary: "Create a PrivatePAY challenge", description: "Create exact x402 v2 USDC payment requirements for the Solana Mainnet private settlement path. This never signs, broadcasts, or moves funds.", requestBody: { required: true, content: { "application/json": { schema: privatePayRequirementsInput } } }, responses: { "200": { description: "Exact payment requirements" }, "403": { description: "PDAO entry requirement rejected" }, "503": { description: "Private rail unavailable" } } } },
+    "/api/privatepay/x402/pdao-fee/transaction": { post: { operationId: "privatePayPdaoFeeTransaction", summary: "Build the PDAO fee transaction", description: "Build an unsigned base-layer PDAO fee transaction. The wallet signs and submits it locally; PrivateDAO never receives a private key.", requestBody: { required: true, content: { "application/json": { schema: { type: "object", required: ["payer", "request_id", "amount_base_units"], properties: { payer: { type: "string" }, request_id: { type: "string", pattern: "^pp_[a-f0-9]{32}$" }, amount_base_units: { type: "string", pattern: "^[0-9]+$" }, pdao_fee_base_units: { type: "string", pattern: "^[0-9]+$" } }, additionalProperties: false } } } }, responses: { "200": { description: "Unsigned transaction" } } } },
+    "/api/privatepay/x402/checkout": { post: { operationId: "privatePayCheckout", summary: "Create a private checkout", description: "Create commercial checkout terms or request the PAYMENT-REQUIRED challenge for an existing checkout. This preparation step never signs, broadcasts, or moves funds.", requestBody: { required: true, content: { "application/json": { schema: privatePayCheckoutInput } } }, responses: { "200": { description: "Checkout terms or challenge" }, "503": { description: "Checkout gate unavailable" } } } },
+    "/api/privatepay/x402/prepare": { post: { operationId: "privatePayPrepare", summary: "Prepare a wallet operation", description: "Prepare an unsigned MagicBlock deposit, private transfer, or withdrawal for local wallet inspection and signing. This endpoint never signs or broadcasts.", requestBody: { required: true, content: { "application/json": { schema: privatePayPrepareInput } } }, responses: { "200": { description: "Unsigned operation context" } } } },
+    "/api/privatepay/x402/verify": { post: { operationId: "privatePayVerify", summary: "Verify a PrivatePAY payment", description: "Verify an x402 v2 payment payload against the unchanged original requirements through the configured facilitator. Read-only and redacted; call before settlement.", requestBody: { required: true, content: { "application/json": { schema: privatePayPayloadInput } } }, responses: { "200": { description: "Redacted verification evidence" }, "402": { description: "Payment invalid or requirements not met" }, "503": { description: "Facilitator unavailable" } } } },
+    "/api/privatepay/x402/settle": { post: { operationId: "privatePaySettle", summary: "Settle a verified PrivatePAY payment", description: "Settle an already verified x402 v2 payment through the configured MagicBlock private facilitator. This is the payment-moving action and may create facilitator-side or on-chain settlement.", requestBody: { required: true, content: { "application/json": { schema: privatePayPayloadInput } } }, responses: { "200": { description: "Redacted settlement evidence" }, "409": { description: "Settlement already consumed" }, "503": { description: "Settlement pending or facilitator unavailable" } } } },
     "/receipts/{receiptId}": { get: { operationId: "humanReceipt" } },
     "/verify/receipt/{receiptId}": { get: { operationId: "verifyHumanReceipt" } },
     "/partners": { get: { operationId: "featuredPartnersPage" } },
@@ -931,7 +983,7 @@ function openapi() {
   };
   return {
     openapi: "3.1.0",
-    info: { title: "PrivateDAO Agent Exchange", version: "1.7.4", description: "A machine-to-machine service marketplace: discover, request, execute, pay when required, and verify the returned evidence." },
+    info: { title: "PrivateDAO Agent Exchange", version: "1.7.5", description: "A machine-to-machine service marketplace with 26 commercial capabilities, MCP and x402 interoperability, and a Solana Mainnet PrivatePAY private settlement rail powered by MagicBlock." },
     servers: [{ url: `https://${config.domain}` }],
     paths,
     components: {
@@ -4987,7 +5039,7 @@ async function handle(e) {
     return json({
       status: "ok",
       service: "pdao-agent-exchange",
-      version: "1.7.4",
+      version: "1.7.5",
       network: "solana-mainnet-beta",
       rpcMode: stats?.providerClass || (config.rpcPrimary.includes("api.mainnet-beta")
         ? "public-fallback"
@@ -5562,7 +5614,7 @@ async function mcp(request) {
       id,
       result: {
         protocolVersion: "2025-06-18",
-        serverInfo: { name: "pdao-agent-exchange", version: "1.7.4" },
+        serverInfo: { name: "pdao-agent-exchange", version: "1.7.5" },
         capabilities: { tools: {} },
       },
     });
