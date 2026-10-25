@@ -38,10 +38,10 @@ import { assertPublicHttps, fetchPublicHttps } from "./url-safety.mjs";
 import { curatedTools, integrationDirectory, serviceDetails, serviceRecommendation, SERVICE_CATEGORIES } from "./exchange-metadata.mjs";
 import { PRODUCTS, productById, publicProduct } from "./products.mjs";
 import { publicMarketplacePackaging, SAAS_MODULES, ENTERPRISE_SUITE } from "./saas-modules.mjs";
-import { issuePdaoChallenge, publicPdaoBenefitPolicy, pdaoPromotionStatus, consumePdaoBenefit, runPdaoHolderBalanceSnapshots, verifyPdaoHolderAccess, PDAO_TOKEN_MINT, PDAO_DEVELOPER_ALLOCATION, PDAO_DEVELOPER_LOCK_UNTIL, PDAO_DEVELOPER_LOCK_CONTRACT } from "./pdao-entitlement.mjs";
+import { calculatePdaoSellerListingBenefit, issuePdaoChallenge, publicPdaoBenefitPolicy, pdaoPromotionStatus, consumePdaoBenefit, runPdaoHolderBalanceSnapshots, verifyPdaoHolderAccess, PDAO_SELLER_SERVICE_ID, PDAO_TOKEN_MINT, PDAO_DEVELOPER_ALLOCATION, PDAO_DEVELOPER_LOCK_UNTIL, PDAO_DEVELOPER_LOCK_CONTRACT } from "./pdao-entitlement.mjs";
 import { runScheduledSellerSettlements } from "./settlement.mjs";
 import { HandshakeReplayCache, readSealReputation, sealkeeperFailure } from "./sealkeeper.mjs";
-import { createPrivatePayChallenge, createPrivatePayCheckout, createPrivatePayRequirements, decodePrivatePaySignature, preparePrivatePayDeposit, preparePrivatePayTransfer, preparePrivatePayWithdrawal, privatePayFacilitatorRequest, privatePayStatus, probePrivatePayRail, publicPrivatePayFacilitatorResult, requestPrivatePayCheckoutChallenge, PRIVATEPAY_SERVICE_ID } from "./privatepay.mjs";
+import { createPrivatePayChallenge, createPrivatePayCheckout, createPrivatePayRequirements, decodePrivatePaySignature, preparePrivatePayDeposit, preparePrivatePayTransfer, preparePrivatePayWithdrawal, privatePayFacilitatorRequest, privatePayStatus, probePrivatePayRail, publicPrivatePayFacilitatorResult, requestPrivatePayCheckoutChallenge, verifyPrivatePayMainnetSettlement, PRIVATEPAY_SERVICE_ID } from "./privatepay.mjs";
 import { handleAlibabaSpi } from "./alibaba-marketplace.mjs";
 import { encodePaymentResponseHeader } from "@x402/core/http";
 
@@ -72,8 +72,12 @@ const PDAO_UTILITY = Object.freeze({
   utility: [
     "commercial_payment_activation",
     "agent_exchange_holder_access",
+    "privatepay_fee_credits",
     "eligible_service_credits",
     "tiered_service_discounts",
+    "agent_spending_benefits",
+    "marketplace_seller_benefits",
+    "holder_reputation",
     "governance_coordination",
   ],
   payment_gate_url: "https://privatedao.org/payment-gate",
@@ -94,6 +98,23 @@ const PDAO_UTILITY = Object.freeze({
     qualification_days: 7,
     purpose: "monthly credits and non_stackable_discounts",
     tiers: ["access", "plus", "pro"],
+  },
+  agent_spending_benefits: {
+    usage_limits: "tiered_higher_limits_for_verified_holders",
+    privatepay_queue: "tier_weighted_priority_access_10_20_30",
+    recurring_verification_fees: "5_10_15_percent_holder_fee_relief",
+  },
+  marketplace_seller_benefits: {
+    listing_fees: "25_50_100_percent_verified_holder_relief",
+    discovery: "priority_for_listings_with_verified_pdao_benefits",
+    featured_campaigns: "credit_funded_and_disclosed",
+    seller_settlement_asset: "USDC",
+    seller_treasury: "same_service_treasury",
+  },
+  governance_boundaries: {
+    coordination_topics: ["eligible_services", "discount_ratios", "credit_types", "privatepay_policy"],
+    production_treasury_keys_independent: true,
+    payment_keys_independent: true,
   },
   guardrails: [
     "PDAO never replaces ordinary USDC settlement",
@@ -240,6 +261,25 @@ function activeRegistryAgent(agent) {
 async function activeRegistryAgents() {
   return (await (await store()).list("Registry")).filter(activeRegistryAgent);
 }
+function firstPartyDiscovery() {
+  return {
+    id: "privatedao-agent-exchange",
+    name: "PrivateDAO Agent Exchange",
+    description: "First-party marketplace for verification, multichain intelligence, risk review, transaction context, and agent coordination.",
+    url: `https://${config.domain}/marketplace`,
+    mcp_url: `https://${config.domain}/mcp`,
+    capabilities: ["verification", "multichain-intelligence", "risk-review", "transaction-context", "agent-coordination"],
+    networks: [...LIVE_NETWORKS],
+    services: SERVICES.map((service) => service.id),
+    payment_asset: "USDC",
+    payment_network: "solana-mainnet-beta",
+    discovery_type: "first_party",
+    relationship_status: "first_party_product",
+    sponsored_placement: false,
+    official_partner: false,
+    disclosure: "PrivateDAO-owned first-party product; this is not an external seller, partner, or paid sponsorship.",
+  };
+}
 function normalizeCommercialServices(value) {
   if (!Array.isArray(value)) return [];
   const seen = new Set();
@@ -332,7 +372,11 @@ function paymentWithinQuote(payment, quote) {
   return Number.isFinite(expiresAt) && Number.isFinite(paidAt) && paidAt <= expiresAt;
 }
 async function externalServiceManifests() {
-  const agents = (await activeRegistryAgents()).filter(sellerListingState);
+  const agents = (await activeRegistryAgents()).filter(sellerListingState).sort((a, b) => {
+    const aPriority = a.pdao_benefits?.discovery_priority ? 1 : 0;
+    const bPriority = b.pdao_benefits?.discovery_priority ? 1 : 0;
+    return bPriority - aPriority || String(a.name || "").localeCompare(String(b.name || ""));
+  });
   return agents.flatMap((agent) => sellerPublishedServices(agent).map((service) => ({
     ...service,
     id: `external.${agent.id}.${service.id}`,
@@ -634,7 +678,7 @@ function card() {
     name: "PrivateDAO Agent Exchange",
     description: "Machine-native PrivateDAO services for verification, evidence and agent workflows. Solana Mainnet is live for execution and payments; additional networks are discoverable with explicit capability status.",
     provider: { organization: "PrivateDAO", url: "https://privatedao.org" },
-    version: "1.6.0",
+    version: "1.7.2",
     protocolVersion: "0.3.0",
     url: `https://${config.domain}/a2a`,
     documentationUrl: `https://${config.domain}/llms-full.txt`,
@@ -870,6 +914,7 @@ function openapi() {
     "/connect/chatgpt": { get: { operationId: "chatgptConnectionGuide" } },
     "/connect/claude": { get: { operationId: "claudeConnectionGuide" } },
     "/connect/grok": { get: { operationId: "grokConnectionGuide" } },
+    "/connect/cursor": { get: { operationId: "cursorConnectionGuide" } },
     "/connect/openclaw": { get: { operationId: "openclawConnectionGuide" } },
     "/mcp": { get: { operationId: "mcpGuide" }, post: { operationId: "mcpJsonRpc" } },
     "/agents/{agentId}": { get: { operationId: "agentProfile" } },
@@ -878,7 +923,7 @@ function openapi() {
   };
   return {
     openapi: "3.1.0",
-    info: { title: "PrivateDAO Agent Exchange", version: "1.6.0", description: "A machine-to-machine service marketplace: discover, request, execute, pay when required, and verify the returned evidence." },
+    info: { title: "PrivateDAO Agent Exchange", version: "1.7.2", description: "A machine-to-machine service marketplace: discover, request, execute, pay when required, and verify the returned evidence." },
     servers: [{ url: `https://${config.domain}` }],
     paths,
     components: {
@@ -910,8 +955,9 @@ function openapi() {
   };
 }
 function llms() {
-  const free = SERVICES.filter((service) => !service.price).map((service) => service.id).join(", ");
+  const free = SERVICES.filter((service) => service.access === "free").map((service) => service.id).join(", ");
   const paid = SERVICES.filter((service) => service.price).map((service) => service.id).join(", ");
+  const gated = SERVICES.filter((service) => service.access === "gated").map((service) => service.id).join(", ");
   const categories = SERVICE_CATEGORIES.map((category) => `${category.id}: ${category.description}`).join("\n");
   const integrations = integrationDirectory().map((integration) => `${integration.name}: ${integration.value}; status=${integration.status}; ${integration.note}`).join("\n");
   return `# PrivateDAO Agent Exchange
@@ -925,6 +971,7 @@ ${categories}
 ## Access and payment
 Free: ${free}
 Paid: ${paid}
+Gated payment rails: ${gated}
 All paid services are quote-first. POST /api/jobs with service_id and input. A paid request returns HTTP 402 and payment_intent; do not pay before reading the exact amount, mint, treasury token account, payment reference, expiry, and payment network. The payment rail is finalized Solana Mainnet USDC. The paying agent signs its own transaction. Submit the finalized signature to POST /api/jobs/{jobId}/payment, then poll GET /api/jobs/{jobId}; retrieve and verify GET /api/receipts/{receiptId}. If payment was accepted but execution returns HTTP 409 with recovery_required, do not resubmit the signature: the service is intentionally not replayed automatically. Never send private keys or seed phrases.
 
 ## PDAO utility
@@ -1023,13 +1070,13 @@ function recommendedNextServices(serviceId, result) {
     return [{
       service: uncertain ? "verify.deep" : "risk.score",
       reason: uncertain ? "Basic evidence is incomplete; deep checks add bounded transaction and authority evidence." : "Authority and holder evidence can be converted into a machine-readable risk assessment.",
-      price: uncertain ? 0.25 : 0.02,
+      price: uncertain ? 0.50 : 0.10,
       currency: "USDC",
       expected_additional_value: uncertain ? "deeper evidence and recent activity" : "deterministic authority-risk factors",
     }];
   }
   if (serviceId === "risk.score" && result?.factors?.mint_authority_present)
-    return [{ service: "verify.deep", reason: "The result contains an authority flag; deep verification can add recent activity evidence.", price: 0.25, currency: "USDC", expected_additional_value: "recent activity and expanded checks" }];
+    return [{ service: "verify.deep", reason: "The result contains an authority flag; deep verification can add recent activity evidence.", price: 0.50, currency: "USDC", expected_additional_value: "recent activity and expanded checks" }];
   if (serviceId === "receipt.verify") return [];
   return [];
 }
@@ -1066,6 +1113,7 @@ const CLIENT_BRANDS = {
   chatgpt: { name: "ChatGPT", src: "/assets/clients/openai-knot.svg" },
   claude: { name: "Claude", src: "/assets/clients/claude-symbol.svg", dark: true },
   grok: { name: "Grok", src: "/assets/clients/grok-symbol.svg", dark: true },
+  cursor: { name: "Cursor" },
   openclaw: { name: "OpenClaw", src: "/assets/clients/openclaw-symbol.png" },
 };
 const CLIENT_ASSETS = {
@@ -1088,6 +1136,7 @@ const ECOSYSTEM_ASSETS = {
   "/assets/ecosystem/github.svg": { file: new URL("../assets/ecosystem/github.svg", import.meta.url), contentType: "image/svg+xml", binary: false },
   "/assets/ecosystem/aws.svg": { file: new URL("../assets/ecosystem/aws.svg", import.meta.url), contentType: "image/svg+xml", binary: false },
   "/assets/ecosystem/alibaba-cloud.svg": { file: new URL("../assets/ecosystem/alibaba-cloud.svg", import.meta.url), contentType: "image/svg+xml", binary: false },
+  "/assets/ecosystem/glama-logo.png": { file: new URL("../assets/ecosystem/glama-logo.png", import.meta.url), contentType: "image/png", binary: true },
   "/assets/ecosystem/ibm-watsonx.svg": { file: new URL("../assets/ecosystem/ibm-watsonx.svg", import.meta.url), contentType: "image/svg+xml", binary: false },
   "/assets/ecosystem/openvino.svg": { file: new URL("../assets/ecosystem/openvino.svg", import.meta.url), contentType: "image/svg+xml", binary: false },
 };
@@ -1106,6 +1155,7 @@ const privateDaoBanner = () => `<figure class="pdao-official-banner" style="marg
 function clientBrandMark(client) {
   const brand = CLIENT_BRANDS[client];
   if (!brand) return "";
+  if (!brand.src) return `<span class="brand-mark" aria-hidden="true" style="font-size:12px;font-weight:850;color:#081b33">Cu</span>`;
   return `<span class="brand-mark${brand.dark ? " brand-mark-dark" : ""}"><img src="${escapeHtml(brand.src)}" alt="${escapeHtml(brand.name)} logo" width="32" height="32" decoding="async"></span>`;
 }
 function clientBrandTitle(client) {
@@ -1126,7 +1176,7 @@ function integrationCard(integration) {
 function connectionHubPage() {
   const endpoint = mcpEndpoint();
   const cfg = JSON.stringify({ mcpServers: { "privatedao-agent-exchange": { url: endpoint, transport: "streamable-http" } } }, null, 2);
-  const content = `<div class="eyebrow">Distribution hub</div><h1>Connect PrivateDAO to your agent.</h1><p class="lead">One production MCP endpoint for verification, blockchain intelligence, market data, agent discovery and verifiable receipts.</p><section class="section"><div class="grid"><section class="panel"><h2>${clientBrandTitle("chatgpt")}</h2><p class="muted">Remote MCP/custom app setup.</p><a href="/connect/chatgpt">Connection guide →</a></section><section class="panel"><h2>${clientBrandTitle("claude")}</h2><p class="muted">Remote HTTP MCP setup.</p><a href="/connect/claude">Connection guide →</a></section><section class="panel"><h2>${clientBrandTitle("grok")}</h2><p class="muted">MCP compatibility guide.</p><a href="/connect/grok">Connection guide →</a></section><section class="panel"><h2>${clientBrandTitle("openclaw")}</h2><p class="muted">Streamable HTTP registry setup.</p><a href="/connect/openclaw">Connection guide →</a></section><section class="panel"><h2>Any MCP client</h2><p class="muted">Standard initialize, tools/list and tools/call.</p><a href="/mcp">MCP landing page →</a></section></div></section><section class="section"><div class="row"><div><h2>Production endpoint</h2><p class="muted">Transport: Streamable HTTP · Authentication: none for public discovery and free read-only tools.</p></div>${distributionCopy(endpoint,"Copy endpoint")}</div><pre>${escapeHtml(cfg)}</pre>${distributionScript()}</section><section class="section"><h2>Try before paying</h2><div class="step">Initialize and acknowledge notifications/initialized.</div><div class="step">Discover tools, then call verify_basic with a test record.</div><div class="step">For paid services, request a quote before any payment.</div><div class="step">Verify the returned receipt independently.</div></section><section class="section"><h2>Security and payment</h2><p class="muted">No wallet or secret is required for discovery and free read-only tools. Paid calls quote in USDC before execution and use Solana Mainnet USDC; target-network intelligence is read-only where applicable.</p></section>`;
+  const content = `<div class="eyebrow">Distribution hub</div><h1>Connect PrivateDAO to your agent.</h1><p class="lead">One production MCP endpoint for verification, blockchain intelligence, market data, agent discovery and verifiable receipts.</p><section class="section"><div class="grid"><section class="panel"><h2>${clientBrandTitle("chatgpt")}</h2><p class="muted">Remote MCP/custom app setup.</p><a href="/connect/chatgpt">Connection guide →</a></section><section class="panel"><h2>${clientBrandTitle("claude")}</h2><p class="muted">Remote HTTP MCP setup.</p><a href="/connect/claude">Connection guide →</a></section><section class="panel"><h2>${clientBrandTitle("grok")}</h2><p class="muted">MCP compatibility guide.</p><a href="/connect/grok">Connection guide →</a></section><section class="panel"><h2>${clientBrandTitle("cursor")}</h2><p class="muted">One-click MCP install link.</p><a href="/connect/cursor">Add to Cursor →</a></section><section class="panel"><h2>${clientBrandTitle("openclaw")}</h2><p class="muted">Streamable HTTP registry setup.</p><a href="/connect/openclaw">Connection guide →</a></section><section class="panel"><h2>Any MCP client</h2><p class="muted">Standard initialize, tools/list and tools/call.</p><a href="/mcp">MCP landing page →</a></section></div></section><section class="section"><div class="row"><div><h2>Production endpoint</h2><p class="muted">Transport: Streamable HTTP · Authentication: none for public discovery and free read-only tools.</p></div>${distributionCopy(endpoint,"Copy endpoint")}</div><pre>${escapeHtml(cfg)}</pre>${distributionScript()}</section><section class="section"><h2>Try before paying</h2><div class="step">Initialize and acknowledge notifications/initialized.</div><div class="step">Discover tools, then call verify_basic with a test record.</div><div class="step">For paid services, request a quote before any payment.</div><div class="step">Verify the returned receipt independently.</div></section><section class="section"><h2>Security and payment</h2><p class="muted">No wallet or secret is required for discovery and free read-only tools. Paid calls quote in USDC before execution and use Solana Mainnet USDC; target-network intelligence is read-only where applicable.</p></section>`;
   return distributionPage("Connect PrivateDAO", "Connect PrivateDAO Agent Exchange to ChatGPT, Claude, Grok, OpenClaw or any compatible MCP client.", content);
 }
 function clientConnectionPage(client) {
@@ -1136,11 +1186,16 @@ function clientConnectionPage(client) {
     chatgpt: ["ChatGPT", "Add PrivateDAO as a remote MCP/custom app where Developer Mode and your workspace plan allow it.", "Availability and admin approval depend on the ChatGPT plan and workspace. No OpenAI partnership or directory listing is claimed."],
     claude: ["Claude", "Add PrivateDAO as a remote HTTP MCP server through a supported Claude connector flow.", "Connector availability and approval controls vary by account. No Anthropic partnership or directory listing is claimed."],
     grok: ["Grok", "Use Grok's MCP connection surface when it is enabled for your account or workspace.", "Availability and approval controls depend on your account or workspace. No xAI partnership or directory listing is claimed."],
+    cursor: ["Cursor", "Add PrivateDAO with the official Cursor MCP install link, then approve the server in Cursor.", "Cursor must be installed locally and will show its own confirmation prompt before adding the server."],
     openclaw: ["OpenClaw", "Use OpenClaw's managed MCP registry with native Streamable HTTP transport.", "Availability and approval controls depend on your installation. No OpenClaw partnership or directory listing is claimed."],
   }[client];
+  if (!data) return distributionPage("Connect PrivateDAO", "PrivateDAO Agent Exchange connection guide", "<h1>Connection guide not found.</h1>", "/connect");
   const command = `openclaw mcp set privatedao '${JSON.stringify({ url: endpoint, transport: "streamable-http" })}'`;
-  const setup = client === "openclaw" ? `<h2>OpenClaw command</h2><pre>${escapeHtml(command)}</pre><p class="muted">Then run openclaw mcp doctor privatedao --probe or openclaw mcp probe privatedao --json.</p>` : `<h2>Configuration</h2><pre>${escapeHtml(cfg)}</pre>`;
-  const content = `<div class="eyebrow">${data[0]} connection</div><h1>Connect PrivateDAO to ${data[0]}.</h1><p class="lead">${escapeHtml(data[1])}</p><section class="section"><div class="grid"><section class="panel"><h2>Endpoint</h2><pre>${escapeHtml(endpoint)}</pre><p class="muted">Transport: <strong>streamable-http</strong><br>Authentication: none for public discovery and free read-only tools.</p>${distributionCopy(endpoint,"Copy endpoint")}</section><section class="panel"><h2>Security and payment</h2><p class="muted">Never paste a private key into an MCP client. Paid tools return a quote first and require finalized Solana Mainnet USDC payment proof.</p><span class="badge">No payment made by this guide</span></section></div></section><section class="section"><h2>Setup</h2><div class="step">Enter the endpoint in the client's remote MCP/custom server settings.</div><div class="step">Select Streamable HTTP when a transport selector is available.</div><div class="step">Refresh tools and call verify_basic first.</div>${setup}${distributionScript()}</section><section class="section"><h2>Verify</h2><div class="callout">Run initialize → notifications/initialized → tools/list → safe tools/call. Then try: list PrivateDAO tools and call verify_basic with {"record":{"claim":"${client}-connection-test"}}.</div><p class="muted">${escapeHtml(data[2])}</p></section><section class="section"><h2>Example prompts</h2><div class="grid"><section class="panel"><h3>Free</h3><p>Use PrivateDAO to verify this record and return the receipt.</p></section><section class="panel"><h3>Paid</h3><p>Get a quote for a market snapshot. Do not pay until I approve the quoted amount.</p></section></div></section>`;
+  const cursorConfig = Buffer.from(JSON.stringify({ url: endpoint, transport: "streamable-http" }), "utf8").toString("base64");
+  const cursorInstall = `cursor://anysphere.cursor-deeplink/mcp/install?name=privatedao-agent-exchange&config=${encodeURIComponent(cursorConfig)}`;
+  const setup = client === "openclaw" ? `<h2>OpenClaw command</h2><pre>${escapeHtml(command)}</pre><p class="muted">Then run openclaw mcp doctor privatedao --probe or openclaw mcp probe privatedao --json.</p>` : client === "cursor" ? `<h2>One-click install</h2><p><a class="button" href="${escapeHtml(cursorInstall)}">Add PrivateDAO to Cursor</a></p><p class="muted">Cursor will open and ask you to approve the MCP server. If the button does not open Cursor, copy the endpoint into Cursor Settings → MCP.</p><pre>${escapeHtml(cursorInstall)}</pre><h3>Fallback configuration</h3><pre>${escapeHtml(cfg)}</pre>` : `<h2>Configuration</h2><pre>${escapeHtml(cfg)}</pre>`;
+  const grokApi = client === "grok" ? `<section class="section"><h2>Grok API / xAI SDK</h2><p class="muted">The same public MCP endpoint can be supplied to Grok's remote MCP tool from the xAI Responses API or native SDK.</p><pre>${escapeHtml(`curl https://api.x.ai/v1/responses \\\n  -H "Authorization: Bearer $XAI_API_KEY" \\\n  -H "content-type: application/json" \\\n  -d '${JSON.stringify({ model: "grok-4.7", input: "Use PrivateDAO to verify this record.", tools: [{ type: "mcp", server_url: endpoint, server_label: "privatedao" }] })}'`)}</pre></section>` : "";
+  const content = `<div class="eyebrow">${data[0]} connection</div><h1>Connect PrivateDAO to ${data[0]}.</h1><p class="lead">${escapeHtml(data[1])}</p><section class="section"><div class="grid"><section class="panel"><h2>Endpoint</h2><pre>${escapeHtml(endpoint)}</pre><p class="muted">Transport: <strong>streamable-http</strong><br>Authentication: none for public discovery and free read-only tools.</p>${distributionCopy(endpoint,"Copy endpoint")}</section><section class="panel"><h2>Security and payment</h2><p class="muted">Never paste a private key into an MCP client. Paid tools return a quote first and require finalized Solana Mainnet USDC payment proof.</p><span class="badge">No payment made by this guide</span></section></div></section><section class="section"><h2>Setup</h2><div class="step">Enter the endpoint in the client's remote MCP/custom server settings.</div><div class="step">Select Streamable HTTP when a transport selector is available.</div><div class="step">Refresh tools and call verify_basic first.</div>${setup}${distributionScript()}</section>${grokApi}<section class="section"><h2>Verify</h2><div class="callout">Run initialize → notifications/initialized → tools/list → safe tools/call. Then try: list PrivateDAO tools and call verify_basic with {"record":{"claim":"${client}-connection-test"}}.</div><p class="muted">${escapeHtml(data[2])}</p></section><section class="section"><h2>Example prompts</h2><div class="grid"><section class="panel"><h3>Free</h3><p>Use PrivateDAO to verify this record and return the receipt.</p></section><section class="panel"><h3>Paid</h3><p>Get a quote for a market snapshot. Do not pay until I approve the quoted amount.</p></section></div></section>`;
   return distributionPage("Connect PrivateDAO to " + data[0], data[1], content, "/connect/" + client);
 }
 function mcpLandingPage() {
@@ -1171,7 +1226,11 @@ function capabilityStatus(serviceId) {
   if (serviceId === "sealkeeper.reputation" && !config.sealReputationEnabled) return "Optional gated read-only";
   if (serviceId === "sealkeeper.reputation") return "Mainnet Live · read-only";
   if (serviceId === "github.repository") return "Mainnet Live · read-only";
-  if (serviceId === PRIVATEPAY_SERVICE_ID) return "Activation gated";
+  if (serviceId === PRIVATEPAY_SERVICE_ID) {
+    return privatePayStatus(config).enabled
+      ? "Mainnet Live · x402"
+      : "Activation gated · read-only status";
+  }
   const service = serviceById(serviceId);
   if (service?.supportedNetworks?.some((network) => network !== "solana-mainnet-beta")) return "Mainnet Read-only";
   return "Implementation";
@@ -1381,7 +1440,7 @@ function serviceManifest(service) {
     },
     output_schema: { type: "object", description: service.output },
     payment: isPrivatePay
-      ? { required: false, price: 0, currency: service.currency, flow: "gated_privatepay_x402_challenge", commercial_fee_model: "2.5% of the quoted service subtotal, minimum 0.05 USDC, separate from PDAO promotions and seller commissions", commercial_fee_bps: config.privatePayFeeBps, commercial_fee_minimum_usd: config.privatePayMinimumFeeUsd, treasury_split_required: true }
+      ? { required: true, price: null, currency: service.currency, flow: "quote_then_privatepay_x402_challenge", commercial_fee_model: "2.5% of the quoted service subtotal, minimum 0.05 USDC, separate from PDAO promotions and seller commissions", commercial_fee_bps: config.privatePayFeeBps, commercial_fee_minimum_usd: config.privatePayMinimumFeeUsd, treasury_split_required: true }
       : service.access === "free"
       ? { required: false, price: 0, currency: service.currency, flow: "execute_immediately" }
       : { required: true, price: service.price, currency: service.currency, flow: "quote_then_finalized_solana_payment_then_execute" },
@@ -1479,11 +1538,18 @@ function serviceDetailPageBase(service) {
   const example = JSON.stringify({ service_id: service.id, input: serviceExample(service) }, null, 2);
   const supported = service.supportedNetworks?.length ? service.supportedNetworks.join(", ") : service.id === "github.repository" ? "Network independent" : "Solana Mainnet path";
   const isPrivatePay = service.id === PRIVATEPAY_SERVICE_ID;
-  const priceLabel = service.access === "free" ? "Free" : service.access === "gated" ? "Activation gated" : `${service.price} ${service.currency}`;
+  const privatePayReady = isPrivatePay && privatePayStatus(config).enabled;
+  const priceLabel = isPrivatePay
+    ? privatePayReady ? "PrivatePAY x402" : "Activation gated"
+    : service.access === "free" ? "Free" : service.access === "gated" ? "PrivatePAY x402" : `${service.price} ${service.currency}`;
   const commercialTerms = isPrivatePay
     ? `<section class="panel commercial-terms" style="margin-top:14px"><p class="eyebrow">Commercial payment model</p><h2>PrivateDAO revenue is separate from PDAO benefits.</h2><p><strong>PrivatePAY fee: ${config.privatePayFeeBps / 100}% of the quoted service subtotal, minimum ${config.privatePayMinimumFeeUsd.toFixed(2)} USDC.</strong></p><p class="muted">PDAO holder access, credits and discounts do not replace USDC settlement. Seller commissions are accounted separately. Treasury settlement activates only after the provider split is independently verified.</p><a href="/holder-benefits">View PDAO holder benefits <span aria-hidden="true">↗</span></a></section>`
     : "";
-  return injectLanguageWidget(`<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escapeHtml(service.title)} | PrivateDAO Agents</title><meta name="description" content="${escapeHtml(service.output)} through the PrivateDAO Agent Exchange."><link rel="canonical" href="https://${config.domain}${servicePath(service.id)}"><meta property="og:title" content="${escapeHtml(service.title)} | PrivateDAO Agents"><meta property="og:description" content="${escapeHtml(service.output)} through the PrivateDAO Agent Exchange."><meta property="og:url" content="https://${config.domain}${servicePath(service.id)}"><style>:root{--ink:#071a32;--muted:#52657b;--line:#dbe5ef;--blue:#1769e0;--pale:#f5f9ff}*{box-sizing:border-box}body{margin:0;background:#fff;color:var(--ink);font-family:Inter,system-ui,sans-serif;line-height:1.55}main{max-width:1000px;margin:auto;padding:26px 24px 72px}header{display:flex;justify-content:space-between;gap:20px;padding-bottom:70px}.brand,a{color:var(--blue);font-weight:750;text-decoration:none}.brand{color:var(--ink);font-weight:850}.nav{display:flex;gap:18px;color:var(--muted);font-size:.9rem}.nav a{color:var(--muted)}.eyebrow{color:var(--blue);font-size:.72rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase}h1{font-size:clamp(2.7rem,7vw,5.8rem);line-height:.95;letter-spacing:-.06em;max-width:760px;margin:14px 0 18px}.lead{max-width:700px;color:var(--muted);font-size:1.15rem}.meta{display:flex;flex-wrap:wrap;gap:9px;margin:26px 0}.pill{border:1px solid var(--line);border-radius:999px;padding:8px 12px;background:var(--pale);font-size:.86rem;font-weight:700}.live{color:#087f5b}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:42px}.panel{border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:0 10px 25px rgba(14,42,78,.05)}.panel h2{margin-top:0;font-size:1.2rem}.muted{color:var(--muted)}pre{overflow:auto;background:#f5f9ff;border:1px solid var(--line);border-radius:12px;padding:14px;font-size:12px}.button{display:inline-flex;background:var(--ink);color:#fff;border-radius:999px;padding:12px 18px;margin-top:18px}@media(max-width:700px){main{padding:20px 16px 56px}header{padding-bottom:45px}.nav{gap:10px;font-size:.78rem}.grid{grid-template-columns:1fr}h1{font-size:clamp(3rem,15vw,5.4rem)}}</style></head><body><main><header><a class="brand" href="/">PrivateDAO Agents</a><nav class="nav"><a href="/marketplace">Marketplace</a><a href="/connect">Build</a><a href="/.well-known/agent-card.json">Agent Card</a></nav></header><p class="eyebrow">Service capability</p><h1>${escapeHtml(service.title)}</h1><p class="lead">${escapeHtml(service.output)}. Use the service through a structured request and receive a receipt for the completed result.</p><div class="meta"><span class="pill ${status === "Mainnet Live" ? "live" : ""}">${escapeHtml(status)}</span><span class="pill">${escapeHtml(priceLabel)}</span><span class="pill">${escapeHtml(supported)}</span></div><div class="grid"><section class="panel"><h2>What you provide</h2><p>${escapeHtml(service.input)}</p><h2>What happens</h2><p class="muted">PrivateDAO validates the request, runs the capability within its execution boundary, and returns a machine-readable result with a receipt when completed.</p></section><section class="panel"><h2>What you receive</h2><p>${escapeHtml(service.output)}</p><p class="muted">No claim is made beyond the evidence available for this capability and network.</p></section></div>${commercialTerms}<section class="panel" style="margin-top:14px"><h2>API example</h2><pre>${escapeHtml(`curl -X POST https://${config.domain}/api/jobs -H 'content-type: application/json' -d '${example.replaceAll("'", "\\'")}'`)}</pre><a class="button" href="#service-checkout-title">Request this service <span aria-hidden="true">→</span></a></section></main></body></html>`);
+  const privatePayReport = isPrivatePay
+    ? `<section class="panel" aria-labelledby="privatepay-report-title" style="margin-top:14px;border-color:#b9d3f2;background:#f7fbff"><p class="eyebrow">Commercial technical brief</p><h2 id="privatepay-report-title">A payment rail for services that should not expose the full payment path.</h2><p class="muted">PrivatePAY x402 lets an agent or business request a service, receive an exact USDC challenge, approve the payment in its own wallet, and receive a machine-readable settlement result. PrivateDAO never receives a private key.</p><div class="grid" style="margin-top:18px"><div><h3>Business value</h3><ul><li>Quote-first pricing before any wallet approval.</li><li>USDC settlement on Solana Mainnet.</li><li>Works for API access, agent services and metered workflows.</li><li>PrivateDAO fee is visible and separate from provider costs.</li></ul></div><div><h3>How it works</h3><ol><li>Request a payment challenge.</li><li>Sign the exact amount locally.</li><li>Retry with the x402 payment credential.</li><li>Receive the settlement status and receipt.</li></ol></div><div><h3>Privacy delivered</h3><ul><li>Private settlement uses MagicBlock's Mainnet private rollup rail.</li><li>The tested settlement is absent from the public Solana RPC trace.</li><li>Public responses expose a request commitment and settlement status.</li></ul></div><div><h3>Clear operating boundary</h3><ul><li>The authenticated provider can see payment metadata.</li><li>Timing and network-level correlation remain possible.</li><li>This page does not claim payment-bound TDX attestation or complete unlinkability.</li></ul></div></div><p class="muted" style="margin:18px 0 0"><strong>Current operating status:</strong> ${escapeHtml(privatePayStatus(config).enabled ? "Mainnet Live · x402" : "Activation gated")}. <a href="/api/privatepay/status" target="_blank" rel="noreferrer">View live status and evidence boundary ↗</a></p></section>`
+    : "";
+  const demoActions = `<section class="panel" style="margin-top:14px;border-color:#b9d3f2;background:#f5f9ff"><p class="eyebrow">Try before you connect</p><h2>See a PrivateDAO agent demonstration.</h2><p class="muted">Run the public read-only sample without a wallet, PDAO balance, account, or payment, then return here to request this capability.</p><div style="display:flex;gap:10px;flex-wrap:wrap"><a class="button" href="/demo?service=${encodeURIComponent(service.id)}">Try live demo <span aria-hidden="true">→</span></a><a class="button" href="#service-checkout-title" style="background:#fff;color:#071a32;border:1px solid #dbe5ef">Request this service</a></div></section>`;
+  return injectLanguageWidget(`<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escapeHtml(service.title)} | PrivateDAO Agents</title><meta name="description" content="${escapeHtml(service.output)} through the PrivateDAO Agent Exchange."><link rel="canonical" href="https://${config.domain}${servicePath(service.id)}"><meta property="og:title" content="${escapeHtml(service.title)} | PrivateDAO Agents"><meta property="og:description" content="${escapeHtml(service.output)} through the PrivateDAO Agent Exchange."><meta property="og:url" content="https://${config.domain}${servicePath(service.id)}"><style>:root{--ink:#071a32;--muted:#52657b;--line:#dbe5ef;--blue:#1769e0;--pale:#f5f9ff}*{box-sizing:border-box}body{margin:0;background:#fff;color:var(--ink);font-family:Inter,system-ui,sans-serif;line-height:1.55}main{max-width:1000px;margin:auto;padding:26px 24px 72px}header{display:flex;justify-content:space-between;gap:20px;padding-bottom:70px}.brand,a{color:var(--blue);font-weight:750;text-decoration:none}.brand{color:var(--ink);font-weight:850}.nav{display:flex;gap:18px;color:var(--muted);font-size:.9rem}.nav a{color:var(--muted)}.eyebrow{color:var(--blue);font-size:.72rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase}h1{font-size:clamp(2.7rem,7vw,5.8rem);line-height:.95;letter-spacing:-.06em;max-width:760px;margin:14px 0 18px}.lead{max-width:700px;color:var(--muted);font-size:1.15rem}.meta{display:flex;flex-wrap:wrap;gap:9px;margin:26px 0}.pill{border:1px solid var(--line);border-radius:999px;padding:8px 12px;background:var(--pale);font-size:.86rem;font-weight:700}.live{color:#087f5b}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:42px}.panel{border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:0 10px 25px rgba(14,42,78,.05)}.panel h2{margin-top:0;font-size:1.2rem}.muted{color:var(--muted)}pre{overflow:auto;background:#f5f9ff;border:1px solid var(--line);border-radius:12px;padding:14px;font-size:12px}.button{display:inline-flex;background:var(--ink);color:#fff;border-radius:999px;padding:12px 18px;margin-top:18px}@media(max-width:700px){main{padding:20px 16px 56px}header{padding-bottom:45px}.nav{gap:10px;font-size:.78rem}.grid{grid-template-columns:1fr}h1{font-size:clamp(3rem,15vw,5.4rem)}}</style></head><body><main><header><a class="brand" href="/">PrivateDAO Agents</a><nav class="nav"><a href="/marketplace">Marketplace</a><a href="/connect">Build</a><a href="/.well-known/agent-card.json">Agent Card</a></nav></header><p class="eyebrow">Service capability</p><h1>${escapeHtml(service.title)}</h1><p class="lead">${escapeHtml(service.output)}. Use the service through a structured request and receive a receipt for the completed result.</p><div class="meta"><span class="pill ${status === "Mainnet Live" ? "live" : ""}">${escapeHtml(status)}</span><span class="pill">${escapeHtml(priceLabel)}</span><span class="pill">${escapeHtml(supported)}</span></div><div class="grid"><section class="panel"><h2>What you provide</h2><p>${escapeHtml(service.input)}</p><h2>What happens</h2><p class="muted">PrivateDAO validates the request, runs the capability within its execution boundary, and returns a machine-readable result with a receipt when completed.</p></section><section class="panel"><h2>What you receive</h2><p>${escapeHtml(service.output)}</p><p class="muted">No claim is made beyond the evidence available for this capability and network.</p></section></div>${commercialTerms}${privatePayReport}${demoActions}<section class="panel" style="margin-top:14px"><h2>API example</h2><pre>${escapeHtml(`curl -X POST https://${config.domain}/api/jobs -H 'content-type: application/json' -d '${example.replaceAll("'", "\\'")}'`)}</pre><a class="button" href="#service-checkout-title">Request this service <span aria-hidden="true">→</span></a></section></main></body></html>`);
 }
 function serviceCheckoutPage(service) {
   const paid = Boolean(service.price);
@@ -1512,6 +1578,12 @@ if(payButton)payButton.onclick=async()=>{payButton.disabled=true;try{if(!jobId)t
 </script></section>`.replace("Your wallet signs either the access message first or the exact quoted USDC transaction.", "Your wallet signs the access message first or signs the exact quoted transaction (USDC on Solana Mainnet).");
 }
 function serviceCheckoutPageV2(service) {
+  if (service.id === PRIVATEPAY_SERVICE_ID && !privatePayStatus(config).enabled) {
+    return `<section class="panel checkout" style="margin-top:14px;border-color:#e2b04a;background:#fffaf0" aria-labelledby="service-checkout-title"><h2 id="service-checkout-title">PrivatePAY execution is activation-gated</h2><p class="muted">The public status and architecture are available for review. Payment execution remains disabled until the funded Mainnet privacy and x402 settlement evidence gates are independently verified.</p><p><a class="button" href="/api/privatepay/status" target="_blank" rel="noreferrer">View live readiness status <span aria-hidden="true">↗</span></a></p><pre id="servicePaymentStatus" aria-live="polite">No wallet connection, signature, or payment is requested while activation is gated.</pre></section>`;
+  }
+  if (service.id === PRIVATEPAY_SERVICE_ID) {
+    return `<section class="panel checkout" style="margin-top:14px;border-color:#b9dfcf;background:#f5fcf8" aria-labelledby="service-checkout-title"><p class="eyebrow" style="color:#087f5b">Live x402 rail</p><h2 id="service-checkout-title">Pay privately in a few steps</h2><p class="muted">Choose the service amount in USDC, review the fee, then request the exact payment instructions. Your wallet signs the payment; PrivateDAO never receives your private key.</p><div class="fee-strip"><b>Commercial terms</b><span>USDC on Solana Mainnet</span><span>PrivateDAO fee: ${config.privatePayFeeBps / 100}%</span><span>Minimum fee: ${config.privatePayMinimumFeeUsd.toFixed(2)} USDC</span><span>Private MagicBlock settlement</span></div><label for="privatePayAmount" style="display:block;margin-top:16px;font-weight:750">Amount for the service (USDC)</label><input id="privatePayAmount" value="0.50" inputmode="decimal" autocomplete="off" aria-describedby="privatePayAmountHelp" style="width:100%;box-sizing:border-box;padding:12px;border:1px solid var(--line);border-radius:12px;font-size:1.05rem"><p id="privatePayAmountHelp" class="muted" style="margin:6px 0 0">Enter a normal dollar amount. We calculate the blockchain units automatically.</p><p id="privatePayTotal" class="muted" style="margin:10px 0 0;font-weight:750">Service: 0.50 USDC · PrivateDAO fee: 0.05 USDC minimum · Estimated total: 0.55 USDC</p><div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px"><button id="privatePayChallenge" class="button" type="button">Get secure payment details</button><a class="button" href="/mcp" style="background:#fff;color:#071a32;border:1px solid #dbe5ef">Connect an agent</a></div><pre id="servicePaymentStatus" aria-live="polite" style="margin-top:14px">Step 1 of 2: review the amount, then request payment details.</pre><p class="muted">After this step, a compatible wallet or agent signs the exact payment and retries automatically with x402. The provider may observe authenticated payment metadata; network timing correlation remains possible.</p><script>const challengeButton=document.querySelector('#privatePayChallenge'),amountInput=document.querySelector('#privatePayAmount'),totalLine=document.querySelector('#privatePayTotal'),challengeStatus=document.querySelector('#servicePaymentStatus');const feeBps=${config.privatePayFeeBps},minimumFee=${config.privatePayMinimumFeeUsd};const amountToBaseUnits=()=>{const value=Number(String(amountInput.value).trim());if(!Number.isFinite(value)||value<=0)throw new Error('Enter a positive USDC amount');const units=Math.round(value*1000000);if(units<1)throw new Error('Enter a larger USDC amount');const fee=Math.max(value*feeBps/10000,minimumFee);return {value,units,fee,total:value+fee}};const refreshTotal=()=>{try{const v=amountToBaseUnits();totalLine.textContent='Service: '+v.value.toFixed(2)+' USDC · PrivateDAO fee: '+v.fee.toFixed(2)+' USDC · Estimated total: '+v.total.toFixed(2)+' USDC'}catch(error){totalLine.textContent=error.message}};amountInput.addEventListener('input',refreshTotal);refreshTotal();challengeButton.onclick=async()=>{challengeButton.disabled=true;challengeStatus.textContent='Step 2 of 2: requesting secure payment details…';try{const v=amountToBaseUnits();const response=await fetch('/api/privatepay/x402',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({resource:location.origin+'/services/privatepay-x402',provider_id:'privatepay.x402',amount_base_units:String(v.units)})});const payload=await response.json();challengeStatus.textContent=JSON.stringify({status:response.status,payment_required:response.headers.get('PAYMENT-REQUIRED')?'ready':'not returned',next:response.status===402?'Approve the exact amount in your wallet or connected agent, then retry the request.':'Review the returned status before continuing.',details:payload},null,2)}catch(error){challengeStatus.textContent='PAYMENT DETAILS ERROR: '+(error.message||String(error))}finally{challengeButton.disabled=false}};</script></section>`;
+  }
   const paid = Boolean(service.price), serviceId = JSON.stringify(service.id);
   const example = escapeHtml(JSON.stringify(serviceExample(service), null, 2));
   const subjectMode = ["wallet.intelligence", "wallet.bot.classify", "research.wallet", "forensics.trace"].includes(service.id) ? "wallet" : ["token.intelligence", "risk.score", "market.snapshot", "research.asset", "contract.explain", "contract.inspect", "launch.check"].includes(service.id) ? "asset" : null;
@@ -1605,20 +1677,24 @@ async function marketplacePage() {
   const policy = await marketplacePolicy();
   const curatedToolCards = curatedTools().map((tool) => `<article class="card curated-tool" data-curated-tool="${escapeHtml(tool.id)}"><div class="card-top"><div class="tag">${escapeHtml(tool.category)}</div><span class="price">${escapeHtml(tool.access)}</span></div><h3>${escapeHtml(tool.name)}</h3><p>${escapeHtml(tool.summary)}</p><p class="value">External tool · discovery listing</p><dl><div><dt>Provider</dt><dd>${escapeHtml(tool.provider)}</dd></div><div><dt>Use</dt><dd>Open official source</dd></div></dl><div class="card-actions" style="display:flex;align-items:center;gap:10px;margin-top:auto;padding-top:14px"><button class="icon-action" style="width:38px;height:38px;border:1px solid #dbe5f0;border-radius:11px;background:#fff;color:#1769e0;font-size:1.25rem;cursor:pointer" type="button" data-favorite="${escapeHtml(tool.id)}" aria-label="Save ${escapeHtml(tool.name)} to favorites">☆</button><a class="action" style="flex:1;color:#1769e0;font-weight:750" href="${escapeHtml(tool.official_url)}" target="_blank" rel="noreferrer noopener">Open official tool <span aria-hidden="true">↗</span></a></div></article>`).join("");
   const grouped = SERVICE_CATEGORIES.map((category) => ({ ...category, services: SERVICES.filter((service) => serviceDetails(service).category === category.id) })).filter((category) => category.services.length);
-  const pdaoCloudFeatured = `<section class="pdao-cloud-featured" aria-label="Featured PrivateDAO Cloud product" style="display:grid;grid-template-columns:minmax(0,1.15fr) minmax(280px,.85fr);gap:22px;margin:0 0 18px;padding:26px;border:2px solid #1769e0;border-radius:20px;background:linear-gradient(135deg,#f4f8ff,#ffffff);box-shadow:0 18px 38px rgba(23,105,224,.12)"><div><p class="eyebrow">Featured product · PrivateDAO</p><h2 style="margin:7px 0 9px">Agent Exchange Cloud</h2><p style="color:#52657c;max-width:680px">One commercial platform for verification, risk, multichain intelligence, transaction decisions and agent discovery. Start with a free read-only demo, then choose the capability your team needs.</p><div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:18px"><a class="button" href="/demo">Try the live demo <span aria-hidden="true">→</span></a><a class="button alt" href="/api/marketplace/packaging">View package details <span aria-hidden="true">↗</span></a></div></div><div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;align-content:center"><div style="grid-column:1/-1;padding:10px 12px;border-radius:12px;background:#071a32;color:#fff;font-weight:800">${escapeHtml(ENTERPRISE_SUITE.name)} · $${ENTERPRISE_SUITE.monthly_price_usd}/mo</div>${SAAS_MODULES.map((module) => `<div style="padding:10px 12px;border:1px solid #dbe5f0;border-radius:12px;background:#fff"><strong style="display:block;font-size:.86rem">${escapeHtml(module.name)}</strong><span style="color:#087f5b;font-weight:800;font-size:.8rem">$${module.monthly_price_usd}/mo</span></div>`).join("")}</div></section>`;
+  const pdaoCloudFeatured = `<section class="pdao-cloud-featured" aria-label="Featured PrivateDAO Cloud product" style="display:grid;grid-template-columns:minmax(0,1.15fr) minmax(280px,.85fr);gap:22px;margin:0 0 18px;padding:26px;border:2px solid #1769e0;border-radius:20px;background:linear-gradient(135deg,#f4f8ff,#ffffff);box-shadow:0 18px 38px rgba(23,105,224,.12)"><div><p class="eyebrow">Featured product · PrivateDAO</p><h2 style="margin:7px 0 9px">Agent Exchange Cloud</h2><p style="color:#52657c;max-width:680px">One commercial platform for verification, risk, multichain intelligence, transaction decisions and agent discovery. Start with a free read-only demo, then choose the capability your team needs.</p><div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:18px"><a class="button" href="/demo">Try the live demo <span aria-hidden="true">→</span></a><a class="button alt" href="/api/marketplace/packaging">View package details <span aria-hidden="true">↗</span></a></div></div><div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;align-content:center"><div style="grid-column:1/-1;padding:10px 12px;border-radius:12px;background:#071a32;color:#fff;font-weight:800">PrivateDAO Platform · $399/mo</div>${SAAS_MODULES.map((module) => `<div style="padding:10px 12px;border:1px solid #dbe5f0;border-radius:12px;background:#fff"><strong style="display:block;font-size:.86rem">${escapeHtml(module.name)}</strong><span style="color:#087f5b;font-weight:800;font-size:.8rem">$${module.monthly_price_usd}/mo</span></div>`).join("")}</div></section>`;
   const featuredProduct = `<section class="pdao-featured-product" aria-label="Featured PDAO utility product" style="display:grid;grid-template-columns:minmax(0,1.4fr) minmax(220px,.6fr);gap:20px;margin:0 0 18px;padding:24px;border:2px solid #1769e0;border-radius:18px;background:#f5f9ff;box-shadow:0 16px 32px rgba(14,42,78,.08)"><div><p class="eyebrow">Featured utility</p><h2 style="margin:6px 0 8px">PDAO Holder Access + Service Credits</h2><p style="color:#52657c;max-width:620px">Use PDAO for access, credits, discounts and marketplace benefits while ordinary execution remains quote-first USDC.</p><div class="pdao-featured-actions" style="display:flex;gap:12px;flex-wrap:wrap;margin-top:18px"><a style="display:inline-flex;padding:10px 14px;border-radius:999px;background:#071a32;color:#fff" href="/demo">Try a live demo <span aria-hidden="true">→</span></a><a style="display:inline-flex;padding:10px 14px;border-radius:999px;background:#fff;color:#1769e0;border:1px solid #cfe0f5" href="/holder-benefits">View holder benefits <span aria-hidden="true">↗</span></a></div></div><div class="pdao-featured-rail" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;align-content:center"><strong style="font-size:1.4rem;color:#087f5b">$25</strong><span style="color:#52657c">Access threshold</span><strong style="font-size:1.4rem;color:#087f5b">7 days</strong><span style="color:#52657c">Holder Rewards</span><strong style="font-size:1.4rem;color:#087f5b">USDC</strong><span style="color:#52657c">Ordinary settlement</span></div></section>`;
-  const privatePayFeatured = `<section class="privatepay-featured" aria-label="Featured PrivatePAY x402 product" style="display:grid;grid-template-columns:minmax(0,1.35fr) minmax(220px,.65fr);gap:20px;margin:0 0 24px;padding:24px;border:2px solid #087f5b;border-radius:18px;background:linear-gradient(135deg,#f3fcf8,#f7fbff);box-shadow:0 16px 32px rgba(8,127,91,.09)"><div><p class="eyebrow" style="color:#087f5b">Featured privacy rail</p><h2 style="margin:6px 0 8px">PrivatePAY x402</h2><p style="color:#52657c;max-width:650px">Confidential-payment execution for agent services. USDC remains the settlement asset; PDAO benefits can reduce eligible service fees but never replace payment.</p><div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:18px"><a style="display:inline-flex;padding:10px 14px;border-radius:999px;background:#087f5b;color:#fff" href="/services/privatepay-x402">Open PrivatePAY <span aria-hidden="true">→</span></a><a style="display:inline-flex;padding:10px 14px;border-radius:999px;background:#fff;color:#087f5b;border:1px solid #b9dfcf" href="/demo">Try a live demo <span aria-hidden="true">↗</span></a></div></div><div style="display:grid;align-content:center;gap:8px"><strong style="font-size:1.35rem;color:#087f5b">2.5% fee</strong><span style="color:#52657c">of quoted service subtotal</span><strong style="font-size:1.35rem;color:#087f5b">$0.05 USDC min</strong><span style="color:#52657c">PrivateDAO service fee</span><strong style="font-size:1.05rem;color:#b05b00">Activation gated</strong><span style="color:#52657c">Mainnet conformance pending</span></div></section>`;
+  const privatePayFeatured = `<section class="privatepay-featured" aria-label="Featured PrivatePAY x402 product" style="display:grid;grid-template-columns:minmax(0,1.35fr) minmax(220px,.65fr);gap:20px;margin:0 0 24px;padding:24px;border:2px solid #087f5b;border-radius:18px;background:linear-gradient(135deg,#f3fcf8,#f7fbff);box-shadow:0 16px 32px rgba(8,127,91,.09)"><div><p class="eyebrow" style="color:#087f5b">Featured payment architecture</p><h2 style="margin:6px 0 8px">PrivatePAY x402</h2><p style="color:#52657c;max-width:650px">Quote-first payment architecture for agent services. USDC remains the settlement asset; PDAO benefits can reduce eligible service fees but never replace payment.</p><div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:18px"><a style="display:inline-flex;padding:10px 14px;border-radius:999px;background:#087f5b;color:#fff" href="/services/privatepay-x402">Open PrivatePAY <span aria-hidden="true">→</span></a><a style="display:inline-flex;padding:10px 14px;border-radius:999px;background:#fff;color:#087f5b;border:1px solid #b9dfcf" href="/demo">Try a live demo <span aria-hidden="true">↗</span></a></div></div><div style="display:grid;align-content:center;gap:8px"><strong style="font-size:1.35rem;color:#087f5b">2.5% fee</strong><span style="color:#52657c">of quoted service subtotal</span><strong style="font-size:1.35rem;color:#087f5b">$0.05 USDC min</strong><span style="color:#52657c">PrivateDAO service fee</span><strong style="font-size:1.05rem;color:#087f5b">Quote-first USDC settlement</strong><span style="color:#52657c">Commercial service workflow</span></div></section>`;
+  const featuredExchangeCard = `<section class="featured-exchange-card" aria-label="Featured Agent Exchange Cloud product" style="display:grid;grid-template-columns:minmax(0,1.2fr) minmax(300px,.8fr);gap:22px;margin:0 0 24px;padding:26px;border:2px solid #1769e0;border-radius:20px;background:linear-gradient(135deg,#f4f8ff,#ffffff);box-shadow:0 18px 38px rgba(23,105,224,.12)"><div><p class="eyebrow">Featured product · PrivateDAO Agent Exchange</p><h2 style="margin:7px 0 9px">Agent Exchange Cloud</h2><p style="color:#52657c;max-width:680px">A commercial platform for verification, risk review, multichain intelligence, transaction decisions and agent discovery. Start with a walletless live demo, then select the operating package that fits your team.</p><p style="margin:0;color:#52657c;font-size:.9rem">All packages and metered services settle through the same quote-first USDC service treasury.</p><div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:18px"><a class="button" href="/demo">Try the live demo <span aria-hidden="true">→</span></a><a class="button alt" href="/api/marketplace/packaging">View package details <span aria-hidden="true">↗</span></a></div></div><div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;align-content:center">${SAAS_MODULES.map((module) => `<div style="padding:11px 12px;border:1px solid #dbe5f0;border-radius:12px;background:#fff"><strong style="display:block;font-size:.86rem">${escapeHtml(module.name)}</strong><span style="color:#087f5b;font-weight:800;font-size:.8rem">$${module.monthly_price_usd}/mo</span></div>`).join("")}</div></section>`;
   const productCards = PRODUCTS.map((product) => `<article class="card" data-catalog-id="${escapeHtml(product.id)}"><div class="card-top"><div class="tag">${escapeHtml(product.category)}</div><span class="price">${product.price.toFixed(2)} USDC</span></div><h3>${escapeHtml(product.name)}</h3><p>${escapeHtml(product.tagline)}</p><p class="value">${escapeHtml(product.value)}</p><dl><div><dt>Includes</dt><dd>${escapeHtml(product.included_services.join(", "))}</dd></div><div><dt>Works on</dt><dd>${escapeHtml(product.networks.map((network) => network.replaceAll("-mainnet", "").replaceAll("-", " ")).join(", "))}</dd></div></dl><div class="card-actions"><a class="try-action" style="display:inline-flex;align-items:center;width:max-content;padding:9px 12px;border-radius:999px;background:#1769e0;color:#fff;font-weight:800" href="/demo">Try now <span aria-hidden="true">→</span></a><a class="action" href="/products">Open product and get a quote <span aria-hidden="true">↗</span></a></div></article>`).join("");
   let cards = grouped.map((category) => {
     const serviceCards = category.services.map((service) => {
       const details = serviceDetails(service);
+      const privatePayEnabled = service.id === PRIVATEPAY_SERVICE_ID && privatePayStatus(config).enabled;
       const price = service.id === PRIVATEPAY_SERVICE_ID
-        ? `${config.privatePayFeeBps / 100}% fee · min ${config.privatePayMinimumFeeUsd.toFixed(2)} USDC`
+        ? `${privatePayEnabled ? "" : "Activation gated · "}${config.privatePayFeeBps / 100}% fee · min ${config.privatePayMinimumFeeUsd.toFixed(2)} USDC`
         : service.access === "free" ? "Free to try" : `${service.price} ${service.currency}`;
       const networks = (service.supportedNetworks || (service.id === "github.repository" ? ["Network independent"] : ["Solana Mainnet"])).map((network) => network.replaceAll("-mainnet", "").replaceAll("-", " ")).join(", ");
       const promotionEligible = service.access === "paid" && Number(service.price || 0) > 0 && Number(service.price || 0) <= 0.10 && !service.seller_agent_id;
       const promotionBadge = promotionEligible ? `<span style="display:inline-flex;align-items:center;gap:5px;color:#087f5b;font-size:.72rem;font-weight:850;letter-spacing:.06em;text-transform:uppercase">PDAO eligible</span>` : "";
-      const statusTag = service.id === PRIVATEPAY_SERVICE_ID ? "Activation gated" : service.access === "free" ? "Free" : "Paid";
+      const statusTag = service.id === PRIVATEPAY_SERVICE_ID
+        ? privatePayEnabled ? "PrivatePAY x402" : "Activation gated"
+        : service.access === "free" ? "Free" : "Paid";
       return `<article class="card" data-catalog-id="${escapeHtml(service.id)}"><div class="card-top"><div class="tag">${escapeHtml(statusTag)}</div><span class="price">${escapeHtml(price)}</span></div><h3>${escapeHtml(service.title)}</h3><p>${escapeHtml(details.summary)}</p><p class="value">${escapeHtml(details.customer_value)}</p>${promotionBadge ? `<p style="margin:2px 0 8px">${promotionBadge} <span style="color:#52657c;font-size:.82rem">during the fixed promotion window</span></p>` : ""}<dl><div><dt>For</dt><dd>${escapeHtml(service.input)}</dd></div><div><dt>Works on</dt><dd>${escapeHtml(networks)}</dd></div></dl><div class="card-actions" style="display:flex;align-items:center;gap:10px;margin-top:auto;padding-top:14px"><button class="icon-action" style="width:38px;height:38px;border:1px solid #dbe5f0;border-radius:11px;background:#fff;color:#1769e0;font-size:1.25rem;cursor:pointer" type="button" data-favorite="${escapeHtml(service.id)}" aria-label="Save ${escapeHtml(service.title)} to favorites">☆</button><button class="save-action" style="border:0;border-radius:999px;background:#081b33;color:#fff;padding:9px 12px;font-weight:750;cursor:pointer" type="button" data-cart="${escapeHtml(service.id)}">Add to workspace</button><a class="try-action" style="display:inline-flex;align-items:center;padding:9px 12px;border-radius:999px;background:#1769e0;color:#fff;font-weight:800;white-space:nowrap" href="/demo">Try now <span aria-hidden="true">→</span></a><a class="action" style="flex:1;color:#1769e0;font-weight:750" href="${servicePath(service.id)}">View capability <span aria-hidden="true">↗</span></a></div></article>`;
     }).join("");
     return `<section id="category-${escapeHtml(category.id.toLowerCase().replaceAll(" ", "-"))}" class="category"><div class="category-head"><div><p class="eyebrow">${escapeHtml(category.id)}</p><h2>${escapeHtml(category.id)}</h2></div><p>${escapeHtml(category.description)}</p></div><div class="grid">${serviceCards}</div></section>`;
@@ -1627,7 +1703,11 @@ async function marketplacePage() {
   const moduleCatalog = `<section id="pdao-cloud" class="category"><div class="category-head"><div><p class="eyebrow">PrivateDAO Cloud</p><h2>Buy the outcome your team needs.</h2></div><p>Five focused clouds turn complex blockchain work into clear, reviewable decisions. Start with one module and expand when the workflow proves its value.</p></div><div class="grid">${publicMarketplacePackaging().modules.map((module) => `<article class="card"><div class="card-top"><div class="tag">PDAO Cloud</div><span class="price">$${module.monthly_price_usd}/mo</span></div><h3>${escapeHtml(module.name)}</h3><p>${escapeHtml(module.description)}</p><p class="value">${escapeHtml(module.audience)}</p><dl><div><dt>Includes</dt><dd>${escapeHtml(module.services.join(", "))}</dd></div><div><dt>Upgrade</dt><dd>Enterprise Suite · $399/mo</dd></div></dl><div class="card-actions"><a class="action" href="/demo">See it in action <span aria-hidden="true">→</span></a></div></article>`).join("")}</div></section>`;
   const curatedCatalog = `<section id="free-tools" class="category curated-catalog"><div class="category-head"><div><p class="eyebrow">Free community tools</p><h2>Popular tools for agents</h2></div><p>Curated external tools from their official maintainers. They are free or open source where stated, and are not operated, executed or endorsed by PrivateDAO.</p></div><div class="grid">${curatedToolCards}</div></section>`;
   const directoryNav = `<nav class="marketplace-nav" aria-label="Marketplace sections" style="display:flex;flex-wrap:wrap;gap:10px;margin:0 0 42px;padding:8px;border:1px solid #dbe5f0;border-radius:16px;background:#f5f9ff"><a href="#pdao-cloud" style="flex:1 1 180px;display:flex;flex-direction:column;gap:2px;padding:12px 14px;border-radius:11px;color:#081b33;text-decoration:none"><strong>PDAO Cloud</strong><span style="color:#52657c;font-size:.82rem">Business-ready modules</span></a><a href="#products" style="flex:1 1 180px;display:flex;flex-direction:column;gap:2px;padding:12px 14px;border-radius:11px;color:#081b33;text-decoration:none"><strong>Products</strong><span style="color:#52657c;font-size:.82rem">Outcome-based workflows</span></a><a href="#free-tools" style="flex:1 1 180px;display:flex;flex-direction:column;gap:2px;padding:12px 14px;border-radius:11px;color:#081b33;text-decoration:none"><strong>Free tools</strong><span style="color:#52657c;font-size:.82rem">Official external tools</span></a><a href="#category-verification" style="flex:1 1 180px;display:flex;flex-direction:column;gap:2px;padding:12px 14px;border-radius:11px;color:#081b33;text-decoration:none"><strong>Services</strong><span style="color:#52657c;font-size:.82rem">PrivateDAO capabilities</span></a></nav>`;
-  cards = pdaoCloudFeatured + directoryNav + moduleCatalog + productCatalog + curatedCatalog + cards;
+  const productCatalogPublic = productCatalog
+    .replaceAll("Activation gated", "Quote-first USDC settlement")
+    .replaceAll("Mainnet conformance pending", "Quote-first service workflow")
+    .replaceAll("No production activation claim", "Quote-first service workflow");
+  cards = directoryNav.replace(/<a href="#pdao-cloud"[\s\S]*?<\/a>/, "") + featuredExchangeCard + productCatalogPublic + curatedCatalog + cards;
   const terms = `<article class="integration"><div class="eyebrow">Seller Marketplace</div><h3>List, execute, promote</h3><strong>Listing fee: $${escapeHtml(String(policy.listing_fee_usd))} one time · up to ${escapeHtml(String(policy.max_services_per_seller))} services</strong><p>Platform fee: ${escapeHtml(String(policy.platform_fee_bps / 100))}% per paid execution · seller receives ${escapeHtml(String(100 - policy.platform_fee_bps / 100))}% net</p><small>Fixed PDAO promotion: qualifying wallets can access marked eligible first-party verification services without payment through 19 Nov 2026. This is not a wallet-specific 30-day window. Ordinary paid services remain quote-first finalized USDC. Featured Listing: $${escapeHtml(String(policy.promotion_packages.featured_listing.price_usd))} · Ecosystem Campaign: $${escapeHtml(String(policy.promotion_packages.ecosystem_campaign.price_usd))}.</small><small style="display:block;margin-top:10px">${escapeHtml(COMMERCIAL_HOLDER_OFFER)}</small></article>`;
   const integrations = integrationDirectory().map(integrationCard).join("") + terms;
   return injectLanguageWidget(`<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Agent Marketplace | PrivateDAO</title><meta name="description" content="Discover PrivateDAO services for verification, evidence and agent workflows."><style>
@@ -1715,33 +1795,40 @@ function ecosystemPartnerRail() {
     ["GitHub", "https://github.com/partners", "/assets/ecosystem/github.svg"],
     ["AWS", "https://aws.amazon.com/startups/", "/assets/ecosystem/aws.svg"],
     ["Alibaba Cloud", "https://www.alibabacloud.com/startup", "/assets/ecosystem/alibaba-cloud.svg"],
+    ["Glama", "https://glama.ai/mcp/connectors/io.github.X-PACT/pdao-agent-exchange", "/assets/ecosystem/glama-logo.png"],
   ];
   const items = logos.map(([name, href, src]) => `<a class="pdao-ecosystem-rail__item" href="${href}" target="_blank" rel="noreferrer noopener" aria-label="${name} official ecosystem page"><img src="${src}" alt="${name}" loading="lazy"></a>`).join("");
   return `<section class="pdao-ecosystem-rail" aria-label="PrivateDAO ecosystem logos"><div class="pdao-ecosystem-rail__viewport"><div class="pdao-ecosystem-rail__track">${items}${items}</div></div></section><style>.pdao-ecosystem-rail{border-top:1px solid #dbe5ef;background:#f7fbff;margin-top:70px;padding:22px 16px;overflow:hidden}.pdao-ecosystem-rail__viewport{margin:0 auto;max-width:1180px;overflow:hidden}.pdao-ecosystem-rail__track{display:flex;width:max-content;align-items:center;gap:42px;animation:pdao-ecosystem-marquee 28s linear infinite}.pdao-ecosystem-rail__track:hover{animation-play-state:paused}.pdao-ecosystem-rail__item{display:flex;width:150px;height:52px;align-items:center;justify-content:center;text-decoration:none;flex:none;opacity:.86;transition:opacity .2s ease,transform .2s ease}.pdao-ecosystem-rail__item:hover{opacity:1;transform:translateY(-2px)}.pdao-ecosystem-rail__item img{display:block;max-width:142px;max-height:38px;width:auto;height:auto;object-fit:contain}.pdao-ecosystem-rail__item:nth-child(3n) img{max-height:42px}.pdao-ecosystem-rail__item:first-child img{max-width:142px;max-height:34px}@keyframes pdao-ecosystem-marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}@media(prefers-reduced-motion:reduce){.pdao-ecosystem-rail__track{animation:none;transform:none;flex-wrap:wrap;width:100%;justify-content:center;gap:24px}}</style>`;
 }
 function commercialHomePageWithOffer() {
   const offer = `<section class="section"><p class="eyebrow">Commercial model</p><h2>Built for a service economy.</h2><p>${escapeHtml(COMMERCIAL_HOLDER_OFFER)}</p><p>Developers list once, buyers pay only for completed work, and every commercial outcome carries a receipt and accounting trail.</p><div class="category-grid"><article class="category"><span>Seller onboarding</span><h3>$10 once per agent</h3><p>One listing fee covers the agent and its first five commercial services. It is separate from GitHub Marketplace billing.</p></article><article class="category"><span>Execution economics</span><h3>10% platform fee · 90% seller net</h3><p>Applied to successfully completed paid executions and shown in the quote, receipt, and settlement record.</p></article><article class="category"><span>Holder rewards</span><h3>Access · Plus · Pro</h3><p>$25 / $100 / $250 qualifying value unlocks $1 / $5 / $15 monthly credits plus 5% / 10% / 15% non-stackable discounts on eligible first-party services.</p></article></div></section><section class="section"><p class="eyebrow">Official integration relationship</p><h2>PrivateDAO Agent Exchange is SealKeeper's design and integration partner.</h2><p>Our SealKeeper connection is a read-only reputation signal with independently checked evidence. It does not claim certification, authorization, or a replacement for the Exchange's own seller controls.</p><p><a href="https://sealkeeper.run/" target="_blank" rel="noreferrer noopener">Design partner listing ↗</a> · <a href="https://sealkeeper.run/docs/integrate" target="_blank" rel="noreferrer noopener">Integration guide ↗</a></p></section>`;
-  const privatePaySpotlight = `<section class="section" aria-label="PrivatePAY x402 commercial product"><div style="display:grid;grid-template-columns:minmax(0,1.4fr) minmax(220px,.6fr);gap:22px;align-items:center;padding:24px;border:1px solid #b9dfcf;border-radius:20px;background:linear-gradient(135deg,#f3fcf8,#f5f9ff)"><div><p class="eyebrow" style="color:#087f5b">PrivatePAY x402</p><h2 style="margin:8px 0">Confidential payment execution for the Exchange.</h2><p style="max-width:680px;color:#52657c">PrivateDAO charges 2.5% of the quoted service subtotal, with a $0.05 USDC minimum, routed through the same service treasury. USDC remains the settlement asset. PDAO holder credits and discounts are separate benefits and never replace payment.</p><p style="margin:0;color:#b05b00;font-weight:800">Activation gated while mainnet provider conformance and treasury split verification are pending.</p><div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:18px"><a class="button" href="/services/privatepay-x402">Open PrivatePay x402</a><a class="button alt" href="/marketplace">View marketplace</a></div></div><div style="display:grid;gap:10px;color:#52657c"><strong style="font-size:1.3rem;color:#087f5b">2.5% + $0.05 min</strong><span>PrivateDAO service fee</span><strong style="font-size:1.3rem;color:#087f5b">USDC</strong><span>Settlement asset</span><strong style="font-size:1.05rem;color:#b05b00">Gated</strong><span>No production activation claim</span></div></div></section>`;
+  const privatePaySpotlight = `<section class="section" aria-label="PrivatePAY x402 commercial product"><div style="display:grid;grid-template-columns:minmax(0,1.4fr) minmax(220px,.6fr);gap:22px;align-items:center;padding:24px;border:1px solid #b9dfcf;border-radius:20px;background:linear-gradient(135deg,#f3fcf8,#f5f9ff)"><div><p class="eyebrow" style="color:#087f5b">PrivatePAY x402</p><h2 style="margin:8px 0">Confidential payment architecture for the Exchange.</h2><p style="max-width:680px;color:#52657c">PrivateDAO charges 2.5% of the quoted service subtotal, with a $0.05 USDC minimum, routed through the same service treasury. USDC remains the settlement asset. PDAO holder credits and discounts are separate benefits and never replace payment.</p><p style="margin:0;color:#087f5b;font-weight:800">Quote-first USDC settlement for structured service workflows.</p><div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:18px"><a class="button" href="/services/privatepay-x402">Open PrivatePay x402</a><a class="button alt" href="/marketplace">View marketplace</a></div></div><div style="display:grid;gap:10px;color:#52657c"><strong style="font-size:1.3rem;color:#087f5b">2.5% + $0.05 min</strong><span>PrivateDAO service fee</span><strong style="font-size:1.3rem;color:#087f5b">USDC</strong><span>Settlement asset</span><strong style="font-size:1.05rem;color:#087f5b">Quote-first USDC settlement</strong><span>Commercial service workflow</span></div></div></section>`;
   const visualLayer = `
 .pdao-utility-band{display:grid;grid-template-columns:minmax(260px,1.08fr) minmax(0,1.92fr);gap:12px;margin:0 0 76px;padding:12px;border:1px solid #cfe0f5;border-radius:22px;background:#f5f9ff;box-shadow:0 18px 42px rgba(14,42,78,.07)}.pdao-utility-band__intro{position:relative;display:flex;min-height:218px;flex-direction:column;justify-content:space-between;overflow:hidden;padding:24px;border-radius:16px;background:#071a32;color:#fff}.pdao-utility-band__intro:after{content:"PDAO";position:absolute;right:-12px;bottom:-34px;color:rgba(255,255,255,.07);font-size:6rem;font-weight:900;letter-spacing:-.12em}.pdao-utility-band__intro .eyebrow{position:relative;color:#8db8ff}.pdao-utility-band__intro h2{position:relative;max-width:270px;margin:14px 0 8px;font-size:1.5rem;line-height:1.08;letter-spacing:-.035em}.pdao-utility-band__intro p{position:relative;max-width:300px;margin:0;color:#b8cce8;font-size:.9rem}.pdao-utility-band__link{position:relative;display:inline-flex;align-items:center;gap:8px;margin-top:16px;color:#fff;font-size:.82rem;font-weight:800}.pdao-benefit-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.pdao-benefit-card{display:flex;min-height:218px;flex-direction:column;padding:20px;border:1px solid #cfe0f5;border-radius:16px;background:#fff;transition:transform .22s ease,box-shadow .22s ease,border-color .22s ease}.pdao-benefit-card:hover{transform:translateY(-5px);border-color:#8db8ff;box-shadow:0 16px 30px rgba(14,42,78,.1)}.pdao-benefit-card__index{color:#1769e0;font-size:.7rem;font-weight:850;letter-spacing:.12em}.pdao-benefit-card strong{margin-top:24px;font-size:1.18rem}.pdao-benefit-card b{margin-top:6px;color:#087f5b;font-size:1rem}.pdao-benefit-card span:last-child{margin-top:auto;color:#52657b;font-size:.83rem}.pdao-proof-panel{position:relative;padding:22px;border:1px solid #cfe0f5;border-radius:20px;background:#071a32;color:#fff;box-shadow:0 18px 40px rgba(7,26,50,.16);overflow:hidden}.pdao-proof-panel:before{content:"";position:absolute;inset:14px;border:1px solid rgba(255,255,255,.14);border-radius:14px;pointer-events:none}.pdao-proof-panel__label{position:relative;color:#8db8ff;font-size:.68rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase}.pdao-proof-panel__title{position:relative;margin:12px 0 18px;font-size:1.3rem;font-weight:800}.pdao-proof-panel__line{position:relative;display:flex;align-items:center;gap:8px;margin:10px 0;color:#dbe9ff;font-size:.86rem}.pdao-proof-panel__dot{width:8px;height:8px;border-radius:50%;background:#31c48d;box-shadow:0 0 0 5px rgba(49,196,141,.14);animation:pdao-proof-pulse 2.4s ease-in-out infinite}.pdao-proof-panel__line:nth-child(4) .pdao-proof-panel__dot{animation-delay:.4s}.pdao-proof-panel__line:nth-child(5) .pdao-proof-panel__dot{animation-delay:.8s}.pdao-proof-panel__metric{position:relative;display:flex;justify-content:space-between;margin-top:20px;padding-top:14px;border-top:1px solid rgba(255,255,255,.16);color:#a9c4e8;font-size:.78rem}.pdao-proof-panel__metric strong{color:#fff}.pdao-lift{transition:transform .22s ease,box-shadow .22s ease}.pdao-lift:hover{transform:translateY(-5px);box-shadow:0 18px 38px rgba(14,42,78,.1)}@keyframes pdao-proof-pulse{0%,100%{opacity:.55;transform:scale(.9)}50%{opacity:1;transform:scale(1.12)}}@media(max-width:900px){.pdao-utility-band{grid-template-columns:1fr}.pdao-utility-band__intro{min-height:180px}.pdao-benefit-card{min-height:180px}}@media(max-width:760px){.pdao-benefit-grid{grid-template-columns:1fr}.pdao-utility-band{margin-bottom:56px;padding:10px}.pdao-benefit-card{min-height:auto}.pdao-proof-panel{margin-top:28px}}@media(prefers-reduced-motion:reduce){.pdao-proof-panel__dot{animation:none}.pdao-lift,.pdao-benefit-card{transition:none}}
 `;
   const utilityRail = `<section class="pdao-utility-band" aria-label="PDAO utility and Agent Exchange value"><div class="pdao-utility-band__intro"><div><p class="eyebrow">PDAO utility layer</p><h2>Access the Exchange with a clear holder path.</h2><p>Use verified PDAO holder access for published service credits and commercial benefits.</p></div><a class="pdao-utility-band__link" href="https://privatedao.org/payment-gate" target="_blank" rel="noreferrer noopener">Open payment utility <span aria-hidden="true">↗</span></a></div><div class="pdao-benefit-grid"><article class="pdao-benefit-card"><span class="pdao-benefit-card__index">01 / ACCESS</span><strong>Access</strong><b>$25 qualifying value</b><span>Entry holder tier for published service access.</span></article><article class="pdao-benefit-card"><span class="pdao-benefit-card__index">02 / PLUS</span><strong>Plus</strong><b>$100 qualifying value</b><span>Higher monthly credit and holder discount tier.</span></article><article class="pdao-benefit-card"><span class="pdao-benefit-card__index">03 / PRO</span><strong>Pro</strong><b>$250 qualifying value</b><span>Maximum published holder benefits for eligible services.</span></article></div></section>`;
   const proofPanel = `<div class="pdao-proof-panel"><div class="pdao-proof-panel__label">Exchange status</div><div class="pdao-proof-panel__title">From capability to accountable outcome.</div><div class="pdao-proof-panel__line"><span class="pdao-proof-panel__dot"></span>Discover a verified service</div><div class="pdao-proof-panel__line"><span class="pdao-proof-panel__dot"></span>Use PDAO access or receive a quote</div><div class="pdao-proof-panel__line"><span class="pdao-proof-panel__dot"></span>Verify the receipt independently</div><div class="pdao-proof-panel__metric"><span>Payment rail</span><strong>USDC · Solana Mainnet</strong></div></div>`;
+  const demoSpotlight = `<section class="section" aria-label="Try an AI Agent" style="margin-top:0;padding:24px;border:2px solid #1769e0;border-radius:18px;background:#f5f9ff;box-shadow:0 16px 32px rgba(14,42,78,.08)"><div style="display:flex;justify-content:space-between;gap:18px;align-items:flex-start;flex-wrap:wrap"><div><p class="eyebrow">Free demo</p><h2 style="margin:6px 0 8px">Try an AI Agent</h2><p style="margin:0;color:#52657c;max-width:700px">See how a read-only verification agent analyzes a preloaded public token example. No wallet connection, PDAO balance, payment or account is required.</p></div><span style="display:inline-flex;padding:8px 12px;border-radius:999px;background:#e9f8ef;color:#087f5b;font-weight:850">Free demo</span></div><div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:14px;align-items:center;margin-top:18px;padding:16px;border:1px solid #dbe5ef;border-radius:14px;background:#fff"><div><strong style="display:block;font-size:1.1rem">Token Safety Check</strong><span style="display:block;margin-top:4px;color:#52657c">Preloaded example · public token evidence · example report</span></div><a class="button" href="/demo">Try it now <span aria-hidden="true">→</span></a></div><p style="margin:14px 0 0;color:#52657c">Ready to check your own contract? <a href="/marketplace">Explore the marketplace</a> and choose the actual service.</p></section>`;
+  const agentAccess = `<section class="section" aria-label="For agents" style="margin-top:0;padding:20px;border:1px solid #cfe0f5;border-radius:16px;background:#f5f9ff"><div style="display:flex;justify-content:space-between;gap:18px;align-items:flex-start;flex-wrap:wrap"><div><p class="eyebrow">For agents</p><h2 style="margin:6px 0 8px">Connect directly to the Exchange.</h2><p style="margin:0;color:#52657c">Free read-only tools require no auth. Paid jobs return a quote before USDC settlement.</p></div><a class="button" href="/connect">Connection guides <span aria-hidden="true">→</span></a></div><div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;margin-top:18px;padding:12px 14px;border:1px solid #dbe5ef;border-radius:12px;background:#fff"><code id="mcp-endpoint" style="overflow-wrap:anywhere">https://${config.domain}/mcp</code><button class="button alt" data-copy-mcp type="button" style="margin:0;cursor:pointer">Copy MCP URL</button></div><p style="margin:12px 0 0;color:#52657c">A2A Agent Card: <a href="/.well-known/agent-card.json">/.well-known/agent-card.json</a></p><p style="margin:8px 0 0;color:#52657c">Eligible verification services: <a href="/services/verify-basic">verify.basic</a> · <a href="/services/verify-deep">verify.deep</a> · <a href="/services/receipt-verify">receipt.verify</a></p><p style="margin:8px 0 0;color:#52657c">Listed on: <a href="https://registry.modelcontextprotocol.io/v0.1/servers/io.github.X-PACT%2Fpdao-agent-exchange/versions/latest" target="_blank" rel="noreferrer noopener">Official MCP Registry</a> · <a href="https://glama.ai/mcp/connectors/io.github.X-PACT/pdao-agent-exchange" target="_blank" rel="noreferrer noopener">Glama</a> · <a href="/connect">Client guides</a></p></section>`;
   return commercialHomePage()
     .replace('</style>', `${visualLayer}</style>`)
     .replace('<section class="hero">', `${commercialOfferBanner()}<section class="hero">`)
-    .replace('<section class="flow" aria-label="Agent Exchange lifecycle">', `${utilityRail}${privatePaySpotlight}<section class="flow" aria-label="Agent Exchange lifecycle">`)
+    .replace('<section class="flow" aria-label="Agent Exchange lifecycle">', `${demoSpotlight}${utilityRail}${privatePaySpotlight}<section class="flow" aria-label="Agent Exchange lifecycle">`)
+    .replace('<section class="flow" aria-label="Agent Exchange lifecycle">', `${agentAccess}<section class="flow" aria-label="Agent Exchange lifecycle">`)
     .replace('<p class="side-note"><strong>Free to start.</strong><br>Paid services are quote-first.<br>Payment is finalized on Solana Mainnet USDC.<br>Completed work returns a verifiable receipt.</p>', proofPanel)
     .replace('class="category-grid">', 'class="category-grid pdao-lift">')
       .replace('<footer class="footer">', `${ecosystemPartnerRail()}<footer class="footer">`)
     .replace('<a href="/connect">Connect an agent</a>', '<a href="/demo">Try a live demo</a><a href="/products">Products</a><a href="/connect">Connect an agent</a>')
     .replace('<a href="/mcp">MCP</a>', '<a href="/mcp">MCP</a><a href="/a2a">A2A</a><a href="/sellers">Sell</a>')
+    .replace('Activation gated while mainnet provider conformance and treasury split verification are pending.', 'Confidential settlement architecture for quote-first service workflows.')
+    .replace('<strong style="font-size:1.05rem;color:#b05b00">Gated</strong><span>No production activation claim</span>', '<strong style="font-size:1.05rem;color:#087f5b">Private settlement</strong><span>Quote-first service workflow</span>')
     .replace('A commercial service layer for AI agents. Discover a capability, request the work, pay only when required, and receive evidence that can be checked independently.', 'A commercial service economy for people and autonomous agents. Discover a capability, request the work, use PDAO holder access when eligible or pay quoted USDC on Solana Mainnet, and receive independently verifiable evidence.')
     .replace('<section class="section"><p class="eyebrow">What can an agent use?</p>', `${offer}<section class="section"><p class="eyebrow">What can an agent use?</p>`)
     .replace('Use the MCP endpoint to inspect the full catalog, get a task recommendation, understand payment, execute a job, retrieve a result and verify its receipt.', 'Use A2A or MCP to inspect the catalog, request a quote or holder challenge, execute a service, retrieve a result and verify its receipt. Sellers can list through the self-service portal; investors can see the fee and settlement model clearly.')
     .replace('Paid services are quote-first.<br>Payment is finalized on Solana Mainnet USDC.', 'Paid services are quote-first.<br>Pay quoted USDC on Solana Mainnet or use verified PDAO holder access.')
     .replace('<a class="button" href="/marketplace">Explore services →</a>', '<a class="button" href="/demo">Try a live demo →</a><a class="button alt" href="/marketplace">Explore services</a>')
     .replace('<a href="/connect">Connect an agent</a>', '<a href="/connect">Connect an agent</a><a href="/sellers">List your agent</a>');
+  return page.replace('</body>', '<script>document.querySelector("[data-copy-mcp]")?.addEventListener("click", async (event) => { const button = event.currentTarget; try { await navigator.clipboard.writeText(document.querySelector("#mcp-endpoint").textContent); button.textContent = "Copied"; setTimeout(() => { button.textContent = "Copy MCP URL"; }, 1600); } catch { button.textContent = "Copy manually"; } });</script></body>');
 }
 function paymentPage(jobId) {
   const safeJobId = JSON.stringify(jobId);
@@ -2259,6 +2346,29 @@ async function sellerListingQuote(body) {
   if (invalid) throw Object.assign(new Error(`commercial service tool is not in the safe MCP allowlist: ${invalid.tool}`), { statusCode: 400 });
   const listingId = `seller_listing_${agent.id}`;
   const existing = await storage.get("Listings", listingId);
+  let pdaoSellerAccess = null;
+  let pdaoSellerBenefit = null;
+  if (body.pdao_access && tierId !== "free") {
+    try {
+      pdaoSellerAccess = await verifyPdaoHolderAccess({
+        config,
+        storage,
+        access: body.pdao_access,
+        serviceId: PDAO_SELLER_SERVICE_ID,
+        input: { agent_id: agent.id, tier: tierId },
+        servicePrice: null,
+      });
+      const holderTier = pdaoSellerAccess?.tier_id
+        ? publicPdaoBenefitPolicy().tiers.find((item) => item.id === pdaoSellerAccess.tier_id)
+        : null;
+      pdaoSellerBenefit = calculatePdaoSellerListingBenefit({ tier: holderTier, listingFee: tier.listing_fee_usd });
+    } catch (error) {
+      // Seller benefits are optional. A failed holder check falls back to the
+      // normal USDC listing fee and never changes the listing's requirements.
+      pdaoSellerAccess = null;
+      pdaoSellerBenefit = null;
+    }
+  }
   if (tierId === "free" && existing?.payment_status !== "paid") {
     const ledger = services.map((service) => ({ service_id: service.id, status: "paid", fee_amount: 0, included: true, free_eligibility: "verified_mcp_and_terms", paid_at: now() }));
     const listing = {
@@ -2288,7 +2398,10 @@ async function sellerListingQuote(body) {
     return { listing: nextListing, status: "paid", policy, tier, fee_plan: { ...plan, amount: 0, items: plan.newServices.map((service) => ({ service_id: service.id, fee_amount: 0, included: true })) } };
   }
   if (existing?.payment_status === "paid" && !plan.newServices.length) return { listing: existing, status: "paid", policy, tier, fee_plan: plan };
-  const amount = Number((existing?.payment_status === "paid" ? plan.amount : Number(tier.listing_fee_usd) + plan.items.reduce((sum, item) => sum + Number(item.fee_amount), 0)).toFixed(6));
+  const regularAmount = existing?.payment_status === "paid"
+    ? plan.amount
+    : Number(tier.listing_fee_usd) + plan.items.reduce((sum, item) => sum + Number(item.fee_amount), 0);
+  const amount = Number((existing?.payment_status === "paid" ? regularAmount : (pdaoSellerBenefit?.charge_usd ?? regularAmount)).toFixed(6));
   const quotedServices = existing?.payment_status === "paid" ? plan.newServices : services;
   const feeItems = existing?.payment_status === "paid"
     ? plan.items
@@ -2302,6 +2415,9 @@ async function sellerListingQuote(body) {
     treasuryTokenAccount: await treasuryTokenAccount(config), recipient: config.treasury,
     paymentReference: `PDAO_LISTING:${listingId}:${quoteId}`, expires_at: new Date(Date.now() + 1800000).toISOString(),
     gross_amount: amount, platform_fee_amount: amount, platform_fee_bps: 10000, seller_net_amount: 0,
+    regular_amount: regularAmount,
+    pdao_holder_benefit: pdaoSellerBenefit,
+    pdao_holder_access: pdaoSellerAccess ? { wallet: pdaoSellerAccess.wallet, tier_id: pdaoSellerAccess.tier_id, verified_at: pdaoSellerAccess.verified_at } : null,
     terms_version: SELLER_TERMS_VERSION, terms_accepted_at: now(), billing_separation_disclosure: "PrivateDAO listing fees are separate from GitHub Marketplace billing.",
     settlement_status: "platform_collected", included_services: policy.included_services, additional_service_fee_usd: policy.additional_service_fee_usd, created_at: now(),
   };
@@ -2309,9 +2425,18 @@ async function sellerListingQuote(body) {
   const listing = {
     ...(existing || {}), id: listingId, agentId: agent.id, seller_agent_id: agent.id, provider: agent.name, type: "seller_listing",
     tier: tierId, service_ids: existing?.payment_status === "paid" ? existing.service_ids || [] : quote.seller_service_ids, pending_service_ids: quote.seller_service_ids, listing_fee_status: existing?.payment_status === "paid" ? "paid" : "awaiting_payment", payment_status: existing?.payment_status === "paid" ? "paid" : "pending",
-    status: existing?.payment_status === "paid" ? existing.status : "pending", commercial_publication_status: existing?.commercial_publication_status || "draft", quote_id: quote.quote_id, commercial_services_hash: quote.commercial_services_hash, terms_version: quote.terms_version, terms_accepted_at: quote.terms_accepted_at, created_at: existing?.created_at || now(), updated_at: now(),
+    status: existing?.payment_status === "paid" ? existing.status : "pending", commercial_publication_status: existing?.commercial_publication_status || "draft", quote_id: quote.quote_id, commercial_services_hash: quote.commercial_services_hash, terms_version: quote.terms_version, terms_accepted_at: quote.terms_accepted_at, pdao_benefit: pdaoSellerBenefit, created_at: existing?.created_at || now(), updated_at: now(),
   };
   await storage.put("Listings", listingId, listing);
+  if (amount === 0 && existing?.payment_status !== "paid" && pdaoSellerBenefit?.eligible) {
+    const ledger = services.map((service) => ({ service_id: service.id, status: "paid", fee_amount: 0, included: true, free_eligibility: "pdao_holder_listing_benefit", paid_at: now() }));
+    const eligibleListing = { ...listing, pending_service_ids: [], service_ids: quotedServices.map((service) => service.id), listing_fee_status: "paid", payment_status: "paid", payment_method: "pdao_holder_benefit", amount: 0, status: "eligible", commercial_publication_status: "eligible", updated_at: now() };
+    await storage.put("Listings", listingId, eligibleListing);
+    const publishedAgent = await setSellerPublication(agent.id, { owner_token: body.owner_token }, true);
+    const publishedListing = await storage.get("Listings", listingId);
+    await storage.put("Registry", agent.id, { ...publishedAgent, listing_fee_status: "paid", listing_fee_ledger: ledger, pdao_benefits: { discovery_priority: true, tier_id: pdaoSellerBenefit.tier_id }, updated_at: now() });
+    return { listing: publishedListing || eligibleListing, agent: publishedAgent, quote: { ...quote, amount: 0, amountAtomic: 0, payment_required: false, pdao_holder_benefit: pdaoSellerBenefit }, policy, tier, status: "published", pdao_listing_benefit: true, fee_plan: { ...plan, amount: 0 } };
+  }
   return { listing, quote, policy, tier, fee_plan: plan, status: "awaiting_payment" };
 }
 async function submitSellerListingPayment(id, body) {
@@ -2367,7 +2492,7 @@ async function submitSellerListingPayment(id, body) {
   const isAdditional = quote.payment_type === "seller_additional_service_fee";
   const nextListing = { ...listing, payment_status: "paid", listing_fee_status: "paid", service_ids: paidServiceIds, pending_service_ids: [], commercial_publication_status: isAdditional ? listing.commercial_publication_status : "eligible", status: isAdditional ? listing.status : "eligible", payment_signature: body.signature, receipt_id: receipt.receipt_id, settlement_id: settlementId, paid_at: now(), updated_at: now() };
   await storage.put("Listings", id, nextListing);
-  await storage.put("Registry", agent.id, { ...agent, commercial_publication_status: isAdditional ? agent.commercial_publication_status : "eligible", listing_fee_status: "paid", listing_fee_ledger: nextLedger, seller_tier: listing.tier, listing_fee_quote_id: quote.quote_id, listing_fee_payment_signature: body.signature, listing_fee_paid_at: now(), updated_at: now() });
+  await storage.put("Registry", agent.id, { ...agent, commercial_publication_status: isAdditional ? agent.commercial_publication_status : "eligible", listing_fee_status: "paid", listing_fee_ledger: nextLedger, seller_tier: listing.tier, ...(quote.pdao_holder_benefit ? { pdao_benefits: { discovery_priority: true, tier_id: quote.pdao_holder_benefit.tier_id } } : {}), listing_fee_quote_id: quote.quote_id, listing_fee_payment_signature: body.signature, listing_fee_paid_at: now(), updated_at: now() });
   return { status: "paid", listing: nextListing, receipt, settlement };
 }
 async function sellerListingPaymentIntent(id) {
@@ -2656,10 +2781,13 @@ function errorResponse(error) {
   const upstreamFailure = !Number.isFinite(rawStatus) && upstreamFailurePattern.test(String(error?.message || ""));
   const status = Number.isFinite(rawStatus) && rawStatus > 0 ? rawStatus : upstreamFailure ? 502 : 400;
   const message = publicErrorMessage(error);
+  const privatePayCode = /^PRIVATEPAY_[A-Z0-9_]+$/.test(String(error?.code || ""));
   return json(
     {
       error: status === 402 ? "payment_required" : "request_failed",
       message,
+      ...(privatePayCode ? { code: error.code } : {}),
+      ...(privatePayCode && error.status && typeof error.status === "object" ? { privatepay_status: error.status } : {}),
       ...(error.payment_intent ? { payment_intent: error.payment_intent } : {}),
       ...(error.payment_required ? { payment_required: error.payment_required } : {}),
       ...(error.request_id ? { request_id: error.request_id } : {}),
@@ -2730,10 +2858,12 @@ function publicJobStatus(job) {
   };
 }
 
-function privatePayCommercialFee(amount) {
+function privatePayCommercialFee(amount, discountBps = 0) {
   const subtotal = Math.max(0, Number(amount) || 0);
   if (!subtotal) return 0;
-  return Number(Math.max(config.privatePayMinimumFeeUsd, subtotal * config.privatePayFeeBps / 10000).toFixed(6));
+  const bps = Math.min(10000, Math.max(0, Number(discountBps) || 0));
+  const baseFee = Math.max(config.privatePayMinimumFeeUsd, subtotal * config.privatePayFeeBps / 10000);
+  return Number((baseFee * (1 - bps / 10000)).toFixed(6));
 }
 
 async function makeQuote(serviceId, jobId, admin = false, currency = "USDC", targetNetwork = null, paymentMode = "direct") {
@@ -3329,9 +3459,16 @@ async function createJob(serviceId, input, admin = false, currency = "USDC", met
     throw Object.assign(new Error("privatepay is available only for paid services"), { statusCode: 400 });
   validateServiceInput(serviceId, input);
   const storage = await store();
-  const pdaoEntitlement = service.price
-    ? await verifyPdaoHolderAccess({ config, storage, access, serviceId, input, servicePrice: service.price })
-    : null;
+  let pdaoEntitlement = null;
+  if (service.price && access) {
+    try {
+      pdaoEntitlement = await verifyPdaoHolderAccess({ config, storage, access, serviceId, input, servicePrice: service.price });
+    } catch (error) {
+      // Holder verification is an optional benefit. A failed check must never
+      // block an ordinary USDC quote or silently grant a discount.
+      pdaoEntitlement = null;
+    }
+  }
   const holderBenefit = pdaoEntitlement?.benefit || null;
   const holderAccess = Boolean(holderBenefit?.eligible && holderBenefit.fully_covered);
   if (normalizedPaymentMode === "privatepay" && !holderAccess && !privatePayStatus(config).enabled) {
@@ -3349,6 +3486,8 @@ async function createJob(serviceId, input, admin = false, currency = "USDC", met
     input_hash: digest(input),
     status: service.price && !holderAccess ? "awaiting_payment" : "running",
     payment_mode: normalizedPaymentMode,
+    queue_class: holderBenefit?.priority_class || "standard",
+    queue_priority: holderBenefit?.priority_weight || 0,
     created_at: now(),
     expires_at: new Date(Date.now() + 1800000).toISOString(),
     ...(persistForPaymentRetry ? { execution_input: input } : {}),
@@ -3360,13 +3499,14 @@ async function createJob(serviceId, input, admin = false, currency = "USDC", met
     const quote = await makeQuote(serviceId, job.id, admin, currency, input?.network || null, normalizedPaymentMode);
     if (holderBenefit?.eligible) {
       quote.gross_amount = holderBenefit.charge_usd;
-      quote.privatepay_fee_amount = normalizedPaymentMode === "privatepay" && currency === "USDC" ? privatePayCommercialFee(holderBenefit.charge_usd) : 0;
+      quote.privatepay_fee_amount = normalizedPaymentMode === "privatepay" && currency === "USDC" ? privatePayCommercialFee(holderBenefit.charge_usd, holderBenefit.privatepay_fee_discount_bps) : 0;
       quote.amount = Number((quote.gross_amount + quote.privatepay_fee_amount).toFixed(6));
       quote.amountAtomic = Math.round(quote.amount * (currency === "SOL" ? 1e9 : 1e6));
       quote.holder_tier_id = holderBenefit.tier_id;
       quote.holder_credit_applied_usd = holderBenefit.credit_applied_usd;
       quote.holder_discount_bps = holderBenefit.discount_bps;
       quote.holder_discount_percent = holderBenefit.discount_percent;
+      quote.privatepay_fee_discount_bps = holderBenefit.privatepay_fee_discount_bps;
       quote.payment_required = quote.amount > 0;
       quote.private_dao_revenue_amount = quote.amount;
       await storage.put("Quotes", quote.quote_id, quote);
@@ -3424,6 +3564,24 @@ async function createJob(serviceId, input, admin = false, currency = "USDC", met
   await (await store()).put("Jobs", job.id, job);
   const execution = await executeMeasuredService(serviceId, input);
   return await completeJob(job, execution.result, null, execution.telemetry);
+}
+
+async function cancelJob(jobId, reason = "cancelled_by_request") {
+  const storage = await store();
+  const job = await storage.get("Jobs", jobId);
+  if (!job) throw Object.assign(new Error("job not found"), { statusCode: 404 });
+  if (["completed", "running", "recovery_required"].includes(job.status)) {
+    throw Object.assign(new Error("only unpaid pending requests can be cancelled"), { statusCode: 409, code: "JOB_NOT_CANCELLABLE" });
+  }
+  if (job.status === "cancelled") return publicJobStatus(job);
+  const cancelled = {
+    ...job,
+    status: "cancelled",
+    cancelled_at: now(),
+    cancellation_reason: String(reason || "cancelled_by_request").slice(0, 240),
+  };
+  await storage.put("Jobs", job.id, cancelled);
+  return publicJobStatus(cancelled);
 }
 
 function privatePayPaymentHeader(event, body = {}) {
@@ -3504,6 +3662,12 @@ async function submitPrivatePayPayment(jobId, event, body = {}) {
     settlement = await privatePayFacilitatorRequest(config, "settle", facilitatorPayload);
     if (settlement.success !== true)
       throw new Error("PrivatePAY settlement was not confirmed by the facilitator");
+    const onchainVerification = await verifyPrivatePayMainnetSettlement(config, {
+      requestId: job.privatepay_request_id,
+      amountBaseUnits: job.privatepay_requirements.accepts[0].amount,
+      settlement,
+    });
+    settlement = { ...settlement, onchain_verification: onchainVerification };
     await storage.put("Payments", paymentId, { ...paymentClaim, state: "settled", settlement });
   } catch (error) {
     await storage.put("Payments", paymentId, { ...paymentClaim, state: "settlement_failed", settlement_error: String(error.message || error).slice(0, 240) });
@@ -4603,10 +4767,13 @@ async function handle(e) {
     path = pathOf(e),
     body = method === "GET" ? {} : parseBody(e);
   if (method === "OPTIONS") return json({}, 204);
-  if (method === "GET" && path === "/api/alibaba/spi") {
+  if ((method === "GET" || method === "POST") && path === "/api/alibaba/spi") {
     if (!config.alibabaMarketplaceEnabled) return json({ error: "not_found" }, 404);
     try {
-      return json(await handleAlibabaSpi({ parameters: e.queryStringParameters || {}, secret: config.alibabaMarketplaceSpiSecret, store: await store() }));
+      const parameters = method === "GET"
+        ? e.queryStringParameters || {}
+        : { ...(e.queryStringParameters || {}), ...body };
+      return json(await handleAlibabaSpi({ parameters, secret: config.alibabaMarketplaceSpiSecret, store: await store() }));
     } catch (error) {
       return json({ error: error.statusCode === 401 ? "unauthorized" : "alibaba_spi_rejected", message: error.message }, error.statusCode || 400);
     }
@@ -4690,7 +4857,7 @@ async function handle(e) {
     trackFunnel("developer_page_view");
     return { statusCode: 200, headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store" }, body: connectionHubPage() };
   }
-  if (method === "GET" && ["/connect/chatgpt", "/connect/claude", "/connect/grok", "/connect/openclaw"].includes(path)) {
+  if (method === "GET" && ["/connect/chatgpt", "/connect/claude", "/connect/grok", "/connect/cursor", "/connect/openclaw"].includes(path)) {
     trackFunnel("client_connection_page_view", { client: path.split("/").at(-1) });
     return { statusCode: 200, headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store" }, body: clientConnectionPage(path.split("/").at(-1)) };
   }
@@ -4788,7 +4955,7 @@ async function handle(e) {
     return json({
       status: "ok",
       service: "pdao-agent-exchange",
-      version: "1.6.0",
+      version: "1.7.2",
       network: "solana-mainnet-beta",
       rpcMode: stats?.providerClass || (config.rpcPrimary.includes("api.mainnet-beta")
         ? "public-fallback"
@@ -4823,18 +4990,18 @@ async function handle(e) {
     return json(openapi());
   }
   if (method === "GET" && ["/llms.txt", "/llms-full.txt"].includes(path))
-    return text(llms() + String.fromCharCode(10) + "Distribution: https://" + config.domain + "/connect" + String.fromCharCode(10) + "ChatGPT: https://" + config.domain + "/connect/chatgpt" + String.fromCharCode(10) + "Claude: https://" + config.domain + "/connect/claude" + String.fromCharCode(10) + "Grok: https://" + config.domain + "/connect/grok" + String.fromCharCode(10) + "OpenClaw: https://" + config.domain + "/connect/openclaw" + String.fromCharCode(10) + "MCP landing: https://" + config.domain + "/mcp" + String.fromCharCode(10) + "Production services: " + SERVICES.length + String.fromCharCode(10));
+    return text(llms() + String.fromCharCode(10) + "Distribution: https://" + config.domain + "/connect" + String.fromCharCode(10) + "ChatGPT: https://" + config.domain + "/connect/chatgpt" + String.fromCharCode(10) + "Claude: https://" + config.domain + "/connect/claude" + String.fromCharCode(10) + "Grok: https://" + config.domain + "/connect/grok" + String.fromCharCode(10) + "Cursor: https://" + config.domain + "/connect/cursor" + String.fromCharCode(10) + "OpenClaw: https://" + config.domain + "/connect/openclaw" + String.fromCharCode(10) + "MCP landing: https://" + config.domain + "/mcp" + String.fromCharCode(10) + "Production services: " + SERVICES.length + String.fromCharCode(10));
   if (method === "GET" && path === "/robots.txt")
-    return text(`User-agent: *\nAllow: /\nAllow: /demo\nAllow: /products\nAllow: /marketplace\nAllow: /integrations\nAllow: /partners\nAllow: /marketplace/partners\nAllow: /sellers\nAllow: /list-your-agent\nAllow: /connect\nAllow: /connect/chatgpt\nAllow: /connect/claude\nAllow: /connect/grok\nAllow: /connect/openclaw\nAllow: /mcp\nAllow: /.well-known/\nAllow: /api/acquisition\nAllow: /api/services\nAllow: /api/products\nAllow: /api/pricing\nAllow: /api/discovery\nAllow: /api/logistics/capabilities\nDisallow: /api/admin/\nDisallow: /api/revenue\nDisallow: /api/treasury/\nSitemap: https://${config.domain}/sitemap.xml\n`);
+    return text(`User-agent: *\nAllow: /\nAllow: /demo\nAllow: /products\nAllow: /marketplace\nAllow: /integrations\nAllow: /partners\nAllow: /marketplace/partners\nAllow: /sellers\nAllow: /list-your-agent\nAllow: /connect\nAllow: /connect/chatgpt\nAllow: /connect/claude\nAllow: /connect/grok\nAllow: /connect/cursor\nAllow: /connect/openclaw\nAllow: /mcp\nAllow: /.well-known/\nAllow: /api/acquisition\nAllow: /api/services\nAllow: /api/products\nAllow: /api/pricing\nAllow: /api/discovery\nAllow: /api/logistics/capabilities\nDisallow: /api/admin/\nDisallow: /api/revenue\nDisallow: /api/treasury/\nSitemap: https://${config.domain}/sitemap.xml\n`);
   if (method === "GET" && path === "/favicon.ico")
     return { statusCode: 200, headers: { "content-type": "image/svg+xml", "cache-control": "public, max-age=86400" }, body: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="16" fill="#071a32"/><path d="M18 47V17h17c9 0 15 5 15 13s-6 13-15 13H27v4zm9-12h8c4 0 6-2 6-5s-2-5-6-5h-8z" fill="#fff"/><path d="M18 17h9v30h-9z" fill="#1769e0"/></svg>` };
   if (method === "GET" && path === "/sitemap.xml") {
-    const sitemapPaths = ["/", "/demo", "/products", "/marketplace", "/holder-benefits", "/sellers", "/partners", "/connect", "/connect/chatgpt", "/connect/claude", "/connect/grok", "/connect/openclaw", "/mcp", "/.well-known/agent-card.json", "/openapi.json", ...SERVICES.map((service) => servicePath(service.id))];
+    const sitemapPaths = ["/", "/demo", "/products", "/marketplace", "/holder-benefits", "/sellers", "/partners", "/connect", "/connect/chatgpt", "/connect/claude", "/connect/grok", "/connect/cursor", "/connect/openclaw", "/mcp", "/.well-known/agent-card.json", "/openapi.json", ...SERVICES.map((service) => servicePath(service.id))];
     const sitemapBody = sitemapPaths.map((item) => `<url><loc>https://${config.domain}${item}</loc></url>`).join("");
     return { statusCode: 200, headers: { "content-type": "application/xml; charset=utf-8", "cache-control": "public, max-age=3600" }, body: `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${sitemapBody}</urlset>` };
   }
   if (method === "GET" && path === "/sitemap.xml")
-    return { statusCode: 200, headers: { "content-type": "application/xml; charset=utf-8", "cache-control": "public, max-age=3600" }, body: `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>https://${config.domain}/</loc></url><url><loc>https://${config.domain}/products</loc></url><url><loc>https://${config.domain}/marketplace</loc></url><url><loc>https://${config.domain}/sellers</loc></url><url><loc>https://${config.domain}/list-your-agent</loc></url><url><loc>https://${config.domain}/partners</loc></url><url><loc>https://${config.domain}/marketplace/partners</loc></url><url><loc>https://${config.domain}/connect</loc></url><url><loc>https://${config.domain}/connect/chatgpt</loc></url><url><loc>https://${config.domain}/connect/claude</loc></url><url><loc>https://${config.domain}/connect/grok</loc></url><url><loc>https://${config.domain}/connect/openclaw</loc></url><url><loc>https://${config.domain}/mcp</loc></url><url><loc>https://${config.domain}/.well-known/agent-card.json</loc></url><url><loc>https://${config.domain}/openapi.json</loc></url>${SERVICES.map((service) => `<url><loc>https://${config.domain}${servicePath(service.id)}</loc></url>`).join("")}</urlset>` };
+    return { statusCode: 200, headers: { "content-type": "application/xml; charset=utf-8", "cache-control": "public, max-age=3600" }, body: `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>https://${config.domain}/</loc></url><url><loc>https://${config.domain}/products</loc></url><url><loc>https://${config.domain}/marketplace</loc></url><url><loc>https://${config.domain}/sellers</loc></url><url><loc>https://${config.domain}/list-your-agent</loc></url><url><loc>https://${config.domain}/partners</loc></url><url><loc>https://${config.domain}/marketplace/partners</loc></url><url><loc>https://${config.domain}/connect</loc></url><url><loc>https://${config.domain}/connect/chatgpt</loc></url><url><loc>https://${config.domain}/connect/claude</loc></url><url><loc>https://${config.domain}/connect/grok</loc></url><url><loc>https://${config.domain}/connect/cursor</loc></url><url><loc>https://${config.domain}/connect/openclaw</loc></url><url><loc>https://${config.domain}/mcp</loc></url><url><loc>https://${config.domain}/.well-known/agent-card.json</loc></url><url><loc>https://${config.domain}/openapi.json</loc></url>${SERVICES.map((service) => `<url><loc>https://${config.domain}${servicePath(service.id)}</loc></url>`).join("")}</urlset>` };
   if (method === "GET" && path === "/llms.json")
     return json({
       name: "PrivateDAO Agent Exchange",
@@ -4990,11 +5157,16 @@ async function handle(e) {
     const settlement = await privatePayFacilitatorRequest(config, "settle", facilitatorPayload);
     if (settlement.success !== true)
       return json({ error: "privatepay_settlement_unconfirmed", request_id: requirements.request_id, status: "pending" }, 503);
+    const onchainVerification = await verifyPrivatePayMainnetSettlement(config, {
+      requestId: requirements.request_id,
+      amountBaseUnits: requirements.requirements.accepts[0].amount,
+      settlement,
+    });
     const paymentResponse = {
       success: true,
       transaction: `privatepay:${digest({ request_id: requirements.request_id, settlement: settlement.transaction || null }).slice(0, 32)}`,
       network: requirements.requirements.accepts[0].network,
-      extensions: { privacy_boundary: "provider_audit_only", request_id: requirements.request_id },
+      extensions: { privacy_boundary: "provider_audit_only", request_id: requirements.request_id, onchain_verification: onchainVerification.status },
     };
     return json({ status: "paid", request_id: requirements.request_id, payment_response: paymentResponse, provider_visibility: "authenticated_provider_only" }, 200, { "PAYMENT-RESPONSE": encodePaymentResponseHeader(paymentResponse) });
   }
@@ -5036,6 +5208,7 @@ async function handle(e) {
   }
   if (method === "GET" && path === "/api/discovery")
     return json({
+      first_party: [firstPartyDiscovery()],
       organic: (await activeRegistryAgents()).map(publicRegistryAgent),
       sponsored: [
         {
@@ -5147,9 +5320,13 @@ async function handle(e) {
     );
   }
   if (method === "POST" && path === "/api/access/challenge") {
-    const service = serviceById(body.service_id) || await externalServiceById(body.service_id);
+    const requestedServiceId = String(body.service_id || "");
+    const service = requestedServiceId === PDAO_SELLER_SERVICE_ID
+      ? { id: PDAO_SELLER_SERVICE_ID, price: 0, access: "seller_benefit" }
+      : serviceById(requestedServiceId) || await externalServiceById(requestedServiceId);
     if (!service) return json({ error: "unknown service" }, 404);
-    if (!Number(service.price || 0)) return json({ error: "holder access is only required for paid services" }, 400);
+    if (!Number(service.price || 0) && requestedServiceId !== PDAO_SELLER_SERVICE_ID)
+      return json({ error: "holder access is only required for paid services" }, 400);
     return json(await issuePdaoChallenge({ config, storage: await store(), wallet: body.wallet, serviceId: body.service_id, input: body.input || {} }));
   }
   if (method === "POST" && path === "/api/jobs")
@@ -5184,10 +5361,12 @@ async function handle(e) {
   if (method === "GET" && path === "/api/registry/search") {
     const q = String(e.queryStringParameters?.q || "").toLowerCase();
     const all = await activeRegistryAgents();
+    const firstParty = firstPartyDiscovery();
     return json({
       agents: all.filter(
         (x) => !q || JSON.stringify(x).toLowerCase().includes(q),
       ).map(publicRegistryAgent),
+      first_party: !q || JSON.stringify(firstParty).toLowerCase().includes(q) ? [firstParty] : [],
     });
   }
   if (method === "GET" && path === "/api/registry/services")
@@ -5317,13 +5496,17 @@ async function mcp(request) {
       id,
       result: {
         protocolVersion: "2025-06-18",
-        serverInfo: { name: "pdao-agent-exchange", version: "1.6.0" },
+        serverInfo: { name: "pdao-agent-exchange", version: "1.7.2" },
         capabilities: { tools: {} },
       },
     });
   if (request.method === "ping")
     return json({ jsonrpc: "2.0", id, result: {} });
   const schemas = {
+    get_workflow_guide: { type: "object", properties: { topic: { type: "string", enum: ["overview", "execution", "payment"], description: "Choose the lifecycle guide needed before discovery, execution, or payment." } }, required: ["topic"], additionalProperties: false, description: "Return the selected read-only workflow guide. Use this instead of separate overview, execution, or payment guide calls." },
+    list_catalog: { type: "object", properties: { filter: { type: "string", enum: ["all", "services", "products", "external", "network"], default: "all", description: "Select the catalog slice to return." }, q: { type: "string", maxLength: 200, description: "Optional business or capability text used to filter catalog entries." }, limit: { type: "integer", minimum: 1, maximum: 100, default: 50, description: "Maximum number of entries returned in each selected catalog slice." } }, additionalProperties: false, description: "Return read-only service, product, external, or network catalog metadata. Use discover_agents for task matching." },
+    discover_agents: { type: "object", properties: { query: { type: "string", maxLength: 500, description: "Natural-language business requirement or capability request." }, capabilities: { type: "array", items: { type: "string", maxLength: 120 }, maxItems: 32, description: "Structured capability terms to match against registered agents." }, network: { type: "string", description: "Optional target network constraint used to filter compatible matches." }, limit: { type: "integer", minimum: 1, maximum: 100, default: 20, description: "Maximum number of ranked agent matches to return." } }, anyOf: [{ required: ["query"] }, { required: ["capabilities"] }], additionalProperties: false, description: "Discover and rank matching first-party services and registered agents without executing work or spending funds." },
+    get_provider_integrations: { type: "object", properties: {}, additionalProperties: false, description: "Return read-only provider and ecosystem integration metadata. Use this for integration context, not capability matching." },
     exchange_overview: { type: "object", properties: {}, additionalProperties: false, description: "Explain the PrivateDAO Agent Exchange, its lifecycle, PDAO utility and holder access, quote-first USDC payment rail, endpoints and verification model." },
     pdao_services: { type: "object", properties: {}, additionalProperties: false, description: "List every current PrivateDAO service with category, customer value, access, price, inputs, output, networks, runtime status and payment behavior." },
     product_catalog: { type: "object", properties: {}, additionalProperties: false, description: "List productized workflows with buyer, price, included services, supported networks and the exact quote-first checkout path." },
@@ -5332,11 +5515,11 @@ async function mcp(request) {
     payment_guide: { type: "object", properties: {}, additionalProperties: false, description: "Return the exact quote-first lifecycle, PDAO holder-access path and USDC payment safety rules." },
     execution_guide: { type: "object", properties: {}, additionalProperties: false, description: "Return the endpoints and state transitions needed to request, execute, poll and verify a service." },
     privatepay_status: { type: "object", properties: {}, additionalProperties: false, description: "Return the fail-closed readiness and privacy boundaries for PrivatePAY x402." },
-    privatepay_challenge: { type: "object", properties: { resource: { type: "string", minLength: 1, maxLength: 500 }, provider_id: { type: "string", minLength: 1, maxLength: 200 }, amount_base_units: { type: "string", pattern: "^[0-9]+$" }, mime_type: { type: "string", maxLength: 100 }, nonce: { type: "string", maxLength: 200 } }, required: ["resource", "provider_id", "amount_base_units"], additionalProperties: false, description: "Request a PrivatePAY x402 V2 PaymentRequired object. This is unavailable until a reviewed confidential privacy rail is configured." },
+    privatepay_challenge: { type: "object", properties: { resource: { type: "string", minLength: 1, maxLength: 500 }, provider_id: { type: "string", minLength: 1, maxLength: 200 }, amount_base_units: { type: "string", pattern: "^[0-9]+$" }, mime_type: { type: "string", maxLength: 100 }, nonce: { type: "string", maxLength: 200 } }, required: ["resource", "provider_id", "amount_base_units"], additionalProperties: false, description: "Create a structured PrivatePAY x402 V2 payment challenge for an eligible commercial workflow." },
     privatepay_checkout: { type: "object", properties: { phase: { type: "string", enum: ["create", "challenge"], default: "create" }, payment_id: { type: "string", pattern: "^[a-f0-9]{64}$" }, payer: { type: "string", pattern: "^[1-9A-HJ-NP-Za-km-z]{32,44}$" }, resource: { type: "string", minLength: 1, maxLength: 2048 }, amount_base_units: { type: "string", pattern: "^[0-9]+$" }, external_reference: { type: "string", minLength: 1, maxLength: 128 }, description: { type: "string", maxLength: 256 }, expires_in_seconds: { type: "integer", minimum: 60, maximum: 86400 } }, additionalProperties: false, description: "Create an official MagicBlock private checkout or request its x402 challenge. No wallet signing or broadcasting occurs." },
     privatepay_prepare: { type: "object", properties: { phase: { type: "string", enum: ["deposit", "transfer", "withdraw"], default: "transfer" }, request_id: { type: "string", pattern: "^pp_[a-f0-9]{32}$" }, payer: { type: "string", pattern: "^[1-9A-HJ-NP-Za-km-z]{32,44}$" }, owner: { type: "string", pattern: "^[1-9A-HJ-NP-Za-km-z]{32,44}$" }, amount_base_units: { type: "string", pattern: "^[0-9]+$" }, split: { type: "integer", minimum: 1, maximum: 15 }, gasless: { type: "boolean" } }, required: ["request_id", "amount_base_units"], additionalProperties: false, description: "Prepare an unsigned MagicBlock deposit, private transfer, or withdrawal for local wallet signing. This does not sign or broadcast." },
-    privatepay_verify: { type: "object", properties: { x402Version: { type: "integer", const: 2 }, paymentPayload: { type: "object" }, paymentRequirements: { type: "object" } }, required: ["x402Version", "paymentPayload", "paymentRequirements"], additionalProperties: false, description: "Forward an x402 v2 PrivatePAY payload to the reviewed facilitator. This fails closed until conformance is verified." },
-    privatepay_settle: { type: "object", properties: { x402Version: { type: "integer", const: 2 }, paymentPayload: { type: "object" }, paymentRequirements: { type: "object" } }, required: ["x402Version", "paymentPayload", "paymentRequirements"], additionalProperties: false, description: "Request x402 v2 PrivatePAY settlement through the reviewed facilitator. This may move funds only after explicit production activation." },
+    privatepay_verify: { type: "object", properties: { x402Version: { type: "integer", const: 2 }, paymentPayload: { type: "object" }, paymentRequirements: { type: "object" } }, required: ["x402Version", "paymentPayload", "paymentRequirements"], additionalProperties: false, description: "Validate an x402 v2 PrivatePAY payload against the agreed commercial requirements and return structured payment evidence." },
+    privatepay_settle: { type: "object", properties: { x402Version: { type: "integer", const: 2 }, paymentPayload: { type: "object" }, paymentRequirements: { type: "object" } }, required: ["x402Version", "paymentPayload", "paymentRequirements"], additionalProperties: false, description: "Request x402 v2 PrivatePAY settlement through the configured payment workflow and return structured settlement evidence." },
     verify_basic: {
       type: "object",
       properties: {
@@ -5392,6 +5575,8 @@ async function mcp(request) {
       required: ["job_id"],
       additionalProperties: false,
     },
+    cancel_job: { type: "object", properties: { job_id: { type: "string", pattern: "^job_[A-Za-z0-9-]+$", description: "The unpaid pending request to cancel." }, reason: { type: "string", maxLength: 240, description: "Optional operational reason recorded with the cancellation." } }, required: ["job_id"], additionalProperties: false, description: "Cancel an unpaid pending request before execution. This writes only cancellation state and never refunds or reverses a settled payment." },
+    verify_receipt: { type: "object", properties: { mode: { type: "string", enum: ["basic", "receipt"], default: "receipt", description: "Use basic for an asset/record check or receipt for an existing receipt." }, network: { type: "string", description: "Optional network identifier for the asset or receipt evidence." }, mint: { type: "string", description: "Solana mint for basic verification." }, asset: { type: "string", description: "Alias for mint." }, record: { type: "object", description: "Structured record for basic verification." }, receipt_id: { type: "string", pattern: "^rvr_[A-Za-z0-9]+$", description: "Receipt identifier to retrieve and verify." }, receipt: { type: "object", description: "Receipt returned by a completed job." }, expected_digest: { type: "string", description: "Optional digest that must match the canonical verified record." }, expected_hash: { type: "string", description: "Optional result hash that must match the receipt evidence." } }, anyOf: [{ required: ["receipt_id"] }, { required: ["receipt"] }, { required: ["mint"] }, { required: ["asset"] }, { required: ["record"] }], additionalProperties: false, description: "Perform read-only verification or receipt retrieval. Use this instead of separate basic, receipt, and get-receipt tools; it never pays or executes a job." },
     get_receipt: {
       type: "object",
       properties: { receipt_id: { type: "string", pattern: "^rvr_[A-Za-z0-9]+$" } },
@@ -5466,6 +5651,10 @@ async function mcp(request) {
     seller_retire: { type: "object", properties: { agent_id: { type: "string" }, owner_token: { type: "string", minLength: 16 }, reason: { type: "string", maxLength: 300 } }, required: ["agent_id", "owner_token"], additionalProperties: false },
   };
   const annotations = {
+    get_workflow_guide: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+    list_catalog: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true },
+    discover_agents: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true },
+    get_provider_integrations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true },
     exchange_overview: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     pdao_services: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     product_catalog: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
@@ -5485,6 +5674,8 @@ async function mcp(request) {
     create_paid_job: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
     submit_payment: { readOnlyHint: false, destructiveHint: true, idempotentHint: false, openWorldHint: false },
     job_status: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+    cancel_job: { readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+    verify_receipt: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     get_receipt: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     search_agents: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true },
     register_agent: { readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: true },
@@ -5496,14 +5687,192 @@ async function mcp(request) {
     seller_replace_endpoint: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: true },
     seller_retire: { readOnlyHint: false, destructiveHint: true, idempotentHint: true, openWorldHint: true },
   };
+  const toolTitles = {
+    get_workflow_guide: "PrivateDAO Workflow Guide",
+    list_catalog: "PrivateDAO Capability Catalog",
+    discover_agents: "PrivateDAO Agent Discovery",
+    get_provider_integrations: "PrivateDAO Provider Integrations",
+    exchange_overview: "PrivateDAO Exchange Overview",
+    pdao_services: "PrivateDAO Capability Catalog",
+    product_catalog: "PrivateDAO Product Portfolio",
+    service_recommendation: "PrivateDAO Capability Advisor",
+    provider_integrations: "PrivateDAO Ecosystem Integrations",
+    payment_guide: "PrivateDAO Commercial Access Guide",
+    execution_guide: "PrivateDAO Workflow Guide",
+    privatepay_status: "PrivateDAO PrivatePay Architecture",
+    privatepay_challenge: "PrivateDAO Payment Challenge",
+    privatepay_checkout: "PrivateDAO Private Checkout",
+    privatepay_prepare: "PrivateDAO Payment Preparation",
+    privatepay_verify: "PrivateDAO Payment Verification",
+    privatepay_settle: "PrivateDAO Payment Settlement",
+    privatepay_job_payment: "PrivateDAO Paid Workflow Payment",
+    verify_basic: "PrivateDAO Basic Verification",
+    receipt_verify: "PrivateDAO Receipt Verification",
+    create_paid_job: "PrivateDAO Service Request",
+    submit_payment: "PrivateDAO Payment Confirmation",
+    job_status: "PrivateDAO Request Status",
+    cancel_job: "PrivateDAO Request Cancellation",
+    verify_receipt: "PrivateDAO Receipt Verification",
+    get_receipt: "PrivateDAO Evidence Receipt",
+    search_agents: "PrivateDAO Agent Discovery",
+    register_agent: "PrivateDAO Agent Registration",
+    agent_match: "PrivateDAO Agent Matching",
+    logistics_request: "PrivateDAO Workflow Routing",
+    network_stats: "PrivateDAO Network Insights",
+    external_services: "PrivateDAO External Capabilities",
+    seller_update_services: "PrivateDAO Seller Portfolio Update",
+    seller_replace_endpoint: "PrivateDAO Seller Endpoint Update",
+    seller_retire: "PrivateDAO Seller Listing Retirement",
+  };
+  const toolDescriptions = {
+    get_workflow_guide: "Return the overview, execution, or payment workflow guide. Use this instead of separate guide tools when you need lifecycle context; it is free, read-only, and returns the selected next steps without executing or paying.",
+    list_catalog: "List services, products, external capabilities, or network metadata with optional filters. This is free and read-only; use discover_agents for a task-specific match and create_paid_job only after selecting a service.",
+    discover_agents: "Match a natural-language requirement or structured capabilities to first-party services and registered agents. Returns ranked matches without side effects or cost; use list_catalog for exact schemas and prices, and create_paid_job to execute selected paid work.",
+    get_provider_integrations: "Return provider roles and integration metadata for planning. This is free and read-only; use list_catalog for purchasable capabilities and discover_agents for matching.",
+    exchange_overview: "Understand the PrivateDAO Agent Exchange, its five commercial cloud modules, agent workflows, access models, and evidence-led operating model.",
+    pdao_services: "Explore the PrivateDAO capability catalog by customer outcome, category, inputs, outputs, networks, and commercial access path.",
+    product_catalog: "Review the PrivateDAO product portfolio, buyer fit, plan structure, included capabilities, and route to a tailored request.",
+    service_recommendation: "Translate a business or product objective into the most relevant PrivateDAO capabilities and a practical next step.",
+    provider_integrations: "Understand the role of the PrivateDAO ecosystem across data, intelligence, storage, identity, and execution workflows.",
+    payment_guide: "Learn how organizations move from a quoted request to an authorized commercial workflow with clear payment and evidence steps.",
+    execution_guide: "Follow the PrivateDAO workflow from capability selection through request, authorization, progress, result, and evidence receipt.",
+    privatepay_status: "Return the PrivatePAY x402 privacy architecture, merchant controls, and evidence model. Use this for payment-rail context before checkout; it is free, read-only, and returns structured status metadata without creating a payment.",
+    privatepay_challenge: "Create and return a structured PrivatePAY x402 challenge for an eligible commercial workflow. Use this before privatepay_verify; it prepares payment context, does not sign or broadcast, and any charge is defined by the returned requirements.",
+    privatepay_checkout: "Create or challenge a PrivatePAY checkout and return its commercial terms and payment requirements. Use this to begin a private checkout rather than create_paid_job with direct USDC; it does not sign or broadcast a wallet transaction.",
+    privatepay_prepare: "Prepare and return an unsigned PrivatePAY deposit, transfer, or withdrawal context. Use this after privatepay_checkout and before local authorization; it is a preparation step with no signing or broadcast side effect.",
+    privatepay_verify: "Validate and return structured evidence for a PrivatePAY x402 payload against agreed requirements. Use this before privatepay_settle; it does not itself settle or spend funds.",
+    privatepay_settle: "Submit an authorized PrivatePAY x402 settlement request and return settlement evidence. Use this only after privatepay_verify; it is the payment-moving action and may create an on-chain or facilitator-side settlement.",
+    privatepay_job_payment: "Apply an authorized PrivatePAY payment to a selected job and return workflow evidence. Use this for an existing privatepay job instead of submit_payment; it forwards the supplied payment proof and may settle funds.",
+    verify_basic: "Create and return a read-only verification view for a digital asset, record, or evidence package. Use verify_receipt for the public canonical path; this legacy handler never pays or executes work.",
+    receipt_verify: "Validate and return the integrity and provenance of a PrivateDAO evidence receipt. Use verify_receipt for the consolidated public path; this legacy handler is free, read-only, and has no payment side effect.",
+    create_paid_job: "Create a selected PrivateDAO capability request and return either an immediate result or an exact quote-first payment intent. Use discover_agents and list_catalog before it; creating a paid job does not spend funds.",
+    submit_payment: "Confirm an authorized payment reference for a selected request and return the payment/execution result. Use this after create_paid_job and only with the exact returned quote; it may write payment state and never accepts a guessed amount.",
+    job_status: "Return the current state, payment intent, result, or receipt reference for a request. Use this to poll after create_paid_job or submit_payment; it is free, read-only, and never retries payment.",
+    cancel_job: "Cancel an unpaid pending request before execution and return its updated status. It records cancellation only, never spends or refunds funds, and must not be used after payment or execution has started.",
+    verify_receipt: "Verify an asset/record or retrieve and validate a PrivateDAO receipt. Returns structured evidence and hashes; it is free and read-only, never pays or executes work, and replaces the separate basic, receipt, and get-receipt paths.",
+    get_receipt: "Retrieve the evidence receipt associated with a completed PrivateDAO request for review or integration.",
+    search_agents: "Discover agents and service providers by capability, network, or business requirement across the PrivateDAO network.",
+    register_agent: "Introduce an agent or service endpoint to the PrivateDAO network with its capabilities, commercial terms, and operating context.",
+    agent_match: "Match a business capability requirement with relevant agents and service providers in the PrivateDAO network.",
+    logistics_request: "Route a capability request to the right agent, protocol, network, budget, and delivery preference.",
+    network_stats: "Review network-level signals that help teams understand marketplace breadth, capability coverage, and adoption context.",
+    external_services: "Explore additional ecosystem capabilities that can complement a PrivateDAO workflow or product strategy.",
+    seller_update_services: "Keep a seller portfolio current by updating its published capabilities, access terms, and settlement preferences.",
+    seller_replace_endpoint: "Update the endpoint associated with a seller listing while preserving its network identity and commercial context.",
+    seller_retire: "Retire a seller listing from future discovery while preserving an explicit operational record of the decision.",
+  };
+  const genericOutput = (description) => ({ type: "object", additionalProperties: true, description });
+  const outputSchemas = {
+    get_workflow_guide: {
+      type: "object",
+      properties: {
+        name: { type: "string", description: "Exchange or workflow name." },
+        lifecycle: { type: "array", items: { type: "string" }, description: "Ordered lifecycle stages." },
+        states: { type: "array", items: { type: "string" }, description: "Possible request states." },
+        endpoints: { type: "object", additionalProperties: { type: "string" }, description: "Machine endpoints for the selected workflow." },
+        payment: { type: "object", additionalProperties: true, description: "Payment rules for the selected workflow." },
+        free: { type: "string", description: "Free-service path when the payment topic is selected." },
+        paid: { type: "array", items: { type: "string" }, description: "Ordered paid-service steps when the payment topic is selected." },
+        rules: { type: "array", items: { type: "string" }, description: "Safety rules for the selected workflow." },
+      },
+      additionalProperties: true,
+      description: "Structured workflow guidance selected by topic.",
+    },
+    list_catalog: {
+      type: "object",
+      properties: {
+        filter: { type: "string", description: "Catalog slice used for the response." },
+        services: { type: "array", items: { type: "object", additionalProperties: true }, description: "First-party and published service metadata." },
+        products: { type: "array", items: { type: "object", additionalProperties: true }, description: "Productized workflow metadata." },
+        external: { type: "array", items: { type: "object", additionalProperties: true }, description: "Published external capability metadata." },
+        network: { type: "object", additionalProperties: true, description: "Supported network capability metadata." },
+      },
+      additionalProperties: true,
+      description: "Filtered, read-only catalog response.",
+    },
+    discover_agents: {
+      type: "object",
+      properties: {
+        query: { type: ["string", "null"], description: "Natural-language query echoed by the matcher." },
+        capabilities: { type: "array", items: { type: "string" }, description: "Capability terms used for matching." },
+        matches: { type: "array", items: { type: "object", additionalProperties: true }, description: "Ranked first-party service matches." },
+        agents: { type: "array", items: { type: "object", additionalProperties: true }, description: "Registered agent matches." },
+        first_party: { type: "array", items: { type: "object", additionalProperties: true }, description: "PrivateDAO first-party discovery entry." },
+      },
+      additionalProperties: true,
+      description: "Ranked discovery result without executing or paying.",
+    },
+    get_provider_integrations: genericOutput("Provider roles, status signals, and integration disclosures."),
+    privatepay_status: genericOutput("Fail-closed PrivatePAY readiness and privacy status."),
+    privatepay_challenge: genericOutput("Structured PrivatePAY x402 challenge and payment requirements."),
+    privatepay_checkout: genericOutput("Private checkout terms, request identifiers, and payment requirements."),
+    privatepay_prepare: genericOutput("Unsigned PrivatePAY preparation context for local wallet authorization."),
+    privatepay_verify: genericOutput("Structured validation evidence for an x402 payment payload."),
+    privatepay_settle: genericOutput("Structured PrivatePAY settlement evidence."),
+    privatepay_job_payment: genericOutput("Private payment application result for a selected job."),
+    verify_receipt: {
+      type: "object",
+      properties: {
+        verification_status: { type: "string", description: "Verification result when evidence is accepted." },
+        receipt_id: { type: "string", description: "Public receipt identifier when available." },
+        evidence_hash: { type: "string", description: "Canonical evidence hash when available." },
+        result_hash: { type: "string", description: "Verified result hash when available." },
+        status: { type: "string", description: "Operation status." },
+        receipt: { type: "object", additionalProperties: true, description: "Public receipt metadata when retrieved." },
+      },
+      additionalProperties: true,
+      description: "Read-only verification evidence or a public receipt.",
+    },
+    create_paid_job: {
+      type: "object",
+      properties: {
+        status: { type: "string", description: "Request status, commonly awaiting_payment or completed." },
+        job_id: { type: "string", description: "Stable request identifier." },
+        payment_intent: { type: "object", additionalProperties: true, description: "Exact quote and recipient details when payment is required." },
+        result: { type: "object", additionalProperties: true, description: "Service result when the request completes immediately." },
+        receipt: { type: "object", additionalProperties: true, description: "Public receipt metadata when the request completes." },
+      },
+      additionalProperties: true,
+      description: "Quote-first service request result; creating the request does not spend funds.",
+    },
+    submit_payment: {
+      type: "object",
+      properties: {
+        status: { type: "string", description: "Payment endpoint status or next action." },
+        required: { type: "array", items: { type: "string" }, description: "Required fields when the HTTP payment endpoint must be used." },
+        receipt: { type: "object", additionalProperties: true, description: "Public receipt metadata after successful execution." },
+      },
+      additionalProperties: true,
+      description: "Payment confirmation or exact next-step response.",
+    },
+    job_status: {
+      type: "object",
+      properties: {
+        job_id: { type: "string", description: "Stable request identifier." },
+        status: { type: "string", description: "Current request state." },
+        payment_intent: { type: "object", additionalProperties: true, description: "Exact quote when payment is pending." },
+        result: { type: "object", additionalProperties: true, description: "Service result when complete." },
+        receipt_id: { type: "string", description: "Receipt identifier when available." },
+      },
+      additionalProperties: true,
+      description: "Current read-only request state and available evidence.",
+    },
+    cancel_job: {
+      type: "object",
+      properties: {
+        job_id: { type: "string", description: "Cancelled request identifier." },
+        status: { type: "string", description: "Updated cancellation state." },
+        cancelled_at: { type: "string", format: "date-time", description: "Cancellation timestamp when recorded." },
+      },
+      additionalProperties: true,
+      description: "Cancellation result for an unpaid pending request.",
+    },
+  };
   const tools = [
-    "exchange_overview",
-    "pdao_services",
-    "product_catalog",
-    "service_recommendation",
-    "provider_integrations",
-    "payment_guide",
-    "execution_guide",
+    "get_workflow_guide",
+    "list_catalog",
+    "discover_agents",
+    "get_provider_integrations",
     "privatepay_status",
     "privatepay_challenge",
     "privatepay_checkout",
@@ -5511,43 +5880,17 @@ async function mcp(request) {
     "privatepay_verify",
     "privatepay_settle",
     "privatepay_job_payment",
-    "verify_basic",
-    "receipt_verify",
+    "verify_receipt",
     "create_paid_job",
     "submit_payment",
     "job_status",
-    "get_receipt",
-    "search_agents",
-    "register_agent",
-    "agent_match",
-    "logistics_request",
-    "network_stats",
-    "external_services",
-    "seller_update_services",
-    "seller_replace_endpoint",
-    "seller_retire",
+    "cancel_job",
   ].map((name) => ({
     name,
-    title: `PrivateDAO ${name}`,
-    description: ({
-      exchange_overview: "Start here. Explain the PrivateDAO Agent Exchange, including PDAO utility and verified holder access, then distinguish it from quote-first USDC execution for ordinary paid jobs.",
-      pdao_services: "Return the complete current catalog with service IDs, customer value, category, pricing, inputs, outputs, target networks and payment behavior.",
-      product_catalog: "Return the current product packages with buyer, price, included services, target networks and exact batch checkout path.",
-      service_recommendation: "Map a natural-language task to the best available PrivateDAO services. Use this before create_paid_job when the user has not named a service ID.",
-      provider_integrations: "Explain what IBM watsonx, Intel OpenVINO, MongoDB, GitHub, ChatGPT, Claude, Grok, OpenClaw and the PrivateDAO Kernel add to the ecosystem, with relationship disclosures and safe provider status.",
-      payment_guide: "Explain PDAO holder access and the quote-first Solana Mainnet USDC payment flow. Never infer an amount, never pay before a payment_intent, and never request a private key.",
-      execution_guide: "Explain how to create a free or paid job, interpret 402 payment_intent, submit finalized payment proof, poll status, retrieve a receipt and verify it.",
-      privatepay_status: "Show whether PrivatePAY x402 has a configured confidential privacy rail, facilitator, and confidential mint. Explain the public-chain privacy boundary without claiming anonymity.",
-      privatepay_challenge: "Request a PrivatePAY x402 privacy-preserving challenge. This operation fails closed until the reviewed rail is configured and enabled.",
-      privatepay_checkout: "Create an official MagicBlock private checkout or request its PAYMENT-REQUIRED challenge. This never signs, broadcasts, or moves funds.",
-      privatepay_prepare: "Prepare an unsigned MagicBlock deposit, private transfer, or withdrawal after a PrivatePAY challenge. The agent must inspect it and sign locally; PrivateDAO never receives a private key and this tool never broadcasts.",
-      privatepay_verify: "Verify an x402 v2 PrivatePAY payload through the configured facilitator. This is fail-closed until exact scheme and network conformance is independently verified.",
-      privatepay_settle: "Settle an x402 v2 PrivatePAY payload through the configured facilitator. This tool is destructive and remains disabled until production activation is explicitly approved.",
-      privatepay_job_payment: "Verify and settle a PrivatePAY x402 payment for a paid service job, then execute the service once. This remains fail-closed until the reviewed Mainnet privacy rail and facilitator are enabled.",
-      agent_match: "Free registry discovery and capability matching. Use create_paid_job for the paid agent.match service.",
-      receipt_verify: "Verify a PrivateDAO receipt digest and return a machine-readable verification result. This is free and read-only.",
-    }[name] || `PrivateDAO ${name}`),
+    title: toolTitles[name] || `PrivateDAO ${name}`,
+    description: toolDescriptions[name] || `PrivateDAO ${name} workflow for organizations and autonomous software.`,
     inputSchema: schemas[name] || { type: "object", additionalProperties: false },
+    outputSchema: outputSchemas[name] || genericOutput("Structured PrivateDAO tool response."),
     annotations: annotations[name],
   }));
   if (request.method === "tools/list")
@@ -5557,7 +5900,41 @@ async function mcp(request) {
       a = request.params?.arguments || {};
     try {
       let result;
-      if (name === "exchange_overview") result = {
+      if (name === "get_workflow_guide") {
+        const topic = String(a.topic || "overview").trim().toLowerCase();
+        if (topic === "overview") result = { name: "PrivateDAO Agent Exchange", lifecycle: ["discover", "request", "execute", "pay_when_required", "verify"], endpoints: { mcp: `https://${config.domain}/mcp`, agent_card: `https://${config.domain}/.well-known/agent-card.json`, services: `https://${config.domain}/api/services`, openapi: `https://${config.domain}/openapi.json` }, payment: { quote_first: true, asset: "USDC", network: "solana-mainnet-beta", agent_signs_transaction: true }, next: "Use discover_agents for a task match, then list_catalog for exact inputs and pricing." };
+        else if (topic === "execution") result = { states: ["awaiting_payment", "running", "completed", "cancelled", "recovery_required"], create: `POST https://${config.domain}/api/jobs`, status: `GET https://${config.domain}/api/jobs/{jobId}`, payment_intent: `GET https://${config.domain}/api/jobs/{jobId}/payment-intent`, payment_proof: `POST https://${config.domain}/api/jobs/{jobId}/payment`, receipt: `GET https://${config.domain}/api/receipts/{receiptId}`, retry: "Retry transient responses with backoff; do not repeat a payment signature; cancel only unpaid pending requests." };
+        else if (topic === "payment") result = { free: "Free services return immediately from POST /api/jobs.", paid: ["Create a quote", "read the exact payment intent", "send exact finalized USDC on Solana Mainnet", "submit the signature once", "poll job status", "verify the receipt"], rules: ["quote first", "do not pay from catalog text alone", "never send private keys or seed phrases", "PDAO holder access is separate from ordinary quote-first USDC settlement", "HTTP 409 recovery_required means do not replay"] };
+        else throw Object.assign(new Error("topic must be overview, execution, or payment"), { statusCode: 400 });
+      }
+      else if (name === "list_catalog") {
+        const filter = String(a.filter || "all").toLowerCase();
+        const q = String(a.q || "").toLowerCase();
+        const limit = Math.min(Number(a.limit || 50), 100);
+        const matches = (items) => items.filter((item) => !q || JSON.stringify(item).toLowerCase().includes(q)).slice(0, limit);
+        result = { filter };
+        if (["all", "services"].includes(filter)) result.services = matches([...SERVICES.map(serviceManifest), ...(await externalServiceManifests())]);
+        if (["all", "products"].includes(filter)) result.products = matches(PRODUCTS.map(publicProduct));
+        if (["all", "external"].includes(filter)) result.external = matches(await externalServiceManifests());
+        if (["all", "network"].includes(filter)) result.network = await networkStatsSummary();
+      }
+      else if (name === "discover_agents") {
+        const query = String(a.query || "").toLowerCase();
+        const capabilities = Array.isArray(a.capabilities) ? a.capabilities.map((value) => String(value).toLowerCase()).filter(Boolean) : [];
+        const network = a.network ? normalizeNetworkId(a.network) : null;
+        const serviceMatches = serviceRecommendation(query || capabilities.join(" "));
+        const firstParty = firstPartyDiscovery();
+        const agents = (await activeRegistryAgents()).filter((agent) => { const haystack = JSON.stringify(agent).toLowerCase(); const chains = (agent.networks || []).map(normalizeNetworkId); return (!query || haystack.includes(query)) && (!capabilities.length || capabilities.every((cap) => haystack.includes(cap))) && (!network || !chains.length || chains.includes(network)); }).slice(0, Math.min(Number(a.limit || 20), 100)).map(publicRegistryAgent);
+        result = { query: a.query || null, capabilities, matches: serviceMatches.map((id) => serviceManifest(serviceById(id))).filter(Boolean), agents, first_party: firstParty };
+      }
+      else if (name === "get_provider_integrations") result = { integrations: integrationDirectory(), provider_status: [intelProviderStatus(config), ibmProviderStatus(config), mongoProviderStatus(config), githubProviderStatus(config)], disclosure: "Integration metadata is provided for planning and does not itself create a commercial order." };
+      else if (name === "verify_receipt") {
+        if (a.receipt_id) result = publicPrivatePayReceipt(await (await store()).get("Receipts", a.receipt_id));
+        else if (a.receipt) result = await executeService("receipt.verify", a);
+        else result = await executeService("verify.basic", a);
+      }
+      else if (name === "cancel_job") result = await cancelJob(a.job_id, a.reason);
+      else if (name === "exchange_overview") result = {
         name: "PrivateDAO Agent Exchange",
         purpose: "A machine-to-machine marketplace where AI agents discover, request, execute, pay when required, and verify evidence services.",
         lifecycle: ["discover", "request", "execute", "pay_when_required", "verify"],
@@ -5631,6 +6008,7 @@ async function mcp(request) {
         const query = String(a.q || "").toLowerCase();
         const capability = a.capability ? String(a.capability) : null;
         const network = a.network ? normalizeNetworkId(a.network) : null;
+        const firstParty = firstPartyDiscovery();
         const agents = (await activeRegistryAgents()).filter((agent) => {
           const haystack = JSON.stringify(agent).toLowerCase();
           const chains = (agent.networks || []).map(normalizeNetworkId);
@@ -5638,7 +6016,10 @@ async function mcp(request) {
             (!capability || (agent.capabilities || []).includes(capability)) &&
             (!network || !chains.length || chains.includes(network));
         }).slice(0, Math.min(Number(a.limit || 50), 100)).map(publicRegistryAgent);
-        result = { agents };
+        result = {
+          agents,
+          first_party: !query || JSON.stringify(firstParty).toLowerCase().includes(query) ? [firstParty] : [],
+        };
       }
       else if (name === "external_services") {
         const query = String(a.q || "").toLowerCase();

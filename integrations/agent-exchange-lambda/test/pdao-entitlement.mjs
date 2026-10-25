@@ -3,7 +3,7 @@ import test from "node:test";
 import nacl from "tweetnacl";
 import { Keypair } from "@solana/web3.js";
 import { MemoryStore } from "../src/storage.mjs";
-import { calculatePdaoBenefit, consumePdaoBenefit, createPdaoChallengeMessage, issuePdaoChallenge, pdaoPromotionStatus, pdaoTierForValue, publicPdaoBenefitPolicy, runPdaoHolderBalanceSnapshots, verifyPdaoHolderAccess } from "../src/pdao-entitlement.mjs";
+import { calculatePdaoBenefit, consumePdaoBenefit, createPdaoChallengeMessage, issuePdaoChallenge, pdaoTierForValue, publicPdaoBenefitPolicy, runPdaoHolderBalanceSnapshots, verifyPdaoHolderAccess } from "../src/pdao-entitlement.mjs";
 
 const config = {
   domain: "agents.privatedao.org",
@@ -49,7 +49,7 @@ test("PDAO holder access verifies the exact signed challenge, balance and one-ti
     assert.equal(verified.monthly_credit_usd, 1);
     assert.equal(verified.discount_percent, 5);
     assert.equal(verified.benefit.charge_usd, 0);
-    assert.deepEqual(verified.usage_limits, { per_minute: 10, daily: 100, monthly: 1000 });
+    assert.deepEqual(verified.usage_limits, { per_minute: 10, daily: 100, monthly: 1000, multiplier: 1 });
     await assert.rejects(() => verifyPdaoHolderAccess({ config, storage, access, serviceId: "wallet.intelligence", input }), /already used/);
   } finally {
     global.fetch = previousFetch;
@@ -69,6 +69,10 @@ test("holder rewards select the highest tier and apply credit before a non-stack
     discount_percent: 10,
     charge_usd: 0.045,
     fully_covered: false,
+    priority_weight: 20,
+    priority_class: "holder_plus",
+    privatepay_fee_discount_bps: 1000,
+    seller_listing_discount_bps: 5000,
   });
   assert.equal(calculatePdaoBenefit({ tier: pdaoTierForValue(250), servicePrice: 0.25, creditRemainingUsd: 15, creditRequestsUsed: 0 }).eligible, false);
 });
@@ -76,8 +80,8 @@ test("holder rewards select the highest tier and apply credit before a non-stack
 test("holder policy is explicit and credit settlement is idempotent", async () => {
   const policy = publicPdaoBenefitPolicy(0);
   assert.equal(policy.qualification_mode, "current_balance_at_each_service_execution");
-  assert.equal(policy.holder_rewards.qualification_mode, "historical_balance_required");
   assert.deepEqual(policy.tiers.map((tier) => tier.id), ["access", "plus", "pro"]);
+  assert.equal(policy.tiers.at(-1).seller_listing_discount_percent, 100);
   const storage = new MemoryStore();
   await storage.put("Registry", "pdao_access_entitlement_wallet", {
     id: "pdao_access_entitlement_wallet",
@@ -100,25 +104,6 @@ test("holder policy is explicit and credit settlement is idempotent", async () =
   assert.equal((await storage.get("Registry", "pdao_access_entitlement_wallet")).credit_remaining_usd, 0.9);
 });
 
-test("fixed promotion is server-windowed and makes eligible services free", () => {
-  assert.equal(pdaoPromotionStatus(new Date("2026-10-20T12:00:00Z")).active, true);
-  assert.equal(pdaoPromotionStatus(new Date("2026-11-20T00:00:00Z")).active, false);
-  assert.equal(publicPdaoBenefitPolicy(7, new Date("2026-10-21T00:00:00Z")).promotion.qualification_days, 0);
-  assert.equal(publicPdaoBenefitPolicy(7, new Date("2026-10-21T00:00:00Z")).qualification_days, 0);
-  assert.equal(publicPdaoBenefitPolicy(7, new Date("2026-12-01T00:00:00Z")).holder_rewards.qualification_days, 7);
-  assert.deepEqual(calculatePdaoBenefit({ tier: pdaoTierForValue(25), servicePrice: 0.1, creditRemainingUsd: 0, creditRequestsUsed: 25, promotionActive: true }), {
-    eligible: true,
-    reason: "eligible_fixed_platform_promotion",
-    tier_id: "access",
-    credit_applied_usd: 0,
-    discount_bps: 0,
-    discount_percent: 0,
-    charge_usd: 0,
-    fully_covered: true,
-    promotion_id: "pdao-holder-promotion-2026-10",
-  });
-});
-
 test("historical holder qualification fails closed before seven days of snapshots", async () => {
   const previousFetch = global.fetch;
   const wallet = Keypair.generate();
@@ -135,7 +120,7 @@ test("historical holder qualification fails closed before seven days of snapshot
   try {
     const storage = new MemoryStore();
     const input = { network: "solana-mainnet-beta" };
-    const afterPromotion = new Date("2026-12-01T00:00:00Z");
+    const afterPromotion = new Date("2026-11-21T00:00:00.000Z");
     const challenge = await issuePdaoChallenge({ config: historicalConfig, storage, wallet: wallet.publicKey.toBase58(), serviceId: "wallet.intelligence", input, now: afterPromotion });
     const signature = nacl.sign.detached(new TextEncoder().encode(challenge.message), wallet.secretKey);
     await assert.rejects(

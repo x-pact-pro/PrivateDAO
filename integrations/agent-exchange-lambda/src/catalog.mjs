@@ -19,7 +19,7 @@ export const SERVICES = Object.freeze([
   {
     id: "verify.deep",
     title: "Deep verification",
-    price: 0.25,
+    price: 0.50,
     currency: "USDC",
     access: "paid",
     input: "JSON evidence and rules",
@@ -29,7 +29,7 @@ export const SERVICES = Object.freeze([
   {
     id: "token.intelligence",
     title: "Token intelligence",
-    price: 0.03,
+    price: 0.10,
     currency: "USDC",
     access: "paid",
     input: "network and token identifier",
@@ -39,7 +39,7 @@ export const SERVICES = Object.freeze([
   {
     id: "risk.score",
     title: "Risk score",
-    price: 0.02,
+    price: 0.10,
     currency: "USDC",
     access: "paid",
     input: "network and token identifier",
@@ -49,7 +49,7 @@ export const SERVICES = Object.freeze([
   {
     id: "wallet.intelligence",
     title: "Wallet intelligence",
-    price: 0.05,
+    price: 0.15,
     currency: "USDC",
     access: "paid",
     input: "network and wallet address",
@@ -59,7 +59,7 @@ export const SERVICES = Object.freeze([
   {
     id: "wallet.bot.classify",
     title: "Wallet bot classification",
-    price: 1,
+    price: 1.50,
     currency: "USDC",
     access: "paid",
     input: "network and wallet address",
@@ -69,7 +69,7 @@ export const SERVICES = Object.freeze([
   {
     id: "contract.inspect",
     title: "Program inspection",
-    price: 0.08,
+    price: 0.20,
     currency: "USDC",
     access: "paid",
     input: "network and program or contract",
@@ -79,7 +79,7 @@ export const SERVICES = Object.freeze([
   {
     id: "launch.check",
     title: "Launch check",
-    price: 0.03,
+    price: 0.10,
     currency: "USDC",
     access: "paid",
     input: "network and token or mint",
@@ -89,7 +89,7 @@ export const SERVICES = Object.freeze([
   {
     id: "market.snapshot",
     title: "Market snapshot",
-    price: 0.01,
+    price: 0.05,
     currency: "USDC",
     access: "paid",
     input: "network and token identifier",
@@ -99,7 +99,7 @@ export const SERVICES = Object.freeze([
   {
     id: "research.asset",
     title: "AI asset research",
-    price: 0.1,
+    price: 0.25,
     currency: "USDC",
     access: "paid",
     input: "network and asset identifier",
@@ -109,7 +109,7 @@ export const SERVICES = Object.freeze([
   {
     id: "research.wallet",
     title: "Wallet behavior analysis",
-    price: 0.1,
+    price: 0.25,
     currency: "USDC",
     access: "paid",
     input: "network and wallet address",
@@ -119,7 +119,7 @@ export const SERVICES = Object.freeze([
   {
     id: "contract.explain",
     title: "Smart contract explain",
-    price: 0.1,
+    price: 0.25,
     currency: "USDC",
     access: "paid",
     input: "network and contract or program address",
@@ -129,7 +129,7 @@ export const SERVICES = Object.freeze([
   {
     id: "transaction.explain",
     title: "Transaction explain before sign",
-    price: 0.05,
+    price: 0.15,
     currency: "USDC",
     access: "paid",
     input: "network and transaction hash or signature",
@@ -139,7 +139,7 @@ export const SERVICES = Object.freeze([
   {
     id: "anomaly.detect",
     title: "On-chain anomaly detection",
-    price: 0.15,
+    price: 0.35,
     currency: "USDC",
     access: "paid",
     input: "network and asset or wallet subject",
@@ -149,7 +149,7 @@ export const SERVICES = Object.freeze([
   {
     id: "agent.research.report",
     title: "Agent research report",
-    price: 0.25,
+    price: 0.75,
     currency: "USDC",
     access: "paid",
     input: "network and asset or wallet subject",
@@ -159,7 +159,7 @@ export const SERVICES = Object.freeze([
   {
     id: "portfolio.intelligence",
     title: "Portfolio intelligence",
-    price: 0.2,
+    price: 0.60,
     currency: "USDC",
     access: "paid",
     input: "network and up to 10 asset identifiers",
@@ -169,7 +169,7 @@ export const SERVICES = Object.freeze([
   {
     id: "swap.quote",
     title: "Swap quote",
-    price: 0.01,
+    price: 0.05,
     currency: "USDC",
     access: "paid",
     input: "network, input token, output token and amount",
@@ -179,7 +179,7 @@ export const SERVICES = Object.freeze([
   {
     id: "transaction.simulate",
     title: "Transaction simulation",
-    price: 0.02,
+    price: 0.10,
     currency: "USDC",
     access: "paid",
     input: "network and unsigned transaction",
@@ -189,7 +189,7 @@ export const SERVICES = Object.freeze([
   {
     id: "decision.context",
     title: "Decision context",
-    price: 0.1,
+    price: 0.25,
     currency: "USDC",
     access: "paid",
     input: "structured evidence",
@@ -220,7 +220,7 @@ export const SERVICES = Object.freeze([
   {
     id: "github.repository",
     title: "GitHub repository evidence",
-    price: 0.08,
+    price: 0.15,
     currency: "USDC",
     access: "paid",
     input: "public GitHub repository URL",
@@ -229,7 +229,7 @@ export const SERVICES = Object.freeze([
   {
     id: "forensics.trace",
     title: "Solana transaction trace",
-    price: 0.75,
+    price: 1.50,
     currency: "USDC",
     access: "paid",
     input: "network and public address",
@@ -239,7 +239,7 @@ export const SERVICES = Object.freeze([
   {
     id: "agent.match",
     title: "Agent capability matching",
-    price: 0.1,
+    price: 0.25,
     currency: "USDC",
     access: "paid",
     input: "capabilities and context",
@@ -269,7 +269,9 @@ export const SERVICES = Object.freeze([
   {
     id: "privatepay.x402",
     title: "PrivatePAY x402 privacy rail",
-    price: 0,
+    // This is a metered payment rail, not a free service or a fixed-price job.
+    // Its commercial fee is calculated from the quoted service subtotal.
+    price: null,
     currency: "USDC",
     access: "gated",
     input: "resource and provider commitment",

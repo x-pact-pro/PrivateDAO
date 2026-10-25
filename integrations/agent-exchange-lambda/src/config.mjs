@@ -98,7 +98,12 @@ export function getConfig(env = process.env) {
       Revenue: env.AGENT_EXCHANGE_REVENUE_TABLE || "",
       Telemetry: env.AGENT_EXCHANGE_TELEMETRY_TABLE || "",
       RateLimits: env.AGENT_EXCHANGE_RATE_LIMITS_TABLE || "",
-      AlibabaInstances: env.AGENT_EXCHANGE_ALIBABA_INSTANCES_TABLE || "",
+      // Alibaba instance lifecycle records can share the existing Registry
+      // table until an operator provisions a dedicated table.
+      AlibabaInstances:
+        env.AGENT_EXCHANGE_ALIBABA_INSTANCES_TABLE ||
+        env.AGENT_EXCHANGE_REGISTRY_TABLE ||
+        "",
     },
     // Test storage must be explicitly enabled in a test process. A stray
     // storage flag in Lambda must never silently replace DynamoDB with memory.
@@ -132,6 +137,7 @@ export function getConfig(env = process.env) {
     // disabled until the official MagicBlock flow is reviewed and funded E2E
     // evidence exists.
     privatePayMerchantCheckoutEnabled: bool(env.PRIVATEPAY_MERCHANT_CHECKOUT_ENABLED),
+    privatePayMerchantAccountsDelegated: bool(env.PRIVATEPAY_MERCHANT_ACCOUNTS_DELEGATED),
     privatePayStealthPoolToken: env.PRIVATEPAY_STEALTH_POOL_TOKEN || "",
     // This is a release gate, not a health check. It may only be set after
     // the exact x402 v2 verify/settle contract has been independently tested.
@@ -142,6 +148,11 @@ export function getConfig(env = process.env) {
     privatePayRelationshipPrivacyVerified: bool(env.PRIVATEPAY_RELATIONSHIP_PRIVACY_VERIFIED),
     privatePayAmountPrivacyVerified: bool(env.PRIVATEPAY_AMOUNT_PRIVACY_VERIFIED),
     privatePayTimingPrivacyVerified: bool(env.PRIVATEPAY_TIMING_PRIVACY_VERIFIED),
+    // Public-trace privacy is the supported MagicBlock claim: the settlement
+    // is not exposed as a public Solana transaction. Provider-side metadata
+    // visibility remains explicit and is never represented as confidentiality.
+    privatePayPublicTraceVerified: bool(env.PRIVATEPAY_PUBLIC_TRACE_VERIFIED),
+    privatePayProviderMetadataDisclosureVerified: bool(env.PRIVATEPAY_PROVIDER_METADATA_DISCLOSURE_VERIFIED),
     privatePayE2eVerified: bool(env.PRIVATEPAY_E2E_VERIFIED),
     privatePayConfidentialMint: env.PRIVATEPAY_CONFIDENTIAL_MINT || "",
     privatePayConfidentialMintProgram: env.PRIVATEPAY_CONFIDENTIAL_MINT_PROGRAM || "",
@@ -156,6 +167,12 @@ export function getConfig(env = process.env) {
     privatePayRpcUrl: env.PRIVATEPAY_RPC_URL || "",
     privatePayCluster: env.PRIVATEPAY_CLUSTER || "mainnet-beta",
     privatePayRequireGasless: bool(env.PRIVATEPAY_REQUIRE_GASLESS, true),
+    // A facilitator success response is not an on-chain settlement receipt.
+    // Keep this proof requirement enabled for any future production activation.
+    privatePayRequireOnchainSettlementProof: bool(env.PRIVATEPAY_REQUIRE_ONCHAIN_SETTLEMENT_PROOF, true),
+    // Optional stronger gate: require a fresh MagicBlock TDX Quote whose
+    // REPORTDATA commits to the exact x402 payment and finalized settlement.
+    privatePayRequirePaymentBoundQuote: bool(env.PRIVATEPAY_REQUIRE_PAYMENT_BOUND_QUOTE),
     privatePayMinDelayMs: boundedNumber(env.PRIVATEPAY_MIN_DELAY_MS || 0, 0, 0, 600000),
     privatePayMaxDelayMs: boundedNumber(env.PRIVATEPAY_MAX_DELAY_MS || 0, 0, 0, 600000),
     privatePayFeeBps: boundedNumber(env.PRIVATEPAY_FEE_BPS || 250, 250, 0, 10000),
@@ -248,7 +265,12 @@ export async function hydrateConfig(config, env = process.env) {
     } catch (error) {
       // Settlement is deliberately inert until the operator provisions the
       // signer. A missing payout secret must not take down buyer-facing APIs.
-      if ((secretId === config.payoutSecretId || secretId === config.privatePaySecretId) && error?.name === "ResourceNotFoundException") continue;
+      if (
+        (secretId === config.payoutSecretId ||
+          secretId === config.privatePaySecretId ||
+          secretId === config.alibabaMarketplaceSecretId) &&
+        error?.name === "ResourceNotFoundException"
+      ) continue;
       throw error;
     }
   }

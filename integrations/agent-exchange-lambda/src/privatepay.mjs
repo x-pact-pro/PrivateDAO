@@ -3,6 +3,7 @@ import { decodePaymentSignatureHeader, encodePaymentRequiredHeader } from "@x402
 import { parsePaymentPayload, parsePaymentRequirements } from "@x402/core/schemas";
 import { VersionedTransaction } from "@solana/web3.js";
 import { assertPrivatePayNetworkAdapter, privatePayNetworkMatrix } from "./privatepay-networks.mjs";
+import { DEFAULT_PRIVATEPAY_TEE_RPC, findPrivatePaySettlement, getPrivatePaySignatureStatus, isSolanaTransactionSignature, verifyPrivatePayPaymentBoundQuote } from "./privatepay-mainnet.mjs";
 
 const PRIVATEPAY_SERVICE_ID = "privatepay.x402";
 const SOLANA_ADDRESS = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/;
@@ -11,6 +12,7 @@ const MAGICBLOCK_PRIVACY_RAIL = "magicblock-private-ephemeral-rollup";
 const MAGICBLOCK_SCHEME = "exact-magicblock";
 const MAGICBLOCK_PRIVATE_CLUSTER = "mainnet-private";
 const PRIVATEPAY_ID = /^[a-f0-9]{64}$/;
+const MAX_PAYMENT_SIGNATURE_HEADER_BYTES = 32768;
 
 function nonEmpty(value) {
   return typeof value === "string" && value.trim().length > 0;
@@ -482,8 +484,11 @@ export async function requestPrivatePayCheckoutChallenge(config, input = {}, fet
 }
 
 export function decodePrivatePaySignature(header) {
+  const encoded = String(header || "");
+  if (Buffer.byteLength(encoded, "utf8") > MAX_PAYMENT_SIGNATURE_HEADER_BYTES)
+    throw Object.assign(new Error("PAYMENT-SIGNATURE header exceeds the bounded size limit"), { statusCode: 413, code: "PRIVATEPAY_PAYMENT_HEADER_TOO_LARGE" });
   try {
-    return decodePaymentSignatureHeader(String(header || ""));
+    return decodePaymentSignatureHeader(encoded);
   } catch {
     throw Object.assign(new Error("valid PAYMENT-SIGNATURE header is required"), { statusCode: 400, code: "PRIVATEPAY_INVALID_PAYMENT_HEADER" });
   }
@@ -565,6 +570,79 @@ export async function privatePayFacilitatorRequest(config, operation, payload, f
   return { operation, ...result };
 }
 
+function settlementTransactionSignature(settlement) {
+  for (const key of ["transaction", "signature", "transactionSignature", "tx_signature"]) {
+    const value = settlement?.[key];
+    if (isSolanaTransactionSignature(value)) return value;
+  }
+  return "";
+}
+
+export async function verifyPrivatePayMainnetSettlement(config, { requestId, amountBaseUnits, settlement } = {}, fetchImpl = fetch) {
+  if (config.privatePayRequireOnchainSettlementProof !== true) {
+    return { required: false, verified: false, status: "not_required" };
+  }
+  const signature = settlementTransactionSignature(settlement);
+  if (!signature) {
+    throw Object.assign(new Error("PrivatePAY facilitator did not return a verifiable Mainnet transaction signature"), {
+      statusCode: 503,
+      code: "PRIVATEPAY_SETTLEMENT_SIGNATURE_MISSING",
+    });
+  }
+  const rpcUrl = config.privatePayRpcUrl || (isMagicBlockRail(config) ? DEFAULT_PRIVATEPAY_TEE_RPC : undefined);
+  const result = await findPrivatePaySettlement({
+    rpcUrl,
+    mint: config.usdcMint,
+    validator: settlement?.validator || settlement?.validatorIdentity || "",
+    queuePda: settlement?.transferQueue || settlement?.queuePda || "",
+    requestId,
+    amountBaseUnits,
+    transactionSignature: signature,
+    fetchImpl,
+  });
+  if (result.status === "settlement_found") return { required: true, verified: true, verificationMode: "finalized_queue_instruction", ...result };
+
+  // MagicBlock x402 direct settlements finalize on the TEE rail without an
+  // observable ExecuteReadyQueuedTransfer queue instruction. Verify the
+  // provider signature's finalized, error-free status as the fallback while
+  // retaining the exact checkout binding performed before settlement.
+  const direct = await getPrivatePaySignatureStatus({ rpcUrl: rpcUrl || DEFAULT_PRIVATEPAY_TEE_RPC, transactionSignature: signature, fetchImpl });
+  if (direct.finalized) {
+    const quoteBinding = config.privatePayRequirePaymentBoundQuote === true
+      ? await verifyPrivatePayPaymentBoundQuote({
+        rpcUrl: rpcUrl || DEFAULT_PRIVATEPAY_TEE_RPC,
+        paymentId: settlement?.paymentId || settlement?.payment_id || settlement?.id,
+        settlementSignature: signature,
+        network: settlement?.network || SOLANA_MAINNET_CAIP2,
+        mint: settlement?.mint || config.usdcMint,
+        amountBaseUnits,
+        finalizedSlot: direct.slot,
+        fetchImpl,
+      })
+      : { required: false, verified: false, status: "not_required" };
+    if (quoteBinding.required && quoteBinding.verified !== true) {
+      throw Object.assign(new Error("PrivatePAY settlement is finalized but its payment-bound TDX quote was not verified"), {
+        statusCode: 503,
+        code: "PRIVATEPAY_PAYMENT_QUOTE_BINDING_FAILED",
+        quoteBinding,
+      });
+    }
+    return {
+      required: true,
+      verified: true,
+      verificationMode: "finalized_tee_signature_status",
+      queueVerification: result,
+      quoteBinding,
+      ...direct,
+    };
+  }
+  throw Object.assign(new Error("PrivatePAY settlement signature was not finalized on the selected Mainnet rail"), {
+    statusCode: 503,
+    code: "PRIVATEPAY_SETTLEMENT_NOT_VERIFIED_ONCHAIN",
+    verification: { queue: result, direct },
+  });
+}
+
 export function publicPrivatePayFacilitatorResult(operation, result, requestId = "") {
   const value = result && typeof result === "object" ? result : {};
   if (operation === "verify") {
@@ -588,10 +666,10 @@ export function privatePayStatus(config) {
   const confidentialMint = String(config.privatePayConfidentialMint || "").trim();
   const conformanceVerified = config.privatePayConformanceVerified === true;
   const mainnetVerified = config.privatePayMainnetVerified === true;
+  const merchantAccountsDelegated = config.privatePayMerchantAccountsDelegated === true;
   const privacyChecks = {
-    relationship: config.privatePayRelationshipPrivacyVerified === true,
-    amount: config.privatePayAmountPrivacyVerified === true,
-    timing: config.privatePayTimingPrivacyVerified === true,
+    public_trace: config.privatePayPublicTraceVerified === true,
+    provider_metadata_disclosed: config.privatePayProviderMetadataDisclosureVerified === true,
     e2e: config.privatePayE2eVerified === true,
   };
   const mintProblem = confidentialMintProblem(config, confidentialMint);
@@ -615,18 +693,35 @@ export function privatePayStatus(config) {
   if (!paymentIngressConfigured) activationBlockers.push("MagicBlock x402 payment ingress must be a separate valid Solana account");
   if (config.privatePayTreasurySplitVerified === false) activationBlockers.push("PrivatePAY commercial fee split to the PrivateDAO treasury is not independently verified");
   if (!mainnetVerified) activationBlockers.push("Mainnet privacy-rail conformance is not independently verified");
-  if (!privacyChecks.relationship) activationBlockers.push("payer/provider unlinkability evidence is missing");
-  if (!privacyChecks.amount) activationBlockers.push("amount confidentiality evidence is missing");
-  if (!privacyChecks.timing) activationBlockers.push("timing and network-fee correlation evidence is missing");
+  if (!merchantAccountsDelegated) activationBlockers.push("MagicBlock merchant payment accounts are not independently verified as delegated");
+  if (!privacyChecks.public_trace) activationBlockers.push("public settlement trace evidence is missing");
+  if (!privacyChecks.provider_metadata_disclosed) activationBlockers.push("provider-side payment metadata disclosure is not acknowledged");
   if (!privacyChecks.e2e) activationBlockers.push("funded deposit/private-transfer/withdrawal E2E evidence is missing");
   if (config.privatePayEnabled !== true) activationBlockers.push("explicit production activation is disabled");
+  const enabled = configured && conformanceVerified && mainnetVerified && privacyAuditVerified && facilitatorCredentialReady && stealthHandleConfigured && stealthHandleVerified && paymentIngressConfigured && config.privatePayTreasurySplitVerified !== false && merchantAccountsDelegated && config.privatePayEnabled === true;
   const status = !configured
     ? "not_ready"
+    : enabled
+      ? "enabled"
     : activationBlockers.length === 1 && activationBlockers[0] === "explicit production activation is disabled"
       ? "ready_pending_explicit_enable"
       : privacyAuditVerified && conformanceVerified
         ? "configured_pending_explicit_enable"
         : "configured_pending_verification";
+  const requiredBeforeActivation = [
+    "MagicBlock Private Ephemeral Rollup or another reviewed shielded/pooled rail with provider audit access",
+    "real x402 v2 facilitator verify/settle conformance test",
+    "authenticated MagicBlock merchant API credential when the MagicBlock rail is selected",
+    "independent verification that the merchant payment accounts are delegated to the selected MagicBlock validator",
+    "independent Mainnet privacy-rail conformance evidence; Devnet or experimental deployments are insufficient",
+    "funded testnet end-to-end proof",
+    "independent evidence that the settlement has no public Solana trace",
+    "explicit disclosure that the facilitator can view authenticated payment metadata",
+    "public wording that does not promise provider-side unlinkability or amount confidentiality",
+    "independent evidence for deposit, private transfer, and withdrawal",
+    "provider audit access and abuse/AML policy",
+    "payment-bound MagicBlock TDX Quote verification when PRIVATEPAY_REQUIRE_PAYMENT_BOUND_QUOTE is enabled",
+  ];
   return {
     service_id: PRIVATEPAY_SERVICE_ID,
     protocol: "x402-v2",
@@ -636,10 +731,12 @@ export function privatePayStatus(config) {
     status,
     conformance_verified: conformanceVerified,
     mainnet_verified: mainnetVerified,
+    merchant_accounts_delegated: merchantAccountsDelegated,
     privacy_audit_verified: privacyAuditVerified,
+    payment_bound_quote_required: config.privatePayRequirePaymentBoundQuote === true,
     privacy_checks: privacyChecks,
     activation_blockers: activationBlockers,
-    enabled: configured && conformanceVerified && mainnetVerified && privacyAuditVerified && facilitatorCredentialReady && stealthHandleConfigured && stealthHandleVerified && paymentIngressConfigured && config.privatePayTreasurySplitVerified !== false && config.privatePayEnabled === true,
+    enabled,
     commercial_fee_model: { type: "percentage_with_minimum", fee_bps: config.privatePayFeeBps, minimum_usd: config.privatePayMinimumFeeUsd, treasury_split_verified: config.privatePayTreasurySplitVerified === true },
     privacy_rail: privacyRail || null,
     facilitator_configured: nonEmpty(facilitatorUrl),
@@ -653,18 +750,7 @@ export function privatePayStatus(config) {
       : "ordinary SPL USDC transfers remain publicly linkable; they are never used as the private rail",
     provider_visibility: "provider_only_after_authenticated_access",
     buyer_visibility: "public response contains only a request commitment and settlement status",
-    required_before_activation: [
-      "MagicBlock Private Ephemeral Rollup or another reviewed shielded/pooled rail with provider audit access",
-      "real x402 v2 facilitator verify/settle conformance test",
-      "authenticated MagicBlock merchant API credential when the MagicBlock rail is selected",
-      "independent Mainnet privacy-rail conformance evidence; Devnet or experimental deployments are insufficient",
-      "funded testnet end-to-end proof",
-      "independent evidence that payer/provider relationship is not linkable",
-      "independent evidence that amount is not observable",
-      "independent evidence that timing and network-fee correlation are bounded",
-      "independent evidence for deposit, private transfer, and withdrawal",
-      "provider audit access and abuse/AML policy",
-    ],
+    required_before_activation: enabled ? [] : requiredBeforeActivation,
   };
 }
 
@@ -683,8 +769,8 @@ export function createPrivatePayChallenge(config, input = {}) {
     provider_commitment: requirements.accepts[0].extra.provider_commitment,
     amount_base_units: requirements.accepts[0].amount,
     expires_at: new Date(Date.now() + 300000).toISOString(),
-    public_disclosure: "The reviewed private rail is intended to keep payer, recipient, and transfer amount out of public settlement data; this remains unproven until the funded Mainnet conformance gates pass.",
-    provider_disclosure: "The provider may view the settled request through authenticated access.",
+    public_disclosure: "The reviewed MagicBlock rail keeps the tested settlement out of public Solana transaction data. This does not hide payment metadata from the authenticated provider or eliminate network-level timing inference.",
+    provider_disclosure: "The provider may view the payer, recipient, amount, and settled request through authenticated access.",
   };
 }
 
