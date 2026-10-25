@@ -120,6 +120,13 @@ export const commercialProductGroups: readonly CommercialProductGroup[] = [
         cta: "Open Agent Marketplace",
         runtimeProductId: "agent",
       },
+      {
+        title: "PrivatePAY x402",
+        summary: "Accept and complete private USDC payments for digital services with a clear settlement receipt.",
+        audience: "Service providers, AI agents, marketplaces, and organizations selling paid digital access.",
+        href: "/privatepay",
+        cta: "Open PrivatePAY",
+      },
     ],
   },
   {
