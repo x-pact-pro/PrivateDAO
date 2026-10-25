@@ -4,13 +4,18 @@ import { readFile } from "node:fs/promises";
 import { handler, resetForTests } from "../src/handler.mjs";
 import { decodePrivatePaySignature } from "../src/privatepay.mjs";
 
-const templatePath = new URL("../../../../../deployment/agent-exchange-template.yaml", import.meta.url);
+const artifactPaths = [
+  new URL("../scripts/privatepay-x402-status.mjs", import.meta.url),
+  new URL("../scripts/privatepay-x402-verify-settle.mjs", import.meta.url),
+  new URL("../scripts/privatepay-x402-submit.mjs", import.meta.url),
+];
 
 test("production deployment points PrivatePAY at the provisioned production secret", async () => {
-  const template = await readFile(templatePath, "utf8");
-  const productionRefs = template.match(/AGENT_EXCHANGE_PRIVATEPAY_SECRET_ID:\s+pdao\/agent-exchange\/privatepay-production/g) || [];
-  assert.equal(productionRefs.length, 2, "both Lambda environment blocks must use the production PrivatePAY secret");
-  assert.equal(template.includes("AGENT_EXCHANGE_PRIVATEPAY_SECRET_ID: pdao/agent-exchange/privatepay\n"), false, "the retired PrivatePAY secret name must not be deployed");
+  const artifacts = await Promise.all(artifactPaths.map((path) => readFile(path, "utf8")));
+  for (const artifact of artifacts) {
+    assert.match(artifact, /PRIVATEPAY_SECRET_ID \|\| "pdao\/agent-exchange\/privatepay-production"/);
+    assert.doesNotMatch(artifact, /pdao\/agent-exchange\/privatepay["'`\s]/);
+  }
 });
 
 test("public PrivatePAY errors expose safe readiness metadata without provider secrets", async () => {

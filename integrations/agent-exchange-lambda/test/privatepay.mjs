@@ -27,6 +27,10 @@ function magicBlockCheckoutConfig(overrides = {}) {
     privatePayAmountPrivacyVerified: true,
     privatePayTimingPrivacyVerified: true,
     privatePayE2eVerified: true,
+    privatePayPublicTraceVerified: true,
+    privatePayProviderMetadataDisclosureVerified: true,
+    privatePayMerchantAccountsDelegated: true,
+    privatePayTreasurySplitVerified: true,
     privatePayConfidentialMint: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
     usdcMint: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
     privatePayProviderHandle: "provider-handle-fixture",
@@ -72,7 +76,7 @@ function validFacilitatorPayload() {
   };
 }
 
-test("PrivatePAY is fail-closed without a reviewed privacy rail", () => {
+test("PrivatePAY is fail-closed without a reviewed privacy rail", async () => {
   const config = { privatePayEnabled: false };
   const status = privatePayStatus(config);
   assert.equal(status.status, "not_ready");
@@ -80,7 +84,7 @@ test("PrivatePAY is fail-closed without a reviewed privacy rail", () => {
   assert.deepEqual(status.supported_payment_networks, ["solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp"]);
   assert.equal(status.network_scope, "solana_only_pending_independent_multichain_conformance");
   assert.ok(status.activation_blockers.includes("privacy rail is not configured"));
-  assert.throws(
+  await assert.rejects(
     () => createPrivatePayChallenge(config, { resource: "api://example", provider_id: "provider-1", amount_base_units: "1000" }),
     (error) => error.code === "PRIVATEPAY_NOT_READY" && error.statusCode === 503,
   );
@@ -164,7 +168,7 @@ test("PrivatePAY rejects ordinary public USDC as the confidential asset", () => 
   assert.ok(status.activation_blockers.includes("ordinary public USDC cannot be used as the confidential payment asset"));
 });
 
-test("PrivatePAY challenge has commitments only and no payment metadata", () => {
+test("PrivatePAY challenge has commitments only and no payment metadata", async () => {
   const config = {
     privatePayEnabled: true,
     privatePayPrivacyRail: "token-2022-confidential-balances",
@@ -175,9 +179,14 @@ test("PrivatePAY challenge has commitments only and no payment metadata", () => 
     privatePayAmountPrivacyVerified: true,
     privatePayTimingPrivacyVerified: true,
     privatePayE2eVerified: true,
+    privatePayPublicTraceVerified: true,
+    privatePayProviderMetadataDisclosureVerified: true,
+    privatePayMerchantAccountsDelegated: true,
+    privatePayTreasurySplitVerified: true,
+    privatePayPdaoGateEnabled: false,
     privatePayConfidentialMint: TEST_CONFIDENTIAL_MINT, privatePayConfidentialMintProgram: TEST_TOKEN_2022_PROGRAM,
   };
-  const result = createPrivatePayChallenge(config, { resource: "api://example", provider_id: "provider-1", amount_base_units: "1000", nonce: "n1" });
+  const result = await createPrivatePayChallenge(config, { resource: "api://example", provider_id: "provider-1", amount_base_units: "1000", nonce: "n1" });
   assert.equal(result.x402Version, 2);
   assert.equal(result.scheme, "privatepay");
   assert.deepEqual(result.supported_payment_networks, ["solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp"]);
@@ -186,7 +195,7 @@ test("PrivatePAY challenge has commitments only and no payment metadata", () => 
   assert.equal(result.resource_commitment.length, 35);
   assert.equal(result.provider_commitment.length, 64);
   assert.equal(result.amount_base_units, "1000");
-  const requirements = createPrivatePayRequirements(config, { resource: "api://example", provider_id: "provider-1", amount_base_units: "1000" });
+  const requirements = await createPrivatePayRequirements(config, { resource: "api://example", provider_id: "provider-1", amount_base_units: "1000" });
   assert.equal(requirements.requirements.accepts[0].scheme, "privatepay");
   assert.equal(decodePaymentRequiredHeader(requirements.header).accepts[0].amount, "1000");
   for (const key of [
@@ -263,7 +272,7 @@ test("MagicBlock payment binds cluster and settlement mode to the quote", () => 
   assert.throws(() => assertPrivatePayPaymentPayload(payload), (error) => error.code === "PRIVATEPAY_PAYMENT_MISMATCH");
 });
 
-test("PrivatePAY remains fail-closed when x402 conformance is not verified", () => {
+test("PrivatePAY remains fail-closed when x402 conformance is not verified", async () => {
   const config = {
     privatePayEnabled: true,
     privatePayPrivacyRail: "reviewed-private-rail",
@@ -274,7 +283,7 @@ test("PrivatePAY remains fail-closed when x402 conformance is not verified", () 
   const status = privatePayStatus(config);
   assert.equal(status.conformance_verified, false);
   assert.equal(status.enabled, false);
-  assert.throws(
+  await assert.rejects(
     () => createPrivatePayRequirements(config, { resource: "api://example", provider_id: "provider-1", amount_base_units: "1000" }),
     (error) => error.code === "PRIVATEPAY_NOT_READY" && error.statusCode === 503,
   );
@@ -291,6 +300,10 @@ test("PrivatePAY rejects a rail that has not independently passed Mainnet confor
     privatePayAmountPrivacyVerified: true,
     privatePayTimingPrivacyVerified: true,
     privatePayE2eVerified: true,
+    privatePayPublicTraceVerified: true,
+    privatePayProviderMetadataDisclosureVerified: true,
+    privatePayMerchantAccountsDelegated: true,
+    privatePayTreasurySplitVerified: true,
     privatePayMainnetVerified: false,
   });
   assert.equal(status.enabled, false);
@@ -313,10 +326,10 @@ test("PrivatePAY remains fail-closed until relationship, amount, timing, and E2E
   const status = privatePayStatus(config);
   assert.equal(status.conformance_verified, true);
   assert.equal(status.privacy_audit_verified, false);
-  assert.equal(status.privacy_checks.timing, false);
+  assert.equal(status.privacy_checks.public_trace, false);
   assert.equal(status.privacy_checks.e2e, false);
   assert.equal(status.enabled, false);
-  assert.ok(status.activation_blockers.includes("timing and network-fee correlation evidence is missing"));
+  assert.ok(status.activation_blockers.includes("public settlement trace evidence is missing"));
   assert.ok(status.activation_blockers.includes("funded deposit/private-transfer/withdrawal E2E evidence is missing"));
 });
 
@@ -337,7 +350,7 @@ test("PrivatePAY facilitator adapter rejects verify and settle before making a n
 test("PrivatePAY facilitator adapter forwards only after the explicit conformance gate", async () => {
   const seen = [];
   const payload = validFacilitatorPayload();
-  const result = await privatePayFacilitatorRequest({ privatePayEnabled: true, privatePayConformanceVerified: true, privatePayMainnetVerified: true, privatePayRelationshipPrivacyVerified: true, privatePayAmountPrivacyVerified: true, privatePayTimingPrivacyVerified: true, privatePayE2eVerified: true, privatePayPrivacyRail: "rail", privatePayFacilitatorUrl: "https://facilitator.example/", privatePayConfidentialMint: TEST_CONFIDENTIAL_MINT, privatePayConfidentialMintProgram: TEST_TOKEN_2022_PROGRAM }, "verify", payload, async (url, init) => {
+  const result = await privatePayFacilitatorRequest({ privatePayEnabled: true, privatePayConformanceVerified: true, privatePayMainnetVerified: true, privatePayRelationshipPrivacyVerified: true, privatePayAmountPrivacyVerified: true, privatePayTimingPrivacyVerified: true, privatePayE2eVerified: true, privatePayPublicTraceVerified: true, privatePayProviderMetadataDisclosureVerified: true, privatePayMerchantAccountsDelegated: true, privatePayTreasurySplitVerified: true, privatePayPrivacyRail: "rail", privatePayFacilitatorUrl: "https://facilitator.example/", privatePayConfidentialMint: TEST_CONFIDENTIAL_MINT, privatePayConfidentialMintProgram: TEST_TOKEN_2022_PROGRAM }, "verify", payload, async (url, init) => {
     seen.push({ url, body: JSON.parse(init.body) });
     return { ok: true, status: 200, async json() { return { isValid: true }; } };
   });
@@ -443,7 +456,7 @@ test("PrivatePAY probes MagicBlock mainnet-private x402 support without a Token-
   assert.ok(!seen.some((url) => url.includes("is-mint-initialized")));
 });
 
-test("PrivatePAY emits the real MagicBlock x402 scheme and private-rollup requirements", () => {
+test("PrivatePAY emits the real MagicBlock x402 scheme and private-rollup requirements", async () => {
   const config = {
     privatePayEnabled: true,
     privatePayPrivacyRail: "magicblock-private-ephemeral-rollup",
@@ -461,8 +474,13 @@ test("PrivatePAY emits the real MagicBlock x402 scheme and private-rollup requir
     privatePayAmountPrivacyVerified: true,
     privatePayTimingPrivacyVerified: true,
     privatePayE2eVerified: true,
+    privatePayPublicTraceVerified: true,
+    privatePayProviderMetadataDisclosureVerified: true,
+    privatePayMerchantAccountsDelegated: true,
+    privatePayTreasurySplitVerified: true,
+    privatePayPdaoGateEnabled: false,
   };
-  const result = createPrivatePayRequirements(config, { resource: "api://example", provider_id: "provider-1", amount_base_units: "1000" });
+  const result = await createPrivatePayRequirements(config, { resource: "api://example", provider_id: "provider-1", amount_base_units: "1000" });
   const accepted = result.requirements.accepts[0];
   assert.equal(accepted.scheme, "exact-magicblock");
   assert.equal(accepted.network, "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp");
@@ -474,7 +492,7 @@ test("PrivatePAY emits the real MagicBlock x402 scheme and private-rollup requir
   assert.equal(accepted.extra.settlement, "ephemeral-rollup");
 });
 
-test("PrivatePAY challenge has one explicit payment_required object and honest privacy wording", () => {
+test("PrivatePAY challenge has one explicit payment_required object and honest privacy wording", async () => {
   const config = {
     privatePayEnabled: true,
     privatePayPrivacyRail: "magicblock-private-ephemeral-rollup",
@@ -492,11 +510,16 @@ test("PrivatePAY challenge has one explicit payment_required object and honest p
     privatePayAmountPrivacyVerified: true,
     privatePayTimingPrivacyVerified: true,
     privatePayE2eVerified: true,
+    privatePayPublicTraceVerified: true,
+    privatePayProviderMetadataDisclosureVerified: true,
+    privatePayMerchantAccountsDelegated: true,
+    privatePayTreasurySplitVerified: true,
+    privatePayPdaoGateEnabled: false,
   };
-  const challenge = createPrivatePayChallenge(config, { resource: "api://example", provider_id: "provider-1", amount_base_units: "1000" });
+  const challenge = await createPrivatePayChallenge(config, { resource: "api://example", provider_id: "provider-1", amount_base_units: "1000" });
   assert.equal(typeof challenge.payment_required, "object");
   assert.notEqual(challenge.payment_required, true);
-  assert.match(challenge.public_disclosure, /unproven until the funded Mainnet conformance gates pass/);
+  assert.match(challenge.public_disclosure, /does not hide payment metadata from the authenticated provider/);
 });
 
 test("PrivatePAY forwards MagicBlock verify to its versioned facilitator endpoint", async () => {
@@ -523,6 +546,10 @@ test("PrivatePAY forwards MagicBlock verify to its versioned facilitator endpoin
     privatePayAmountPrivacyVerified: true,
     privatePayTimingPrivacyVerified: true,
     privatePayE2eVerified: true,
+    privatePayPublicTraceVerified: true,
+    privatePayProviderMetadataDisclosureVerified: true,
+    privatePayMerchantAccountsDelegated: true,
+    privatePayTreasurySplitVerified: true,
     privatePayPrivacyRail: "magicblock-private-ephemeral-rollup",
     privatePayFacilitatorUrl: "https://payments.magicblock.app",
     privatePayFacilitatorApiKey: "test-magicblock-key",

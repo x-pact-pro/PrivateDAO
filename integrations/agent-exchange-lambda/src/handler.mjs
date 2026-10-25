@@ -3636,13 +3636,15 @@ async function submitPrivatePayPayment(jobId, event, body = {}) {
   }
   const payer = String(body.payer || body.wallet || "").trim();
   const pdaoFeeSignature = body.pdao_fee_signature || event.headers?.["X-PrivatePAY-PDAO-Fee-Signature"] || event.headers?.["x-privatepay-pdao-fee-signature"];
-  const pdaoFee = await verifyPrivatePayPdaoFee(config, {
-    payer,
-    signature: pdaoFeeSignature,
-    pdao_fee_base_units: job.privatepay_requirements.accepts?.[0]?.extra?.pdao_fee_base_units,
-    amount_base_units: job.privatepay_requirements.accepts?.[0]?.amount,
-    request_id: job.privatepay_request_id,
-  });
+  const pdaoFee = config.privatePayPdaoGateEnabled === false
+    ? { required: false, status: "disabled_by_configuration" }
+    : await verifyPrivatePayPdaoFee(config, {
+      payer,
+      signature: pdaoFeeSignature,
+      pdao_fee_base_units: job.privatepay_requirements.accepts?.[0]?.extra?.pdao_fee_base_units,
+      amount_base_units: job.privatepay_requirements.accepts?.[0]?.amount,
+      request_id: job.privatepay_request_id,
+    });
   const paymentPayload = decodePrivatePaySignature(signatureHeader);
   const facilitatorPayload = {
     x402Version: 2,
@@ -5199,7 +5201,9 @@ async function handle(e) {
     if (!paymentSignature)
       return json({ error: "payment_required", x402: requirements.requirements, request_id: requirements.request_id }, 402, { "PAYMENT-REQUIRED": requirements.header });
     const pdaoFeeSignature = x402Input.pdao_fee_signature || e.headers?.["X-PrivatePAY-PDAO-Fee-Signature"] || e.headers?.["x-privatepay-pdao-fee-signature"];
-    const pdaoFee = await verifyPrivatePayPdaoFee(config, { payer: x402Input.payer, signature: pdaoFeeSignature, pdao_fee_base_units: requirements.pdao.fee_base_units, amount_base_units: x402Input.amount_base_units, request_id: requirements.request_id });
+    const pdaoFee = requirements.pdao.required
+      ? await verifyPrivatePayPdaoFee(config, { payer: x402Input.payer, signature: pdaoFeeSignature, pdao_fee_base_units: requirements.pdao.fee_base_units, amount_base_units: x402Input.amount_base_units, request_id: requirements.request_id })
+      : { required: false, status: "disabled_by_configuration" };
     const paymentPayload = decodePrivatePaySignature(paymentSignature);
     const facilitatorPayload = {
       x402Version: 2,
