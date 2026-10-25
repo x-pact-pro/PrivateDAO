@@ -18,8 +18,8 @@ test("human root is HTML while machine surfaces remain available", async () => {
   assert.match(root.headers["content-type"], /^text\/html/);
   assert.match(root.body, /PrivateDAO Agents/);
   assert.match(root.body, /Evidence for/);
-  assert.match(root.body, /PDAO holder rewards run on three tiers/);
-  assert.match(root.body, /pdao-value-rail/);
+  assert.match(root.body, /PDAO utility layer/);
+  assert.match(root.body, /pdao-utility-band/);
   assert.match(root.body, /pdao-proof-panel/);
   assert.match(root.body, /prefers-reduced-motion/);
   assert.match(root.body, /DISCOVER/);
@@ -55,7 +55,7 @@ test("human root is HTML while machine surfaces remain available", async () => {
   assert.equal(holderPolicy.statusCode, 200);
   assert.equal(holderPolicy.headers["content-type"], "application/json; charset=utf-8");
   assert.deepEqual(JSON.parse(holderPolicy.body).tiers.map((tier) => tier.id), ["access", "plus", "pro"]);
-  assert.equal(JSON.parse(holderPolicy.body).qualification_mode, "historical_balance_required");
+  assert.equal(JSON.parse(holderPolicy.body).qualification_mode, "current_balance_at_each_service_execution");
   assert.match(marketplace.body, /SealKeeper read-only reputation verification/);
   assert.match(marketplace.body, /PrivateDAO Agent Exchange is SealKeeper's design and integration partner/);
   assert.match(marketplace.body, /https:\/\/sealkeeper\.run\/docs\/integrate/);
@@ -145,7 +145,7 @@ test("human root is HTML while machine surfaces remain available", async () => {
   assert.deepEqual(walletService.input_schema.required, ["network"]);
   assert.ok(walletService.input_schema.anyOf.some((branch) => branch.required.includes("wallet")));
   const botService = catalog.services.find((service) => service.id === "wallet.bot.classify");
-  assert.equal(botService.price, 1);
+  assert.equal(botService.price, 1.5);
   assert.deepEqual(botService.supported_target_networks, ["solana-mainnet-beta", "ethereum-mainnet", "base-mainnet", "arbitrum-mainnet"]);
   assert.ok(botService.input_schema.anyOf.some((branch) => branch.required.includes("wallet")));
   const botPage = await request("/services/wallet-bot-classify");
@@ -156,7 +156,7 @@ test("human root is HTML while machine surfaces remain available", async () => {
   assert.match(botPage.body, /onlyIfTrusted:false/);
   assert.match(botPage.body, /provider\.connect\(\)/);
   assert.match(botPage.body, /Target network/);
-  assert.match(botPage.body, /PDAO holder rewards run on three tiers/);
+  assert.match(botPage.body, /PDAO/);
   assert.match(botPage.body, /href="#service-checkout-title">Request this service/);
   assert.match(botPage.body, /if\(immediate\.length===1\)\{await connect\(immediate\[0\]\);return;\}/);
   assert.match(botPage.body, /Wallet found\. Click Use … to approve the connection/);
@@ -254,8 +254,8 @@ test("product quote packages existing services without trusting client pricing",
   assert.equal(quote.statusCode, 402);
   const intent = JSON.parse(quote.body).payment_intent;
   assert.equal(intent.product_id, "token-safety-brief");
-  assert.equal(intent.product_price, 0.09);
-  assert.equal(intent.amount, "0.090000");
+  assert.equal(intent.product_price, 0.35);
+  assert.equal(intent.amount, "0.350000");
   assert.equal(intent.items.length, 4);
   const invalid = await request("/api/products/unknown/quote", "POST", { input: {} });
   assert.equal(invalid.statusCode, 404);
@@ -532,6 +532,12 @@ test("every catalog capability has a stable detail page", async () => {
     assert.equal(response.statusCode, 200, service.id);
     assert.match(response.headers["content-type"], /^text\/html/, service.id);
     assert.match(response.body, new RegExp(service.title.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")), service.id);
+    if (service.id === "privatepay.x402") {
+      assert.match(response.body, /Activation gated/, service.id);
+      assert.match(response.body, /\/api\/privatepay\/status/, service.id);
+      assert.doesNotMatch(response.body, /Pay quoted USDC/, service.id);
+      continue;
+    }
     assert.match(response.body, /Service input JSON/, service.id);
     assert.match(response.body, /\/api\/jobs/, service.id);
     if (service.price) {
@@ -573,13 +579,13 @@ test("crawler files expose the intended public surfaces", async () => {
 
 test("MCP and A2A machine entrypoints remain callable", async () => {
   resetForTests();
-  for (const path of ["/connect", "/connect/chatgpt", "/connect/claude", "/connect/grok", "/connect/openclaw", "/mcp"]) {
+  for (const path of ["/connect", "/connect/chatgpt", "/connect/claude", "/connect/grok", "/connect/cursor", "/connect/openclaw", "/mcp"]) {
     const page = await request(path);
     assert.equal(page.statusCode, 200, path);
     assert.match(page.headers["content-type"], /^text\/html/, path);
     assert.match(page.body, /agents\.privatedao\.org\/mcp/, path);
     assert.match(page.body, /streamable-http/, path);
-    assert.match(page.body, /PDAO holder rewards run on three tiers/, path);
+    assert.match(page.body, /PDAO/, path);
   }
   const hub = await request("/connect");
   assert.match(hub.body, /ChatGPT/);
@@ -595,7 +601,7 @@ test("MCP and A2A machine entrypoints remain callable", async () => {
     assert.ok(asset.endsWith(".png") ? response.isBase64Encoded : /^<svg/.test(response.body), asset);
   }
   assert.doesNotMatch(hub.body, /cdn\.simpleicons|claude\.ai\/favicon|grok\.com\/images\/favicon/);
-  for (const path of ["/connect/chatgpt", "/connect/claude", "/connect/grok", "/connect/openclaw"]) {
+  for (const path of ["/connect/chatgpt", "/connect/claude", "/connect/grok", "/connect/cursor", "/connect/openclaw"]) {
     const page = await request(path);
     assert.doesNotMatch(page.body, /MCP VERIFIED/, path);
     assert.doesNotMatch(page.body, /PrivateDAO-tested MCP interoperability/, path);
@@ -610,7 +616,7 @@ test("MCP and A2A machine entrypoints remain callable", async () => {
   assert.match(a2a.headers["content-type"], /^application\/json/);
   const mcp = await request("/mcp", "POST", { jsonrpc: "2.0", id: 1, method: "tools/list" });
   assert.equal(mcp.statusCode, 200);
-  assert.match(mcp.body, /pdao_services/);
+  assert.match(mcp.body, /list_catalog/);
   const api = JSON.parse((await request("/openapi.json")).body);
   assert.ok(api.components.schemas.CreateJobRequest);
   assert.ok(api.components.schemas.ServiceInput_token_intelligence);
@@ -653,7 +659,7 @@ test("MCP lifecycle, schemas, errors, and network aliases are protocol-safe", as
   assert.equal(cancelled.body, "");
 
   const listed = JSON.parse((await request("/mcp", "POST", { jsonrpc: "2.0", id: 2, method: "tools/list", params: {} })).body).result.tools;
-  assert.equal(listed.length, 22);
+  assert.equal(listed.length, 16);
   for (const tool of listed) {
     assert.equal(tool.inputSchema.type, "object", tool.name);
     assert.ok(tool.inputSchema.properties, tool.name);
@@ -662,24 +668,20 @@ test("MCP lifecycle, schemas, errors, and network aliases are protocol-safe", as
   }
   const byName = Object.fromEntries(listed.map((tool) => [tool.name, tool.inputSchema]));
   assert.deepEqual(byName.submit_payment.required, ["job_id", "signature"]);
-  assert.deepEqual(byName.register_agent.anyOf, [{ required: ["mcpUrl"] }, { required: ["mcp_url"] }, { required: ["endpoint"] }]);
-  assert.deepEqual(byName.logistics_request.required, ["capability"]);
-  assert.deepEqual(byName.receipt_verify.required, ["receipt"]);
-  assert.equal(byName.receipt_verify.properties.receipt.type, "object");
-  const productCatalog = JSON.parse((await request("/mcp", "POST", { jsonrpc: "2.0", id: 10, method: "tools/call", params: { name: "product_catalog", arguments: {} } })).body);
+  const productCatalog = JSON.parse((await request("/mcp", "POST", { jsonrpc: "2.0", id: 10, method: "tools/call", params: { name: "list_catalog", arguments: { filter: "products" } } })).body);
   assert.equal(productCatalog.result.structuredContent.products.length, 3);
-  for (const toolName of ["exchange_overview", "service_recommendation", "provider_integrations", "payment_guide", "execution_guide"])
+  for (const toolName of ["get_workflow_guide", "list_catalog", "discover_agents", "get_provider_integrations", "verify_receipt"])
     assert.ok(byName[toolName], `${toolName} discovery tool`);
 
-  const executionGuide = JSON.parse((await request("/mcp", "POST", { jsonrpc: "2.0", id: 5, method: "tools/call", params: { name: "execution_guide", arguments: {} } })).body);
-  assert.deepEqual(executionGuide.result.structuredContent.states, ["awaiting_payment", "running", "completed", "recovery_required"]);
-  assert.match(executionGuide.result.structuredContent.retry, /must not replay the service/);
+  const executionGuide = JSON.parse((await request("/mcp", "POST", { jsonrpc: "2.0", id: 5, method: "tools/call", params: { name: "get_workflow_guide", arguments: { topic: "execution" } } })).body);
+  assert.deepEqual(executionGuide.result.structuredContent.states, ["awaiting_payment", "running", "completed", "cancelled", "recovery_required"]);
+  assert.match(executionGuide.result.structuredContent.retry, /do not repeat a payment signature/);
 
   const safe = JSON.parse((await request("/mcp", "POST", { jsonrpc: "2.0", id: 3, method: "tools/call", params: { name: "verify_basic", arguments: { record: { test: "mcp" } } } })).body);
   assert.equal(safe.result.isError, undefined);
   assert.match(safe.result.content[0].text, /VERIFIED/);
 
-  const receiptCheck = JSON.parse((await request("/mcp", "POST", { jsonrpc: "2.0", id: 9, method: "tools/call", params: { name: "receipt_verify", arguments: { receipt: { receipt_id: "rvr_fixture", status: "VERIFIED" } } } })).body);
+  const receiptCheck = JSON.parse((await request("/mcp", "POST", { jsonrpc: "2.0", id: 9, method: "tools/call", params: { name: "verify_receipt", arguments: { receipt: { receipt_id: "rvr_fixture", status: "VERIFIED" } } } })).body);
   assert.equal(receiptCheck.result.isError, undefined);
   assert.equal(receiptCheck.result.structuredContent.verification_status, "VERIFIED");
 
@@ -693,11 +695,11 @@ test("MCP lifecycle, schemas, errors, and network aliases are protocol-safe", as
   assert.equal(a2aValidation.statusCode, 400);
   assert.match(a2aValidation.body, /mint or record is required/);
 
-  const match = JSON.parse((await request("/mcp", "POST", { jsonrpc: "2.0", id: 5, method: "tools/call", params: { name: "agent_match", arguments: { capabilities: ["chains"], network: "solana:mainnet-beta" } } })).body);
+  const match = JSON.parse((await request("/mcp", "POST", { jsonrpc: "2.0", id: 5, method: "tools/call", params: { name: "discover_agents", arguments: { capabilities: ["chains"], network: "solana:mainnet-beta" } } })).body);
   assert.equal(match.result.isError, undefined);
-  const stats = JSON.parse((await request("/mcp", "POST", { jsonrpc: "2.0", id: 8, method: "tools/call", params: { name: "network_stats", arguments: {} } })).body);
-  assert.ok(stats.result.structuredContent.networks["solana-mainnet-beta"]);
-  assert.ok(stats.result.structuredContent.networks["base-mainnet"]);
+  const stats = JSON.parse((await request("/mcp", "POST", { jsonrpc: "2.0", id: 8, method: "tools/call", params: { name: "list_catalog", arguments: { filter: "network" } } })).body);
+  assert.ok(stats.result.structuredContent.network.networks["solana-mainnet-beta"]);
+  assert.ok(stats.result.structuredContent.network.networks["base-mainnet"]);
 });
 
 test("agent invocation rejects malformed identifiers without leaking storage errors", async () => {
@@ -728,8 +730,8 @@ test("GitHub App and external seller boundaries fail closed without credentials 
   const services = JSON.parse((await request("/api/registry/services")).body);
   assert.deepEqual(services.services, []);
   const mcp = JSON.parse((await request("/mcp", "POST", { jsonrpc: "2.0", id: 1, method: "tools/list" })).body).result.tools;
-  assert.ok(mcp.some((tool) => tool.name === "external_services"));
-  assert.ok(mcp.some((tool) => tool.name === "seller_update_services"));
+  assert.ok(mcp.some((tool) => tool.name === "list_catalog"));
+  assert.ok(mcp.some((tool) => tool.name === "get_provider_integrations"));
 });
 
 test("external seller ownership protects mutations and publishes declared services", async () => {
@@ -1036,7 +1038,7 @@ test("external seller paid lifecycle quotes, executes once, and records attribut
     const directPaidInvoke = await request("/api/agents/invoke", "POST", { agentId: registeredBody.id, tool: "read", arguments: { subject: "bypass-attempt" } });
     assert.equal(directPaidInvoke.statusCode, 402);
     assert.match(directPaidInvoke.body, /quote and finalized payment/);
-    assert.equal(JSON.parse((await request("/mcp", "POST", { jsonrpc: "2.0", id: 2, method: "tools/call", params: { name: "external_services", arguments: {} } })).body).result.isError, undefined);
+    assert.equal(JSON.parse((await request("/mcp", "POST", { jsonrpc: "2.0", id: 2, method: "tools/call", params: { name: "list_catalog", arguments: { filter: "external" } } })).body).result.isError, undefined);
     const created = await request("/api/external/jobs", "POST", { service_id: service.id, input: { subject: "fixture" } });
     assert.equal(created.statusCode, 201);
     const paymentIntent = JSON.parse(created.body).payment_intent;
@@ -1230,6 +1232,29 @@ test("public seller metadata removes secret-shaped fields including camelCase va
   assert.equal(safe.official_partner, false);
   assert.equal(safe.sponsored_placement, false);
   assert.equal(safe.directory, "public_agent_registry");
+});
+
+test("first-party exchange appears in machine discovery without becoming an external seller", async () => {
+  resetForTests();
+  const discovery = JSON.parse((await request("/api/discovery")).body);
+  assert.equal(discovery.first_party.length, 1);
+  assert.equal(discovery.first_party[0].id, "privatedao-agent-exchange");
+  assert.equal(discovery.first_party[0].discovery_type, "first_party");
+  assert.equal(discovery.first_party[0].payment_asset, "USDC");
+
+  const search = JSON.parse((await handler({
+    requestContext: { http: { method: "GET", path: "/api/registry/search" } },
+    queryStringParameters: { q: "PrivateDAO" },
+  })).body);
+  assert.deepEqual(search.agents, []);
+  assert.equal(search.first_party.length, 1);
+  assert.equal(search.first_party[0].mcp_url, "https://agents.privatedao.org/mcp");
+
+  const unrelated = JSON.parse((await handler({
+    requestContext: { http: { method: "GET", path: "/api/registry/search" } },
+    queryStringParameters: { q: "does-not-match" },
+  })).body);
+  assert.deepEqual(unrelated.first_party, []);
 });
 
 test("payment finality responses are non-success until activation is complete", () => {

@@ -11,11 +11,12 @@ function alchemySolanaRpcUrl(apiKey) {
 
 export function getConfig(env = process.env) {
   const evmRpcUrls = Object.fromEntries(
-    [
-      ["ethereum-mainnet", "PDAO_EVM_ETHEREUM_MAINNET_RPC_URL"],
-      ["base-mainnet", "PDAO_EVM_BASE_MAINNET_RPC_URL"],
-      ["arbitrum-mainnet", "PDAO_EVM_ARBITRUM_MAINNET_RPC_URL"],
-    ].map(([network, key]) => [network, env[key] || ""]).filter(([, value]) => value),
+      [
+        ["ethereum-mainnet", "PDAO_EVM_ETHEREUM_MAINNET_RPC_URL"],
+        ["base-mainnet", "PDAO_EVM_BASE_MAINNET_RPC_URL"],
+        ["arbitrum-mainnet", "PDAO_EVM_ARBITRUM_MAINNET_RPC_URL"],
+        ["robinhood-mainnet", "PDAO_EVM_ROBINHOOD_MAINNET_RPC_URL"],
+      ].map(([network, key]) => [network, env[key] || ""]).filter(([, value]) => value),
   );
   return {
     region: env.AWS_REGION || "eu-north-1",
@@ -48,7 +49,7 @@ export function getConfig(env = process.env) {
     alchemyApiKey: env.ALCHEMY_API_KEY || "",
     alchemySecretId: env.AGENT_EXCHANGE_ALCHEMY_SECRET_ID || "",
     evmRpcUrls,
-    jupiterQuoteUrl: env.PDAO_JUPITER_QUOTE_URL || "https://quote-api.jup.ag/v6/quote",
+    jupiterQuoteUrl: env.PDAO_JUPITER_QUOTE_URL || "https://api.jup.ag/swap/v1/quote",
     jupiterApiKey: env.PDAO_JUPITER_API_KEY || "",
     lifiQuoteUrl: env.PDAO_LIFI_QUOTE_URL || "https://li.quest/v1/quote",
     lifiApiKey: env.PDAO_LIFI_API_KEY || "",
@@ -76,6 +77,8 @@ export function getConfig(env = process.env) {
     githubApiUrl: env.GITHUB_API_URL || "https://api.github.com",
     githubRepository: env.GITHUB_REPOSITORY || "",
     payoutSecretId: env.AGENT_EXCHANGE_PAYOUT_SECRET_ID || "",
+    privatePaySecretId: env.AGENT_EXCHANGE_PRIVATEPAY_SECRET_ID || "",
+    alibabaMarketplaceSecretId: env.AGENT_EXCHANGE_ALIBABA_SECRET_ID || "",
     payoutSignerSecret: "",
     payoutBatchLimit: boundedNumber(env.AGENT_EXCHANGE_PAYOUT_BATCH_LIMIT || 20, 20, 1, 100),
     marketDataUrl: env.PDAO_MARKET_DATA_URL || "https://api.dexscreener.com/latest/dex",
@@ -95,6 +98,12 @@ export function getConfig(env = process.env) {
       Revenue: env.AGENT_EXCHANGE_REVENUE_TABLE || "",
       Telemetry: env.AGENT_EXCHANGE_TELEMETRY_TABLE || "",
       RateLimits: env.AGENT_EXCHANGE_RATE_LIMITS_TABLE || "",
+      // Alibaba instance lifecycle records can share the existing Registry
+      // table until an operator provisions a dedicated table.
+      AlibabaInstances:
+        env.AGENT_EXCHANGE_ALIBABA_INSTANCES_TABLE ||
+        env.AGENT_EXCHANGE_REGISTRY_TABLE ||
+        "",
     },
     // Test storage must be explicitly enabled in a test process. A stray
     // storage flag in Lambda must never silently replace DynamoDB with memory.
@@ -103,9 +112,10 @@ export function getConfig(env = process.env) {
     rateLimitPerMinute: boundedNumber(env.AGENT_EXCHANGE_RATE_LIMIT_PER_MINUTE || 120, 120, 10, 1000),
     priceMultiplier: boundedNumber(env.AGENT_EXCHANGE_PRICE_MULTIPLIER || 1, 1, 0.000001, 1000),
     marketplaceFeeBps: boundedNumber(env.AGENT_EXCHANGE_MARKETPLACE_FEE_BPS || 1000, 1000, 0, 10000),
-    // Swap remains quote-only and gated until the configured provider has passed
-    // production verification. Tests opt in explicitly through test mode.
-    swapQuotesEnabled: bool(env.PDAO_SWAP_QUOTES_ENABLED) || env.AGENT_EXCHANGE_TEST_MODE === "true",
+    // Jupiter has passed the read-only Mainnet quote check. This flag never
+    // enables swap execution; operators can disable the quote surface with
+    // PDAO_SWAP_QUOTES_ENABLED=false if the provider becomes unavailable.
+    swapQuotesEnabled: bool(env.PDAO_SWAP_QUOTES_ENABLED, true),
     sealReputationEnabled: bool(env.SEAL_REPUTATION_ENABLED),
     sealkeeperTimeoutMs: boundedNumber(env.SEALKEEPER_TIMEOUT_MS || 8000, 8000, 1000, 30000),
     // Holder access is a privilege with explicit anti-abuse ceilings, not an
@@ -113,15 +123,68 @@ export function getConfig(env = process.env) {
     pdaoHolderPerMinuteLimit: boundedNumber(env.PDAO_HOLDER_PER_MINUTE_LIMIT || 10, 10, 1, 60),
     pdaoHolderDailyLimit: boundedNumber(env.PDAO_HOLDER_DAILY_LIMIT || 100, 100, 1, 10000),
     pdaoHolderMonthlyLimit: boundedNumber(env.PDAO_HOLDER_MONTHLY_LIMIT || 1000, 1000, 1, 100000),
-    // The holder proposal requires a seven-day qualifying balance window.
-    // Snapshots are recorded by the scheduled Lambda sweep and live access
-    // verification; access fails closed until the window is complete.
+    // Holder Rewards use a seven-day qualifying balance window after the
+    // fixed platform promotion. The fixed promotion itself is current-balance
+    // based and is not extended by connecting a wallet.
     pdaoHolderQualificationDays: boundedNumber(env.PDAO_HOLDER_QUALIFICATION_DAYS || 7, 7, 0, 30),
+    privatePayEnabled: bool(env.PRIVATEPAY_ENABLED),
+    privatePayNetwork: env.PRIVATEPAY_NETWORK || "solana",
+    privatePayPrivacyRail: env.PRIVATEPAY_PRIVACY_RAIL || "",
+    privatePayFacilitatorUrl: env.PRIVATEPAY_FACILITATOR_URL || "",
+    privatePayFacilitatorApiKey: env.PRIVATEPAY_FACILITATOR_API_KEY || "",
+    privatePayMerchantId: env.PRIVATEPAY_MERCHANT_ID || env.PRIVATEPAY_PROVIDER_WALLET || "",
+    // Merchant checkout is a separate remote-side capability and remains
+    // disabled until the official MagicBlock flow is reviewed and funded E2E
+    // evidence exists.
+    privatePayMerchantCheckoutEnabled: bool(env.PRIVATEPAY_MERCHANT_CHECKOUT_ENABLED),
+    privatePayMerchantAccountsDelegated: bool(env.PRIVATEPAY_MERCHANT_ACCOUNTS_DELEGATED),
+    privatePayStealthPoolToken: env.PRIVATEPAY_STEALTH_POOL_TOKEN || "",
+    // This is a release gate, not a health check. It may only be set after
+    // the exact x402 v2 verify/settle contract has been independently tested.
+    privatePayConformanceVerified: bool(env.PRIVATEPAY_CONFORMANCE_VERIFIED),
+    // A separate gate prevents Devnet or experimental evidence from enabling
+    // the production Mainnet path.
+    privatePayMainnetVerified: bool(env.PRIVATEPAY_MAINNET_VERIFIED),
+    privatePayRelationshipPrivacyVerified: bool(env.PRIVATEPAY_RELATIONSHIP_PRIVACY_VERIFIED),
+    privatePayAmountPrivacyVerified: bool(env.PRIVATEPAY_AMOUNT_PRIVACY_VERIFIED),
+    privatePayTimingPrivacyVerified: bool(env.PRIVATEPAY_TIMING_PRIVACY_VERIFIED),
+    // Public-trace privacy is the supported MagicBlock claim: the settlement
+    // is not exposed as a public Solana transaction. Provider-side metadata
+    // visibility remains explicit and is never represented as confidentiality.
+    privatePayPublicTraceVerified: bool(env.PRIVATEPAY_PUBLIC_TRACE_VERIFIED),
+    privatePayProviderMetadataDisclosureVerified: bool(env.PRIVATEPAY_PROVIDER_METADATA_DISCLOSURE_VERIFIED),
+    privatePayE2eVerified: bool(env.PRIVATEPAY_E2E_VERIFIED),
+    privatePayConfidentialMint: env.PRIVATEPAY_CONFIDENTIAL_MINT || "",
+    privatePayConfidentialMintProgram: env.PRIVATEPAY_CONFIDENTIAL_MINT_PROGRAM || "",
+    privatePayProviderUrl: env.PRIVATEPAY_PROVIDER_URL || "https://payments.magicblock.app",
+    privatePayProviderWallet: env.PRIVATEPAY_PROVIDER_WALLET || "",
+    // MagicBlock stealth handles are required to avoid sending a provider
+    // wallet directly in the private transfer request.
+    privatePayProviderHandle: env.PRIVATEPAY_PROVIDER_HANDLE || "",
+    privatePayProviderHandleVerified: bool(env.PRIVATEPAY_PROVIDER_HANDLE_VERIFIED),
+    // Public x402 payTo must be an ingress/settlement account, never the provider wallet.
+    privatePayPaymentIngress: env.PRIVATEPAY_PAYMENT_INGRESS || "",
+    privatePayRpcUrl: env.PRIVATEPAY_RPC_URL || "",
+    privatePayCluster: env.PRIVATEPAY_CLUSTER || "mainnet-beta",
+    privatePayRequireGasless: bool(env.PRIVATEPAY_REQUIRE_GASLESS, true),
+    // A facilitator success response is not an on-chain settlement receipt.
+    // Keep this proof requirement enabled for any future production activation.
+    privatePayRequireOnchainSettlementProof: bool(env.PRIVATEPAY_REQUIRE_ONCHAIN_SETTLEMENT_PROOF, true),
+    // Optional stronger gate: require a fresh MagicBlock TDX Quote whose
+    // REPORTDATA commits to the exact x402 payment and finalized settlement.
+    privatePayRequirePaymentBoundQuote: bool(env.PRIVATEPAY_REQUIRE_PAYMENT_BOUND_QUOTE),
+    privatePayMinDelayMs: boundedNumber(env.PRIVATEPAY_MIN_DELAY_MS || 0, 0, 0, 600000),
+    privatePayMaxDelayMs: boundedNumber(env.PRIVATEPAY_MAX_DELAY_MS || 0, 0, 0, 600000),
+    privatePayFeeBps: boundedNumber(env.PRIVATEPAY_FEE_BPS || 250, 250, 0, 10000),
+    privatePayMinimumFeeUsd: boundedNumber(env.PRIVATEPAY_MINIMUM_FEE_USD || 0.05, 0.05, 0, 1000),
+    privatePayTreasurySplitVerified: bool(env.PRIVATEPAY_TREASURY_SPLIT_VERIFIED),
+    alibabaMarketplaceEnabled: bool(env.ALIBABA_MARKETPLACE_ENABLED),
+    alibabaMarketplaceSpiSecret: env.ALIBABA_MARKETPLACE_SPI_SECRET || "",
   };
 }
 
 export async function hydrateConfig(config, env = process.env) {
-  if (!env.AGENT_EXCHANGE_SOLANA_RPC_SECRET_ID && !config.alchemySecretId && !config.mongoSecretId && !config.ibmSecretId && !config.githubSecretId && !config.payoutSecretId && !env.AGENT_EXCHANGE_ADMIN_SECRET_ID) return config;
+  if (!env.AGENT_EXCHANGE_SOLANA_RPC_SECRET_ID && !config.alchemySecretId && !config.mongoSecretId && !config.ibmSecretId && !config.githubSecretId && !config.payoutSecretId && !config.privatePaySecretId && !config.alibabaMarketplaceSecretId && !env.AGENT_EXCHANGE_ADMIN_SECRET_ID) return config;
   const [{ SecretsManagerClient, GetSecretValueCommand }] = await Promise.all([
     import("@aws-sdk/client-secrets-manager"),
   ]);
@@ -155,10 +218,13 @@ export async function hydrateConfig(config, env = process.env) {
     config.alchemyApiKey = values.ALCHEMY_API_KEY;
     if (!config.rpcSecondary) config.rpcSecondary = alchemySolanaRpcUrl(values.ALCHEMY_API_KEY);
   }
+  if (values.JUPITER_API_KEY) config.jupiterApiKey = values.JUPITER_API_KEY;
+  if (values.PDAO_JUPITER_API_KEY) config.jupiterApiKey = values.PDAO_JUPITER_API_KEY;
   for (const [network, key] of [
     ["ethereum-mainnet", "PDAO_EVM_ETHEREUM_MAINNET_RPC_URL"],
     ["base-mainnet", "PDAO_EVM_BASE_MAINNET_RPC_URL"],
     ["arbitrum-mainnet", "PDAO_EVM_ARBITRUM_MAINNET_RPC_URL"],
+    ["robinhood-mainnet", "PDAO_EVM_ROBINHOOD_MAINNET_RPC_URL"],
   ]) if (values[key]) config.evmRpcUrls[network] = values[key];
   if (config.alchemySecretId) {
     const alchemy = await client.send(new GetSecretValueCommand({ SecretId: config.alchemySecretId }));
@@ -171,6 +237,7 @@ export async function hydrateConfig(config, env = process.env) {
       ["ethereum-mainnet", "PDAO_EVM_ETHEREUM_MAINNET_RPC_URL"],
       ["base-mainnet", "PDAO_EVM_BASE_MAINNET_RPC_URL"],
       ["arbitrum-mainnet", "PDAO_EVM_ARBITRUM_MAINNET_RPC_URL"],
+      ["robinhood-mainnet", "PDAO_EVM_ROBINHOOD_MAINNET_RPC_URL"],
     ]) if (alchemyValues[key]) config.evmRpcUrls[network] = alchemyValues[key];
   }
   if (env.AGENT_EXCHANGE_ADMIN_SECRET_ID) {
@@ -187,6 +254,8 @@ export async function hydrateConfig(config, env = process.env) {
     [config.ibmSecretId, (values) => { if (values.IBM_WATSONX_API_KEY) config.ibmApiKey = values.IBM_WATSONX_API_KEY; if (values.IBM_WATSONX_URL) config.ibmUrl = values.IBM_WATSONX_URL; if (values.IBM_WATSONX_PROJECT_ID) config.ibmProjectId = values.IBM_WATSONX_PROJECT_ID; if (values.IBM_WATSONX_MODEL_ID) config.ibmModel = values.IBM_WATSONX_MODEL_ID; }],
     [config.githubSecretId, (values) => { if (values.GITHUB_TOKEN) config.githubToken = values.GITHUB_TOKEN; if (values.GITHUB_REPOSITORY) config.githubRepository = values.GITHUB_REPOSITORY; if (values.GITHUB_APP_ID) config.githubAppId = Number(values.GITHUB_APP_ID); if (values.GITHUB_APP_PRIVATE_KEY) config.githubAppPrivateKey = values.GITHUB_APP_PRIVATE_KEY; if (values.GITHUB_WEBHOOK_SECRET) config.githubWebhookSecret = values.GITHUB_WEBHOOK_SECRET; if (values.GITHUB_APP_SLUG) config.githubAppSlug = values.GITHUB_APP_SLUG; }],
     [config.payoutSecretId, (values, raw) => { config.payoutSignerSecret = values.SOLANA_PAYOUT_PRIVATE_KEY || values.PAYOUT_SIGNER_PRIVATE_KEY || values.secretKey || values.privateKey || raw || ""; }],
+    [config.privatePaySecretId, (values) => { if (values.PRIVATEPAY_FACILITATOR_API_KEY) config.privatePayFacilitatorApiKey = values.PRIVATEPAY_FACILITATOR_API_KEY; if (values.PRIVATEPAY_MERCHANT_ID) config.privatePayMerchantId = values.PRIVATEPAY_MERCHANT_ID; if (values.PRIVATEPAY_STEALTH_POOL_TOKEN) config.privatePayStealthPoolToken = values.PRIVATEPAY_STEALTH_POOL_TOKEN; }],
+    [config.alibabaMarketplaceSecretId, (values) => { if (values.ALIBABA_MARKETPLACE_SPI_SECRET) config.alibabaMarketplaceSpiSecret = values.ALIBABA_MARKETPLACE_SPI_SECRET; }],
   ];
   for (const [secretId, apply] of optionalSecrets) {
     if (!secretId) continue;
@@ -196,7 +265,12 @@ export async function hydrateConfig(config, env = process.env) {
     } catch (error) {
       // Settlement is deliberately inert until the operator provisions the
       // signer. A missing payout secret must not take down buyer-facing APIs.
-      if (secretId === config.payoutSecretId && error?.name === "ResourceNotFoundException") continue;
+      if (
+        (secretId === config.payoutSecretId ||
+          secretId === config.privatePaySecretId ||
+          secretId === config.alibabaMarketplaceSecretId) &&
+        error?.name === "ResourceNotFoundException"
+      ) continue;
       throw error;
     }
   }

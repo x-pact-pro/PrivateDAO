@@ -10,11 +10,15 @@ export const PDAO_DEVELOPER_LOCK_UNTIL = "2026-11-30";
 export const PDAO_DEVELOPER_LOCK_CONTRACT = "3s5gg6upQXd4USTUQKdrWPBexEa2sZwzoD4P3HLA4tUK";
 export const PDAO_HOLDER_THRESHOLD_USD = 25;
 export const PDAO_HOLDER_WINDOW_MS = 30 * 24 * 60 * 60 * 1000;
+export const PDAO_HOLDER_REWARD_QUALIFICATION_DAYS = 7;
+export const PDAO_PROMOTION_START_AT = "2026-10-20T00:00:00.000Z";
+export const PDAO_PROMOTION_END_AT = "2026-11-20T00:00:00.000Z";
 export const PDAO_ELIGIBLE_SERVICE_MAX_USD = 0.10;
+export const PDAO_SELLER_SERVICE_ID = "marketplace.seller_listing";
 export const PDAO_HOLDER_TIERS = Object.freeze([
-  { id: "access", name: "Access", threshold_usd: 25, monthly_credit_usd: 1, credit_request_limit: 25, discount_bps: 500 },
-  { id: "plus", name: "Plus", threshold_usd: 100, monthly_credit_usd: 5, credit_request_limit: 50, discount_bps: 1000 },
-  { id: "pro", name: "Pro", threshold_usd: 250, monthly_credit_usd: 15, credit_request_limit: 100, discount_bps: 1500 },
+  { id: "access", name: "Access", threshold_usd: 25, monthly_credit_usd: 1, credit_request_limit: 25, discount_bps: 500, priority_weight: 10, privatepay_fee_discount_bps: 500, seller_listing_discount_bps: 2500 },
+  { id: "plus", name: "Plus", threshold_usd: 100, monthly_credit_usd: 5, credit_request_limit: 50, discount_bps: 1000, priority_weight: 20, privatepay_fee_discount_bps: 1000, seller_listing_discount_bps: 5000 },
+  { id: "pro", name: "Pro", threshold_usd: 250, monthly_credit_usd: 15, credit_request_limit: 100, discount_bps: 1500, priority_weight: 30, privatepay_fee_discount_bps: 1500, seller_listing_discount_bps: 10000 },
 ]);
 export const PDAO_HOLDER_POLICY_VERSION = "pdao-holder-rewards-v1";
 export const PDAO_SNAPSHOT_INTERVAL_MS = 5 * 60 * 1000;
@@ -25,35 +29,105 @@ const base58Pattern = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/;
 const challengeId = (nonce) => `pdao_access_challenge_${nonce}`;
 const entitlementId = (wallet) => `pdao_access_entitlement_${wallet}`;
 
+export function pdaoPromotionStatus(at = new Date()) {
+  const observedAt = at instanceof Date ? at.getTime() : Date.parse(at);
+  const start = Date.parse(PDAO_PROMOTION_START_AT);
+  const end = Date.parse(PDAO_PROMOTION_END_AT);
+  return {
+    id: "pdao-holder-promotion-2026-10",
+    active: Number.isFinite(observedAt) && observedAt >= start && observedAt < end,
+    starts_at: PDAO_PROMOTION_START_AT,
+    ends_at: PDAO_PROMOTION_END_AT,
+    display_ends_on: "2026-11-19",
+    qualification_mode: "current_balance_at_each_service_execution",
+    qualification_days: 0,
+    threshold_usd: PDAO_HOLDER_THRESHOLD_USD,
+    eligible_service_max_usd: PDAO_ELIGIBLE_SERVICE_MAX_USD,
+    payment_required: false,
+    wallet_link_date_does_not_extend_promotion: true,
+  };
+}
+
 export function pdaoTierForValue(valueUsd) {
   const value = Number(valueUsd);
   return [...PDAO_HOLDER_TIERS].reverse().find((tier) => value >= tier.threshold_usd) || null;
 }
 
-export function publicPdaoBenefitPolicy(qualificationDays = 0) {
+export function publicPdaoBenefitPolicy(_qualificationDays = 0, at = new Date()) {
+  const promotion = pdaoPromotionStatus(at);
   return {
     version: PDAO_HOLDER_POLICY_VERSION,
     token_mint: PDAO_TOKEN_MINT,
-    utility: ["commercial_payment_activation", "agent_exchange_holder_access", "governance_coordination"],
+    utility: [
+      "commercial_payment_activation",
+      "agent_exchange_holder_access",
+      "privatepay_fee_credits",
+      "eligible_service_credits",
+      "tiered_service_discounts",
+      "agent_spending_benefits",
+      "marketplace_seller_benefits",
+      "holder_reputation",
+      "governance_coordination",
+    ],
     payment_gate_url: "https://privatedao.org/payment-gate",
     token_surface_url: "https://privatedao.org/token",
     ordinary_agent_exchange_payment_asset: "USDC",
     developer_allocation: PDAO_DEVELOPER_ALLOCATION,
     developer_lock_until: PDAO_DEVELOPER_LOCK_UNTIL,
     developer_lock_contract: PDAO_DEVELOPER_LOCK_CONTRACT,
+    // The platform-wide promotion is fixed by server dates. Connecting a
+    // wallet never starts a personal 30-day window.
     duration_days: 30,
-    qualification_days: qualificationDays,
-    qualification_mode: qualificationDays > 0 ? "historical_balance_required" : "current_balance_pilot",
+    qualification_days: 0,
+    qualification_mode: "current_balance_at_each_service_execution",
+    promotion,
+    promotion_note: "The fixed platform-wide promotion is separate from the seven-day Holder Rewards qualification window.",
+    holder_rewards: {
+      qualification_days: PDAO_HOLDER_REWARD_QUALIFICATION_DAYS,
+      qualification_mode: "historical_balance_required",
+      window_days: 30,
+      purpose: "monthly credits and non_stackable_discounts",
+      starts_after_promotion: true,
+    },
     eligible_service_max_usd: PDAO_ELIGIBLE_SERVICE_MAX_USD,
     credits_apply_before_discounts: true,
     credits_expire_each_cycle: true,
     discounts_stackable: false,
     excluded: ["high-cost services", "premium services", "third-party seller services"],
-    tiers: PDAO_HOLDER_TIERS.map((tier) => ({ ...tier, discount_percent: tier.discount_bps / 100 })),
+    tiers: PDAO_HOLDER_TIERS.map((tier) => ({
+      ...tier,
+      discount_percent: tier.discount_bps / 100,
+      privatepay_fee_discount_percent: tier.privatepay_fee_discount_bps / 100,
+      seller_listing_discount_percent: tier.seller_listing_discount_bps / 100,
+    })),
   };
 }
 
-export function calculatePdaoBenefit({ tier, servicePrice, creditRemainingUsd, creditRequestsUsed }) {
+export function pdaoOperationalBenefits(tier) {
+  return {
+    priority_weight: Number(tier?.priority_weight || 0),
+    priority_class: tier ? `holder_${tier.id}` : "standard",
+    privatepay_fee_discount_bps: Number(tier?.privatepay_fee_discount_bps || 0),
+    seller_listing_discount_bps: Number(tier?.seller_listing_discount_bps || 0),
+  };
+}
+
+export function calculatePdaoSellerListingBenefit({ tier, listingFee }) {
+  const fee = Math.max(0, Number(listingFee || 0));
+  const operational = pdaoOperationalBenefits(tier);
+  const discount = Number((fee * operational.seller_listing_discount_bps / 10000).toFixed(6));
+  return {
+    eligible: Boolean(tier && fee > 0),
+    tier_id: tier?.id || null,
+    original_fee_usd: fee,
+    discount_bps: operational.seller_listing_discount_bps,
+    discount_usd: discount,
+    charge_usd: Number(Math.max(0, fee - discount).toFixed(6)),
+    ...operational,
+  };
+}
+
+export function calculatePdaoBenefit({ tier, servicePrice, creditRemainingUsd, creditRequestsUsed, promotionActive = false }) {
   const price = Number(servicePrice);
   const remaining = Math.max(0, Number(creditRemainingUsd || 0));
   const requestsUsed = Math.max(0, Number(creditRequestsUsed || 0));
@@ -67,6 +141,19 @@ export function calculatePdaoBenefit({ tier, servicePrice, creditRemainingUsd, c
     discount_percent: 0,
     charge_usd: Number.isFinite(price) ? Number(price.toFixed(6)) : 0,
     fully_covered: false,
+    ...pdaoOperationalBenefits(tier),
+  };
+  if (promotionActive) return {
+    eligible: true,
+    reason: "eligible_fixed_platform_promotion",
+    tier_id: tier.id,
+    credit_applied_usd: 0,
+    discount_bps: 0,
+    discount_percent: 0,
+    charge_usd: 0,
+    fully_covered: true,
+    promotion_id: "pdao-holder-promotion-2026-10",
+    ...pdaoOperationalBenefits(tier),
   };
   const creditAvailable = requestsUsed < tier.credit_request_limit;
   const creditApplied = creditAvailable ? Math.min(price, remaining) : 0;
@@ -81,6 +168,7 @@ export function calculatePdaoBenefit({ tier, servicePrice, creditRemainingUsd, c
     discount_percent: tier.discount_bps / 100,
     charge_usd: charge,
     fully_covered: charge <= 0,
+    ...pdaoOperationalBenefits(tier),
   };
 }
 
@@ -94,11 +182,17 @@ function hashInput(input) {
   return JSON.stringify(input ?? {});
 }
 
-async function enforceHolderUsageLimits(storage, config, wallet) {
+async function enforceHolderUsageLimits(storage, config, wallet, tier = null) {
+  const multiplier = tier?.id === "pro" ? 3 : tier?.id === "plus" ? 2 : 1;
+  const limits = {
+    per_minute: Math.floor(config.pdaoHolderPerMinuteLimit * multiplier),
+    daily: Math.floor(config.pdaoHolderDailyLimit * multiplier),
+    monthly: Math.floor(config.pdaoHolderMonthlyLimit * multiplier),
+  };
   const buckets = [
-    [`pdao-holder-minute:${wallet}`, config.pdaoHolderPerMinuteLimit, 60 * 1000, "per-minute"],
-    [`pdao-holder-day:${wallet}`, config.pdaoHolderDailyLimit, 24 * 60 * 60 * 1000, "daily"],
-    [`pdao-holder-month:${wallet}`, config.pdaoHolderMonthlyLimit, PDAO_HOLDER_WINDOW_MS, "monthly"],
+    [`pdao-holder-minute:${wallet}`, limits.per_minute, 60 * 1000, "per-minute"],
+    [`pdao-holder-day:${wallet}`, limits.daily, 24 * 60 * 60 * 1000, "daily"],
+    [`pdao-holder-month:${wallet}`, limits.monthly, PDAO_HOLDER_WINDOW_MS, "monthly"],
   ];
   for (const [key, limit, windowMs, label] of buckets) {
     const decision = await storage.consumeRateLimit(key, limit, windowMs);
@@ -109,9 +203,8 @@ async function enforceHolderUsageLimits(storage, config, wallet) {
     }
   }
   return {
-    per_minute: config.pdaoHolderPerMinuteLimit,
-    daily: config.pdaoHolderDailyLimit,
-    monthly: config.pdaoHolderMonthlyLimit,
+    ...limits,
+    multiplier,
   };
 }
 
@@ -129,11 +222,12 @@ export function createPdaoChallengeMessage({ domain, wallet, serviceId, inputHas
   ].join("\n");
 }
 
-export async function issuePdaoChallenge({ config, storage, wallet, serviceId, input }) {
+export async function issuePdaoChallenge({ config, storage, wallet, serviceId, input, now = new Date() }) {
   if (config.pdaoMint !== PDAO_TOKEN_MINT) throw Object.assign(new Error("PDAO holder access token configuration mismatch"), { statusCode: 503 });
   const normalizedWallet = asWallet(wallet);
   const inputHash = hashInput(input);
-  const expiresAt = new Date(Date.now() + challengeTtlMs).toISOString();
+  const currentTime = now instanceof Date ? now : new Date(now);
+  const expiresAt = new Date(currentTime.getTime() + challengeTtlMs).toISOString();
   const nonce = randomUUID();
   const message = createPdaoChallengeMessage({
     domain: config.domain,
@@ -151,7 +245,7 @@ export async function issuePdaoChallenge({ config, storage, wallet, serviceId, i
     input_hash: inputHash,
     message,
     expires_at: expiresAt,
-    created_at: new Date().toISOString(),
+    created_at: currentTime.toISOString(),
   }, true);
   return {
     purpose: PDAO_HOLDER_PURPOSE,
@@ -162,6 +256,7 @@ export async function issuePdaoChallenge({ config, storage, wallet, serviceId, i
     token_mint: config.pdaoMint,
     threshold_usd: PDAO_HOLDER_THRESHOLD_USD,
     duration_days: 30,
+    promotion: pdaoPromotionStatus(currentTime),
   };
 }
 
@@ -310,7 +405,7 @@ export async function runPdaoHolderBalanceSnapshots({ config, storage, limit = 1
   return result;
 }
 
-export async function verifyPdaoHolderAccess({ config, storage, access, serviceId, input, servicePrice = null }) {
+export async function verifyPdaoHolderAccess({ config, storage, access, serviceId, input, servicePrice = null, now = new Date() }) {
   if (!access || typeof access !== "object") return null;
   if (config.pdaoMint !== PDAO_TOKEN_MINT) throw Object.assign(new Error("PDAO holder access token configuration mismatch"), { statusCode: 503 });
   const wallet = asWallet(access.wallet);
@@ -319,7 +414,8 @@ export async function verifyPdaoHolderAccess({ config, storage, access, serviceI
   const challenge = await storage.get("Registry", challengeId(nonce));
   if (!challenge || challenge.kind !== "pdao_access_challenge" || challenge.wallet !== wallet || challenge.service_id !== serviceId || challenge.input_hash !== hashInput(input))
     throw Object.assign(new Error("token-holder access challenge is invalid or expired"), { statusCode: 401 });
-  if (Date.parse(challenge.expires_at) <= Date.now()) throw Object.assign(new Error("token-holder access challenge is expired"), { statusCode: 401 });
+  const currentTime = now instanceof Date ? now : new Date(now);
+  if (Date.parse(challenge.expires_at) <= currentTime.getTime()) throw Object.assign(new Error("token-holder access challenge is expired"), { statusCode: 401 });
   if (String(access.message || "") !== challenge.message) throw Object.assign(new Error("signed access message does not match the challenge"), { statusCode: 401 });
   try {
     if (!verifySignature(wallet, challenge.message, access.signature)) throw new Error("signature verification failed");
@@ -331,14 +427,16 @@ export async function verifyPdaoHolderAccess({ config, storage, access, serviceI
   const valueUsd = balance.amount * price.price_usd;
   if (!Number.isFinite(valueUsd) || valueUsd < PDAO_HOLDER_THRESHOLD_USD)
     throw Object.assign(new Error("wallet does not currently hold the required PDAO token value"), { statusCode: 403 });
-  await recordPdaoBalanceSnapshot({ config, storage, wallet, balance, price });
-  const historical = await pdaoHistoricalQualification({ config, storage, wallet });
+  await recordPdaoBalanceSnapshot({ config, storage, wallet, balance, price, observedAt: currentTime });
+  const promotion = pdaoPromotionStatus(currentTime);
+  const historical = promotion.active
+    ? { qualified: true, mode: "current_balance_at_each_service_execution", snapshot_count: 0, required_days: 0 }
+    : await pdaoHistoricalQualification({ config, storage, wallet, now: currentTime });
   if (!historical.qualified) {
     const error = Object.assign(new Error(`PDAO holder access requires ${historical.required_days} consecutive days of qualifying balance; ${historical.snapshot_count} verified snapshots are currently available`), { statusCode: 403 });
     error.pdaoQualification = historical;
     throw error;
   }
-  const usageLimits = await enforceHolderUsageLimits(storage, config, wallet);
   try {
     await storage.claim("Registry", challenge.id, {
       claim_started_at: new Date().toISOString(),
@@ -352,18 +450,21 @@ export async function verifyPdaoHolderAccess({ config, storage, access, serviceI
     throw Object.assign(new Error("token-holder access challenge was already used"), { statusCode: 409 });
   }
   const existing = await storage.get("Registry", entitlementId(wallet));
-  const nowIso = new Date().toISOString();
-  const active = existing?.active_until && Date.parse(existing.active_until) > Date.now();
-  const cycleStartedAt = active ? existing.cycle_started_at : nowIso;
-  const activeUntil = active ? existing.active_until : new Date(Date.now() + PDAO_HOLDER_WINDOW_MS).toISOString();
+  const nowIso = currentTime.toISOString();
+  const active = promotion.active || (existing?.active_until && Date.parse(existing.active_until) > currentTime.getTime());
+  const cycleStartedAt = active ? (existing?.cycle_started_at || promotion.starts_at || nowIso) : nowIso;
+  const activeUntil = promotion.active
+    ? PDAO_PROMOTION_END_AT
+    : active ? existing.active_until : new Date(currentTime.getTime() + PDAO_HOLDER_WINDOW_MS).toISOString();
   const tier = pdaoTierForValue(valueUsd);
+  const usageLimits = await enforceHolderUsageLimits(storage, config, wallet, tier);
   const creditRemainingUsd = active && existing?.tier_id === tier?.id
     ? Number(existing.credit_remaining_usd || 0)
     : Number(tier?.monthly_credit_usd || 0);
   const creditRequestsUsed = active && existing?.tier_id === tier?.id
     ? Number(existing.credit_requests_used || 0)
     : 0;
-  const benefit = calculatePdaoBenefit({ tier, servicePrice, creditRemainingUsd, creditRequestsUsed });
+  const benefit = calculatePdaoBenefit({ tier, servicePrice, creditRemainingUsd, creditRequestsUsed, promotionActive: promotion.active });
   const entitlement = {
     id: entitlementId(wallet),
     kind: "pdao_holder_entitlement",
@@ -381,8 +482,10 @@ export async function verifyPdaoHolderAccess({ config, storage, access, serviceI
     credit_requests_used: creditRequestsUsed,
     credit_request_limit: tier?.credit_request_limit || 0,
     discount_bps: tier?.discount_bps || 0,
-    qualification_days: config.pdaoHolderQualificationDays,
+    ...pdaoOperationalBenefits(tier),
+    qualification_days: promotion.active ? 0 : config.pdaoHolderQualificationDays,
     qualification_mode: historical.mode,
+    promotion_id: promotion.active ? promotion.id : null,
     qualification_snapshot_count: historical.snapshot_count,
     qualification_first_snapshot_at: historical.first_snapshot_at || null,
     qualification_last_snapshot_at: historical.last_snapshot_at || null,
@@ -407,6 +510,7 @@ export async function verifyPdaoHolderAccess({ config, storage, access, serviceI
     credit_request_limit: tier?.credit_request_limit || 0,
     discount_bps: tier?.discount_bps || 0,
     discount_percent: tier ? tier.discount_bps / 100 : 0,
+    ...pdaoOperationalBenefits(tier),
     balance_tokens: balance.amount,
     price_usd: price.price_usd,
     value_usd: valueUsd,
