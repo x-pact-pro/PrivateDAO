@@ -136,8 +136,8 @@ export const runtimeCatalog = {
               "entrypoint": "kernel://verification.blind.prove",
               "method": null,
               "note": "Zcash Testnet blind verification runs through the Kernel policy provider; no Zcash settlement or wallet movement is implied.",
-              "evidenceStatus": "testnet_ready",
-              "evidence": "runtime-only",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
               "supportsExecution": true,
               "supportsProof": true,
               "supportsReceipt": true,
@@ -145,7 +145,7 @@ export const runtimeCatalog = {
               "supportedAssets": [
                 "TAZ"
               ],
-              "provider": "privatedao-kernel-policy"
+              "provider": "zcash-testnet-zallet"
             },
             {
               "network": "stellar-testnet",
@@ -206,14 +206,14 @@ export const runtimeCatalog = {
               "note": "This network uses the Kernel policy verification path; no contract write or settlement claim is made before funded E2E evidence.",
               "evidenceStatus": "testnet_ready",
               "evidence": "runtime-only",
-              "supportsExecution": true,
-              "supportsProof": true,
-              "supportsReceipt": true,
-              "supportsReconciliation": true,
+              "supportsExecution": false,
+              "supportsProof": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
               "supportedAssets": [
                 "USDC"
               ],
-              "provider": "privatedao-kernel-policy"
+              "provider": "privatedao-hypercore-native"
             }
           ],
           "networkAvailability": [
@@ -476,16 +476,16 @@ export const runtimeCatalog = {
               "chainId": null,
               "declared": true,
               "mode": "kernel-gateway",
-              "evidenceStatus": "testnet_ready",
-              "evidence": "runtime-only",
-              "executable": false,
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "executable": true,
               "supportsProof": true,
               "supportsReceipt": true,
               "supportsReconciliation": true,
               "supportedAssets": [
                 "TAZ"
               ],
-              "provider": "privatedao-kernel-policy"
+              "provider": "zcash-testnet-zallet"
             },
             {
               "network": "hyperliquid-testnet",
@@ -533,13 +533,13 @@ export const runtimeCatalog = {
               "evidenceStatus": "testnet_ready",
               "evidence": "runtime-only",
               "executable": false,
-              "supportsProof": true,
-              "supportsReceipt": true,
-              "supportsReconciliation": true,
+              "supportsProof": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
               "supportedAssets": [
                 "USDC"
               ],
-              "provider": "privatedao-kernel-policy"
+              "provider": "privatedao-hypercore-native"
             }
           ]
         }
@@ -678,8 +678,8 @@ export const runtimeCatalog = {
               "entrypoint": "kernel://verification.record.create",
               "method": null,
               "note": "Zcash Testnet record creation is a Kernel verification artifact; the source record remains off-chain and no Zcash transaction is implied.",
-              "evidenceStatus": "testnet_ready",
-              "evidence": "runtime-only",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
               "supportsExecution": true,
               "supportsProof": true,
               "supportsReceipt": true,
@@ -687,7 +687,7 @@ export const runtimeCatalog = {
               "supportedAssets": [
                 "TAZ"
               ],
-              "provider": "privatedao-kernel-policy"
+              "provider": "zcash-testnet-zallet"
             },
             {
               "network": "stellar-testnet",
@@ -748,14 +748,14 @@ export const runtimeCatalog = {
               "note": "Record creation is routed through the Kernel policy provider; the source record remains off-chain until network E2E is verified.",
               "evidenceStatus": "testnet_ready",
               "evidence": "runtime-only",
-              "supportsExecution": true,
-              "supportsProof": true,
-              "supportsReceipt": true,
-              "supportsReconciliation": true,
+              "supportsExecution": false,
+              "supportsProof": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
               "supportedAssets": [
                 "USDC"
               ],
-              "provider": "privatedao-kernel-policy"
+              "provider": "privatedao-hypercore-native"
             }
           ],
           "networkAvailability": [
@@ -1018,16 +1018,16 @@ export const runtimeCatalog = {
               "chainId": null,
               "declared": true,
               "mode": "kernel-gateway",
-              "evidenceStatus": "testnet_ready",
-              "evidence": "runtime-only",
-              "executable": false,
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "executable": true,
               "supportsProof": true,
               "supportsReceipt": true,
               "supportsReconciliation": true,
               "supportedAssets": [
                 "TAZ"
               ],
-              "provider": "privatedao-kernel-policy"
+              "provider": "zcash-testnet-zallet"
             },
             {
               "network": "hyperliquid-testnet",
@@ -1075,13 +1075,13 @@ export const runtimeCatalog = {
               "evidenceStatus": "testnet_ready",
               "evidence": "runtime-only",
               "executable": false,
-              "supportsProof": true,
-              "supportsReceipt": true,
-              "supportsReconciliation": true,
+              "supportsProof": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
               "supportedAssets": [
                 "USDC"
               ],
-              "provider": "privatedao-kernel-policy"
+              "provider": "privatedao-hypercore-native"
             }
           ]
         },
@@ -1200,8 +1200,8 @@ export const runtimeCatalog = {
               "entrypoint": "kernel://verification.record.verify",
               "method": null,
               "note": "Zcash Testnet record verification is performed by the Kernel without exposing source data or requiring a wallet transaction.",
-              "evidenceStatus": "testnet_ready",
-              "evidence": "runtime-only",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
               "supportsExecution": true,
               "supportsProof": true,
               "supportsReceipt": true,
@@ -1209,7 +1209,7 @@ export const runtimeCatalog = {
               "supportedAssets": [
                 "TAZ"
               ],
-              "provider": "privatedao-kernel-policy"
+              "provider": "zcash-testnet-zallet"
             },
             {
               "network": "stellar-testnet",
@@ -1270,14 +1270,14 @@ export const runtimeCatalog = {
               "note": "Record verification is routed through the Kernel without exposing source data or claiming a chain anchor.",
               "evidenceStatus": "testnet_ready",
               "evidence": "runtime-only",
-              "supportsExecution": true,
-              "supportsProof": true,
-              "supportsReceipt": true,
-              "supportsReconciliation": true,
+              "supportsExecution": false,
+              "supportsProof": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
               "supportedAssets": [
                 "USDC"
               ],
-              "provider": "privatedao-kernel-policy"
+              "provider": "privatedao-hypercore-native"
             }
           ],
           "networkAvailability": [
@@ -1540,16 +1540,16 @@ export const runtimeCatalog = {
               "chainId": null,
               "declared": true,
               "mode": "kernel-gateway",
-              "evidenceStatus": "testnet_ready",
-              "evidence": "runtime-only",
-              "executable": false,
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "executable": true,
               "supportsProof": true,
               "supportsReceipt": true,
               "supportsReconciliation": true,
               "supportedAssets": [
                 "TAZ"
               ],
-              "provider": "privatedao-kernel-policy"
+              "provider": "zcash-testnet-zallet"
             },
             {
               "network": "hyperliquid-testnet",
@@ -1597,13 +1597,13 @@ export const runtimeCatalog = {
               "evidenceStatus": "testnet_ready",
               "evidence": "runtime-only",
               "executable": false,
-              "supportsProof": true,
-              "supportsReceipt": true,
-              "supportsReconciliation": true,
+              "supportsProof": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
               "supportedAssets": [
                 "USDC"
               ],
-              "provider": "privatedao-kernel-policy"
+              "provider": "privatedao-hypercore-native"
             }
           ]
         }
@@ -1742,8 +1742,8 @@ export const runtimeCatalog = {
               "entrypoint": "kernel://payroll.calculate",
               "method": null,
               "note": "Zcash Testnet payroll calculation is Kernel-only until the Zallet/Zebra compatibility gate enables the network.",
-              "evidenceStatus": "testnet_ready",
-              "evidence": "runtime-only",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
               "supportsExecution": true,
               "supportsProof": false,
               "supportsReceipt": true,
@@ -1751,7 +1751,7 @@ export const runtimeCatalog = {
               "supportedAssets": [
                 "TAZ"
               ],
-              "provider": "privatedao-kernel-policy"
+              "provider": "zcash-testnet-zallet"
             },
             {
               "network": "stellar-testnet",
@@ -1795,10 +1795,10 @@ export const runtimeCatalog = {
               "note": "Payroll calculation is network-selectable through the Kernel; private settlement remains separately gated.",
               "evidenceStatus": "testnet_ready",
               "evidence": "runtime-only",
-              "supportsExecution": true,
+              "supportsExecution": false,
               "supportsProof": false,
-              "supportsReceipt": true,
-              "supportsReconciliation": true,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
               "supportedAssets": [
                 "HYPE"
               ],
@@ -1812,14 +1812,14 @@ export const runtimeCatalog = {
               "note": "Payroll calculation is network-selectable through the Kernel; private settlement remains separately gated.",
               "evidenceStatus": "testnet_ready",
               "evidence": "runtime-only",
-              "supportsExecution": true,
+              "supportsExecution": false,
               "supportsProof": false,
-              "supportsReceipt": true,
-              "supportsReconciliation": true,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
               "supportedAssets": [
                 "USDC"
               ],
-              "provider": "privatedao-kernel-policy"
+              "provider": "privatedao-hypercore-native"
             }
           ],
           "networkAvailability": [
@@ -2082,16 +2082,16 @@ export const runtimeCatalog = {
               "chainId": null,
               "declared": true,
               "mode": "kernel-gateway",
-              "evidenceStatus": "testnet_ready",
-              "evidence": "runtime-only",
-              "executable": false,
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "executable": true,
               "supportsProof": false,
               "supportsReceipt": true,
               "supportsReconciliation": true,
               "supportedAssets": [
                 "TAZ"
               ],
-              "provider": "privatedao-kernel-policy"
+              "provider": "zcash-testnet-zallet"
             },
             {
               "network": "hyperliquid-testnet",
@@ -2104,8 +2104,8 @@ export const runtimeCatalog = {
               "evidence": "runtime-only",
               "executable": false,
               "supportsProof": false,
-              "supportsReceipt": true,
-              "supportsReconciliation": true,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
               "supportedAssets": [
                 "HYPE"
               ],
@@ -2140,12 +2140,12 @@ export const runtimeCatalog = {
               "evidence": "runtime-only",
               "executable": false,
               "supportsProof": false,
-              "supportsReceipt": true,
-              "supportsReconciliation": true,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
               "supportedAssets": [
                 "USDC"
               ],
-              "provider": "privatedao-kernel-policy"
+              "provider": "privatedao-hypercore-native"
             }
           ]
         },
@@ -2264,8 +2264,8 @@ export const runtimeCatalog = {
               "entrypoint": "kernel://payroll.approve",
               "method": null,
               "note": "Zcash Testnet Maker/Checker approval remains a Kernel policy gate before settlement.",
-              "evidenceStatus": "testnet_ready",
-              "evidence": "runtime-only",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
               "supportsExecution": true,
               "supportsProof": false,
               "supportsReceipt": true,
@@ -2273,7 +2273,7 @@ export const runtimeCatalog = {
               "supportedAssets": [
                 "TAZ"
               ],
-              "provider": "privatedao-kernel-policy"
+              "provider": "zcash-testnet-zallet"
             },
             {
               "network": "stellar-testnet",
@@ -2317,10 +2317,10 @@ export const runtimeCatalog = {
               "note": "Payroll Maker/Checker approval is network-selectable through the Kernel; settlement remains separately gated.",
               "evidenceStatus": "testnet_ready",
               "evidence": "runtime-only",
-              "supportsExecution": true,
+              "supportsExecution": false,
               "supportsProof": false,
-              "supportsReceipt": true,
-              "supportsReconciliation": true,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
               "supportedAssets": [
                 "HYPE"
               ],
@@ -2334,14 +2334,14 @@ export const runtimeCatalog = {
               "note": "Payroll Maker/Checker approval is network-selectable through the Kernel; settlement remains separately gated.",
               "evidenceStatus": "testnet_ready",
               "evidence": "runtime-only",
-              "supportsExecution": true,
+              "supportsExecution": false,
               "supportsProof": false,
-              "supportsReceipt": true,
-              "supportsReconciliation": true,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
               "supportedAssets": [
                 "USDC"
               ],
-              "provider": "privatedao-kernel-policy"
+              "provider": "privatedao-hypercore-native"
             }
           ],
           "networkAvailability": [
@@ -2604,16 +2604,16 @@ export const runtimeCatalog = {
               "chainId": null,
               "declared": true,
               "mode": "kernel-gateway",
-              "evidenceStatus": "testnet_ready",
-              "evidence": "runtime-only",
-              "executable": false,
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "executable": true,
               "supportsProof": false,
               "supportsReceipt": true,
               "supportsReconciliation": true,
               "supportedAssets": [
                 "TAZ"
               ],
-              "provider": "privatedao-kernel-policy"
+              "provider": "zcash-testnet-zallet"
             },
             {
               "network": "hyperliquid-testnet",
@@ -2626,8 +2626,8 @@ export const runtimeCatalog = {
               "evidence": "runtime-only",
               "executable": false,
               "supportsProof": false,
-              "supportsReceipt": true,
-              "supportsReconciliation": true,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
               "supportedAssets": [
                 "HYPE"
               ],
@@ -2662,12 +2662,12 @@ export const runtimeCatalog = {
               "evidence": "runtime-only",
               "executable": false,
               "supportsProof": false,
-              "supportsReceipt": true,
-              "supportsReconciliation": true,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
               "supportedAssets": [
                 "USDC"
               ],
-              "provider": "privatedao-kernel-policy"
+              "provider": "privatedao-hypercore-native"
             }
           ]
         },
@@ -2772,7 +2772,7 @@ export const runtimeCatalog = {
               "evidenceStatus": "testnet_verified",
               "evidence": "testnet-e2e",
               "supportsExecution": true,
-              "supportsProof": false,
+              "supportsProof": true,
               "supportsReceipt": true,
               "supportsReconciliation": true,
               "supportedAssets": [
@@ -3078,7 +3078,7 @@ export const runtimeCatalog = {
               "evidenceStatus": "testnet_verified",
               "evidence": "testnet-e2e",
               "executable": true,
-              "supportsProof": false,
+              "supportsProof": true,
               "supportsReceipt": true,
               "supportsReconciliation": true,
               "supportedAssets": [
@@ -3277,8 +3277,8 @@ export const runtimeCatalog = {
               "entrypoint": "kernel://treasury.policy.check",
               "method": null,
               "note": "Zcash Testnet Treasury policy checks run in the Kernel; this binding does not claim Zcash treasury settlement.",
-              "evidenceStatus": "testnet_ready",
-              "evidence": "runtime-only",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
               "supportsExecution": true,
               "supportsProof": false,
               "supportsReceipt": true,
@@ -3286,7 +3286,7 @@ export const runtimeCatalog = {
               "supportedAssets": [
                 "TAZ"
               ],
-              "provider": "privatedao-kernel-policy"
+              "provider": "zcash-testnet-zallet"
             },
             {
               "network": "stellar-testnet",
@@ -3330,10 +3330,10 @@ export const runtimeCatalog = {
               "note": "Treasury policy checks run through the Kernel; no asset movement or settlement is implied.",
               "evidenceStatus": "testnet_ready",
               "evidence": "runtime-only",
-              "supportsExecution": true,
+              "supportsExecution": false,
               "supportsProof": false,
-              "supportsReceipt": true,
-              "supportsReconciliation": true,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
               "supportedAssets": [
                 "HYPE"
               ],
@@ -3347,14 +3347,14 @@ export const runtimeCatalog = {
               "note": "Treasury policy checks run through the Kernel; no asset movement or settlement is implied.",
               "evidenceStatus": "testnet_ready",
               "evidence": "runtime-only",
-              "supportsExecution": true,
+              "supportsExecution": false,
               "supportsProof": false,
-              "supportsReceipt": true,
-              "supportsReconciliation": true,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
               "supportedAssets": [
                 "USDC"
               ],
-              "provider": "privatedao-kernel-policy"
+              "provider": "privatedao-hypercore-native"
             }
           ],
           "networkAvailability": [
@@ -3617,16 +3617,16 @@ export const runtimeCatalog = {
               "chainId": null,
               "declared": true,
               "mode": "kernel-gateway",
-              "evidenceStatus": "testnet_ready",
-              "evidence": "runtime-only",
-              "executable": false,
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "executable": true,
               "supportsProof": false,
               "supportsReceipt": true,
               "supportsReconciliation": true,
               "supportedAssets": [
                 "TAZ"
               ],
-              "provider": "privatedao-kernel-policy"
+              "provider": "zcash-testnet-zallet"
             },
             {
               "network": "hyperliquid-testnet",
@@ -3639,8 +3639,8 @@ export const runtimeCatalog = {
               "evidence": "runtime-only",
               "executable": false,
               "supportsProof": false,
-              "supportsReceipt": true,
-              "supportsReconciliation": true,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
               "supportedAssets": [
                 "HYPE"
               ],
@@ -3675,12 +3675,12 @@ export const runtimeCatalog = {
               "evidence": "runtime-only",
               "executable": false,
               "supportsProof": false,
-              "supportsReceipt": true,
-              "supportsReconciliation": true,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
               "supportedAssets": [
                 "USDC"
               ],
-              "provider": "privatedao-kernel-policy"
+              "provider": "privatedao-hypercore-native"
             }
           ]
         }
@@ -3819,8 +3819,8 @@ export const runtimeCatalog = {
               "entrypoint": "kernel://governance.proposal.execute",
               "method": null,
               "note": "Zcash Testnet governance is a Kernel policy approval with an auditable receipt; it does not claim Zcash on-chain governance settlement.",
-              "evidenceStatus": "testnet_ready",
-              "evidence": "runtime-only",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
               "supportsExecution": true,
               "supportsProof": true,
               "supportsReceipt": true,
@@ -3828,7 +3828,7 @@ export const runtimeCatalog = {
               "supportedAssets": [
                 "TAZ"
               ],
-              "provider": "privatedao-kernel-policy"
+              "provider": "zcash-testnet-zallet"
             },
             {
               "network": "stellar-testnet",
@@ -3872,10 +3872,10 @@ export const runtimeCatalog = {
               "note": "Governance authority approval runs through the Kernel policy provider; on-chain execution awaits funded E2E evidence.",
               "evidenceStatus": "testnet_ready",
               "evidence": "runtime-only",
-              "supportsExecution": true,
-              "supportsProof": true,
-              "supportsReceipt": true,
-              "supportsReconciliation": true,
+              "supportsExecution": false,
+              "supportsProof": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
               "supportedAssets": [
                 "HYPE"
               ],
@@ -3889,14 +3889,14 @@ export const runtimeCatalog = {
               "note": "Governance authority approval runs through the Kernel policy provider; on-chain execution awaits funded E2E evidence.",
               "evidenceStatus": "testnet_ready",
               "evidence": "runtime-only",
-              "supportsExecution": true,
-              "supportsProof": true,
-              "supportsReceipt": true,
-              "supportsReconciliation": true,
+              "supportsExecution": false,
+              "supportsProof": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
               "supportedAssets": [
                 "USDC"
               ],
-              "provider": "privatedao-kernel-policy"
+              "provider": "privatedao-hypercore-native"
             }
           ],
           "networkAvailability": [
@@ -4159,16 +4159,16 @@ export const runtimeCatalog = {
               "chainId": null,
               "declared": true,
               "mode": "kernel-gateway",
-              "evidenceStatus": "testnet_ready",
-              "evidence": "runtime-only",
-              "executable": false,
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "executable": true,
               "supportsProof": true,
               "supportsReceipt": true,
               "supportsReconciliation": true,
               "supportedAssets": [
                 "TAZ"
               ],
-              "provider": "privatedao-kernel-policy"
+              "provider": "zcash-testnet-zallet"
             },
             {
               "network": "hyperliquid-testnet",
@@ -4180,9 +4180,9 @@ export const runtimeCatalog = {
               "evidenceStatus": "testnet_ready",
               "evidence": "runtime-only",
               "executable": false,
-              "supportsProof": true,
-              "supportsReceipt": true,
-              "supportsReconciliation": true,
+              "supportsProof": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
               "supportedAssets": [
                 "HYPE"
               ],
@@ -4216,13 +4216,13 @@ export const runtimeCatalog = {
               "evidenceStatus": "testnet_ready",
               "evidence": "runtime-only",
               "executable": false,
-              "supportsProof": true,
-              "supportsReceipt": true,
-              "supportsReconciliation": true,
+              "supportsProof": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
               "supportedAssets": [
                 "USDC"
               ],
-              "provider": "privatedao-kernel-policy"
+              "provider": "privatedao-hypercore-native"
             }
           ]
         }
@@ -4361,8 +4361,8 @@ export const runtimeCatalog = {
               "entrypoint": "kernel://auction.bid.commit",
               "method": null,
               "note": "Zcash Testnet sealed-bid commitments are computed in the Kernel; this binding does not claim on-chain Zcash auction settlement.",
-              "evidenceStatus": "testnet_ready",
-              "evidence": "runtime-only",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
               "supportsExecution": true,
               "supportsProof": true,
               "supportsReceipt": true,
@@ -4370,7 +4370,7 @@ export const runtimeCatalog = {
               "supportedAssets": [
                 "TAZ"
               ],
-              "provider": "privatedao-kernel-policy"
+              "provider": "zcash-testnet-zallet"
             },
             {
               "network": "stellar-testnet",
@@ -4414,10 +4414,10 @@ export const runtimeCatalog = {
               "note": "Sealed-bid commitment runs through the Kernel; financial bid settlement is not claimed.",
               "evidenceStatus": "testnet_ready",
               "evidence": "runtime-only",
-              "supportsExecution": true,
-              "supportsProof": true,
-              "supportsReceipt": true,
-              "supportsReconciliation": true,
+              "supportsExecution": false,
+              "supportsProof": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
               "supportedAssets": [
                 "HYPE"
               ],
@@ -4431,14 +4431,14 @@ export const runtimeCatalog = {
               "note": "Sealed-bid commitment runs through the Kernel; financial bid settlement is not claimed.",
               "evidenceStatus": "testnet_ready",
               "evidence": "runtime-only",
-              "supportsExecution": true,
-              "supportsProof": true,
-              "supportsReceipt": true,
-              "supportsReconciliation": true,
+              "supportsExecution": false,
+              "supportsProof": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
               "supportedAssets": [
                 "USDC"
               ],
-              "provider": "privatedao-kernel-policy"
+              "provider": "privatedao-hypercore-native"
             }
           ],
           "networkAvailability": [
@@ -4701,16 +4701,16 @@ export const runtimeCatalog = {
               "chainId": null,
               "declared": true,
               "mode": "kernel-gateway",
-              "evidenceStatus": "testnet_ready",
-              "evidence": "runtime-only",
-              "executable": false,
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "executable": true,
               "supportsProof": true,
               "supportsReceipt": true,
               "supportsReconciliation": true,
               "supportedAssets": [
                 "TAZ"
               ],
-              "provider": "privatedao-kernel-policy"
+              "provider": "zcash-testnet-zallet"
             },
             {
               "network": "hyperliquid-testnet",
@@ -4722,9 +4722,9 @@ export const runtimeCatalog = {
               "evidenceStatus": "testnet_ready",
               "evidence": "runtime-only",
               "executable": false,
-              "supportsProof": true,
-              "supportsReceipt": true,
-              "supportsReconciliation": true,
+              "supportsProof": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
               "supportedAssets": [
                 "HYPE"
               ],
@@ -4758,13 +4758,13 @@ export const runtimeCatalog = {
               "evidenceStatus": "testnet_ready",
               "evidence": "runtime-only",
               "executable": false,
-              "supportsProof": true,
-              "supportsReceipt": true,
-              "supportsReconciliation": true,
+              "supportsProof": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
               "supportedAssets": [
                 "USDC"
               ],
-              "provider": "privatedao-kernel-policy"
+              "provider": "privatedao-hypercore-native"
             }
           ]
         },
@@ -4883,8 +4883,8 @@ export const runtimeCatalog = {
               "entrypoint": "kernel://auction.settle",
               "method": null,
               "note": "Zcash Testnet auction outcome proofs are Kernel artifacts; no Zcash financial settlement is implied.",
-              "evidenceStatus": "testnet_ready",
-              "evidence": "runtime-only",
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
               "supportsExecution": true,
               "supportsProof": true,
               "supportsReceipt": true,
@@ -4892,7 +4892,7 @@ export const runtimeCatalog = {
               "supportedAssets": [
                 "TAZ"
               ],
-              "provider": "privatedao-kernel-policy"
+              "provider": "zcash-testnet-zallet"
             },
             {
               "network": "stellar-testnet",
@@ -4936,10 +4936,10 @@ export const runtimeCatalog = {
               "note": "Auction outcome proof runs through the Kernel; financial settlement is not claimed.",
               "evidenceStatus": "testnet_ready",
               "evidence": "runtime-only",
-              "supportsExecution": true,
-              "supportsProof": true,
-              "supportsReceipt": true,
-              "supportsReconciliation": true,
+              "supportsExecution": false,
+              "supportsProof": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
               "supportedAssets": [
                 "HYPE"
               ],
@@ -4953,14 +4953,14 @@ export const runtimeCatalog = {
               "note": "Auction outcome proof runs through the Kernel; financial settlement is not claimed.",
               "evidenceStatus": "testnet_ready",
               "evidence": "runtime-only",
-              "supportsExecution": true,
-              "supportsProof": true,
-              "supportsReceipt": true,
-              "supportsReconciliation": true,
+              "supportsExecution": false,
+              "supportsProof": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
               "supportedAssets": [
                 "USDC"
               ],
-              "provider": "privatedao-kernel-policy"
+              "provider": "privatedao-hypercore-native"
             }
           ],
           "networkAvailability": [
@@ -5223,16 +5223,16 @@ export const runtimeCatalog = {
               "chainId": null,
               "declared": true,
               "mode": "kernel-gateway",
-              "evidenceStatus": "testnet_ready",
-              "evidence": "runtime-only",
-              "executable": false,
+              "evidenceStatus": "testnet_verified",
+              "evidence": "testnet-e2e",
+              "executable": true,
               "supportsProof": true,
               "supportsReceipt": true,
               "supportsReconciliation": true,
               "supportedAssets": [
                 "TAZ"
               ],
-              "provider": "privatedao-kernel-policy"
+              "provider": "zcash-testnet-zallet"
             },
             {
               "network": "hyperliquid-testnet",
@@ -5244,9 +5244,9 @@ export const runtimeCatalog = {
               "evidenceStatus": "testnet_ready",
               "evidence": "runtime-only",
               "executable": false,
-              "supportsProof": true,
-              "supportsReceipt": true,
-              "supportsReconciliation": true,
+              "supportsProof": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
               "supportedAssets": [
                 "HYPE"
               ],
@@ -5280,13 +5280,13 @@ export const runtimeCatalog = {
               "evidenceStatus": "testnet_ready",
               "evidence": "runtime-only",
               "executable": false,
-              "supportsProof": true,
-              "supportsReceipt": true,
-              "supportsReconciliation": true,
+              "supportsProof": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
               "supportedAssets": [
                 "USDC"
               ],
-              "provider": "privatedao-kernel-policy"
+              "provider": "privatedao-hypercore-native"
             }
           ]
         }
