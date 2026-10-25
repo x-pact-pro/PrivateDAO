@@ -52,3 +52,21 @@ export function createTransferCheckedInstruction(source, mint, destination, owne
     data,
   });
 }
+
+export function createBurnCheckedInstruction(source, mint, owner, amount, decimals, multiSigners = [], programId = TOKEN_PROGRAM_ID) {
+  if (!Number.isInteger(decimals) || decimals < 0 || decimals > 255) throw new RangeError("token decimals must fit u8");
+  const data = new Uint8Array(10);
+  data[0] = 15;
+  data.set(u64le(amount), 1);
+  data[9] = decimals;
+  return new TransactionInstruction({
+    programId,
+    keys: [
+      { pubkey: source, isSigner: false, isWritable: true },
+      { pubkey: mint, isSigner: false, isWritable: false },
+      { pubkey: owner, isSigner: multiSigners.length === 0, isWritable: false },
+      ...multiSigners.map((signer) => ({ pubkey: signer, isSigner: true, isWritable: false })),
+    ],
+    data,
+  });
+}

@@ -301,6 +301,13 @@ async function readHolderBalance(config, wallet) {
   return { atomic, decimals, amount: Number(atomic) / 10 ** decimals };
 }
 
+// PrivatePAY uses the same finalized RPC balance read as holder access, but
+// keeps the policy separate: holding PDAO unlocks the private rail and does
+// not grant free public services.
+export async function readPdaoBalance(config, wallet) {
+  return readHolderBalance(config, wallet);
+}
+
 async function readPdaoUsdPrice(config) {
   const response = await fetch(`${config.marketDataUrl.replace(/\/$/, "")}/tokens/${encodeURIComponent(config.pdaoMint)}`, {
     headers: { accept: "application/json" },
@@ -327,6 +334,10 @@ async function readPdaoUsdPrice(config) {
     pair_address: selected.pair.pairAddress || null,
     observed_at: new Date().toISOString(),
   };
+}
+
+export async function readPdaoPrice(config) {
+  return readPdaoUsdPrice(config);
 }
 
 async function recordPdaoBalanceSnapshot({ config, storage, wallet, balance, price, observedAt = new Date() }) {

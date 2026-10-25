@@ -1,10 +1,13 @@
 import { digest } from "./canonical.mjs";
 import { decodePaymentSignatureHeader, encodePaymentRequiredHeader } from "@x402/core/http";
 import { parsePaymentPayload, parsePaymentRequirements } from "@x402/core/schemas";
-import { VersionedTransaction } from "@solana/web3.js";
+import { PublicKey, Transaction, TransactionInstruction, VersionedTransaction } from "@solana/web3.js";
 import { assertPrivatePayNetworkAdapter, privatePayNetworkMatrix } from "./privatepay-networks.mjs";
 import { DEFAULT_PRIVATEPAY_TEE_RPC, findPrivatePaySettlement, getPrivatePaySignatureStatus, isSolanaTransactionSignature, verifyPrivatePayPaymentBoundQuote } from "./privatepay-mainnet.mjs";
 import { privatePayAutopilotStatus } from "./privatepay-autopilot.mjs";
+import { readPdaoBalance, readPdaoPrice } from "./pdao-entitlement.mjs";
+import { ASSOCIATED_TOKEN_PROGRAM_ID, TOKEN_PROGRAM_ID, createAssociatedTokenAccountIdempotentInstruction, createBurnCheckedInstruction, createTransferCheckedInstruction, getAssociatedTokenAddressSync } from "./spl-token.mjs";
+import { readRpc } from "./solana.mjs";
 
 const PRIVATEPAY_SERVICE_ID = "privatepay.x402";
 const SOLANA_ADDRESS = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/;
@@ -14,6 +17,7 @@ const MAGICBLOCK_SCHEME = "exact-magicblock";
 const MAGICBLOCK_PRIVATE_CLUSTER = "mainnet-private";
 const PRIVATEPAY_ID = /^[a-f0-9]{64}$/;
 const MAX_PAYMENT_SIGNATURE_HEADER_BYTES = 32768;
+const MEMO_PROGRAM_ID = new PublicKey("MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr");
 
 function nonEmpty(value) {
   return typeof value === "string" && value.trim().length > 0;
@@ -56,6 +60,123 @@ function amountBaseUnits(input) {
   if (!/^\d+$/.test(value) || BigInt(value) <= 0n || BigInt(value) > 1000000000000n)
     throw Object.assign(new Error("a bounded positive amount_base_units value is required"), { statusCode: 400 });
   return value;
+}
+
+function pdaoFeeBaseUnits({ amountBaseUnits: amount, priceUsd, decimals, feeBps, floorUsd }) {
+  const amountUsd = Number(amount) / 1e6;
+  const feeUsd = Math.max(amountUsd * feeBps / 10000, floorUsd);
+  if (!Number.isFinite(priceUsd) || priceUsd <= 0) throw Object.assign(new Error("PDAO price is unavailable"), { statusCode: 503, code: "PRIVATEPAY_PDAO_PRICE_UNAVAILABLE" });
+  const units = Math.ceil((feeUsd / priceUsd) * (10 ** decimals));
+  if (!Number.isSafeInteger(units) || units <= 0) throw Object.assign(new Error("PDAO fee is outside the supported token range"), { statusCode: 503, code: "PRIVATEPAY_PDAO_FEE_INVALID" });
+  return { amount_usd: Number(amountUsd.toFixed(6)), fee_usd: Number(feeUsd.toFixed(6)), fee_base_units: String(units) };
+}
+
+async function privatePayPdaoQuote(config, input, amount, { requireWallet = false } = {}) {
+  if (config.privatePayPdaoGateEnabled === false) return { required: false, status: "disabled_by_configuration" };
+  const payer = String(input.payer || input.wallet || "").trim();
+  if (!SOLANA_ADDRESS.test(payer)) {
+    if (requireWallet) throw Object.assign(new Error("payer wallet is required for the private PDAO gate"), { statusCode: 400, code: "PRIVATEPAY_PDAO_WALLET_REQUIRED" });
+    return { required: true, status: "wallet_required", min_hold_usd: Number(config.privatePayPdaoMinHoldUsd), fee_bps: Number(config.privatePayPdaoFeeBps), fee_floor_usd: Number(config.privatePayPdaoFeeFloorUsd), fee_split: String(config.privatePayPdaoFeeSplit), fee_collection: "separate_signed_pdao_transaction_required" };
+  }
+  if (String(config.pdaoMint || "") !== "9isGuumtaqvJeJeyLF44fvfskk2cv5mYsopexMBfpump") throw Object.assign(new Error("PrivatePAY PDAO mint configuration mismatch"), { statusCode: 503, code: "PRIVATEPAY_PDAO_MINT_MISMATCH" });
+  let balance;
+  let price;
+  try {
+    [balance, price] = await Promise.all([readPdaoBalance(config, payer), readPdaoPrice(config)]);
+  } catch (error) {
+    throw Object.assign(new Error("PrivatePAY cannot verify the PDAO entry requirement"), { statusCode: 503, code: "PRIVATEPAY_PDAO_VERIFICATION_UNAVAILABLE", cause: error });
+  }
+  const balanceUsd = Number((balance.amount * price.price_usd).toFixed(6));
+  if (!Number.isFinite(balanceUsd) || balanceUsd < Number(config.privatePayPdaoMinHoldUsd)) {
+    throw Object.assign(new Error(`Private settlement requires at least $${Number(config.privatePayPdaoMinHoldUsd).toFixed(2)} of PDAO`), {
+      statusCode: 403,
+      code: "PRIVATEPAY_PDAO_MIN_HOLD_REQUIRED",
+      pdao: { mint: config.pdaoMint, required_usd: Number(config.privatePayPdaoMinHoldUsd), observed_usd: balanceUsd },
+    });
+  }
+  return {
+    required: true,
+    status: "verified",
+    mint: config.pdaoMint,
+    wallet: payer,
+    observed_balance_usd: balanceUsd,
+    min_hold_usd: Number(config.privatePayPdaoMinHoldUsd),
+    fee_bps: Number(config.privatePayPdaoFeeBps),
+    fee_floor_usd: Number(config.privatePayPdaoFeeFloorUsd),
+    fee_split: String(config.privatePayPdaoFeeSplit),
+    price_usd: price.price_usd,
+    price_source: price.source,
+    price_observed_at: price.observed_at,
+    ...pdaoFeeBaseUnits({ amountBaseUnits: amount, priceUsd: price.price_usd, decimals: balance.decimals, feeBps: Number(config.privatePayPdaoFeeBps), floorUsd: Number(config.privatePayPdaoFeeFloorUsd) }),
+    fee_collection: "separate_signed_pdao_transaction_required",
+  };
+}
+
+function pdaoFeeParts(feeBaseUnits) {
+  const total = BigInt(String(feeBaseUnits));
+  if (total < 2n) throw Object.assign(new Error("PDAO fee is too small to split"), { statusCode: 503, code: "PRIVATEPAY_PDAO_FEE_TOO_SMALL" });
+  const burn = total / 2n;
+  return { burn: String(burn), treasury: String(total - burn), total: String(total) };
+}
+
+export async function buildPrivatePayPdaoFeeTransaction(config, input = {}) {
+  const payer = String(input.payer || input.wallet || "").trim();
+  if (!SOLANA_ADDRESS.test(payer)) throw Object.assign(new Error("payer must be a valid Solana address"), { statusCode: 400, code: "PRIVATEPAY_PDAO_WALLET_REQUIRED" });
+  const amount = amountBaseUnits(input);
+  const pdao = await privatePayPdaoQuote(config, { ...input, payer }, amount, { requireWallet: true });
+  const parts = pdaoFeeParts(input.pdao_fee_base_units || pdao.fee_base_units);
+  const payerKey = new PublicKey(payer);
+  const mint = new PublicKey(config.pdaoMint);
+  const treasury = new PublicKey(config.privatePayPdaoTreasury || config.treasury);
+  const source = getAssociatedTokenAddressSync(mint, payerKey, false, TOKEN_PROGRAM_ID, ASSOCIATED_TOKEN_PROGRAM_ID);
+  const destination = getAssociatedTokenAddressSync(mint, treasury, false, TOKEN_PROGRAM_ID, ASSOCIATED_TOKEN_PROGRAM_ID);
+  const latest = await readRpc(config, "getLatestBlockhash", [{ commitment: "finalized" }]);
+  const transaction = new Transaction({ recentBlockhash: latest.result.value.blockhash, feePayer: payerKey });
+  transaction.add(
+    createAssociatedTokenAccountIdempotentInstruction(payerKey, destination, treasury, mint, TOKEN_PROGRAM_ID, ASSOCIATED_TOKEN_PROGRAM_ID),
+    createBurnCheckedInstruction(source, mint, payerKey, BigInt(parts.burn), pdao.decimals, [], TOKEN_PROGRAM_ID),
+    createTransferCheckedInstruction(source, mint, destination, payerKey, BigInt(parts.treasury), pdao.decimals, [], TOKEN_PROGRAM_ID),
+    new TransactionInstruction({ programId: MEMO_PROGRAM_ID, keys: [{ pubkey: payerKey, isSigner: true, isWritable: false }], data: Buffer.from(`PDAO_PRIVATEPAY:${String(input.request_id || "")}`) }),
+  );
+  return {
+    kind: "privatepay_pdao_fee",
+    transaction_base64: transaction.serialize({ requireAllSignatures: false, verifySignatures: false }).toString("base64"),
+    send_to: "base",
+    recent_blockhash: latest.result.value.blockhash,
+    last_valid_block_height: latest.result.value.lastValidBlockHeight,
+    payer,
+    mint: config.pdaoMint,
+    decimals: pdao.decimals,
+    fee_base_units: parts.total,
+    burn_base_units: parts.burn,
+    treasury_base_units: parts.treasury,
+    fee_split: String(config.privatePayPdaoFeeSplit),
+    treasury: treasury.toBase58(),
+    request_id: String(input.request_id || ""),
+  };
+}
+
+export async function verifyPrivatePayPdaoFee(config, input = {}) {
+  const signature = String(input.signature || input.pdao_fee_signature || "").trim();
+  const payer = String(input.payer || input.wallet || "").trim();
+  if (!isSolanaTransactionSignature(signature)) throw Object.assign(new Error("a finalized PDAO fee signature is required"), { statusCode: 400, code: "PRIVATEPAY_PDAO_FEE_SIGNATURE_REQUIRED" });
+  if (!SOLANA_ADDRESS.test(payer)) throw Object.assign(new Error("payer must be a valid Solana address"), { statusCode: 400, code: "PRIVATEPAY_PDAO_WALLET_REQUIRED" });
+  const amount = amountBaseUnits(input);
+  const pdao = await privatePayPdaoQuote(config, { ...input, payer }, amount, { requireWallet: true });
+  const parts = pdaoFeeParts(input.pdao_fee_base_units || pdao.fee_base_units);
+  const expectedDestination = getAssociatedTokenAddressSync(new PublicKey(config.pdaoMint), new PublicKey(config.privatePayPdaoTreasury || config.treasury), false, TOKEN_PROGRAM_ID, ASSOCIATED_TOKEN_PROGRAM_ID).toBase58();
+  const response = await readRpc(config, "getTransaction", [signature, { commitment: "finalized", encoding: "jsonParsed", maxSupportedTransactionVersion: 0 }]);
+  const transaction = response.result;
+  if (!transaction || transaction.meta?.err) throw Object.assign(new Error("PDAO fee transaction is not finalized successfully"), { statusCode: 402, code: "PRIVATEPAY_PDAO_FEE_NOT_FINALIZED" });
+  const accountKeys = transaction.transaction?.message?.accountKeys || [];
+  if (!accountKeys.some((entry) => String(entry.pubkey || entry).trim() === payer)) throw Object.assign(new Error("PDAO fee transaction payer does not match the private payment wallet"), { statusCode: 402, code: "PRIVATEPAY_PDAO_FEE_PAYER_MISMATCH" });
+  const instructions = transaction.transaction?.message?.instructions || [];
+  const parsed = instructions.map((instruction) => instruction.parsed?.info ? { program: instruction.program, type: instruction.parsed.type, info: instruction.parsed.info } : null).filter(Boolean);
+  const burned = parsed.some((item) => item.program === "spl-token" && item.type === "burnChecked" && item.info.mint === config.pdaoMint && String(item.info.amount) === parts.burn && item.info.authority === payer);
+  const transferred = parsed.some((item) => item.program === "spl-token" && item.type === "transferChecked" && item.info.mint === config.pdaoMint && String(item.info.amount) === parts.treasury && item.info.authority === payer && item.info.destination === expectedDestination);
+  const memo = instructions.some((instruction) => instruction.program === "spl-memo" && String(instruction.parsed || instruction.data || "") === `PDAO_PRIVATEPAY:${String(input.request_id || "")}`);
+  if (!burned || !transferred || !memo) throw Object.assign(new Error("PDAO fee transaction does not match the quoted private payment fee"), { statusCode: 402, code: "PRIVATEPAY_PDAO_FEE_MISMATCH" });
+  return { verified: true, signature, mint: config.pdaoMint, fee_base_units: parts.total, burn_base_units: parts.burn, treasury_base_units: parts.treasury, fee_split: String(config.privatePayPdaoFeeSplit), status: "finalized" };
 }
 
 function privatePayProviderUrl(config, path) {
@@ -341,7 +462,7 @@ export async function preparePrivatePayWithdrawal(config, input = {}, fetchImpl 
   return preparePrivatePayBaseTransaction(config, "withdraw", "/v1/spl/withdraw", body, requestId, fetchImpl);
 }
 
-export function createPrivatePayRequirements(config, input = {}) {
+export async function createPrivatePayRequirements(config, input = {}) {
   assertPrivatePayNetworkAdapter(config);
   const status = privatePayStatus(config);
   if (!status.enabled) {
@@ -355,6 +476,7 @@ export function createPrivatePayRequirements(config, input = {}) {
   const providerId = String(input.provider_id || "").trim();
   if (!resource || !providerId) throw Object.assign(new Error("resource and provider_id are required"), { statusCode: 400 });
   const amount = amountBaseUnits(input);
+  const pdao = await privatePayPdaoQuote(config, input, amount, { requireWallet: input.require_pdao_wallet === true });
   const magicBlockRail = isMagicBlockRail(config);
   const requestId = `pp_${digest({ resource, providerId, amount, nonce: input.nonce || null }).slice(0, 32)}`;
   const requirements = {
@@ -371,13 +493,23 @@ export function createPrivatePayRequirements(config, input = {}) {
         provider_commitment: digest(providerId),
         request_id: requestId,
         paymentId: digest({ requestId, resource, providerId, amount }),
+        pdao_required: pdao.required,
+        ...(pdao.required ? {
+          pdao_mint: pdao.mint,
+          pdao_fee_bps: pdao.fee_bps,
+          pdao_fee_floor_usd: pdao.fee_floor_usd,
+          pdao_fee_usd: pdao.fee_usd,
+          pdao_fee_base_units: pdao.fee_base_units,
+          pdao_fee_split: pdao.fee_split,
+          pdao_fee_collection: pdao.fee_collection,
+        } : {}),
         ...(magicBlockRail ? { cluster: MAGICBLOCK_PRIVATE_CLUSTER, settlement: "ephemeral-rollup", paymentFlow: "upfront" } : {}),
       },
     }],
     resource: { url: resource, description: "PrivatePAY x402 resource", mimeType: String(input.mime_type || "application/json") },
     extensions: { privatepay: { request_id: requestId, provider_visibility: "authenticated_provider_only" } },
   };
-  return { request_id: requestId, requirements, header: encodePaymentRequiredHeader(requirements) };
+  return { request_id: requestId, requirements, header: encodePaymentRequiredHeader(requirements), pdao };
 }
 
 function assertMerchantCheckoutReady(config) {
@@ -736,6 +868,16 @@ export function privatePayStatus(config) {
     privacy_audit_verified: privacyAuditVerified,
     payment_bound_quote_required: config.privatePayRequirePaymentBoundQuote === true,
     autopilot: privatePayAutopilotStatus(config),
+    pdao_required: config.privatePayPdaoGateEnabled !== false,
+    pdao_mint: config.pdaoMint || null,
+    min_hold_usd: Number(config.privatePayPdaoMinHoldUsd || 25),
+    fee_bps: Number(config.privatePayPdaoFeeBps || 100),
+    fee_floor_usd: Number(config.privatePayPdaoFeeFloorUsd || 0.05),
+    fee_split: String(config.privatePayPdaoFeeSplit || "50_burn_50_treasury"),
+    pdao_fee_bps: Number(config.privatePayPdaoFeeBps || 100),
+    pdao_fee_floor_usd: Number(config.privatePayPdaoFeeFloorUsd || 0.05),
+    pdao_fee_split: String(config.privatePayPdaoFeeSplit || "50_burn_50_treasury"),
+    pdao_fee_collection: "separate_signed_pdao_transaction_required",
     privacy_checks: privacyChecks,
     activation_blockers: activationBlockers,
     enabled,
@@ -756,8 +898,9 @@ export function privatePayStatus(config) {
   };
 }
 
-export function createPrivatePayChallenge(config, input = {}) {
-  const { request_id: requestId, requirements, header } = createPrivatePayRequirements(config, input);
+export async function createPrivatePayChallenge(config, input = {}) {
+  const { request_id: requestId, requirements, header, pdao } = await createPrivatePayRequirements(config, { ...input, require_pdao_wallet: true });
+  if (pdao.required && pdao.status !== "verified") throw Object.assign(new Error("PrivatePAY PDAO entry requirement is not verified"), { statusCode: 503, code: "PRIVATEPAY_PDAO_NOT_VERIFIED", pdao });
   return {
     x402Version: 2,
     request_id: requestId,
@@ -769,6 +912,7 @@ export function createPrivatePayChallenge(config, input = {}) {
     payment_required_header: header,
     resource_commitment: requirements.extensions.privatepay.request_id,
     provider_commitment: requirements.accepts[0].extra.provider_commitment,
+    pdao,
     amount_base_units: requirements.accepts[0].amount,
     expires_at: new Date(Date.now() + 300000).toISOString(),
     public_disclosure: "The reviewed MagicBlock rail keeps the tested settlement out of public Solana transaction data. This does not hide payment metadata from the authenticated provider or eliminate network-level timing inference.",
