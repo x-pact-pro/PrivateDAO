@@ -2,14 +2,28 @@
 
 ## Current boundary
 
-PrivatePAY remains fail-closed. The production merchant account is
+PrivatePAY is publicly enabled on the production Agent Exchange surface. The
+production merchant account is
 `2BJ4ezxqV9YJXc38D9duKBkdn4su4jE1beKUHwH663sL` and the settlement asset is
 native Solana USDC on `mainnet-private`.
 
-The merchant account currently reports `delegation.status=undelegated` and
-base USDC balance `0`. Do not set any production activation flag while this is
-true. The `Fpi5...` account is a test provider account and is not a substitute
-for the production merchant account.
+The read-only release collector last confirmed at
+`2026-10-25T08:52:57Z` that the merchant account is delegated to
+`MTEWGuqxUpYZGFJQcp8tLN7x5v9BSeoFHYWQQ3n3xzo` at
+`https://mainnet-tee.magicblock.app`, and that the recorded x402 payment is
+`paid` with a finalized TEE settlement. The public status endpoint returned
+`enabled`, with no activation blockers.
+
+The release decision remains `candidate`, not an unconditional privacy claim:
+the collector marks payment-bound TDX attestation as `INCONCLUSIVE`. This
+means finalized TEE execution and the provider's public-trace evidence are
+recorded, while payment-specific TDX binding and complete unlinkability are
+not claimed. The `Fpi5...` account remains a test provider account and is not
+a substitute for the production merchant account.
+
+The reproducible evidence packet is written with mode `0600` to:
+`/home/x-pact/PrivateDAO-CANONICAL-LIVE-20260818/evidence/privatepay/PrivatePAY-live-release-audit-latest.json`.
+It contains no private key, API secret, or signed/broadcast transaction.
 
 ## Phase 1: provider-side account setup
 
