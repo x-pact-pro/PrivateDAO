@@ -204,6 +204,7 @@ test("human root is HTML while machine surfaces remain available", async () => {
   for (const path of [
     "/api/health",
     "/.well-known/agent-card.json",
+    "/.well-known/mcp.json",
     "/openapi.json",
     "/api/services",
     "/api/acquisition",

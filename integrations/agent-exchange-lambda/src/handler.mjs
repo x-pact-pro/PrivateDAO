@@ -5069,6 +5069,17 @@ async function handle(e) {
     trackFunnel("agent_card_view");
     return json(card());
   }
+  if (method === "GET" && path === "/.well-known/mcp.json") {
+    return json({
+      name: "PrivateDAO Agent Exchange",
+      description: "Production MCP access to PrivateDAO services, including PrivatePAY x402 on Solana Mainnet.",
+      url: mcpEndpoint(),
+      transport: "streamable-http",
+      openapi: `https://${config.domain}/openapi.json`,
+      agent_card: `https://${config.domain}/.well-known/agent-card.json`,
+      tools: `https://${config.domain}/mcp`,
+    });
+  }
   if (method === "GET" && path === "/openapi.json") {
     trackFunnel("openapi_view");
     return json(openapi());

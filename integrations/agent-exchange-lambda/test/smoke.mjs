@@ -27,10 +27,14 @@ for (const serviceId of ["verify.deep", "decision.context", "receipt.verify", "a
   assert.deepEqual(service.supported_target_networks, ["solana-mainnet-beta", "ethereum-mainnet", "base-mainnet", "arbitrum-mainnet"], serviceId);
 }
 
-for (const path of ["/.well-known/agent-card.json", "/openapi.json", "/mcp", "/a2a"]) {
+for (const path of ["/.well-known/agent-card.json", "/.well-known/mcp.json", "/openapi.json", "/mcp", "/a2a"]) {
   const response = await request(path);
   assert.equal(response.statusCode, 200, path);
 }
+
+const mcpDiscovery = JSON.parse((await request("/.well-known/mcp.json")).body);
+assert.equal(mcpDiscovery.url, "https://agents.privatedao.org/mcp");
+assert.equal(mcpDiscovery.transport, "streamable-http");
 
 const free = await request("/api/jobs", "POST", {
   service_id: "verify.basic",
