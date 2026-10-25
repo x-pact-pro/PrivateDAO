@@ -1,0 +1,4 @@
+interface:
+  display_name: "PrivateDAO Agent Exchange"
+  short_description: "Create brand-safe product content and guide users across 27 PrivateDAO services."
+  default_prompt: "Create a clear commercial post, image brief, or video brief for the right PrivateDAO product and audience, using official facts and links."

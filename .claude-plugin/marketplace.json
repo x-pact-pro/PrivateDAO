@@ -1,0 +1,33 @@
+{
+  "name": "privatedao-marketplace",
+  "version": "1.0.0",
+  "description": "PrivateDAO Agent Exchange and PrivatePAY x402 tools for commercial verification, intelligence, and private payments.",
+  "owner": {
+    "name": "PrivateDAO",
+    "email": "hello@privatedao.org"
+  },
+  "plugins": [
+    {
+      "name": "privatedao-agent-exchange",
+      "source": "./plugins/privatedao-agent-exchange",
+      "version": "1.2.6",
+      "description": "PrivateDAO Agent Exchange with 27 commercial verification, intelligence, and private payment services across four networks, including PrivatePAY x402 on Solana Mainnet.",
+      "author": {
+        "name": "PrivateDAO",
+        "url": "https://privatedao.org/"
+      },
+      "homepage": "https://agents.privatedao.org/",
+      "repository": "https://github.com/x-pact-pro/PrivateDAO",
+      "category": "business",
+      "tags": [
+        "PrivateDAO",
+        "Agent Exchange",
+        "PrivatePAY x402",
+        "Solana Mainnet",
+        "MCP",
+        "verification",
+        "intelligence"
+      ]
+    }
+  ]
+}
