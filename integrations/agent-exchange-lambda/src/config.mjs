@@ -137,6 +137,7 @@ export function getConfig(env = process.env) {
     // disabled until the official MagicBlock flow is reviewed and funded E2E
     // evidence exists.
     privatePayMerchantCheckoutEnabled: bool(env.PRIVATEPAY_MERCHANT_CHECKOUT_ENABLED),
+    privatePayMerchantAccountsDelegated: bool(env.PRIVATEPAY_MERCHANT_ACCOUNTS_DELEGATED),
     privatePayStealthPoolToken: env.PRIVATEPAY_STEALTH_POOL_TOKEN || "",
     // This is a release gate, not a health check. It may only be set after
     // the exact x402 v2 verify/settle contract has been independently tested.
@@ -147,6 +148,11 @@ export function getConfig(env = process.env) {
     privatePayRelationshipPrivacyVerified: bool(env.PRIVATEPAY_RELATIONSHIP_PRIVACY_VERIFIED),
     privatePayAmountPrivacyVerified: bool(env.PRIVATEPAY_AMOUNT_PRIVACY_VERIFIED),
     privatePayTimingPrivacyVerified: bool(env.PRIVATEPAY_TIMING_PRIVACY_VERIFIED),
+    // Public-trace privacy is the supported MagicBlock claim: the settlement
+    // is not exposed as a public Solana transaction. Provider-side metadata
+    // visibility remains explicit and is never represented as confidentiality.
+    privatePayPublicTraceVerified: bool(env.PRIVATEPAY_PUBLIC_TRACE_VERIFIED),
+    privatePayProviderMetadataDisclosureVerified: bool(env.PRIVATEPAY_PROVIDER_METADATA_DISCLOSURE_VERIFIED),
     privatePayE2eVerified: bool(env.PRIVATEPAY_E2E_VERIFIED),
     privatePayConfidentialMint: env.PRIVATEPAY_CONFIDENTIAL_MINT || "",
     privatePayConfidentialMintProgram: env.PRIVATEPAY_CONFIDENTIAL_MINT_PROGRAM || "",
@@ -161,11 +167,26 @@ export function getConfig(env = process.env) {
     privatePayRpcUrl: env.PRIVATEPAY_RPC_URL || "",
     privatePayCluster: env.PRIVATEPAY_CLUSTER || "mainnet-beta",
     privatePayRequireGasless: bool(env.PRIVATEPAY_REQUIRE_GASLESS, true),
+    // A facilitator success response is not an on-chain settlement receipt.
+    // Keep this proof requirement enabled for any future production activation.
+    privatePayRequireOnchainSettlementProof: bool(env.PRIVATEPAY_REQUIRE_ONCHAIN_SETTLEMENT_PROOF, true),
+    // Optional stronger gate: require a fresh MagicBlock TDX Quote whose
+    // REPORTDATA commits to the exact x402 payment and finalized settlement.
+    privatePayRequirePaymentBoundQuote: bool(env.PRIVATEPAY_REQUIRE_PAYMENT_BOUND_QUOTE),
     privatePayMinDelayMs: boundedNumber(env.PRIVATEPAY_MIN_DELAY_MS || 0, 0, 0, 600000),
     privatePayMaxDelayMs: boundedNumber(env.PRIVATEPAY_MAX_DELAY_MS || 0, 0, 0, 600000),
     privatePayFeeBps: boundedNumber(env.PRIVATEPAY_FEE_BPS || 250, 250, 0, 10000),
     privatePayMinimumFeeUsd: boundedNumber(env.PRIVATEPAY_MINIMUM_FEE_USD || 0.05, 0.05, 0, 1000),
     privatePayTreasurySplitVerified: bool(env.PRIVATEPAY_TREASURY_SPLIT_VERIFIED),
+    // The private rail has a separate PDAO utility gate. Public USDC
+    // services never read these fields or require the token.
+    privatePayPdaoGateEnabled: bool(env.PRIVATEPAY_PDAO_GATE_ENABLED, true),
+    privatePayPdaoMinHoldUsd: boundedNumber(env.PRIVATEPAY_PDAO_MIN_HOLD_USD || 25, 25, 25, 1000000),
+    privatePayPdaoFeeBps: boundedNumber(env.PRIVATEPAY_PDAO_FEE_BPS || 100, 100, 0, 10000),
+    privatePayPdaoFeeFloorUsd: boundedNumber(env.PRIVATEPAY_PDAO_FEE_FLOOR_USD || 0.05, 0.05, 0, 1000),
+    privatePayPdaoFeeSplit: env.PRIVATEPAY_PDAO_FEE_SPLIT || "50_burn_50_treasury",
+    privatePayPdaoTreasury: env.PRIVATEPAY_PDAO_TREASURY || env.SOLANA_TREASURY || "2BJ4ezxqV9YJXc38D9duKBkdn4su4jE1beKUHwH663sL",
+    privatePayAutopilotEnabled: bool(env.PRIVATEPAY_AUTOPILOT_ENABLED),
     alibabaMarketplaceEnabled: bool(env.ALIBABA_MARKETPLACE_ENABLED),
     alibabaMarketplaceSpiSecret: env.ALIBABA_MARKETPLACE_SPI_SECRET || "",
   };

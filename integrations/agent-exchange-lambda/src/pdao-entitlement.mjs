@@ -14,10 +14,11 @@ export const PDAO_HOLDER_REWARD_QUALIFICATION_DAYS = 7;
 export const PDAO_PROMOTION_START_AT = "2026-10-20T00:00:00.000Z";
 export const PDAO_PROMOTION_END_AT = "2026-11-20T00:00:00.000Z";
 export const PDAO_ELIGIBLE_SERVICE_MAX_USD = 0.10;
+export const PDAO_SELLER_SERVICE_ID = "marketplace.seller_listing";
 export const PDAO_HOLDER_TIERS = Object.freeze([
-  { id: "access", name: "Access", threshold_usd: 25, monthly_credit_usd: 1, credit_request_limit: 25, discount_bps: 500 },
-  { id: "plus", name: "Plus", threshold_usd: 100, monthly_credit_usd: 5, credit_request_limit: 50, discount_bps: 1000 },
-  { id: "pro", name: "Pro", threshold_usd: 250, monthly_credit_usd: 15, credit_request_limit: 100, discount_bps: 1500 },
+  { id: "access", name: "Access", threshold_usd: 25, monthly_credit_usd: 1, credit_request_limit: 25, discount_bps: 500, priority_weight: 10, privatepay_fee_discount_bps: 500, seller_listing_discount_bps: 2500 },
+  { id: "plus", name: "Plus", threshold_usd: 100, monthly_credit_usd: 5, credit_request_limit: 50, discount_bps: 1000, priority_weight: 20, privatepay_fee_discount_bps: 1000, seller_listing_discount_bps: 5000 },
+  { id: "pro", name: "Pro", threshold_usd: 250, monthly_credit_usd: 15, credit_request_limit: 100, discount_bps: 1500, priority_weight: 30, privatepay_fee_discount_bps: 1500, seller_listing_discount_bps: 10000 },
 ]);
 export const PDAO_HOLDER_POLICY_VERSION = "pdao-holder-rewards-v1";
 export const PDAO_SNAPSHOT_INTERVAL_MS = 5 * 60 * 1000;
@@ -93,7 +94,36 @@ export function publicPdaoBenefitPolicy(_qualificationDays = 0, at = new Date())
     credits_expire_each_cycle: true,
     discounts_stackable: false,
     excluded: ["high-cost services", "premium services", "third-party seller services"],
-    tiers: PDAO_HOLDER_TIERS.map((tier) => ({ ...tier, discount_percent: tier.discount_bps / 100 })),
+    tiers: PDAO_HOLDER_TIERS.map((tier) => ({
+      ...tier,
+      discount_percent: tier.discount_bps / 100,
+      privatepay_fee_discount_percent: tier.privatepay_fee_discount_bps / 100,
+      seller_listing_discount_percent: tier.seller_listing_discount_bps / 100,
+    })),
+  };
+}
+
+export function pdaoOperationalBenefits(tier) {
+  return {
+    priority_weight: Number(tier?.priority_weight || 0),
+    priority_class: tier ? `holder_${tier.id}` : "standard",
+    privatepay_fee_discount_bps: Number(tier?.privatepay_fee_discount_bps || 0),
+    seller_listing_discount_bps: Number(tier?.seller_listing_discount_bps || 0),
+  };
+}
+
+export function calculatePdaoSellerListingBenefit({ tier, listingFee }) {
+  const fee = Math.max(0, Number(listingFee || 0));
+  const operational = pdaoOperationalBenefits(tier);
+  const discount = Number((fee * operational.seller_listing_discount_bps / 10000).toFixed(6));
+  return {
+    eligible: Boolean(tier && fee > 0),
+    tier_id: tier?.id || null,
+    original_fee_usd: fee,
+    discount_bps: operational.seller_listing_discount_bps,
+    discount_usd: discount,
+    charge_usd: Number(Math.max(0, fee - discount).toFixed(6)),
+    ...operational,
   };
 }
 
@@ -111,6 +141,7 @@ export function calculatePdaoBenefit({ tier, servicePrice, creditRemainingUsd, c
     discount_percent: 0,
     charge_usd: Number.isFinite(price) ? Number(price.toFixed(6)) : 0,
     fully_covered: false,
+    ...pdaoOperationalBenefits(tier),
   };
   if (promotionActive) return {
     eligible: true,
@@ -122,6 +153,7 @@ export function calculatePdaoBenefit({ tier, servicePrice, creditRemainingUsd, c
     charge_usd: 0,
     fully_covered: true,
     promotion_id: "pdao-holder-promotion-2026-10",
+    ...pdaoOperationalBenefits(tier),
   };
   const creditAvailable = requestsUsed < tier.credit_request_limit;
   const creditApplied = creditAvailable ? Math.min(price, remaining) : 0;
@@ -136,6 +168,7 @@ export function calculatePdaoBenefit({ tier, servicePrice, creditRemainingUsd, c
     discount_percent: tier.discount_bps / 100,
     charge_usd: charge,
     fully_covered: charge <= 0,
+    ...pdaoOperationalBenefits(tier),
   };
 }
 
@@ -149,11 +182,17 @@ function hashInput(input) {
   return JSON.stringify(input ?? {});
 }
 
-async function enforceHolderUsageLimits(storage, config, wallet) {
+async function enforceHolderUsageLimits(storage, config, wallet, tier = null) {
+  const multiplier = tier?.id === "pro" ? 3 : tier?.id === "plus" ? 2 : 1;
+  const limits = {
+    per_minute: Math.floor(config.pdaoHolderPerMinuteLimit * multiplier),
+    daily: Math.floor(config.pdaoHolderDailyLimit * multiplier),
+    monthly: Math.floor(config.pdaoHolderMonthlyLimit * multiplier),
+  };
   const buckets = [
-    [`pdao-holder-minute:${wallet}`, config.pdaoHolderPerMinuteLimit, 60 * 1000, "per-minute"],
-    [`pdao-holder-day:${wallet}`, config.pdaoHolderDailyLimit, 24 * 60 * 60 * 1000, "daily"],
-    [`pdao-holder-month:${wallet}`, config.pdaoHolderMonthlyLimit, PDAO_HOLDER_WINDOW_MS, "monthly"],
+    [`pdao-holder-minute:${wallet}`, limits.per_minute, 60 * 1000, "per-minute"],
+    [`pdao-holder-day:${wallet}`, limits.daily, 24 * 60 * 60 * 1000, "daily"],
+    [`pdao-holder-month:${wallet}`, limits.monthly, PDAO_HOLDER_WINDOW_MS, "monthly"],
   ];
   for (const [key, limit, windowMs, label] of buckets) {
     const decision = await storage.consumeRateLimit(key, limit, windowMs);
@@ -164,9 +203,8 @@ async function enforceHolderUsageLimits(storage, config, wallet) {
     }
   }
   return {
-    per_minute: config.pdaoHolderPerMinuteLimit,
-    daily: config.pdaoHolderDailyLimit,
-    monthly: config.pdaoHolderMonthlyLimit,
+    ...limits,
+    multiplier,
   };
 }
 
@@ -263,6 +301,13 @@ async function readHolderBalance(config, wallet) {
   return { atomic, decimals, amount: Number(atomic) / 10 ** decimals };
 }
 
+// PrivatePAY uses the same finalized RPC balance read as holder access, but
+// keeps the policy separate: holding PDAO unlocks the private rail and does
+// not grant free public services.
+export async function readPdaoBalance(config, wallet) {
+  return readHolderBalance(config, wallet);
+}
+
 async function readPdaoUsdPrice(config) {
   const response = await fetch(`${config.marketDataUrl.replace(/\/$/, "")}/tokens/${encodeURIComponent(config.pdaoMint)}`, {
     headers: { accept: "application/json" },
@@ -289,6 +334,10 @@ async function readPdaoUsdPrice(config) {
     pair_address: selected.pair.pairAddress || null,
     observed_at: new Date().toISOString(),
   };
+}
+
+export async function readPdaoPrice(config) {
+  return readPdaoUsdPrice(config);
 }
 
 async function recordPdaoBalanceSnapshot({ config, storage, wallet, balance, price, observedAt = new Date() }) {
@@ -399,7 +448,6 @@ export async function verifyPdaoHolderAccess({ config, storage, access, serviceI
     error.pdaoQualification = historical;
     throw error;
   }
-  const usageLimits = await enforceHolderUsageLimits(storage, config, wallet);
   try {
     await storage.claim("Registry", challenge.id, {
       claim_started_at: new Date().toISOString(),
@@ -420,6 +468,7 @@ export async function verifyPdaoHolderAccess({ config, storage, access, serviceI
     ? PDAO_PROMOTION_END_AT
     : active ? existing.active_until : new Date(currentTime.getTime() + PDAO_HOLDER_WINDOW_MS).toISOString();
   const tier = pdaoTierForValue(valueUsd);
+  const usageLimits = await enforceHolderUsageLimits(storage, config, wallet, tier);
   const creditRemainingUsd = active && existing?.tier_id === tier?.id
     ? Number(existing.credit_remaining_usd || 0)
     : Number(tier?.monthly_credit_usd || 0);
@@ -444,6 +493,7 @@ export async function verifyPdaoHolderAccess({ config, storage, access, serviceI
     credit_requests_used: creditRequestsUsed,
     credit_request_limit: tier?.credit_request_limit || 0,
     discount_bps: tier?.discount_bps || 0,
+    ...pdaoOperationalBenefits(tier),
     qualification_days: promotion.active ? 0 : config.pdaoHolderQualificationDays,
     qualification_mode: historical.mode,
     promotion_id: promotion.active ? promotion.id : null,
@@ -471,6 +521,7 @@ export async function verifyPdaoHolderAccess({ config, storage, access, serviceI
     credit_request_limit: tier?.credit_request_limit || 0,
     discount_bps: tier?.discount_bps || 0,
     discount_percent: tier ? tier.discount_bps / 100 : 0,
+    ...pdaoOperationalBenefits(tier),
     balance_tokens: balance.amount,
     price_usd: price.price_usd,
     value_usd: valueUsd,

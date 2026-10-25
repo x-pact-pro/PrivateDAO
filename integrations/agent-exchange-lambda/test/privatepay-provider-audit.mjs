@@ -22,6 +22,11 @@ process.env.PRIVATEPAY_AMOUNT_PRIVACY_VERIFIED = "true";
 process.env.PRIVATEPAY_TIMING_PRIVACY_VERIFIED = "true";
 process.env.PRIVATEPAY_E2E_VERIFIED = "true";
 process.env.PRIVATEPAY_TREASURY_SPLIT_VERIFIED = "true";
+process.env.PRIVATEPAY_PUBLIC_TRACE_VERIFIED = "true";
+process.env.PRIVATEPAY_PROVIDER_METADATA_DISCLOSURE_VERIFIED = "true";
+process.env.PRIVATEPAY_MERCHANT_ACCOUNTS_DELEGATED = "true";
+process.env.PRIVATEPAY_PDAO_GATE_ENABLED = "false";
+process.env.PRIVATEPAY_REQUIRE_ONCHAIN_SETTLEMENT_PROOF = "false";
 
 const { handler, resetForTests } = await import("../src/handler.mjs");
 

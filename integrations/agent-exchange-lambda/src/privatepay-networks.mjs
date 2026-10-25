@@ -7,7 +7,7 @@ export const PRIVATEPAY_NETWORKS = Object.freeze({
     caip2: "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
     family: "solana",
     chain_id: null,
-    status: "reviewed_pending_funded_e2e",
+    status: "reviewed_mainnet_private",
     privacy_rail: "magicblock-private-ephemeral-rollup",
     x402_scheme: "exact-magicblock",
   }),
@@ -44,7 +44,9 @@ export function privatePayNetworkMatrix(config = {}) {
     ...network,
     selected: key === selected,
     enabled: key === "solana" && config.privatePayEnabled === true,
-    activation_status: key === "solana" ? "gated_by_conformance_and_funded_e2e" : "adapter_contract_only",
+    activation_status: key === "solana"
+      ? (config.privatePayEnabled === true ? "enabled_mainnet_private" : "gated_by_conformance_and_funded_e2e")
+      : "adapter_contract_only",
   }]));
 }
 

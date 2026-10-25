@@ -171,6 +171,26 @@ and Jupiter swap quotes never sign or broadcast transactions. Solana
 transaction simulation uses `simulateTransaction` with signature verification
 disabled; it returns simulation logs and compute usage only.
 
+### PrivatePAY PDAO gate
+
+The private settlement path has an explicit PDAO utility requirement. At
+challenge time the payer must hold at least `$25` of the exact configured PDAO
+mint. Each private quote also requires a separate wallet-signed PDAO fee
+transaction: `1%` of the quoted USDC amount, with a `$0.05` equivalent floor.
+The fee is split `50_burn_50_treasury`; the backend verifies the finalized
+transaction, memo, mint, payer, and exact split before it asks the facilitator
+to verify or settle the private USDC payment. The internal receipt records this
+proof without exposing private purchase metadata in the public receipt.
+
+The browser flow is exposed through:
+
+- `POST /api/privatepay/x402/requirements` — checks the PDAO entry requirement and returns the exact fee.
+- `POST /api/privatepay/x402/pdao-fee/transaction` — returns an unsigned base-layer PDAO fee transaction.
+- `POST /api/privatepay/x402` — requires the payer, finalized PDAO fee signature, and x402 payment credential.
+
+This gate applies only to PrivatePAY private settlement. Public quote-first
+USDC services remain unchanged and do not require PDAO.
+
 The scheduled payout sweep is enabled by the deployment template every five
 minutes and is intentionally inert until the dedicated
 `AGENT_EXCHANGE_PAYOUT_SECRET_ID` secret is provisioned with the treasury
