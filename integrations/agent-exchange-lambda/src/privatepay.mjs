@@ -4,6 +4,7 @@ import { parsePaymentPayload, parsePaymentRequirements } from "@x402/core/schema
 import { VersionedTransaction } from "@solana/web3.js";
 import { assertPrivatePayNetworkAdapter, privatePayNetworkMatrix } from "./privatepay-networks.mjs";
 import { DEFAULT_PRIVATEPAY_TEE_RPC, findPrivatePaySettlement, getPrivatePaySignatureStatus, isSolanaTransactionSignature, verifyPrivatePayPaymentBoundQuote } from "./privatepay-mainnet.mjs";
+import { privatePayAutopilotStatus } from "./privatepay-autopilot.mjs";
 
 const PRIVATEPAY_SERVICE_ID = "privatepay.x402";
 const SOLANA_ADDRESS = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/;
@@ -734,6 +735,7 @@ export function privatePayStatus(config) {
     merchant_accounts_delegated: merchantAccountsDelegated,
     privacy_audit_verified: privacyAuditVerified,
     payment_bound_quote_required: config.privatePayRequirePaymentBoundQuote === true,
+    autopilot: privatePayAutopilotStatus(config),
     privacy_checks: privacyChecks,
     activation_blockers: activationBlockers,
     enabled,

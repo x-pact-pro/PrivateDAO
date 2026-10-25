@@ -42,6 +42,7 @@ import { calculatePdaoSellerListingBenefit, issuePdaoChallenge, publicPdaoBenefi
 import { runScheduledSellerSettlements } from "./settlement.mjs";
 import { HandshakeReplayCache, readSealReputation, sealkeeperFailure } from "./sealkeeper.mjs";
 import { createPrivatePayChallenge, createPrivatePayCheckout, createPrivatePayRequirements, decodePrivatePaySignature, preparePrivatePayDeposit, preparePrivatePayTransfer, preparePrivatePayWithdrawal, privatePayFacilitatorRequest, privatePayStatus, probePrivatePayRail, publicPrivatePayFacilitatorResult, requestPrivatePayCheckoutChallenge, verifyPrivatePayMainnetSettlement, PRIVATEPAY_SERVICE_ID } from "./privatepay.mjs";
+import { authorizePrivatePayAutopilotOperation, cancelPrivatePayAutopilotOperation, completePrivatePayAutopilotOperation, createPrivatePayAutopilotChallenge, createPrivatePayAutopilotOperationChallenge, createPrivatePayAutopilotPolicy, privatePayAutopilotStatus, validatePrivatePayAutopilotOperation } from "./privatepay-autopilot.mjs";
 import { handleAlibabaSpi } from "./alibaba-marketplace.mjs";
 import { encodePaymentResponseHeader } from "@x402/core/http";
 
@@ -900,6 +901,12 @@ function openapi() {
     "/api/providers/status": { get: { operationId: "providerStatus" } },
     "/api/integrations": { get: { operationId: "integrations" } },
     "/api/privatepay/status": { get: { operationId: "privatePayStatus" } },
+    "/api/privatepay/autopilot/status": { get: { operationId: "privatePayAutopilotStatus" } },
+    "/api/privatepay/autopilot/challenge": { post: { operationId: "privatePayAutopilotChallenge" } },
+    "/api/privatepay/autopilot/policies": { post: { operationId: "privatePayAutopilotPolicy" } },
+    "/api/privatepay/autopilot/operation-challenge": { post: { operationId: "privatePayAutopilotOperationChallenge" } },
+    "/api/privatepay/autopilot/operations": { post: { operationId: "privatePayAutopilotOperation" } },
+    "/api/privatepay/autopilot/cancel": { post: { operationId: "privatePayAutopilotCancel" } },
     "/api/privatepay/x402": { post: { operationId: "privatePayX402", description: "Return HTTP 402 PrivatePAY requirements or fail closed until a reviewed facilitator supports the exact scheme and network." } },
     "/api/privatepay/x402/requirements": { post: { operationId: "privatePayRequirements", description: "Return x402 V2 requirements after the configured private rail is enabled." } },
     "/api/privatepay/x402/checkout": { post: { operationId: "privatePayCheckout", description: "Create an official MagicBlock private checkout or request its PAYMENT-REQUIRED challenge. Disabled until explicit merchant-checkout and privacy gates pass; never signs or broadcasts." } },
@@ -5140,8 +5147,31 @@ async function handle(e) {
   }
   if (method === "GET" && path === "/api/privatepay/status")
     return json(await probePrivatePayRail(config));
+  if (method === "GET" && path === "/api/privatepay/autopilot/status")
+    return json(privatePayAutopilotStatus(config));
+  if (method === "POST" && path === "/api/privatepay/autopilot/challenge")
+    return json(await createPrivatePayAutopilotChallenge(config, body));
+  if (method === "POST" && path === "/api/privatepay/autopilot/policies")
+    return json(await createPrivatePayAutopilotPolicy(config, body), 201);
+  if (method === "POST" && path === "/api/privatepay/autopilot/operation-challenge")
+    return json(await createPrivatePayAutopilotOperationChallenge(config, body));
+  if (method === "POST" && path === "/api/privatepay/autopilot/operations")
+    return json(await authorizePrivatePayAutopilotOperation(config, body), 201);
+  if (method === "POST" && path === "/api/privatepay/autopilot/cancel")
+    return json(await cancelPrivatePayAutopilotOperation(config, body));
   if (method === "POST" && path === "/api/privatepay/x402") {
-    const requirements = createPrivatePayRequirements(config, body);
+    const x402Input = body.autopilot_operation_id && !body.nonce ? { ...body, nonce: body.autopilot_operation_id } : body;
+    const requirements = createPrivatePayRequirements(config, x402Input);
+    const autopilot = x402Input.autopilot_policy_id && x402Input.autopilot_operation_id
+      ? await validatePrivatePayAutopilotOperation(config, {
+        policy_id: x402Input.autopilot_policy_id,
+        operation_id: x402Input.autopilot_operation_id,
+        resource: x402Input.resource,
+        provider_id: x402Input.provider_id,
+        amount_base_units: x402Input.amount_base_units,
+        session_signature: x402Input.autopilot_session_signature,
+      })
+      : null;
     const paymentSignature = e.headers?.["PAYMENT-SIGNATURE"] || e.headers?.["payment-signature"];
     if (!paymentSignature)
       return json({ error: "payment_required", x402: requirements.requirements, request_id: requirements.request_id }, 402, { "PAYMENT-REQUIRED": requirements.header });
@@ -5162,11 +5192,16 @@ async function handle(e) {
       amountBaseUnits: requirements.requirements.accepts[0].amount,
       settlement,
     });
+    if (autopilot) {
+      const completion = await completePrivatePayAutopilotOperation(config, x402Input.autopilot_policy_id, x402Input.autopilot_operation_id);
+      if (!completion.completed)
+        return json({ error: "privatepay_autopilot_accounting_pending", request_id: requirements.request_id, operation_id: x402Input.autopilot_operation_id, status: "pending" }, 503);
+    }
     const paymentResponse = {
       success: true,
       transaction: `privatepay:${digest({ request_id: requirements.request_id, settlement: settlement.transaction || null }).slice(0, 32)}`,
       network: requirements.requirements.accepts[0].network,
-      extensions: { privacy_boundary: "provider_audit_only", request_id: requirements.request_id, onchain_verification: onchainVerification.status },
+      extensions: { privacy_boundary: "provider_audit_only", request_id: requirements.request_id, onchain_verification: onchainVerification.status, ...(autopilot ? { autopilot_operation_id: x402Input.autopilot_operation_id } : {}) },
     };
     return json({ status: "paid", request_id: requirements.request_id, payment_response: paymentResponse, provider_visibility: "authenticated_provider_only" }, 200, { "PAYMENT-RESPONSE": encodePaymentResponseHeader(paymentResponse) });
   }
