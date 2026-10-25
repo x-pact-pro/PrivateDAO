@@ -1,6 +1,8 @@
 <!-- SPDX-License-Identifier: AGPL-3.0-or-later -->
 # PrivateDAO
 
+[![PrivateDAO Agent Exchange MCP connector – tool definition quality and endpoint health on Glama](https://glama.ai/mcp/connectors/io.github.X-PACT/pdao-agent-exchange/badges/score.svg)](https://glama.ai/mcp/connectors/io.github.X-PACT/pdao-agent-exchange)
+
 > **Private decisions. Verifiable outcomes.**
 
 PrivateDAO is a privacy-first operating layer for organizations that need to

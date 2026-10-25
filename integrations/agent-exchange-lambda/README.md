@@ -1,5 +1,7 @@
 # PrivateDAO Agent Exchange Lambda
 
+[![PrivateDAO Agent Exchange MCP connector – tool definition quality and endpoint health on Glama](https://glama.ai/mcp/connectors/io.github.X-PACT/pdao-agent-exchange/badges/score.svg)](https://glama.ai/mcp/connectors/io.github.X-PACT/pdao-agent-exchange)
+
 This directory is the canonical source for the independently deployed Agent
 Exchange Lambda. It is intentionally separate from the commercial website and
 the game runtime.
