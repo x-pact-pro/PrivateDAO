@@ -679,7 +679,7 @@ function card() {
     name: "PrivateDAO Agent Exchange",
     description: "Machine-native PrivateDAO services for verification, evidence and agent workflows. Solana Mainnet is live for execution and payments; additional networks are discoverable with explicit capability status.",
     provider: { organization: "PrivateDAO", url: "https://privatedao.org" },
-    version: "1.7.2",
+    version: "1.7.3",
     protocolVersion: "0.3.0",
     url: `https://${config.domain}/a2a`,
     documentationUrl: `https://${config.domain}/llms-full.txt`,
@@ -931,7 +931,7 @@ function openapi() {
   };
   return {
     openapi: "3.1.0",
-    info: { title: "PrivateDAO Agent Exchange", version: "1.7.2", description: "A machine-to-machine service marketplace: discover, request, execute, pay when required, and verify the returned evidence." },
+    info: { title: "PrivateDAO Agent Exchange", version: "1.7.3", description: "A machine-to-machine service marketplace: discover, request, execute, pay when required, and verify the returned evidence." },
     servers: [{ url: `https://${config.domain}` }],
     paths,
     components: {
@@ -4987,7 +4987,7 @@ async function handle(e) {
     return json({
       status: "ok",
       service: "pdao-agent-exchange",
-      version: "1.7.2",
+      version: "1.7.3",
       network: "solana-mainnet-beta",
       rpcMode: stats?.providerClass || (config.rpcPrimary.includes("api.mainnet-beta")
         ? "public-fallback"
@@ -5562,7 +5562,7 @@ async function mcp(request) {
       id,
       result: {
         protocolVersion: "2025-06-18",
-        serverInfo: { name: "pdao-agent-exchange", version: "1.7.2" },
+        serverInfo: { name: "pdao-agent-exchange", version: "1.7.3" },
         capabilities: { tools: {} },
       },
     });
@@ -5580,12 +5580,12 @@ async function mcp(request) {
     provider_integrations: { type: "object", properties: {}, additionalProperties: false, description: "Explain the commercial role and verified status of each ecosystem integration without exposing credentials." },
     payment_guide: { type: "object", properties: {}, additionalProperties: false, description: "Return the exact quote-first lifecycle, PDAO holder-access path and USDC payment safety rules." },
     execution_guide: { type: "object", properties: {}, additionalProperties: false, description: "Return the endpoints and state transitions needed to request, execute, poll and verify a service." },
-    privatepay_status: { type: "object", properties: {}, additionalProperties: false, description: "Return the fail-closed readiness and privacy boundaries for PrivatePAY x402." },
-    privatepay_challenge: { type: "object", properties: { resource: { type: "string", minLength: 1, maxLength: 500 }, provider_id: { type: "string", minLength: 1, maxLength: 200 }, amount_base_units: { type: "string", pattern: "^[0-9]+$" }, mime_type: { type: "string", maxLength: 100 }, nonce: { type: "string", maxLength: 200 } }, required: ["resource", "provider_id", "amount_base_units"], additionalProperties: false, description: "Create a structured PrivatePAY x402 V2 payment challenge for an eligible commercial workflow." },
-    privatepay_checkout: { type: "object", properties: { phase: { type: "string", enum: ["create", "challenge"], default: "create" }, payment_id: { type: "string", pattern: "^[a-f0-9]{64}$" }, payer: { type: "string", pattern: "^[1-9A-HJ-NP-Za-km-z]{32,44}$" }, resource: { type: "string", minLength: 1, maxLength: 2048 }, amount_base_units: { type: "string", pattern: "^[0-9]+$" }, external_reference: { type: "string", minLength: 1, maxLength: 128 }, description: { type: "string", maxLength: 256 }, expires_in_seconds: { type: "integer", minimum: 60, maximum: 86400 } }, additionalProperties: false, description: "Create an official MagicBlock private checkout or request its x402 challenge. No wallet signing or broadcasting occurs." },
-    privatepay_prepare: { type: "object", properties: { phase: { type: "string", enum: ["deposit", "transfer", "withdraw"], default: "transfer" }, request_id: { type: "string", pattern: "^pp_[a-f0-9]{32}$" }, payer: { type: "string", pattern: "^[1-9A-HJ-NP-Za-km-z]{32,44}$" }, owner: { type: "string", pattern: "^[1-9A-HJ-NP-Za-km-z]{32,44}$" }, amount_base_units: { type: "string", pattern: "^[0-9]+$" }, split: { type: "integer", minimum: 1, maximum: 15 }, gasless: { type: "boolean" } }, required: ["request_id", "amount_base_units"], additionalProperties: false, description: "Prepare an unsigned MagicBlock deposit, private transfer, or withdrawal for local wallet signing. This does not sign or broadcast." },
-    privatepay_verify: { type: "object", properties: { x402Version: { type: "integer", const: 2 }, paymentPayload: { type: "object" }, paymentRequirements: { type: "object" } }, required: ["x402Version", "paymentPayload", "paymentRequirements"], additionalProperties: false, description: "Validate an x402 v2 PrivatePAY payload against the agreed commercial requirements and return structured payment evidence." },
-    privatepay_settle: { type: "object", properties: { x402Version: { type: "integer", const: 2 }, paymentPayload: { type: "object" }, paymentRequirements: { type: "object" } }, required: ["x402Version", "paymentPayload", "paymentRequirements"], additionalProperties: false, description: "Request x402 v2 PrivatePAY settlement through the configured payment workflow and return structured settlement evidence." },
+    privatepay_status: { type: "object", properties: {}, additionalProperties: false, description: "Read the current PrivatePAY x402 readiness, MagicBlock private-rail configuration, facilitator state, PDAO entry requirement, and public-chain privacy boundary. Use this first; it never creates a challenge or payment." },
+    privatepay_challenge: { type: "object", properties: { resource: { type: "string", minLength: 1, maxLength: 500, description: "Stable HTTPS resource or service identifier being purchased." }, provider_id: { type: "string", minLength: 1, maxLength: 200, description: "PrivatePAY provider or merchant identifier." }, amount_base_units: { type: "string", pattern: "^[0-9]+$", description: "Quoted USDC amount in token base units, not a decimal display amount." }, mime_type: { type: "string", maxLength: 100, description: "Optional response media type for the purchased resource." }, nonce: { type: "string", maxLength: 200, description: "Optional caller nonce used to bind a fresh challenge." } }, required: ["resource", "provider_id", "amount_base_units"], additionalProperties: false, description: "Create a fresh PrivatePAY x402 v2 challenge after checking rail status. This returns payment requirements and the PDAO private-settlement rule; it does not sign, broadcast, or move funds." },
+    privatepay_checkout: { type: "object", properties: { phase: { type: "string", enum: ["create", "challenge"], default: "create", description: "Use create for a new checkout or challenge to request the payment-required response for an existing payment_id." }, payment_id: { type: "string", pattern: "^[a-f0-9]{64}$", description: "Existing 64-character checkout identifier when phase is challenge." }, payer: { type: "string", pattern: "^[1-9A-HJ-NP-Za-km-z]{32,44}$", description: "Solana payer wallet public key; never a private key." }, resource: { type: "string", minLength: 1, maxLength: 2048, description: "HTTPS resource or service endpoint being purchased." }, amount_base_units: { type: "string", pattern: "^[0-9]+$", description: "Quoted USDC amount in base units." }, external_reference: { type: "string", minLength: 1, maxLength: 128, description: "Merchant-owned idempotency or order reference." }, description: { type: "string", maxLength: 256, description: "Human-readable commercial description shown in the checkout response." }, expires_in_seconds: { type: "integer", minimum: 60, maximum: 86400, description: "Challenge lifetime in seconds, between one minute and one day." } }, additionalProperties: false, description: "Create a MagicBlock PrivatePAY checkout or request its x402 payment-required challenge. This is a quote and preparation step: it never signs, broadcasts, or moves funds." },
+    privatepay_prepare: { type: "object", properties: { phase: { type: "string", enum: ["deposit", "transfer", "withdraw"], default: "transfer", description: "Unsigned wallet operation to prepare after the challenge: deposit into the private rail, private transfer, or withdrawal." }, request_id: { type: "string", pattern: "^pp_[a-f0-9]{32}$", description: "PrivatePAY request identifier returned by the challenge or checkout." }, payer: { type: "string", pattern: "^[1-9A-HJ-NP-Za-km-z]{32,44}$", description: "Wallet public key that will inspect and authorize the transaction." }, owner: { type: "string", pattern: "^[1-9A-HJ-NP-Za-km-z]{32,44}$", description: "Optional destination or balance owner public key." }, amount_base_units: { type: "string", pattern: "^[0-9]+$", description: "Token amount in base units." }, split: { type: "integer", minimum: 1, maximum: 15, description: "Optional private transfer split count, from one to fifteen." }, gasless: { type: "boolean", description: "Request the configured sponsored route when supported; the wallet still signs the returned transaction." } }, required: ["request_id", "amount_base_units"], additionalProperties: false, description: "Prepare an unsigned MagicBlock deposit, private transfer, or withdrawal for local wallet inspection and signing. PrivateDAO never receives a private key and this tool never broadcasts." },
+    privatepay_verify: { type: "object", properties: { x402Version: { type: "integer", const: 2, description: "Must be x402 protocol version 2." }, paymentPayload: { type: "object", description: "The payer wallet's finalized x402 payment payload, including the accepted scheme and transaction proof." }, paymentRequirements: { type: "object", description: "The exact requirements returned by privatepay_challenge or privatepay_checkout; do not substitute a guessed amount or recipient." } }, required: ["x402Version", "paymentPayload", "paymentRequirements"], additionalProperties: false, description: "Verify an x402 v2 PrivatePAY payload against the exact challenge requirements through the configured facilitator. This is read-only, fail-closed, and returns redacted structured evidence; call it before privatepay_settle." },
+    privatepay_settle: { type: "object", properties: { x402Version: { type: "integer", const: 2, description: "Must be x402 protocol version 2." }, paymentPayload: { type: "object", description: "The same finalized payer payload that passed privatepay_verify." }, paymentRequirements: { type: "object", description: "The unchanged requirements from the original PrivatePAY challenge." } }, required: ["x402Version", "paymentPayload", "paymentRequirements"], additionalProperties: false, description: "Settle an already authorized x402 v2 PrivatePAY payload through the configured facilitator and return redacted settlement evidence. Call privatepay_verify first; this is the only payment-moving PrivatePAY tool and may create a facilitator or on-chain settlement." },
     verify_basic: {
       type: "object",
       properties: {
@@ -5611,18 +5611,19 @@ async function mcp(request) {
     create_paid_job: {
       type: "object",
       properties: {
-        service_id: { type: "string", enum: SERVICES.filter((service) => service.access === "paid").map((service) => service.id) },
-        input: { type: "object", description: "Service-specific JSON input." },
+        service_id: { type: "string", enum: SERVICES.filter((service) => service.access === "paid").map((service) => service.id), description: "Paid service identifier selected from list_catalog or discover_agents." },
+        input: { type: "object", description: "Service-specific JSON input matching the selected service schema." },
         payment_mode: { type: "string", enum: ["direct", "privatepay"], default: "direct", description: "Select privatepay only when the PrivatePAY x402 status is enabled." },
         pdao_access: { type: "object", description: "Optional signed PDAO holder challenge from /api/access/challenge.", properties: { wallet: { type: "string" }, message: { type: "string" }, signature: { type: "string" }, nonce: { type: "string" } }, required: ["wallet", "message", "signature", "nonce"], additionalProperties: false },
       },
       required: ["service_id"],
       additionalProperties: false,
+      description: "Create a selected paid service request and return either an immediate result or an exact quote-first payment intent. This call does not spend funds; use the returned quote with the matching payment tool.",
     },
     privatepay_job_payment: {
       type: "object",
       properties: {
-        job_id: { type: "string", pattern: "^job_[A-Za-z0-9-]+$" },
+        job_id: { type: "string", pattern: "^job_[A-Za-z0-9-]+$", description: "Job identifier returned by create_paid_job." },
         payment_signature: { type: "string", minLength: 1, description: "The x402 PAYMENT-SIGNATURE value returned by the paying agent wallet." },
       },
       required: ["job_id", "payment_signature"],
@@ -5637,27 +5638,30 @@ async function mcp(request) {
     },
     job_status: {
       type: "object",
-      properties: { job_id: { type: "string", pattern: "^job_[A-Za-z0-9-]+$" } },
+      properties: { job_id: { type: "string", pattern: "^job_[A-Za-z0-9-]+$", description: "Job identifier returned by create_paid_job; polling never retries or charges payment." } },
       required: ["job_id"],
       additionalProperties: false,
+      description: "Read the current asynchronous request state, exact payment intent, result, or receipt reference. This is free and never retries or charges a payment.",
     },
     cancel_job: { type: "object", properties: { job_id: { type: "string", pattern: "^job_[A-Za-z0-9-]+$", description: "The unpaid pending request to cancel." }, reason: { type: "string", maxLength: 240, description: "Optional operational reason recorded with the cancellation." } }, required: ["job_id"], additionalProperties: false, description: "Cancel an unpaid pending request before execution. This writes only cancellation state and never refunds or reverses a settled payment." },
     verify_receipt: { type: "object", properties: { mode: { type: "string", enum: ["basic", "receipt"], default: "receipt", description: "Use basic for an asset/record check or receipt for an existing receipt." }, network: { type: "string", description: "Optional network identifier for the asset or receipt evidence." }, mint: { type: "string", description: "Solana mint for basic verification." }, asset: { type: "string", description: "Alias for mint." }, record: { type: "object", description: "Structured record for basic verification." }, receipt_id: { type: "string", pattern: "^rvr_[A-Za-z0-9]+$", description: "Receipt identifier to retrieve and verify." }, receipt: { type: "object", description: "Receipt returned by a completed job." }, expected_digest: { type: "string", description: "Optional digest that must match the canonical verified record." }, expected_hash: { type: "string", description: "Optional result hash that must match the receipt evidence." } }, anyOf: [{ required: ["receipt_id"] }, { required: ["receipt"] }, { required: ["mint"] }, { required: ["asset"] }, { required: ["record"] }], additionalProperties: false, description: "Perform read-only verification or receipt retrieval. Use this instead of separate basic, receipt, and get-receipt tools; it never pays or executes a job." },
     get_receipt: {
       type: "object",
-      properties: { receipt_id: { type: "string", pattern: "^rvr_[A-Za-z0-9]+$" } },
+      properties: { receipt_id: { type: "string", pattern: "^rvr_[A-Za-z0-9]+$", description: "Receipt identifier returned by job_status or a completed request." } },
       required: ["receipt_id"],
       additionalProperties: false,
+      description: "Retrieve a completed PrivateDAO evidence receipt by its receipt_id for review or downstream verification. This is free and read-only.",
     },
     search_agents: {
       type: "object",
       properties: {
         q: { type: "string", maxLength: 200, description: "Free-text registry search." },
-        capability: { type: "string", maxLength: 120 },
+        capability: { type: "string", maxLength: 120, description: "Optional capability term to match against registered agents." },
         network: { type: "string", description: "Canonical network or accepted alias." },
-        limit: { type: "integer", minimum: 1, maximum: 100 },
+        limit: { type: "integer", minimum: 1, maximum: 100, default: 20, description: "Maximum number of matching agents to return." },
       },
       additionalProperties: false,
+      description: "Search the registered PrivateDAO agent network by capability, text, or network. This is free, read-only discovery and never creates a job or payment.",
     },
     register_agent: {
       type: "object",
@@ -5699,19 +5703,20 @@ async function mcp(request) {
     logistics_request: {
       type: "object",
       properties: {
-        capability: { type: "string", maxLength: 120 },
-        requirements: { type: "object" },
-        maxPrice: { type: "number", minimum: 0 },
-        asset: { type: "string", maxLength: 20 },
-        deadline: { type: "string", format: "date-time" },
-        preferredProtocols: { type: "array", items: { type: "string", maxLength: 40 }, maxItems: 8 },
+        capability: { type: "string", maxLength: 120, description: "Business capability to route, such as private payment, risk analysis, or data delivery." },
+        requirements: { type: "object", description: "Optional structured constraints the selected provider must satisfy." },
+        maxPrice: { type: "number", minimum: 0, description: "Maximum quoted price in the declared asset; this does not authorize payment." },
+        asset: { type: "string", maxLength: 20, description: "Preferred settlement asset, for example USDC." },
+        deadline: { type: "string", format: "date-time", description: "Optional ISO-8601 delivery deadline." },
+        preferredProtocols: { type: "array", items: { type: "string", maxLength: 40 }, maxItems: 8, description: "Optional protocols or agent transports to prefer." },
         network: { type: "string", description: "Canonical network or accepted alias." },
       },
       required: ["capability"],
       additionalProperties: false,
+      description: "Create a read-only routing request for a capability, constraints, budget, asset, deadline, and preferred protocol. It returns routing guidance and does not authorize payment or execute work.",
     },
     network_stats: { type: "object", properties: {}, additionalProperties: false },
-    external_services: { type: "object", properties: { q: { type: "string", maxLength: 200 }, limit: { type: "integer", minimum: 1, maximum: 100 } }, additionalProperties: false },
+    external_services: { type: "object", properties: { q: { type: "string", maxLength: 200, description: "Optional business or capability search text." }, limit: { type: "integer", minimum: 1, maximum: 100, default: 20, description: "Maximum number of external capabilities to return." } }, additionalProperties: false, description: "Search registered external ecosystem capabilities. This is free, read-only discovery and never executes or pays for a service." },
     seller_update_services: { type: "object", properties: { agent_id: { type: "string" }, owner_token: { type: "string", minLength: 16 }, services: { type: "array", items: { type: "object" } }, accepted_assets: { type: "array", items: { type: "string" } }, payout: { type: "object" } }, required: ["agent_id", "owner_token", "services"], additionalProperties: false },
     seller_replace_endpoint: { type: "object", properties: { agent_id: { type: "string" }, owner_token: { type: "string", minLength: 16 }, mcp_url: { type: "string", format: "uri" } }, required: ["agent_id", "owner_token", "mcp_url"], additionalProperties: false },
     seller_retire: { type: "object", properties: { agent_id: { type: "string" }, owner_token: { type: "string", minLength: 16 }, reason: { type: "string", maxLength: 300 } }, required: ["agent_id", "owner_token"], additionalProperties: false },
