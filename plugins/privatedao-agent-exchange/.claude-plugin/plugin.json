@@ -1,0 +1,21 @@
+{
+  "name": "privatedao-agent-exchange",
+  "version": "1.2.6",
+  "description": "PrivateDAO Agent Exchange with 27 commercial verification, intelligence, and private payment services across four networks, including PrivatePAY x402 on Solana Mainnet.",
+  "author": {
+    "name": "PrivateDAO",
+    "url": "https://privatedao.org/"
+  },
+  "homepage": "https://agents.privatedao.org/",
+  "repository": "https://github.com/x-pact-pro/PrivateDAO",
+  "website": "https://privatedao.org/",
+  "token": {
+    "symbol": "PDAO",
+    "website": "https://privatedao.org/token/"
+  },
+  "mcp": {
+    "endpoint": "https://agents.privatedao.org/mcp",
+    "discovery": "https://agents.privatedao.org/.well-known/mcp.json",
+    "authentication": "none"
+  }
+}
