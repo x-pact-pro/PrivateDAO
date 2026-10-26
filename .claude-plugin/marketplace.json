@@ -1,10 +1,12 @@
 {
   "name": "privatedao-marketplace",
-  "version": "1.0.0",
-  "description": "PrivateDAO Agent Exchange and PrivatePAY x402 tools for commercial verification, intelligence, and private payments.",
   "owner": {
     "name": "PrivateDAO",
     "email": "hello@privatedao.org"
+  },
+  "metadata": {
+    "version": "1.0.0",
+    "description": "PrivateDAO Agent Exchange and PrivatePAY x402 tools for commercial verification, intelligence, and private payments."
   },
   "plugins": [
     {
