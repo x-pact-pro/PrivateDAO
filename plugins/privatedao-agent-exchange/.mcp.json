@@ -1,0 +1,7 @@
+{
+  "mcpServers": {
+    "privatedao-agent-exchange": {
+      "url": "https://agents.privatedao.org/mcp"
+    }
+  }
+}
