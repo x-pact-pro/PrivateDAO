@@ -8,14 +8,13 @@
   },
   "homepage": "https://agents.privatedao.org/",
   "repository": "https://github.com/x-pact-pro/PrivateDAO",
-  "website": "https://privatedao.org/",
-  "token": {
-    "symbol": "PDAO",
-    "website": "https://privatedao.org/token/"
-  },
-  "mcp": {
-    "endpoint": "https://agents.privatedao.org/mcp",
-    "discovery": "https://agents.privatedao.org/.well-known/mcp.json",
-    "authentication": "none"
-  }
+  "keywords": [
+    "PrivateDAO",
+    "Agent Exchange",
+    "PrivatePAY x402",
+    "Solana Mainnet",
+    "MCP",
+    "verification",
+    "intelligence"
+  ]
 }
