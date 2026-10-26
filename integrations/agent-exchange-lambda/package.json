@@ -27,7 +27,7 @@
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.1136.0",
     "@aws-sdk/client-secrets-manager": "^3.1106.0",
-    "@aws-sdk/lib-dynamodb": "^3.1136.0",
+    "@aws-sdk/lib-dynamodb": "^3.1156.0",
     "@magicblock-labs/ephemeral-rollups-sdk": "0.17.3",
     "@solana/web3.js": "1.98.4",
     "@x402/core": "^2.28.0",
