@@ -673,7 +673,7 @@ test("MCP lifecycle, schemas, errors, and network aliases are protocol-safe", as
   assert.equal(cancelled.body, "");
 
   const listed = JSON.parse((await request("/mcp", "POST", { jsonrpc: "2.0", id: 2, method: "tools/list", params: {} })).body).result.tools;
-  assert.equal(listed.length, 23);
+  assert.equal(listed.length, 17);
   for (const tool of listed) {
     assert.equal(tool.inputSchema.type, "object", tool.name);
     assert.ok(tool.inputSchema.properties, tool.name);
@@ -684,7 +684,7 @@ test("MCP lifecycle, schemas, errors, and network aliases are protocol-safe", as
   assert.deepEqual(byName.submit_payment.required, ["job_id", "signature"]);
   const productCatalog = JSON.parse((await request("/mcp", "POST", { jsonrpc: "2.0", id: 10, method: "tools/call", params: { name: "list_catalog", arguments: { filter: "products" } } })).body);
   assert.equal(productCatalog.result.structuredContent.products.length, 3);
-  for (const toolName of ["get_workflow_guide", "list_catalog", "discover_agents", "get_provider_integrations", "exchange_overview", "pdao_services", "product_catalog", "service_recommendation", "provider_integrations", "payment_guide", "execution_guide", "verify_receipt"])
+  for (const toolName of ["get_workflow_guide", "list_catalog", "discover_agents", "get_provider_integrations", "service_recommendation", "verify_receipt"])
     assert.ok(byName[toolName], `${toolName} discovery tool`);
 
   const executionGuide = JSON.parse((await request("/mcp", "POST", { jsonrpc: "2.0", id: 5, method: "tools/call", params: { name: "get_workflow_guide", arguments: { topic: "execution" } } })).body);
