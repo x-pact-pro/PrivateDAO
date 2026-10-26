@@ -679,7 +679,7 @@ function card() {
     name: "PrivateDAO Agent Exchange",
     description: "Machine-native PrivateDAO services for verification, evidence and agent workflows. Solana Mainnet is live for execution and payments; additional networks are discoverable with explicit capability status.",
     provider: { organization: "PrivateDAO", url: "https://privatedao.org" },
-    version: "1.7.5",
+    version: "1.7.6",
     protocolVersion: "0.3.0",
     url: `https://${config.domain}/a2a`,
     documentationUrl: `https://${config.domain}/llms-full.txt`,
@@ -983,7 +983,7 @@ function openapi() {
   };
   return {
     openapi: "3.1.0",
-    info: { title: "PrivateDAO Agent Exchange", version: "1.7.5", description: "A machine-to-machine service marketplace with 26 commercial capabilities, MCP and x402 interoperability, and a Solana Mainnet PrivatePAY private settlement rail powered by MagicBlock." },
+    info: { title: "PrivateDAO Agent Exchange", version: "1.7.6", description: "A machine-to-machine service marketplace with 26 commercial capabilities, MCP and x402 interoperability, and a Solana Mainnet PrivatePAY private settlement rail powered by MagicBlock." },
     servers: [{ url: `https://${config.domain}` }],
     paths,
     components: {
@@ -5039,7 +5039,7 @@ async function handle(e) {
     return json({
       status: "ok",
       service: "pdao-agent-exchange",
-      version: "1.7.5",
+      version: "1.7.6",
       network: "solana-mainnet-beta",
       rpcMode: stats?.providerClass || (config.rpcPrimary.includes("api.mainnet-beta")
         ? "public-fallback"
@@ -5625,7 +5625,7 @@ async function mcp(request) {
       id,
       result: {
         protocolVersion: "2025-06-18",
-        serverInfo: { name: "pdao-agent-exchange", version: "1.7.5" },
+        serverInfo: { name: "pdao-agent-exchange", version: "1.7.6" },
         capabilities: { tools: {} },
       },
     });
@@ -5896,6 +5896,7 @@ async function mcp(request) {
     seller_retire: "Retire a seller listing from future discovery while preserving an explicit operational record of the decision.",
   };
   const genericOutput = (description) => ({ type: "object", additionalProperties: true, description });
+  const structuredOutput = (description, properties) => ({ type: "object", properties, additionalProperties: true, description });
   const outputSchemas = {
     get_workflow_guide: {
       type: "object",
@@ -5936,14 +5937,60 @@ async function mcp(request) {
       additionalProperties: true,
       description: "Ranked discovery result without executing or paying.",
     },
-    get_provider_integrations: genericOutput("Provider roles, status signals, and integration disclosures."),
-    privatepay_status: genericOutput("Fail-closed PrivatePAY readiness and privacy status."),
-    privatepay_challenge: genericOutput("Structured PrivatePAY x402 challenge and payment requirements."),
-    privatepay_checkout: genericOutput("Private checkout terms, request identifiers, and payment requirements."),
-    privatepay_prepare: genericOutput("Unsigned PrivatePAY preparation context for local wallet authorization."),
-    privatepay_verify: genericOutput("Structured validation evidence for an x402 payment payload."),
-    privatepay_settle: genericOutput("Structured PrivatePAY settlement evidence."),
-    privatepay_job_payment: genericOutput("Private payment application result for a selected job."),
+    get_provider_integrations: structuredOutput("Provider roles, status signals, and integration disclosures.", {
+      integrations: { type: "array", items: { type: "object", additionalProperties: true }, description: "Provider and ecosystem integration records." },
+      provider_status: { type: "array", items: { type: "object", additionalProperties: true }, description: "Public readiness signals with secrets removed." },
+      disclosure: { type: "string", description: "Boundary explaining what the integration records do and do not prove." },
+    }),
+    service_recommendation: structuredOutput("Ranked first-party service recommendations for the requested business task.", {
+      task: { type: "string", description: "The original business task." },
+      matches: { type: "array", items: { type: "object", additionalProperties: true }, description: "Ranked service manifests to inspect before requesting work." },
+      note: { type: "string", description: "Matching and next-step guidance." },
+    }),
+    privatepay_status: structuredOutput("Fail-closed PrivatePAY readiness and privacy status.", {
+      enabled: { type: "boolean", description: "Whether the private settlement rail is currently enabled for new payment operations." },
+      activation_blockers: { type: "array", items: { type: "string" }, description: "Explicit blockers when the rail is unavailable." },
+      network: { type: "string", description: "Settlement network identifier." },
+      settlement_mode: { type: "string", description: "Configured provider settlement mode." },
+      pdao_required: { type: "boolean", description: "Whether the private path requires the PDAO entry policy." },
+      privacy: { type: "object", additionalProperties: true, description: "Provider-visible and public-chain privacy boundaries." },
+    }),
+    privatepay_challenge: structuredOutput("Structured PrivatePAY x402 challenge and payment requirements.", {
+      request_id: { type: "string", description: "Fresh challenge or payment request identifier." },
+      payment_required: { type: "object", additionalProperties: true, description: "Exact x402 v2 requirements to present to the payer." },
+      payment_required_header: { type: "string", description: "HTTP PAYMENT-REQUIRED value when returned by the checkout flow." },
+      privacy: { type: "object", additionalProperties: true, description: "Redacted privacy boundary for the challenge." },
+    }),
+    privatepay_checkout: structuredOutput("Private checkout terms, request identifiers, and payment requirements.", {
+      payment_id: { type: "string", description: "Checkout identifier used to request the challenge or continue the checkout." },
+      status: { type: "string", description: "Checkout state or next action." },
+      payment_required: { type: "object", additionalProperties: true, description: "Exact x402 v2 requirements when the challenge phase is requested." },
+      payment_required_header: { type: "string", description: "HTTP PAYMENT-REQUIRED value when returned." },
+    }),
+    privatepay_prepare: structuredOutput("Unsigned PrivatePAY preparation context for local wallet authorization.", {
+      request_id: { type: "string", description: "PrivatePAY request identifier bound to the unsigned operation." },
+      phase: { type: "string", enum: ["deposit", "transfer", "withdraw"], description: "Prepared private-rail operation." },
+      transaction: { type: "string", description: "Serialized unsigned transaction when the provider returns one." },
+      required_signers: { type: "array", items: { type: "string" }, description: "Wallet public keys that must sign locally." },
+    }),
+    privatepay_verify: structuredOutput("Structured validation evidence for an x402 payment payload.", {
+      valid: { type: "boolean", description: "Whether the facilitator accepted the exact payment requirements." },
+      request_id: { type: "string", description: "Redacted PrivatePAY request identifier when available." },
+      status: { type: "string", description: "Verification status or next action." },
+      evidence: { type: "object", additionalProperties: true, description: "Redacted facilitator evidence." },
+    }),
+    privatepay_settle: structuredOutput("Structured PrivatePAY settlement evidence.", {
+      settled: { type: "boolean", description: "Whether the facilitator accepted settlement." },
+      request_id: { type: "string", description: "Redacted PrivatePAY request identifier when available." },
+      status: { type: "string", description: "Settlement status." },
+      evidence: { type: "object", additionalProperties: true, description: "Redacted settlement evidence; provider secrets and sensitive payment payloads are excluded." },
+    }),
+    privatepay_job_payment: structuredOutput("Private payment application result for a selected job.", {
+      job_id: { type: "string", description: "Paid workflow job identifier." },
+      status: { type: "string", description: "Job or payment state after applying the supplied x402 proof." },
+      receipt: { type: "object", additionalProperties: true, description: "Public evidence receipt when execution completes." },
+      result: { type: "object", additionalProperties: true, description: "Service result when execution completes." },
+    }),
     verify_receipt: {
       type: "object",
       properties: {

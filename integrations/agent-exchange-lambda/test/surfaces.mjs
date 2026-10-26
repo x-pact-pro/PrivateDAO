@@ -619,7 +619,7 @@ test("MCP and A2A machine entrypoints remain callable", async () => {
   assert.equal(mcp.statusCode, 200);
   assert.match(mcp.body, /list_catalog/);
   const api = JSON.parse((await request("/openapi.json")).body);
-  assert.equal(api.info.version, "1.7.5");
+  assert.equal(api.info.version, "1.7.6");
   for (const path of [
     "/api/privatepay/status",
     "/api/privatepay/x402/requirements",
