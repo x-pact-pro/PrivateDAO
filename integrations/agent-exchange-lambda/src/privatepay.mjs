@@ -541,16 +541,17 @@ function readResponseHeader(response, name) {
 }
 
 function checkoutResponseBody(payload) {
-  const id = String(payload?.id || "").trim();
+  const payment = payload?.payment && typeof payload.payment === "object" ? payload.payment : payload;
+  const id = String(payment?.id || payment?.paymentId || payment?.payment_id || "").trim();
   if (!PRIVATEPAY_ID.test(id))
     throw Object.assign(new Error("MagicBlock returned an invalid checkout id"), { statusCode: 503, code: "PRIVATEPAY_INVALID_CHECKOUT_RESPONSE" });
   return {
     payment_id: id,
-    status: nonEmpty(payload.status) ? payload.status : "created",
-    expires_at: payload.expiresAt || payload.expires_at || null,
-    external_reference: payload.externalReference || payload.external_reference || null,
-    cluster: payload.cluster || MAGICBLOCK_PRIVATE_CLUSTER,
-    resource: payload.resource || null,
+    status: nonEmpty(payment.status) ? payment.status : "created",
+    expires_at: payment.expiresAt || payment.expires_at || null,
+    external_reference: payment.externalReference || payment.external_reference || null,
+    cluster: payment.cluster || MAGICBLOCK_PRIVATE_CLUSTER,
+    resource: payment.resource || null,
   };
 }
 

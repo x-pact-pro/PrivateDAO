@@ -131,6 +131,30 @@ test("MagicBlock merchant checkout follows the official payments contract", asyn
   assert.doesNotMatch(JSON.stringify(result), /merchant-api-key-fixture|payer/);
 });
 
+test("MagicBlock merchant checkout accepts the provider's nested payment response", async () => {
+  const result = await createPrivatePayCheckout(magicBlockCheckoutConfig(), {
+    payer: TEST_PAYER,
+    amount_base_units: "1000",
+    resource: "https://agents.example/api/service/verify",
+    external_reference: "job_fixture_nested",
+  }, async () => response(200, {
+    accessToken: "redacted-by-test",
+    payment: {
+      id: TEST_PAYMENT_ID,
+      status: "created",
+      expiresAt: "2026-10-21T12:00:00.000Z",
+      externalReference: "job_fixture_nested",
+      cluster: "mainnet-private",
+      resource: "https://agents.example/api/service/verify",
+    },
+    paymentUrls: {},
+  }));
+  assert.equal(result.payment_id, TEST_PAYMENT_ID);
+  assert.equal(result.status, "created");
+  assert.equal(result.cluster, "mainnet-private");
+  assert.doesNotMatch(JSON.stringify(result), /accessToken|redacted-by-test|payer/);
+});
+
 test("MagicBlock checkout challenge returns the provider PAYMENT-REQUIRED header without signing", async () => {
   const calls = [];
   const header = "eyJ4NDAyVmVyc2lvbiI6Mn0=";
