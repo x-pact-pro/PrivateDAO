@@ -39,6 +39,22 @@ function request(path, method = "GET", body, headers = {}) {
   });
 }
 
+test("PrivatePAY product page separates free demo, live pricing, privacy scope, and x402 API flow", async () => {
+  resetForTests();
+  const response = await request("/services/privatepay-x402");
+  assert.equal(response.statusCode, 200);
+  assert.match(response.body, /Free demo/);
+  assert.match(response.body, /no wallet.*no charge/i);
+  assert.match(response.body, /Live payment/);
+  assert.match(response.body, /2\.5% fee/);
+  assert.match(response.body, /PAYMENT-SIGNATURE/);
+  assert.match(response.body, /payment_id/);
+  assert.match(response.body, /evidence_hash/);
+  assert.match(response.body, /What PrivatePAY keeps private/);
+  assert.match(response.body, /MagicBlock.s private rail/);
+  assert.doesNotMatch(response.body, /claim.*example/i);
+});
+
 test("PrivatePAY job lifecycle verifies, settles, executes once, and redacts public payment data", async () => {
   const originalFetch = globalThis.fetch;
   const calls = [];
