@@ -98,6 +98,7 @@ export function getConfig(env = process.env) {
       Revenue: env.AGENT_EXCHANGE_REVENUE_TABLE || "",
       Telemetry: env.AGENT_EXCHANGE_TELEMETRY_TABLE || "",
       RateLimits: env.AGENT_EXCHANGE_RATE_LIMITS_TABLE || "",
+      QuestlineCompletions: env.AGENT_EXCHANGE_QUESTLINE_COMPLETIONS_TABLE || "",
       // Alibaba instance lifecycle records can share the existing Registry
       // table until an operator provisions a dedicated table.
       AlibabaInstances:
@@ -187,6 +188,13 @@ export function getConfig(env = process.env) {
     privatePayPdaoFeeSplit: env.PRIVATEPAY_PDAO_FEE_SPLIT || "50_burn_50_treasury",
     privatePayPdaoTreasury: env.PRIVATEPAY_PDAO_TREASURY || env.SOLANA_TREASURY || "2BJ4ezxqV9YJXc38D9duKBkdn4su4jE1beKUHwH663sL",
     privatePayAutopilotEnabled: bool(env.PRIVATEPAY_AUTOPILOT_ENABLED),
+    questline: {
+      questId: Number(env.MAGICBLOCK_QUESTLINE_QUEST_ID || 94),
+      baseUrl: env.MAGICBLOCK_QUESTLINE_BASE_URL || "",
+      bearerToken: env.MAGICBLOCK_QUESTLINE_API_KEY || "",
+      pushPath: env.MAGICBLOCK_QUESTLINE_PUSH_PATH || "/api/validators/run",
+      pushEnabled: bool(env.MAGICBLOCK_QUESTLINE_PUSH_ENABLED),
+    },
     alibabaMarketplaceEnabled: bool(env.ALIBABA_MARKETPLACE_ENABLED),
     alibabaMarketplaceSpiSecret: env.ALIBABA_MARKETPLACE_SPI_SECRET || "",
   };
