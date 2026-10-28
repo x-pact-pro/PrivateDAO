@@ -49,13 +49,23 @@ try {
       const makeWallet = (name, address) => ({ name, publicKey: { toString: () => address }, async connect() { return { publicKey: this.publicKey }; }, async signTransaction() { throw new Error("visual test must not sign"); } });
       window.phantom = { solana: makeWallet("Phantom", "11111111111111111111111111111111") };
       window.solflare = { solana: makeWallet("Solflare", "11111111111111111111111111111111") };
+      window.__pdaoStandardWallets = [{
+        name: "Jupiter Wallet",
+        chains: ["solana:mainnet"],
+        accounts: [{ address: "11111111111111111111111111111111" }],
+        features: {
+          "standard:connect": { async connect() { return { accounts: [{ address: "11111111111111111111111111111111" }] }; } },
+          "solana:signTransaction": { async signTransaction() { throw new Error("visual test must not sign"); } },
+        },
+      }];
     });
     await page.goto(`http://127.0.0.1:${port}/services/privatepay-x402`, { waitUntil: "domcontentloaded" });
     await page.click("#privatePayPay");
     await page.waitForSelector("#privatePayWallets:not([hidden])");
-    assert.equal(await page.locator("#privatePayWallets button").count(), 2);
+    assert.equal(await page.locator("#privatePayWallets button").count(), 3);
     assert.match(await page.locator("#privatePayWallets").textContent(), /Solflare/);
     assert.match(await page.locator("#privatePayWallets").textContent(), /Phantom/);
+    assert.match(await page.locator("#privatePayWallets").textContent(), /Jupiter Wallet/);
     assert.equal(await page.locator("#servicePaymentStatus").textContent(), "Choose the wallet you want to use.");
     assert.match(await page.locator("#privatePayMobileWallets").textContent(), /Open Phantom Mobile/);
     assert.match(await page.locator("#privatePayMobileWallets").textContent(), /Open Solflare Mobile/);
