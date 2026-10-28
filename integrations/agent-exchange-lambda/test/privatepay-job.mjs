@@ -1,15 +1,15 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { encodePaymentSignatureHeader } from "@x402/core/http";
+import { encodePaymentRequiredHeader, encodePaymentSignatureHeader } from "@x402/core/http";
 
 process.env.NODE_ENV = "test";
 process.env.AGENT_EXCHANGE_TEST_MODE = "true";
 process.env.AGENT_EXCHANGE_ALLOW_TEST_STORAGE = "true";
 process.env.AGENT_EXCHANGE_RPC_FIXTURE = "true";
 process.env.PRIVATEPAY_ENABLED = "true";
-process.env.PRIVATEPAY_PRIVACY_RAIL = "fixture-reviewed-mainnet-rail";
+process.env.PRIVATEPAY_PRIVACY_RAIL = "magicblock-private-ephemeral-rollup";
 process.env.PRIVATEPAY_FACILITATOR_URL = "https://privatepay-fixture.example";
-process.env.PRIVATEPAY_CONFIDENTIAL_MINT = "US517G5965aydkZ46HS38QLi7UQiSojurfbQfKCELFx";
+process.env.PRIVATEPAY_CONFIDENTIAL_MINT = "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v";
 process.env.PRIVATEPAY_CONFIDENTIAL_MINT_PROGRAM = "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb";
 process.env.PRIVATEPAY_CONFORMANCE_VERIFIED = "true";
 process.env.PRIVATEPAY_MAINNET_VERIFIED = "true";
@@ -23,6 +23,11 @@ process.env.PRIVATEPAY_PROVIDER_METADATA_DISCLOSURE_VERIFIED = "true";
 process.env.PRIVATEPAY_MERCHANT_ACCOUNTS_DELEGATED = "true";
 process.env.PRIVATEPAY_PDAO_GATE_ENABLED = "false";
 process.env.PRIVATEPAY_REQUIRE_ONCHAIN_SETTLEMENT_PROOF = "false";
+process.env.PRIVATEPAY_MERCHANT_CHECKOUT_ENABLED = "true";
+process.env.PRIVATEPAY_FACILITATOR_API_KEY = "fixture-merchant-key";
+process.env.PRIVATEPAY_PROVIDER_HANDLE = "provider@magicblock.id";
+process.env.PRIVATEPAY_PROVIDER_HANDLE_VERIFIED = "true";
+process.env.PRIVATEPAY_PAYMENT_INGRESS = "So11111111111111111111111111111111111111112";
 
 const { handler, resetForTests } = await import("../src/handler.mjs");
 
@@ -63,7 +68,7 @@ test("PrivatePAY job lifecycle verifies, settles, executes once, and redacts pub
     assert.match(created.headers["PAYMENT-REQUIRED"], /^[A-Za-z0-9+/=_-]+$/);
     const challenge = JSON.parse(created.body);
     assert.equal(challenge.error, "payment_required");
-    assert.equal(challenge.payment_required.accepts[0].scheme, "privatepay");
+    assert.equal(challenge.payment_required.accepts[0].scheme, "exact-magicblock");
     assert.equal(challenge.payment_required.accepts[0].amount, "550000");
     assert.equal(Object.hasOwn(challenge, "payment_intent"), false);
     const jobId = challenge.payment_required.resource.url.split("/api/jobs/")[1].split("/")[0];
@@ -80,10 +85,8 @@ test("PrivatePAY job lifecycle verifies, settles, executes once, and redacts pub
       resource: challenge.payment_required.resource,
       accepted: challenge.payment_required.accepts[0],
       payload: {
-        signature: "fixture-signed-locally",
-        request_id: challenge.request_id,
-        provider_commitment: challenge.payment_required.accepts[0].extra.provider_commitment,
-        amount_commitment: "b".repeat(64),
+        paymentId: challenge.payment_required.accepts[0].extra.paymentId,
+        transaction: "AQID",
       },
     });
     const completed = await request(`/api/jobs/${jobId}/privatepay`, "POST", undefined, { "PAYMENT-SIGNATURE": paymentSignature });
@@ -154,6 +157,21 @@ test("generic PrivatePAY x402 endpoint performs verify and settle with a redacte
   let facilitatorPayloads = [];
   globalThis.fetch = async (url, init = {}) => {
     const target = String(url);
+    if (target.endsWith("/v1/payments")) {
+      return new Response(JSON.stringify({ id: "a".repeat(64), status: "created" }), { status: 200, headers: { "content-type": "application/json" } });
+    }
+    if (target.includes("/v1/x402/payments/") && target.endsWith("/pay")) {
+      const accepted = {
+        scheme: "exact-magicblock",
+        network: "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+        asset: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+        amount: "1000",
+        payTo: "2BJ4ezxqV9YJXc38D9duKBkdn4su4jE1beKUHwH663sL",
+        maxTimeoutSeconds: 60,
+        extra: { paymentId: "a".repeat(64), cluster: "mainnet-private", settlement: "ephemeral-rollup", transaction: "AQID" },
+      };
+      return new Response(JSON.stringify({}), { status: 402, headers: { "content-type": "application/json", "PAYMENT-REQUIRED": encodePaymentRequiredHeader({ x402Version: 2, resource: { url: "api://generic" }, accepts: [accepted] }) } });
+    }
     if (target.endsWith("/verify")) {
       calls.push("verify");
       facilitatorPayloads.push(JSON.parse(init.body));
@@ -168,21 +186,20 @@ test("generic PrivatePAY x402 endpoint performs verify and settle with a redacte
   };
   try {
     resetForTests();
-    const unpaid = await request("/api/privatepay/x402", "POST", { resource: "api://generic", provider_id: "provider-1", amount_base_units: "1000" });
+    const input = { payer: "BkNcuvQZr6392aZCwcGnB6SQptV6vhWa7syJs5fgLz6", resource: "api://generic", provider_id: "provider-1", amount_base_units: "1000" };
+    const unpaid = await request("/api/privatepay/x402", "POST", input);
     assert.equal(unpaid.statusCode, 402);
     const challenge = JSON.parse(unpaid.body);
+    const paymentRequired = JSON.parse(Buffer.from(unpaid.headers["PAYMENT-REQUIRED"], "base64url").toString("utf8"));
     const signature = encodePaymentSignatureHeader({
       x402Version: 2,
-      resource: challenge.x402.resource,
-      accepted: challenge.x402.accepts[0],
+      resource: paymentRequired.resource,
+      accepted: paymentRequired.accepts[0],
       payload: {
-        signature: "fixture-signed-generic",
-        request_id: challenge.request_id,
-        provider_commitment: challenge.x402.accepts[0].extra.provider_commitment,
-        amount_commitment: "c".repeat(64),
+        transaction: "AQID",
       },
     });
-    const paid = await request("/api/privatepay/x402", "POST", { resource: "api://generic", provider_id: "provider-1", amount_base_units: "1000" }, { "PAYMENT-SIGNATURE": signature });
+    const paid = await request("/api/privatepay/x402", "POST", input, { "PAYMENT-SIGNATURE": signature });
     assert.equal(paid.statusCode, 200);
     const body = JSON.parse(paid.body);
     assert.equal(body.status, "paid");
@@ -191,7 +208,7 @@ test("generic PrivatePAY x402 endpoint performs verify and settle with a redacte
     assert.match(paid.headers["PAYMENT-RESPONSE"], /^[A-Za-z0-9+/=_-]+$/);
     assert.deepEqual(calls, ["verify", "settle"]);
     assert.equal(Object.hasOwn(facilitatorPayloads[0].paymentRequirements, "accepts"), false);
-    assert.equal(facilitatorPayloads[0].paymentRequirements.maxTimeoutSeconds, 300);
+    assert.equal(facilitatorPayloads[0].paymentRequirements.amount, "1000");
   } finally {
     globalThis.fetch = originalFetch;
   }

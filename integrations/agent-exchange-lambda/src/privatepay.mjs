@@ -71,8 +71,9 @@ function pdaoFeeBaseUnits({ amountBaseUnits: amount, priceUsd, decimals, feeBps,
   return { amount_usd: Number(amountUsd.toFixed(6)), fee_usd: Number(feeUsd.toFixed(6)), fee_base_units: String(units) };
 }
 
-async function privatePayPdaoQuote(config, input, amount, { requireWallet = false } = {}) {
+async function privatePayPdaoQuote(config, input, amount, { requireWallet = false, optional = false } = {}) {
   if (config.privatePayPdaoGateEnabled === false) return { required: false, status: "disabled_by_configuration" };
+  if (optional) return { required: false, status: "optional" };
   const payer = String(input.payer || input.wallet || "").trim();
   if (!SOLANA_ADDRESS.test(payer)) {
     if (requireWallet) throw Object.assign(new Error("payer wallet is required for the private PDAO gate"), { statusCode: 400, code: "PRIVATEPAY_PDAO_WALLET_REQUIRED" });
@@ -476,7 +477,7 @@ export async function createPrivatePayRequirements(config, input = {}) {
   const providerId = String(input.provider_id || "").trim();
   if (!resource || !providerId) throw Object.assign(new Error("resource and provider_id are required"), { statusCode: 400 });
   const amount = amountBaseUnits(input);
-  const pdao = await privatePayPdaoQuote(config, input, amount, { requireWallet: input.require_pdao_wallet === true });
+  const pdao = await privatePayPdaoQuote(config, input, amount, { requireWallet: input.require_pdao_wallet === true, optional: input.pdao_optional === true });
   const magicBlockRail = isMagicBlockRail(config);
   const requestId = `pp_${digest({ resource, providerId, amount, nonce: input.nonce || null }).slice(0, 32)}`;
   const requirements = {
@@ -614,6 +615,50 @@ export async function requestPrivatePayCheckoutChallenge(config, input = {}, fet
   if (!response.ok)
     throw Object.assign(new Error(`MagicBlock rejected checkout challenge (${response.status})`), { statusCode: 503, code: "PRIVATEPAY_CHALLENGE_REJECTED", provider_status: response.status });
   return { payment_id: paymentId, status: nonEmpty(payload.status) ? payload.status : "accepted" };
+}
+
+export function decodePrivatePayRequiredHeader(header) {
+  try {
+    const value = JSON.parse(Buffer.from(String(header || ""), "base64url").toString("utf8"));
+    if (value?.x402Version !== 2 || !Array.isArray(value.accepts) || !value.accepts[0]) throw new Error("invalid payment requirements");
+    return value;
+  } catch {
+    throw Object.assign(new Error("MagicBlock returned an invalid PAYMENT-REQUIRED header"), { statusCode: 503, code: "PRIVATEPAY_INVALID_PAYMENT_REQUIRED" });
+  }
+}
+
+function providerPaymentRequirements(paymentPayload) {
+  const accepted = paymentPayload?.accepted;
+  if (!paymentPayload || paymentPayload.x402Version !== 2 || !accepted || typeof accepted !== "object")
+    throw Object.assign(new Error("MagicBlock x402 payment payload is invalid"), { statusCode: 400, code: "PRIVATEPAY_INVALID_PAYMENT_PAYLOAD" });
+  if (accepted.scheme !== MAGICBLOCK_SCHEME || accepted.network !== SOLANA_MAINNET_CAIP2
+    || typeof accepted.asset !== "string" || typeof accepted.amount !== "string"
+    || typeof accepted.payTo !== "string" || !accepted.extra?.paymentId
+    || accepted.extra?.cluster !== MAGICBLOCK_PRIVATE_CLUSTER
+    || accepted.extra?.settlement !== "ephemeral-rollup")
+    throw Object.assign(new Error("MagicBlock x402 payment payload is not for the reviewed Mainnet private rail"), { statusCode: 400, code: "PRIVATEPAY_PAYMENT_MISMATCH" });
+  if (typeof paymentPayload.payload?.transaction !== "string" || !paymentPayload.payload.transaction)
+    throw Object.assign(new Error("MagicBlock x402 signed transaction is required"), { statusCode: 400, code: "PRIVATEPAY_INVALID_PAYMENT_PROOF" });
+  return accepted;
+}
+
+export async function privatePayMagicBlockFacilitatorRequest(config, operation, paymentPayload, fetchImpl = fetch) {
+  if (!new Set(["verify", "settle"]).has(operation))
+    throw Object.assign(new Error("unsupported MagicBlock facilitator operation"), { statusCode: 400, code: "PRIVATEPAY_INVALID_FACILITATOR_OPERATION" });
+  assertMerchantCheckoutReady(config);
+  const paymentRequirements = providerPaymentRequirements(paymentPayload);
+  const response = await fetchImpl(privatePayProviderUrl(config, `/v1/x402/${operation}`), {
+    method: "POST",
+    headers: merchantHeaders(config),
+    body: JSON.stringify({ x402Version: 2, paymentPayload, paymentRequirements }),
+    signal: AbortSignal.timeout(8000),
+  });
+  const result = await response.json().catch(() => ({}));
+  if (!response.ok)
+    throw Object.assign(new Error(`MagicBlock facilitator rejected ${operation} (${response.status})`), { statusCode: 503, code: "PRIVATEPAY_FACILITATOR_REJECTED", facilitator_status: response.status });
+  if (!result || typeof result !== "object" || Array.isArray(result))
+    throw Object.assign(new Error(`MagicBlock facilitator returned an invalid ${operation} response`), { statusCode: 503, code: "PRIVATEPAY_INVALID_FACILITATOR_RESPONSE" });
+  return { operation, ...result, payment_id: paymentRequirements.extra.paymentId };
 }
 
 export function decodePrivatePaySignature(header) {
