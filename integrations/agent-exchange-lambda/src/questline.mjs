@@ -122,11 +122,20 @@ export async function validateQuestEligibility({ storage, wallet, participationI
   if (!freeJob || !freeService || Number(freeService.price || 0) !== 0 || freeJob.status !== "completed" || freeJob.payment_mode !== "direct" || freeReceipt?.status !== "VERIFIED")
     throw safeError("QUESTLINE_FREE_ACTIVITY_REQUIRED", "a completed free Agent Exchange service receipt is required", 403);
   const privatePayJob = await storage.get("Jobs", privatePayJobId);
-  const privatePayPayment = privatePayJob?.id ? (await storage.list("Payments")).find((item) => item.job_id === privatePayJob.id && item.payment_mode === "privatepay") : null;
-  if (!privatePayJob || privatePayJob.status !== "completed" || privatePayJob.payment_mode !== "privatepay" || !privatePayJob.privatepay_settlement || !privatePayPayment || privatePayPayment.payer !== pubkey || privatePayPayment.state !== "settled")
+  const privatePayPayment = privatePayJob?.id
+    ? (await storage.list("Payments"))
+      .filter((item) => item.job_id === privatePayJob.id && item.payment_mode === "privatepay" && item.payer === pubkey && item.state === "settled")
+      .sort((a, b) => String(b.settled_at || b.updated_at || b.created_at || "").localeCompare(String(a.settled_at || a.updated_at || a.created_at || "")))[0]
+    : null;
+  if (!privatePayJob || privatePayJob.status !== "completed" || privatePayJob.payment_mode !== "privatepay" || privatePayJob.privatepay_settlement?.status !== "settled" || !privatePayPayment)
     throw safeError("QUESTLINE_PRIVATEPAY_ACTIVITY_REQUIRED", "a completed PrivatePAY x402 settlement is required", 403);
   const pdaoEligibility = pdaoEligibilityId ? await storage.get("Registry", pdaoEligibilityId) : null;
-  if (pdaoEligibilityId && (!pdaoEligibility || pdaoEligibility.wallet !== pubkey || pdaoEligibility.eligible !== true))
+  const pdaoVerified = pdaoEligibility?.wallet === pubkey && (
+    pdaoEligibility.eligible === true ||
+    pdaoEligibility.benefit?.eligible === true ||
+    pdaoEligibility.pdao_benefit?.eligible === true
+  );
+  if (pdaoEligibilityId && !pdaoVerified)
     throw safeError("QUESTLINE_PDAO_ELIGIBILITY_INVALID", "optional PDAO eligibility record is not verified", 403);
   const evidence = evidencePublic({ participation, freeJob, freeReceipt, privatePayJob, privatePayPayment, pdaoEligibility });
   return { wallet: pubkey, evidence, key: completionKey({ questId, wallet: pubkey, freeJobId, privatePayJobId }) };
@@ -136,17 +145,28 @@ export async function validateAndPushQuest({ storage, client, config = questline
   const result = await validateQuestEligibility({ storage, wallet, participationId, freeJobId, privatePayJobId, pdaoEligibilityId, questId: config.questId });
   const existing = await storage.get("QuestlineCompletions", result.key);
   if (existing?.state === "completed") return { status: "duplicate", completion_id: result.key, evidence: existing.evidence };
-  const pending = { id: result.key, kind: "questline_completion", quest_id: config.questId, wallet_fingerprint: walletFingerprint(result.wallet), state: "pending", evidence: result.evidence, created_at: now() };
-  try { await storage.put("QuestlineCompletions", result.key, pending, true); } catch { return { status: "in_progress", completion_id: result.key }; }
+  if (!config.pushEnabled) {
+    const validated = { id: result.key, kind: "questline_completion", quest_id: config.questId, wallet_fingerprint: walletFingerprint(result.wallet), state: "validated", evidence: result.evidence, validated_at: existing?.validated_at || now(), created_at: existing?.created_at || now() };
+    await storage.put("QuestlineCompletions", result.key, validated);
+    return { status: "validated", completion_id: result.key, push: "disabled", evidence: result.evidence };
+  }
+  const claimExpiresAt = new Date(Date.now() + 300000).toISOString();
+  const pending = { id: result.key, kind: "questline_completion", quest_id: config.questId, wallet_fingerprint: walletFingerprint(result.wallet), state: "pending", evidence: result.evidence, created_at: existing?.created_at || now(), claim_started_at: now(), claim_expires_at: claimExpiresAt, claim_installation_id: result.key };
   try {
-    if (!config.pushEnabled) return { status: "validated", completion_id: result.key, push: "disabled", evidence: result.evidence };
+    if (!existing) await storage.put("QuestlineCompletions", result.key, pending, true);
+    else if (existing.state === "pending" && existing.claim_expires_at && Date.parse(existing.claim_expires_at) > Date.now()) return { status: "in_progress", completion_id: result.key };
+    else if (typeof storage.claim === "function") await storage.claim("QuestlineCompletions", result.key, { claim_started_at: pending.claim_started_at, claim_expires_at: claimExpiresAt, claim_installation_id: result.key });
+    else await storage.put("QuestlineCompletions", result.key, pending);
+    await storage.put("QuestlineCompletions", result.key, pending);
+  } catch { return { status: "in_progress", completion_id: result.key }; }
+  try {
     const pushed = await client.pushCompletion({ wallet: result.wallet, evidence: result.evidence, idempotencyKey: result.key });
     const completed = { ...pending, state: "completed", pushed_at: now(), push_status: pushed.status };
     await storage.put("QuestlineCompletions", result.key, completed);
     logger({ event: "questline_completion_pushed", quest_id: config.questId, wallet_fingerprint: walletFingerprint(result.wallet), completion_id: result.key, status: pushed.status });
     return { status: pushed.duplicate ? "duplicate" : "pushed", completion_id: result.key, evidence: result.evidence };
   } catch (error) {
-    await storage.put("QuestlineCompletions", result.key, { ...pending, state: "push_failed", error_code: error.code || "QUESTLINE_PUSH_FAILED", failed_at: now() });
+    await storage.put("QuestlineCompletions", result.key, { ...pending, state: "push_failed", claim_expires_at: now(), error_code: error.code || "QUESTLINE_PUSH_FAILED", failed_at: now() });
     throw error;
   }
 }
