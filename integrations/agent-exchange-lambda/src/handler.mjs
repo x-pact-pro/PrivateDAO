@@ -1657,6 +1657,68 @@ function privatePayCheckoutPageMagic() {
 <div class="pm-body"><div class="pm-card" id="privatepay-payment"><p class="pm-kicker">PrivatePAY x402 · private settlement</p><h2 id="service-checkout-title">Pay privately with your wallet</h2><p>Review the amount, connect a Solana wallet, and sign the exact MagicBlock payment locally. PDAO holder access is optional and never blocks payment.</p><div class="pm-payment"><div class="pm-payment-head"><span>Payment request</span><span class="pm-live">Mainnet private</span></div><div class="pm-field"><label for="privatePayAmount">You send</label><div class="pm-amount-row"><span class="pm-token"><span class="pm-token-dot" aria-hidden="true">$</span>USDC</span><input id="privatePayAmount" class="pm-amount" value="0.50" inputmode="decimal" autocomplete="off" aria-label="Service amount in USDC"></div><small style="display:block;margin-top:8px;color:#8092a8;text-align:right">Exact amount shown in your wallet before signing</small></div><div class="pm-field"><label>Recipient</label><div class="pm-destination"><div><strong>PrivateDAO service vault</strong><span>MagicBlock private settlement rail</span></div><span class="pm-destination-badge">Protected</span></div></div></div><div class="pm-actions"><button id="privatePayPay" class="button pm-primary" type="button">Connect wallet and pay</button><a class="button pm-secondary" href="/mcp">Connect an agent</a></div><pre id="servicePaymentStatus" class="pm-status" aria-live="polite">Ready. No wallet connection or payment has been requested.</pre></div><aside class="pm-side" id="privatepay-details"><div class="pm-side-card"><h3>PrivatePAY x402</h3><p>Agent-ready access to PrivateDAO services with USDC settlement through the MagicBlock private rail.</p><div class="pm-step"><span class="pm-step-num">1</span><div><strong>Request</strong><span>Receive an exact x402 challenge.</span></div></div><div class="pm-step"><span class="pm-step-num">2</span><div><strong>Approve</strong><span>Sign the unchanged transaction in your wallet.</span></div></div><div class="pm-step"><span class="pm-step-num">3</span><div><strong>Settle</strong><span>Get the service response and receipt.</span></div></div></div><div class="pm-side-card"><h3>What you get</h3><ul><li>USDC on Solana Mainnet</li><li>Wallet stays local</li><li>PDAO benefits remain optional</li><li>Machine-readable x402 response</li></ul></div></aside></div><div class="pm-bottom"><span><b>PrivateDAO</b> service access</span><span>USDC</span><span>MagicBlock private settlement</span><span style="margin-left:auto">No private key requested</span></div>${script}`;
 }
 
+function privatePayServicePage() {
+  const checkout = privatePayCheckoutPageMagic()
+    .replace('PrivatePAY x402 · private settlement', 'PrivatePAY x402 privacy rail · private settlement')
+    .replace('..hero-rail', '.hero-rail');
+  const walletFlow = `<script>
+let privatePayButton=document.querySelector('#privatePayPay');
+const privatePayAmount=document.querySelector('#privatePayAmount');
+const privatePayStatus=document.querySelector('#servicePaymentStatus');
+let privatePayWallet=null;
+let privatePayPayer='';
+const privatePayProvider=()=>window.solflare?.solana||window.solflare||window.phantom?.solana||window.phantom||window.solana;
+const privatePayAddress=value=>{const key=value?.publicKey||value?.account?.address||value?.accounts?.[0]?.address;return typeof key==='string'?key:key?.toBase58?.()||key?.toString?.()||''};
+const privatePayEncode=bytes=>{let binary='';for(const byte of bytes)binary+=String.fromCharCode(byte);return btoa(binary).replace(/\\+/g,'-').replace(/\\//g,'_').replace(/=+$/,'')};
+const privatePayDecode=value=>{const text=String(value),padded=text.replace(/-/g,'+').replace(/_/g,'/')+'='.repeat((4-text.length%4)%4);return Uint8Array.from(atob(padded),c=>c.charCodeAt(0))};
+const privatePayUnits=()=>{const value=Number(String(privatePayAmount.value).trim());if(!Number.isFinite(value)||value<=0)throw Error('Enter a positive USDC amount');return String(Math.round(value*1000000))};
+async function connectPrivatePayWallet(){
+  const wallet=privatePayProvider();
+  if(!wallet||typeof wallet.connect!=='function')throw Error('No Solana wallet detected. Open this page in Phantom or Solflare, or install a browser wallet.');
+  privatePayStatus.textContent='Connecting wallet… approve the connection request in your wallet.';
+  let connected;
+  try{connected=await wallet.connect({onlyIfTrusted:false});}catch(first){connected=await wallet.connect();}
+  privatePayPayer=privatePayAddress(connected)||privatePayAddress(wallet);
+  if(!privatePayPayer)throw Error('Wallet connected but did not return a public Solana address. Unlock the wallet and try again.');
+  privatePayWallet=wallet;
+  privatePayButton.textContent='Request payment';
+  privatePayStatus.textContent='Wallet connected: '+privatePayPayer+'\\nNo transaction has been signed.';
+}
+async function requestPrivatePay(){
+  if(!privatePayWallet||!privatePayPayer)return connectPrivatePayWallet();
+  privatePayButton.disabled=true;
+  try{
+    const amountBaseUnits=privatePayUnits();
+    privatePayStatus.textContent='Requesting an exact MagicBlock x402 challenge…';
+    const resource=location.origin+'/services/privatepay-x402';
+    const first=await fetch('/api/privatepay/x402',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({payer:privatePayPayer,resource,provider_id:'privatepay.x402',amount_base_units:amountBaseUnits,pdao_optional:true})});
+    const firstBody=await first.json().catch(()=>({}));
+    const requiredHeader=first.headers.get('PAYMENT-REQUIRED');
+    if(first.status!==402||!requiredHeader){
+      const reason=firstBody.code==='PRIVATEPAY_CHECKOUT_DISABLED'?'Merchant checkout is not activated on the production rail yet.':(firstBody.message||firstBody.error||'MagicBlock payment challenge unavailable');
+      throw Error(reason);
+    }
+    const required=JSON.parse(new TextDecoder().decode(privatePayDecode(requiredHeader))),accepted=required.accepts?.[0],raw=accepted?.extra?.transaction;
+    if(!raw)throw Error('MagicBlock returned a challenge without a signable transaction.');
+    const web3=await import('/assets/browser/solana-web3.mjs');
+    const unsigned=web3.VersionedTransaction.deserialize(privatePayDecode(raw));
+    privatePayStatus.textContent='Challenge ready. Review the exact amount and approve the unchanged transaction in your wallet.';
+    const signed=await privatePayWallet.signTransaction(unsigned);
+    const transaction=privatePayEncode(signed.serialize({requireAllSignatures:false,verifySignatures:false}));
+    const payload={x402Version:2,resource:required.resource,accepted,payload:{paymentId:accepted.extra.paymentId,transaction}};
+    const paymentSignature=privatePayEncode(new TextEncoder().encode(JSON.stringify(payload)));
+    privatePayStatus.textContent='Signed locally. Waiting for the private settlement receipt…';
+    const second=await fetch('/api/privatepay/x402',{method:'POST',headers:{'content-type':'application/json','payment-signature':paymentSignature},body:JSON.stringify({payer:privatePayPayer,resource,provider_id:'privatepay.x402',amount_base_units:amountBaseUnits,pdao_optional:true})});
+    const secondBody=await second.json().catch(()=>({}));
+    privatePayStatus.textContent=JSON.stringify({status:second.status,payment_id:accepted.extra.paymentId,response:secondBody,payment_response:second.headers.get('PAYMENT-RESPONSE')||null},null,2);
+  }catch(error){privatePayStatus.textContent='PRIVATE PAYMENT ERROR: '+(error.message||String(error));}
+  finally{privatePayButton.disabled=false;}
+}
+setTimeout(()=>{if(!privatePayButton)return;const replacement=privatePayButton.cloneNode(true);privatePayButton.replaceWith(replacement);privatePayButton=replacement;privatePayButton.addEventListener('click',()=>requestPrivatePay().catch(error=>{privatePayStatus.textContent='WALLET ERROR: '+(error.message||String(error));privatePayButton.disabled=false;}));},0);
+</script>`;
+  return injectLanguageWidget(`<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>PrivatePAY x402 | PrivateDAO</title><meta name="description" content="PrivateDAO PrivatePAY x402 checkout powered by MagicBlock on Solana Mainnet."><style>:root{--ink:#071a32;--muted:#52657c;--line:#dbe5ef;--blue:#1769e0;--green:#087f5b;--navy:#101a31}*{box-sizing:border-box}body{margin:0;background:#f7faff;color:var(--ink);font-family:Inter,system-ui,sans-serif;line-height:1.55}main{max-width:1180px;margin:0 auto;padding:24px 22px 64px}.site-header{display:flex;justify-content:space-between;align-items:center;gap:20px;padding:8px 0 48px}.site-brand{color:var(--ink);font-weight:850;text-decoration:none}.site-nav{display:flex;gap:18px;flex-wrap:wrap}.site-nav a{color:var(--blue);font-weight:750;text-decoration:none}.hero{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(260px,.7fr);gap:22px;align-items:end;margin-bottom:22px}.eyebrow{color:var(--blue);font-size:.72rem;font-weight:850;letter-spacing:.12em;text-transform:uppercase}.hero h1{max-width:720px;margin:10px 0;font-size:clamp(2.4rem,6vw,5.2rem);line-height:.98;letter-spacing:-.04em}.lead{max-width:690px;color:var(--muted);font-size:1.05rem}..hero-rail{padding:18px;border:1px solid #b9dfcf;border-radius:14px;background:#f1fbf6}.hero-rail strong{display:block;color:var(--green);font-size:1.35rem}.hero-rail span{display:block;margin-top:4px;color:var(--muted);font-size:.86rem}.proof-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:22px}.proof-card{padding:16px;border:1px solid var(--line);border-radius:12px;background:#fff}.proof-card strong{display:block;margin-bottom:4px}.proof-card span{color:var(--muted);font-size:.86rem}.page-footer{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-top:22px;padding-top:18px;border-top:1px solid var(--line);color:var(--muted);font-size:.84rem}.page-footer a{color:var(--blue);font-weight:750;text-decoration:none}@media(max-width:760px){main{padding:18px 14px 48px}.site-header{align-items:flex-start;flex-direction:column;padding-bottom:30px}.hero{grid-template-columns:1fr}.hero h1{font-size:clamp(2.35rem,13vw,4rem)}.proof-grid{grid-template-columns:1fr}}</style>${walletStandardBootstrap()}</head><body><main><header class="site-header"><a class="site-brand" href="/">PrivateDAO Agent Exchange</a><nav class="site-nav" aria-label="PrivateDAO navigation"><a href="/marketplace">Marketplace</a><a href="/services">Services</a><a href="/mcp">Agent access</a></nav></header><section class="hero"><div><p class="eyebrow">PrivateDAO PrivatePAY x402</p><h1>Private service access, ready for agents and wallets.</h1><p class="lead">Request an exact USDC quote, connect your Solana wallet, and approve the unchanged MagicBlock payment only when you are ready.</p></div><aside class="hero-rail"><strong>Powered by MagicBlock</strong><span>Solana Mainnet · USDC · x402 v2</span><span>PrivateDAO service settlement</span></aside></section>${checkout}<section class="proof-grid" aria-label="PrivatePAY service capabilities"><article class="proof-card"><strong>Exact request</strong><span>One quoted amount and one payment challenge for each service request.</span></article><article class="proof-card"><strong>Wallet-local approval</strong><span>Your wallet remains in control and signs the transaction locally.</span></article><article class="proof-card"><strong>Agent-ready receipt</strong><span>Successful settlement returns a machine-readable x402 response.</span></article></section><footer class="page-footer"><span>PrivateDAO PrivatePAY · USDC service access</span><span><a href="/api/privatepay/status">Live status</a> · <a href="/mcp">Connect an agent</a></span></footer></main>${walletFlow}</body></html>`);
+}
+
 function serviceCheckoutPageV2(service) {
   if (service.id === PRIVATEPAY_SERVICE_ID && !privatePayStatus(config).enabled) {
     return `<section class="panel checkout" style="margin-top:14px;border-color:#e2b04a;background:#fffaf0" aria-labelledby="service-checkout-title"><h2 id="service-checkout-title">PrivatePAY execution is activation-gated</h2><p class="muted">The public status and architecture are available for review. Payment execution remains disabled until the funded Mainnet privacy and x402 settlement evidence gates are independently verified.</p><p><a class="button" href="/api/privatepay/status" target="_blank" rel="noreferrer">View live readiness status <span aria-hidden="true">↗</span></a></p><pre id="servicePaymentStatus" aria-live="polite">No wallet connection, signature, or payment is requested while activation is gated.</pre></section>`;
@@ -1712,6 +1774,9 @@ $("payService")?.addEventListener("click",async()=>{const button=$("payService")
 </script></section>`;
 }
 function serviceDetailPage(service) {
+  if (service.id === PRIVATEPAY_SERVICE_ID && privatePayStatus(config).enabled) {
+    return privatePayServicePage();
+  }
   // This checkout script is intentionally classic: it is inline after the controls,
   // so it must bind synchronously even when a browser blocks module execution.
   const checkout = serviceCheckoutPageV2(service)
