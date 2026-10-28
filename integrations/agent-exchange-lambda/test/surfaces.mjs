@@ -537,6 +537,13 @@ test("every catalog capability has a stable detail page", async () => {
       assert.match(response.body, /Activation gated/, service.id);
       assert.match(response.body, /\/api\/privatepay\/status/, service.id);
       assert.doesNotMatch(response.body, /Pay quoted USDC/, service.id);
+      if (response.body.includes("privatepay-magic-shell")) {
+        assert.match(response.body, /Powered by MagicBlock · Solana Mainnet/, service.id);
+        assert.match(response.body, /Payment.*Swap.*Shield.*Request/, service.id);
+        assert.match(response.body, /Connect wallet and pay/, service.id);
+      } else {
+        assert.match(response.body, /PrivatePAY execution is activation-gated/, service.id);
+      }
       continue;
     }
     assert.match(response.body, /Service input JSON/, service.id);
