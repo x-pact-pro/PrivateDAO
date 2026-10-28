@@ -50,6 +50,7 @@ export class MemoryStore {
     this.rateLimits.set(key, entry);
     return { allowed: entry.count <= limit, retryAfterSeconds: Math.max(1, Math.ceil((entry.expiresAt - now) / 1000)) };
   }
+
 }
 
 export async function createStore(config) {

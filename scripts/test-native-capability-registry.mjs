@@ -8,7 +8,7 @@ const verifiedDevnet = entries.filter((entry) => entry.status === "devnet_verifi
 const verifiedPayroll = verifiedDevnet.filter((entry) => entry.product === "payroll");
 
 assert.equal(entries.length, 216, "unexpected native capability matrix size");
-assert.equal(verified.length, 74, "only evidence-backed testnet verification and organizational rows should be verified");
+assert.equal(verified.length, 83, "only evidence-backed testnet verification and organizational rows should be verified");
 assert.equal(liveAgents.length, 2, "the two live Agent Exchange rows must be runtime-verified");
 assert.equal(verifiedPayroll.length, 2, "only Payroll calculation and approval remain enabled on Solana Devnet");
 assert.equal(verifiedDevnet.length, 9, "Solana Devnet must include the evidenced verification, payroll, governance, treasury, and auction lanes");
@@ -100,15 +100,16 @@ assert.equal(entries.some((entry) => entry.network === "zcash-testnet" && entry.
 for (const product of ["blind-verification", "record-verification", "treasury", "auction"]) {
   const zcashRows = entries.filter((entry) => entry.network === "zcash-testnet" && entry.product === product && entry.declared);
   assert.ok(zcashRows.length > 0, `${product} must expose a Zcash Kernel policy workflow`);
-  assert.equal(zcashRows.every((entry) => entry.status === "testnet_ready" && entry.evidence === "runtime-only"), true, `${product} Zcash policy rows must not claim E2E`);
+  assert.equal(zcashRows.every((entry) => entry.status === "testnet_verified" && entry.evidence === "testnet-e2e"), true, `${product} Zcash rows must reflect the isolated Testnet E2E evidence`);
 }
 const zcashPayrollPolicyRows = entries.filter((entry) => entry.network === "zcash-testnet" && entry.product === "payroll" && ["payroll.calculate", "payroll.approve"].includes(entry.capability) && entry.declared);
 assert.equal(zcashPayrollPolicyRows.length, 2, "Zcash payroll policy workflows must be declared");
-assert.equal(zcashPayrollPolicyRows.every((entry) => entry.status === "testnet_ready" && entry.evidence === "runtime-only"), true, "Zcash payroll policy rows must be Kernel-ready without claiming settlement");
+assert.equal(zcashPayrollPolicyRows.every((entry) => entry.status === "testnet_verified" && entry.evidence === "testnet-e2e"), true, "Zcash payroll policy rows must reflect the isolated Testnet E2E evidence");
 const zcashGovernance = entries.filter((entry) => entry.network === "zcash-testnet" && entry.product === "governance" && entry.capability === "governance.proposal.execute" && entry.declared);
 assert.equal(zcashGovernance.length, 1, "Zcash governance policy workflow must be declared");
-assert.equal(zcashGovernance[0].status, "testnet_ready");
-assert.equal(zcashGovernance[0].provider, "privatedao-kernel-policy");
+assert.equal(zcashGovernance[0].status, "testnet_verified");
+assert.equal(zcashGovernance[0].evidence, "testnet-e2e");
+assert.equal(zcashGovernance[0].provider, "zcash-testnet-zallet");
 const solanaPolicyRows = entries.filter((entry) => entry.network === "solana-devnet" && ["blind-verification", "record-verification"].includes(entry.product) && entry.declared);
 assert.ok(solanaPolicyRows.length >= 3, "Solana verification workflows must be available through the Kernel policy provider");
 assert.equal(solanaPolicyRows.every((entry) => entry.status === "devnet_verified" && entry.evidence === "devnet-e2e"), true, "Solana verification rows must reflect their confirmed Devnet E2E evidence");

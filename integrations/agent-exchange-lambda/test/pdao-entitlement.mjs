@@ -49,7 +49,7 @@ test("PDAO holder access verifies the exact signed challenge, balance and one-ti
     assert.equal(verified.monthly_credit_usd, 1);
     assert.equal(verified.discount_percent, 5);
     assert.equal(verified.benefit.charge_usd, 0);
-    assert.deepEqual(verified.usage_limits, { per_minute: 10, daily: 100, monthly: 1000 });
+    assert.deepEqual(verified.usage_limits, { per_minute: 10, daily: 100, monthly: 1000, multiplier: 1 });
     await assert.rejects(() => verifyPdaoHolderAccess({ config, storage, access, serviceId: "wallet.intelligence", input }), /already used/);
   } finally {
     global.fetch = previousFetch;
@@ -69,14 +69,19 @@ test("holder rewards select the highest tier and apply credit before a non-stack
     discount_percent: 10,
     charge_usd: 0.045,
     fully_covered: false,
+    priority_weight: 20,
+    priority_class: "holder_plus",
+    privatepay_fee_discount_bps: 1000,
+    seller_listing_discount_bps: 5000,
   });
   assert.equal(calculatePdaoBenefit({ tier: pdaoTierForValue(250), servicePrice: 0.25, creditRemainingUsd: 15, creditRequestsUsed: 0 }).eligible, false);
 });
 
 test("holder policy is explicit and credit settlement is idempotent", async () => {
   const policy = publicPdaoBenefitPolicy(0);
-  assert.equal(policy.qualification_mode, "current_balance_pilot");
+  assert.equal(policy.qualification_mode, "current_balance_at_each_service_execution");
   assert.deepEqual(policy.tiers.map((tier) => tier.id), ["access", "plus", "pro"]);
+  assert.equal(policy.tiers.at(-1).seller_listing_discount_percent, 100);
   const storage = new MemoryStore();
   await storage.put("Registry", "pdao_access_entitlement_wallet", {
     id: "pdao_access_entitlement_wallet",
@@ -115,10 +120,11 @@ test("historical holder qualification fails closed before seven days of snapshot
   try {
     const storage = new MemoryStore();
     const input = { network: "solana-mainnet-beta" };
-    const challenge = await issuePdaoChallenge({ config: historicalConfig, storage, wallet: wallet.publicKey.toBase58(), serviceId: "wallet.intelligence", input });
+    const afterPromotion = new Date("2026-11-21T00:00:00.000Z");
+    const challenge = await issuePdaoChallenge({ config: historicalConfig, storage, wallet: wallet.publicKey.toBase58(), serviceId: "wallet.intelligence", input, now: afterPromotion });
     const signature = nacl.sign.detached(new TextEncoder().encode(challenge.message), wallet.secretKey);
     await assert.rejects(
-      () => verifyPdaoHolderAccess({ config: historicalConfig, storage, serviceId: "wallet.intelligence", input, access: { wallet: challenge.wallet, message: challenge.message, nonce: challenge.nonce, signature: Buffer.from(signature).toString("base64") } }),
+      () => verifyPdaoHolderAccess({ config: historicalConfig, storage, serviceId: "wallet.intelligence", input, now: afterPromotion, access: { wallet: challenge.wallet, message: challenge.message, nonce: challenge.nonce, signature: Buffer.from(signature).toString("base64") } }),
       /requires 7 consecutive days/,
     );
     assert.equal((await storage.list("Registry")).filter((item) => item.kind === "pdao_holder_balance_snapshot").length, 1);

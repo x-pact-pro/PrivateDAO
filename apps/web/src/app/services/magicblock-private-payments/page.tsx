@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { ArrowRight, Bot, CheckCircle2, ExternalLink, LockKeyhole, WalletCards, Zap } from "lucide-react";
 
 import { LocalizedRouteSummary } from "@/components/localized-route-summary";
 import { MagicBlockPrivatePaymentsStatus } from "@/components/magicblock-private-payments-status";
@@ -11,7 +12,7 @@ import { cn } from "@/lib/utils";
 export const metadata: Metadata = buildRouteMetadata({
   title: "MagicBlock Private Payments",
   description:
-    "MagicBlock private payment corridor with on-chain Testnet proof, challenge/login authenticated private reads, and wallet-signed deposit, transfer, withdraw, settle, and execute receipts.",
+    "PrivatePAY x402 gives people and agents a simple way to request a service, approve a private Solana payment, and receive a verifiable receipt.",
   path: "/services/magicblock-private-payments",
   keywords: ["magicblock", "private payments", "ephemeral rollups", "solana payments", "private balance"],
 });
@@ -19,54 +20,66 @@ export const metadata: Metadata = buildRouteMetadata({
 export default function MagicBlockPrivatePaymentsPage() {
   return (
     <OperationsShell
-      eyebrow="MagicBlock track"
-      title="On-chain private payment corridor for MagicBlock execution"
-      description="This route exposes MagicBlock as an execution lane: live Solana RPC proof for the corridor, finalized private payment receipts, challenge initiation, bearer-token private reads, and wallet-signed continuation in one place."
+      eyebrow="PrivatePAY x402"
+      title="Private payments for real AI commerce"
+      description="Let people and agents discover a service, approve a quote, pay with their wallet, and receive a clear receipt. MagicBlock supplies the private settlement rail behind the experience."
       badges={[
-        { label: "Private Payments API", variant: "cyan" },
-        { label: "Challenge/login", variant: "success" },
-        { label: "On-chain receipts", variant: "violet" },
+        { label: "Built on Solana", variant: "cyan" },
+        { label: "MagicBlock settlement", variant: "success" },
+        { label: "Agent-ready", variant: "violet" },
       ]}
     >
       <LocalizedRouteSummary routeKey="services" />
 
-      <section className="rounded-[28px] border border-cyan-300/18 bg-cyan-300/[0.055] p-5">
-        <div className="text-[11px] uppercase tracking-[0.28em] text-cyan-100/72">Frontier protocol spine</div>
-        <h2 className="mt-3 text-2xl font-semibold text-white">MagicBlock is bound to the same visitor-repeatable on-chain claim layer</h2>
-        <p className="mt-3 max-w-4xl text-sm leading-7 text-white/66">
-          The corridor keeps its native MagicBlock proof endpoint and finalized Solana Testnet receipts, while every visitor can create a fresh
-          PDAO_ENCRYPTED_CLAIM_V1 Memo claim from the browser and verify the signature on Explorer. Building and development continue without interruption as PER delegation evidence is deepened.
-        </p>
-        <div className="mt-4 flex flex-wrap gap-3">
-          <a href="https://api.privatedao.org/api/v1/frontier/privacy-protocol-spine" target="_blank" rel="noreferrer" className={cn(buttonVariants({ size: "sm" }))}>
-            Verify protocol spine
-          </a>
-          <a href="https://api.privatedao.org/api/v1/privacy-execution-claims/prepare?claim=private-payments" target="_blank" rel="noreferrer" className={cn(buttonVariants({ size: "sm", variant: "secondary" }))}>
-            Prepare MagicBlock claim
-          </a>
+      <section className="grid gap-4 lg:grid-cols-[1.15fr_0.85fr]">
+        <div className="rounded-[24px] border border-[#cfe0f2] bg-[#f4f8fc] p-6 sm:p-8">
+          <div className="flex items-center gap-2 text-sm font-semibold text-[#175cd3]"><Zap className="h-4 w-4" /> A checkout that works for humans and software</div>
+          <h2 className="mt-4 max-w-xl text-3xl font-semibold tracking-[-0.035em] text-[#10233f]">One private payment rail. Two simple entry points.</h2>
+          <p className="mt-3 max-w-xl text-sm leading-7 text-[#5d6d82]">Use the service directly from a wallet, or let an agent discover and call it through the Agent Exchange.</p>
+          <div className="mt-6 flex flex-wrap gap-3">
+            <Link href="/agents" className={cn(buttonVariants({ size: "lg" }))}>Explore services <ArrowRight className="h-4 w-4" /></Link>
+            <a href="https://quests.magicblock.app/" target="_blank" rel="noreferrer" className={cn(buttonVariants({ size: "lg", variant: "outline" }))}>Open Questline <ExternalLink className="h-4 w-4" /></a>
+          </div>
+        </div>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
+          <Link href="/agents" className="group rounded-[20px] border border-[#dce5f0] bg-white p-5 transition hover:border-[#175cd3]">
+            <WalletCards className="h-5 w-5 text-[#175cd3]" />
+            <h3 className="mt-3 font-semibold text-[#10233f]">For people</h3>
+            <p className="mt-2 text-sm leading-6 text-[#5d6d82]">Connect a wallet, choose a service, and approve the exact payment.</p>
+            <span className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-[#175cd3]">Start with a service <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" /></span>
+          </Link>
+          <Link href="/agents" className="group rounded-[20px] border border-[#dce5f0] bg-white p-5 transition hover:border-[#175cd3]">
+            <Bot className="h-5 w-5 text-[#175cd3]" />
+            <h3 className="mt-3 font-semibold text-[#10233f]">For agents</h3>
+            <p className="mt-2 text-sm leading-6 text-[#5d6d82]">Discover machine-ready tools, request access, and return a payment receipt.</p>
+            <span className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-[#175cd3]">Browse Agent Exchange <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" /></span>
+          </Link>
         </div>
       </section>
 
-      <div className="rounded-[28px] border border-white/10 bg-white/[0.04] p-6">
-        <div className="text-[11px] uppercase tracking-[0.28em] text-white/44">Reviewer route</div>
-        <h2 className="mt-3 text-2xl font-semibold text-white">MagicBlock proof starts on-chain, then protects private reads</h2>
-        <p className="mt-3 max-w-4xl text-sm leading-7 text-white/66">
-          The public proof endpoint checks the corridor PDA and finalized Testnet receipts live through Solana RPC. Private
-          balances remain behind MagicBlock challenge/login, then the user wallet signs and submits any payment
-          transaction to the connection returned by the payments API.
-        </p>
-        <div className="mt-5 flex flex-wrap gap-3">
-          <Link href="/services/umbra-confidential-payout" className={cn(buttonVariants({ size: "sm" }))}>
-            Open Umbra payout lane
-          </Link>
-          <Link href="/services/cloak-private-settlement" className={cn(buttonVariants({ size: "sm", variant: "secondary" }))}>
-            Open Cloak lane
-          </Link>
-          <Link href="/proof" className={cn(buttonVariants({ size: "sm", variant: "outline" }))}>
-            Open proof
-          </Link>
+      <section className="border-y border-[#dce5f0] py-8">
+        <div className="text-[11px] font-bold uppercase tracking-[0.24em] text-[#175cd3]">The PrivatePAY flow</div>
+        <div className="mt-5 grid gap-4 md:grid-cols-3">
+          {[
+            ["01", "Discover", "Find a useful service through the marketplace or an agent."],
+            ["02", "Approve", "Review the recipient, amount, and purpose before signing."],
+            ["03", "Verify", "Receive a settlement receipt that can be checked later."],
+          ].map(([number, title, body]) => <div key={number} className="flex gap-4 border-l-2 border-[#b9d8f2] pl-4">
+            <div className="text-sm font-bold text-[#175cd3]">{number}</div>
+            <div><h3 className="font-semibold text-[#10233f]">{title}</h3><p className="mt-1 text-sm leading-6 text-[#5d6d82]">{body}</p></div>
+          </div>)}
         </div>
-      </div>
+      </section>
+
+      <section className="rounded-[24px] border border-[#dce5f0] bg-white p-6 sm:p-8">
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div><div className="text-[11px] font-bold uppercase tracking-[0.24em] text-[#175cd3]">Live settlement rail</div><h2 className="mt-3 text-2xl font-semibold text-[#10233f]">Powered by MagicBlock private settlement</h2><p className="mt-3 max-w-3xl text-sm leading-7 text-[#5d6d82]">The experience stays simple at the surface while the payment corridor keeps a clear, verifiable record underneath.</p></div>
+          <CheckCircle2 className="h-8 w-8 text-emerald-500" aria-hidden="true" />
+        </div>
+        <div className="mt-6 grid gap-3 sm:grid-cols-3">
+          {[[LockKeyhole, "Private by design"], [CheckCircle2, "Receipt-backed"], [Zap, "Agent-ready"]].map(([Icon, label]) => <div key={label as string} className="flex items-center gap-3 rounded-[14px] bg-[#f7f9fc] px-4 py-3 text-sm font-semibold text-[#425570]"><Icon className="h-4 w-4 text-[#175cd3]" />{label as string}</div>)}
+        </div>
+      </section>
 
       <MagicBlockPrivatePaymentsStatus />
     </OperationsShell>

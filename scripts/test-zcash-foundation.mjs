@@ -76,7 +76,7 @@ appendFileSync(${JSON.stringify(callsPath)}, method + "\\n");
 if (method === "getwalletinfo") {
   console.log(JSON.stringify({ locked: false }));
 } else if (method === "getwalletstatus") {
-  console.log(JSON.stringify({ node_tip: { height: 100 } }));
+  console.log(JSON.stringify({ node_tip: { height: 100 }, wallet_tip: { height: 100 }, locked: false }));
 } else if (method === "z_gettotalbalance") {
   console.log(JSON.stringify({ orchard: "1.0" }));
 } else if (method === "z_sendmany") {

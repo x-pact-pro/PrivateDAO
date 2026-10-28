@@ -25,6 +25,7 @@ const DETAILS = Object.freeze({
   "swap.quote": detail("Financial Services", "Return a Solana swap quote, route, slippage and network cost.", "Price a possible swap without executing it."),
   "agent.match": detail("Agent Services", "Rank registered agents against requested capabilities and context.", "Find the next provider for a multi-agent workflow."),
   "sponsored.discovery": detail("Agent Services", "Create an explicitly disclosed sponsored placement for agent discovery.", "Reach agents through a transparent commercial channel."),
+  "privatepay.x402": detail("Financial Services", "Negotiate a TEE-private x402 payment challenge whose tested settlement has no public Solana transaction trace; the authenticated provider can see payment metadata and network-level inference remains possible.", "Let agents pay for APIs through a TEE-backed settlement rail with explicit provider-visibility boundaries.", "commercial_fee: 2.5% of the quoted service subtotal, minimum $0.05 USDC, routed to the PrivateDAO treasury; MagicBlock documents separate Private Payments API costs of 0.002 SOL fixed plus 0.1% volume for applicable Mainnet setup/transfer flows; PDAO fees are separate from provider costs, holder promotions, and seller commissions; active while treasury-split verification remains true"),
 });
 
 export function serviceDetails(service) {
@@ -90,6 +91,9 @@ export function serviceRecommendation(task = "") {
     ["repository", ["github.repository"]],
     ["agent", ["agent.match", "sponsored.discovery"]],
     ["provider", ["agent.match"]],
+    ["privatepay", ["privatepay.x402"]],
+    ["x402", ["privatepay.x402"]],
+    ["privacy payment", ["privatepay.x402"]],
   ];
   const ids = terms.filter(([term]) => query.includes(term)).flatMap(([, matches]) => matches);
   return [...new Set(ids)].slice(0, 8);
