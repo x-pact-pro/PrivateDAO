@@ -53,6 +53,7 @@ test("PrivatePAY product page separates free demo, live pricing, privacy scope, 
   assert.match(response.body, /What PrivatePAY keeps private/);
   assert.match(response.body, /MagicBlock.s private rail/);
   assert.match(response.body, /Choose wallet and pay/);
+  assert.match(response.body, /id="privatePayWallets"/);
   assert.match(response.body, /Solflare/);
   assert.match(response.body, /Phantom/);
   assert.match(response.body, /wallet-standard:register-wallet/);
