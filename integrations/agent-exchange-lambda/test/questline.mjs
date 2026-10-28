@@ -43,6 +43,29 @@ test("does not push when activity is missing", async () => {
   await assert.rejects(() => validateAndPushQuest({ storage, client: createQuestlineClient({ config: base, fetchImpl: async () => { throw new Error("must not call"); } }), config: base, wallet, freeJobId: "missing", privatePayJobId: "job_private" }), /free Agent Exchange service receipt/);
 });
 
+test("persists validation state when Push is disabled and remains idempotent", async () => {
+  const storage = await records();
+  const config = { ...base, pushEnabled: false };
+  const client = createQuestlineClient({ config, fetchImpl: async () => { throw new Error("must not call"); } });
+  const first = await validateAndPushQuest({ storage, client, config, wallet, freeJobId: "job_free", privatePayJobId: "job_private" });
+  assert.equal(first.status, "validated");
+  const second = await validateAndPushQuest({ storage, client, config, wallet, freeJobId: "job_free", privatePayJobId: "job_private" });
+  assert.equal(second.status, "validated");
+  assert.equal((await storage.get("QuestlineCompletions", first.completion_id)).state, "validated");
+});
+
+test("retries a completion after a persisted Push failure", async () => {
+  const storage = await records();
+  let attempts = 0;
+  const config = { ...base };
+  const failing = createQuestlineClient({ config, sleepImpl: async () => {}, fetchImpl: async () => { attempts += 1; return new Response("no", { status: 401 }); } });
+  await assert.rejects(() => validateAndPushQuest({ storage, client: failing, config, wallet, freeJobId: "job_free", privatePayJobId: "job_private" }), /rejected/);
+  const succeeding = createQuestlineClient({ config, fetchImpl: async () => new Response(JSON.stringify({ completed: true }), { status: 200 }) });
+  const result = await validateAndPushQuest({ storage, client: succeeding, config, wallet, freeJobId: "job_free", privatePayJobId: "job_private" });
+  assert.equal(result.status, "pushed");
+  assert.equal(attempts, 1);
+});
+
 test("retries transient Push API failures and reports invalid credentials", async () => {
   const storage = await records();
   let attempts = 0;

@@ -136,10 +136,19 @@ export async function validateAndPushQuest({ storage, client, config = questline
   const result = await validateQuestEligibility({ storage, wallet, participationId, freeJobId, privatePayJobId, pdaoEligibilityId, questId: config.questId });
   const existing = await storage.get("QuestlineCompletions", result.key);
   if (existing?.state === "completed") return { status: "duplicate", completion_id: result.key, evidence: existing.evidence };
+  if (existing?.state === "validated") return { status: "validated", completion_id: result.key, push: "disabled", evidence: existing.evidence };
+  if (existing?.state === "pending") return { status: "in_progress", completion_id: result.key, evidence: existing.evidence };
   const pending = { id: result.key, kind: "questline_completion", quest_id: config.questId, wallet_fingerprint: walletFingerprint(result.wallet), state: "pending", evidence: result.evidence, created_at: now() };
-  try { await storage.put("QuestlineCompletions", result.key, pending, true); } catch { return { status: "in_progress", completion_id: result.key }; }
   try {
-    if (!config.pushEnabled) return { status: "validated", completion_id: result.key, push: "disabled", evidence: result.evidence };
+    if (existing?.state === "push_failed") await storage.put("QuestlineCompletions", result.key, pending);
+    else await storage.put("QuestlineCompletions", result.key, pending, true);
+  } catch { return { status: "in_progress", completion_id: result.key }; }
+  try {
+    if (!config.pushEnabled) {
+      const validated = { ...pending, state: "validated", validated_at: now() };
+      await storage.put("QuestlineCompletions", result.key, validated);
+      return { status: "validated", completion_id: result.key, push: "disabled", evidence: result.evidence };
+    }
     const pushed = await client.pushCompletion({ wallet: result.wallet, evidence: result.evidence, idempotencyKey: result.key });
     const completed = { ...pending, state: "completed", pushed_at: now(), push_status: pushed.status };
     await storage.put("QuestlineCompletions", result.key, completed);
