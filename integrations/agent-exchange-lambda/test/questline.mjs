@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import nacl from "tweetnacl";
 import { PublicKey } from "@solana/web3.js";
 import { MemoryStore } from "../src/storage.mjs";
-import { createQuestlineClient, participationMessage, validateAndPushQuest, verifyWalletSignature } from "../src/questline.mjs";
+import { createQuestlineClient, participationMessage, validateAndPushQuest, validateQuestEligibility, verifyWalletSignature } from "../src/questline.mjs";
 
 const wallet = new PublicKey(nacl.sign.keyPair.fromSeed(Uint8Array.from({ length: 32 }, (_, i) => i + 1)).publicKey).toBase58();
 const base = { questId: 94, baseUrl: "https://quests.magicblock.app", bearerToken: "test-token", pushPath: "/api/validators/run", pushEnabled: true };
@@ -53,6 +53,25 @@ test("retries transient Push API failures and reports invalid credentials", asyn
   const unauthorized = createQuestlineClient({ config: base, fetchImpl: async () => new Response("no", { status: 401 }) });
   const unauthorizedStorage = await records();
   await assert.rejects(() => validateAndPushQuest({ storage: unauthorizedStorage, client: unauthorized, config: base, wallet, freeJobId: "job_free", privatePayJobId: "job_private" }), (error) => error.code === "QUESTLINE_PUSH_REJECTED" && error.statusCode === 401);
+});
+
+test("retries a validated completion after Push is enabled", async () => {
+  const storage = await records();
+  const disabled = { ...base, pushEnabled: false };
+  const first = await validateAndPushQuest({ storage, client: null, config: disabled, wallet, freeJobId: "job_free", privatePayJobId: "job_private" });
+  assert.equal(first.status, "validated");
+  const calls = [];
+  const enabled = createQuestlineClient({ config: base, fetchImpl: async (url, init) => { calls.push({ url, init }); return new Response("{}", { status: 200 }); } });
+  const second = await validateAndPushQuest({ storage, client: enabled, config: base, wallet, freeJobId: "job_free", privatePayJobId: "job_private" });
+  assert.equal(second.status, "pushed");
+  assert.equal(calls.length, 1);
+});
+
+test("accepts the existing nested PDAO eligibility record shape", async () => {
+  const storage = await records();
+  await storage.put("Registry", "pdao-eligibility", { id: "pdao-eligibility", wallet, kind: "pdao_holder_entitlement", benefit: { eligible: true } });
+  const result = await validateQuestEligibility({ storage, wallet, freeJobId: "job_free", privatePayJobId: "job_private", pdaoEligibilityId: "pdao-eligibility" });
+  assert.equal(result.evidence.pdao_eligibility.verified, true);
 });
 
 test("wallet participation message is deterministic", () => {
