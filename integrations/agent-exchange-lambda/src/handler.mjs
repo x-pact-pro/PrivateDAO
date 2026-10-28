@@ -45,6 +45,7 @@ import { buildPrivatePayPdaoFeeTransaction, createPrivatePayChallenge, createPri
 import { authorizePrivatePayAutopilotOperation, cancelPrivatePayAutopilotOperation, completePrivatePayAutopilotOperation, createPrivatePayAutopilotChallenge, createPrivatePayAutopilotOperationChallenge, createPrivatePayAutopilotPolicy, privatePayAutopilotStatus, validatePrivatePayAutopilotOperation } from "./privatepay-autopilot.mjs";
 import { handleAlibabaSpi } from "./alibaba-marketplace.mjs";
 import { encodePaymentResponseHeader } from "@x402/core/http";
+import { createQuestlineClient, participationMessage, validateAndPushQuest, assertSolanaWallet, verifyWalletSignature } from "./questline.mjs";
 
 const config = getConfig();
 let storePromise;
@@ -4774,6 +4775,47 @@ function requestHeaders(event) {
   return event.headers || {};
 }
 
+async function questlineRoute(path, method, body) {
+  const match = path.match(/^\/api\/questline\/(\d+)\/(participation\/challenge|participation|complete)$/);
+  if (method !== "POST" || !match) return null;
+  const questId = Number(match[1]);
+  if (!Number.isInteger(questId) || questId !== Number(config.questline.questId || 94))
+    throw Object.assign(new Error("quest is not configured"), { statusCode: 404, code: "QUESTLINE_QUEST_NOT_CONFIGURED" });
+  const action = match[2];
+  const storage = await store();
+  const wallet = assertSolanaWallet(body.wallet);
+  if (action === "participation/challenge") {
+    const nonce = randomBytes(24).toString("hex");
+    const id = `questline_challenge_${questId}_${wallet}`;
+    await storage.put("Registry", id, { id, kind: "questline_challenge", quest_id: questId, wallet, nonce, expires_at: new Date(Date.now() + 300000).toISOString() });
+    return json({ quest_id: questId, wallet, nonce, message: participationMessage({ questId, wallet, nonce }), expires_at: new Date(Date.now() + 300000).toISOString() });
+  }
+  if (action === "participation") {
+    const nonce = String(body.nonce || "").trim();
+    const challenge = await storage.get("Registry", `questline_challenge_${questId}_${wallet}`);
+    const message = participationMessage({ questId, wallet, nonce });
+    if (!challenge || challenge.used || challenge.nonce !== nonce || Date.parse(challenge.expires_at) <= Date.now())
+      throw Object.assign(new Error("quest participation challenge is missing or expired"), { statusCode: 401, code: "QUESTLINE_CHALLENGE_INVALID" });
+    verifyWalletSignature({ wallet, message, signature: body.signature });
+    const id = `questline_participation_${questId}_${wallet}`;
+    await storage.put("Registry", id, { id, kind: "questline_participation", quest_id: questId, wallet, started_at: now(), auth: "wallet_signature" }, true);
+    await storage.put("Registry", challenge.id, { ...challenge, used: true, used_at: now() });
+    return json({ status: "started", quest_id: questId, participation_id: id });
+  }
+  const result = await validateAndPushQuest({
+    storage,
+    client: createQuestlineClient({ config: config.questline, logger: (entry) => console.info(JSON.stringify(entry)) }),
+    config: config.questline,
+    wallet,
+    participationId: body.participation_id,
+    freeJobId: body.free_job_id,
+    privatePayJobId: body.privatepay_job_id,
+    pdaoEligibilityId: body.pdao_eligibility_id || "",
+    logger: (entry) => console.info(JSON.stringify(entry)),
+  });
+  return json(result, result.status === "pushed" || result.status === "duplicate" ? 200 : 202);
+}
+
 const DEFAULT_SECURITY_HEADERS = {
   "x-content-type-options": "nosniff",
   "referrer-policy": "no-referrer",
@@ -4797,6 +4839,8 @@ async function handle(e) {
     path = pathOf(e),
     body = method === "GET" ? {} : parseBody(e);
   if (method === "OPTIONS") return json({}, 204);
+  const questlineResponse = await questlineRoute(path, method, body);
+  if (questlineResponse) return questlineResponse;
   if ((method === "GET" || method === "POST") && path === "/api/alibaba/spi") {
     if (!config.alibabaMarketplaceEnabled) return json({ error: "not_found" }, 404);
     try {
