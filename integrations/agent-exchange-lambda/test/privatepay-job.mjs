@@ -65,6 +65,17 @@ test("PrivatePAY product page separates free demo, live pricing, privacy scope, 
   assert.doesNotMatch(response.body, /claim.*example/i);
 });
 
+test("PrivatePAY wallet balance lookup is read-only and rejects invalid wallets", async () => {
+  resetForTests();
+  const response = await handler({
+    requestContext: { http: { method: "GET", path: "/api/privatepay/wallet-balance" } },
+    queryStringParameters: { wallet: "not-a-solana-wallet" },
+    headers: {},
+  });
+  assert.equal(response.statusCode, 400);
+  assert.match(response.body, /valid Solana wallet|invalid Solana wallet/i);
+});
+
 test("PrivatePAY job lifecycle verifies, settles, executes once, and redacts public payment data", async () => {
   const originalFetch = globalThis.fetch;
   const calls = [];
