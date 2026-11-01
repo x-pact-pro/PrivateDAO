@@ -6,6 +6,7 @@ import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { Activity, ArrowUpRight, Bot, CheckCircle2, CircleDollarSign, Clock3, Coins, ExternalLink, RefreshCw, ShieldCheck, WalletCards } from "lucide-react";
 
 import { WalletConnectButton } from "@/components/wallet-connect-button";
+import { WalletOperationsPanel } from "@/components/wallet-operations-panel";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { buttonVariants } from "@/components/ui/button";
@@ -90,6 +91,8 @@ export function PdaoWalletDashboard() {
         <BalanceCard icon={CircleDollarSign} label="USDC" value={formatTokenAmount(usdc.amountBaseUnits, usdc.decimals)} detail="Mainnet USDC" />
         <BalanceCard icon={ShieldCheck} label="PDAO" value={formatTokenAmount(pdao.amountBaseUnits, pdao.decimals)} detail="Mainnet utility token" />
       </div>
+
+      <WalletOperationsPanel />
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1.35fr)_minmax(280px,0.65fr)]">
         <Card>
