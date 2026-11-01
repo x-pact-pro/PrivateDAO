@@ -57,7 +57,13 @@ export function WalletFreeServicePanel({ wallet }: { wallet: string }) {
       const created = await readJson(await fetch(`${API_BASE}/api/jobs`, {
         method: "POST",
         headers: { "content-type": "application/json", accept: "application/json" },
-        body: JSON.stringify({ service_id: "verify.basic", input: { network: "solana-mainnet-beta", mint: mint.trim() } }),
+        body: JSON.stringify({
+          service_id: "verify.basic",
+          input: { network: "solana-mainnet-beta", mint: mint.trim() },
+          // Bind the free verification to the connected wallet for participation
+          // records and downstream Questline validation. This remains read-only.
+          payer: wallet,
+        }),
       }));
       setJob(created);
       const jobId = created.id || created.job_id;
