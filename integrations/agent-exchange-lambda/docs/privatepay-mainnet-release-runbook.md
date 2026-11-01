@@ -2,17 +2,18 @@
 
 ## Current boundary
 
-PrivatePAY is publicly enabled on the production Agent Exchange surface. The
+PrivatePAY is deployed on the production Agent Exchange surface but remains
+fail-closed until both required MagicBlock accounts are delegated. The
 production merchant account is
 `2BJ4ezxqV9YJXc38D9duKBkdn4su4jE1beKUHwH663sL` and the settlement asset is
 native Solana USDC on `mainnet-private`.
 
-The read-only release collector last confirmed at
-`2026-10-25T08:52:57Z` that the merchant account is delegated to
-`MTEWGuqxUpYZGFJQcp8tLN7x5v9BSeoFHYWQQ3n3xzo` at
-`https://mainnet-tee.magicblock.app`, and that the recorded x402 payment is
-`paid` with a finalized TEE settlement. The public status endpoint returned
-`enabled`, with no activation blockers.
+The current production status check confirms that the merchant account is
+delegated to `MTEWGuqxUpYZGFJQcp8tLN7x5v9BSeoFHYWQQ3n3xzo`, while the separate
+x402 payment-ingress account is not delegated. The public status therefore
+returns `not_ready`, `enabled=false`, and `operational=false`; challenge
+creation returns `503 PRIVATEPAY_NOT_READY` without calling the facilitator.
+This is intentional until the payment-ingress owner completes delegation.
 
 The release decision remains `candidate`, not an unconditional privacy claim:
 the collector marks payment-bound TDX attestation as `INCONCLUSIVE`. This
@@ -27,22 +28,23 @@ It contains no private key, API secret, or signed/broadcast transaction.
 
 ## Phase 1: provider-side account setup
 
-1. The owner of the production merchant wallet must use the official
-   MagicBlock flow to initialize/delegate the USDC account to the selected
-   Mainnet validator.
-2. Fund the merchant USDC account with the bounded test amount and fund its
-   base wallet with enough SOL for the required base-chain transaction.
-3. The owner signs the unsigned transaction returned by `POST /v1/spl/deposit`
-   or the applicable official delegation flow. The signer must be the merchant
-   wallet owner; a payer or test-provider key is not interchangeable.
-4. Confirm the delegation with:
+1. The owner of each required production account must use the official
+   MagicBlock flow to initialize/delegate its USDC account to the selected
+   Mainnet validator: `merchant` and `payment_ingress`.
+2. Fund each base wallet with enough SOL for the required base-chain
+   transaction and fund the accounts only with the bounded amount needed for
+   the approved conformance test.
+3. The owner of each account signs its own unsigned transaction returned by
+   `POST /v1/spl/deposit` or the applicable official delegation flow. A payer,
+   provider, merchant, and payment-ingress key are not interchangeable.
+4. Confirm both delegations with:
 
    ```bash
    npm run privatepay:delegation-audit
    ```
 
-   The merchant result must show `delegation.status=delegated` and the expected
-   validator. A test-provider result is informational only.
+   Both required results must show `delegation.status=delegated` and the
+   expected validator. A test-provider result is informational only.
 
 To build the unsigned merchant deposit transaction locally, without signing or
 broadcasting it:
@@ -87,7 +89,14 @@ npm run privatepay:provider-preflight
 npm run privatepay:audit
 ```
 
-Expected conditions:
+Before payment-ingress delegation, the expected safe condition is:
+
+- public status is `not_ready` and `enabled=false`;
+- challenge creation returns `503 PRIVATEPAY_NOT_READY`;
+- the facilitator is not called.
+
+After both required delegations and before any funded test, the expected
+read-only conditions are:
 
 - checkout creation returns HTTP 200;
 - challenge returns HTTP 402 with `PAYMENT-REQUIRED`;
