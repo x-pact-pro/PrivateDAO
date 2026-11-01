@@ -494,7 +494,7 @@ test("PrivatePAY probes MagicBlock mainnet-private x402 support without a Token-
   assert.ok(!seen.some((url) => url.includes("is-mint-initialized")));
 });
 
-test("PrivatePAY readiness requires the live merchant USDC account to be delegated", async () => {
+test("PrivatePAY readiness requires both merchant USDC accounts to be delegated", async () => {
   const config = {
     privatePayEnabled: true,
     privatePayPrivacyRail: "magicblock-private-ephemeral-rollup",
@@ -520,10 +520,19 @@ test("PrivatePAY readiness requires the live merchant USDC account to be delegat
     privatePayPdaoGateEnabled: false,
   };
   const delegation = await probePrivatePayMerchantDelegation(config, async (url) => {
-    assert.match(String(url), /\/v1\/spl\/balance\?address=11111111111111111111111111111111/);
-    return { ok: true, status: 200, async json() { return { location: "base", delegation: { status: "not_delegated" } }; } };
+    const isMerchant = String(url).includes("address=11111111111111111111111111111111");
+    return { ok: true, status: 200, async json() { return { location: "base", delegation: isMerchant ? { status: "delegated", validator: "validator-1" } : { status: "undelegated" } }; } };
   });
-  assert.deepEqual(delegation, { status: "not_delegated", delegated: false, validator: null, location: "base" });
+  assert.deepEqual(delegation, {
+    status: "not_delegated",
+    delegated: false,
+    validator: null,
+    location: "base",
+    accounts: [
+      { role: "merchant", status: "delegated", delegated: true, validator: "validator-1", location: "base" },
+      { role: "payment_ingress", status: "not_delegated", delegated: false, validator: null, location: "base" },
+    ],
+  });
   const status = await probePrivatePayRail(config, async (url) => {
     const target = String(url);
     if (target.includes("/v1/spl/stealth-pool")) return { ok: true, status: 200, async json() { return { exists: true }; } };

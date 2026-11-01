@@ -998,28 +998,55 @@ export async function probePrivatePayStealthHandle(config, fetchImpl = fetch) {
 export async function probePrivatePayMerchantDelegation(config, fetchImpl = fetch) {
   if (!isMagicBlockRail(config)) return { status: "not_applicable", delegated: false };
   const merchant = String(config.privatePayMerchantId || "").trim();
+  const paymentIngress = String(config.privatePayPaymentIngress || "").trim();
   const mint = String(config.usdcMint || config.privatePayConfidentialMint || "").trim();
   const providerUrl = String(config.privatePayProviderUrl || "").trim();
-  if (!SOLANA_ADDRESS.test(merchant) || !SOLANA_ADDRESS.test(mint) || !providerUrl)
+  if (!SOLANA_ADDRESS.test(merchant) || !SOLANA_ADDRESS.test(paymentIngress) || !SOLANA_ADDRESS.test(mint) || !providerUrl)
     return { status: "not_configured", delegated: false };
-  const url = new URL("/v1/spl/balance", providerUrl.replace(/\/$/, ""));
-  url.searchParams.set("address", merchant);
-  url.searchParams.set("mint", mint);
-  url.searchParams.set("cluster", MAGICBLOCK_PRIVATE_CLUSTER);
-  try {
-    const response = await fetchImpl(url, { signal: AbortSignal.timeout(5000) });
-    const body = await response.json().catch(() => ({}));
-    const delegation = body?.delegation && typeof body.delegation === "object" ? body.delegation : null;
-    const delegated = response.ok && delegation?.status === "delegated";
-    return {
-      status: response.ok ? (delegated ? "delegated" : "not_delegated") : `http_${response.status}`,
-      delegated,
-      validator: delegation?.validator || null,
-      location: body?.location || null,
-    };
-  } catch {
-    return { status: "unavailable", delegated: false };
-  }
+  const accounts = [
+    ["merchant", merchant],
+    ["payment_ingress", paymentIngress],
+  ];
+  const checks = await Promise.all(accounts.map(async ([role, address]) => {
+    const url = new URL("/v1/spl/balance", providerUrl.replace(/\/$/, ""));
+    url.searchParams.set("address", address);
+    url.searchParams.set("mint", mint);
+    url.searchParams.set("cluster", MAGICBLOCK_PRIVATE_CLUSTER);
+    try {
+      const response = await fetchImpl(url, { signal: AbortSignal.timeout(5000) });
+      const body = await response.json().catch(() => ({}));
+      const delegation = body?.delegation && typeof body.delegation === "object" ? body.delegation : null;
+      return {
+        role,
+        status: response.ok ? (delegation?.status === "delegated" ? "delegated" : "not_delegated") : `http_${response.status}`,
+        delegated: response.ok && delegation?.status === "delegated",
+        validator: delegation?.validator || null,
+        location: body?.location || null,
+      };
+    } catch {
+      return { role, status: "unavailable", delegated: false, validator: null, location: null };
+    }
+  }));
+  const delegated = checks.every((check) => check.delegated === true);
+  const validators = new Set(checks.map((check) => check.validator).filter(Boolean));
+  const status = checks.some((check) => check.status === "unavailable")
+    ? "unavailable"
+    : checks.some((check) => check.status.startsWith("http_"))
+      ? checks.find((check) => check.status.startsWith("http_"))?.status || "unavailable"
+      : delegated ? "delegated" : "not_delegated";
+  return {
+    status,
+    delegated,
+    validator: delegated && validators.size === 1 ? [...validators][0] : null,
+    location: checks.every((check) => check.location === "base") ? "base" : null,
+    accounts: checks.map(({ role, status: accountStatus, delegated: accountDelegated, validator, location }) => ({
+      role,
+      status: accountStatus,
+      delegated: accountDelegated,
+      validator,
+      location,
+    })),
+  };
 }
 
 export async function probePrivatePayRail(config, fetchImpl = fetch) {
