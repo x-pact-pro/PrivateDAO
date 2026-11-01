@@ -50,7 +50,12 @@ export function PdaoWalletDashboard() {
       ]);
       const parsedAccounts = [...classicAccounts.value, ...token2022Accounts.value].flatMap((entry) => {
         const info = (entry.account.data as { parsed?: { info?: { mint?: unknown; tokenAmount?: { amount?: unknown; decimals?: unknown } } } }).parsed?.info;
-        return info?.mint && info.tokenAmount ? [{ mint: info.mint, amount: info.tokenAmount.amount, decimals: info.tokenAmount.decimals }] : [];
+        return info?.mint && info.tokenAmount ? [{
+          mint: info.mint,
+          amount: info.tokenAmount.amount,
+          decimals: info.tokenAmount.decimals,
+          program: entry.account.owner.equals(TOKEN_2022_PROGRAM_ID) ? "token-2022" : "spl-token",
+        }] : [];
       });
       setSolBalance(BigInt(lamports));
       setTokens(aggregateTokenBalances(parsedAccounts));
@@ -96,6 +101,8 @@ export function PdaoWalletDashboard() {
 
       <WalletTransferPanel />
 
+      <TokenHoldings tokens={tokens} loading={loading} />
+
       {connected && address ? <WalletFreeServicePanel wallet={address} /> : null}
 
       <WalletOperationsPanel wallet={address} />
@@ -115,6 +122,22 @@ export function PdaoWalletDashboard() {
 
 function BalanceCard({ icon: Icon, label, value, detail }: { icon: typeof Coins; label: string; value: string; detail: string }) {
   return <Card><CardContent className="p-5"><div className="flex items-center gap-3"><span className="flex h-10 w-10 items-center justify-center rounded-[12px] bg-[#f1f8ff] text-[#175cd3]"><Icon className="h-5 w-5" /></span><div><div className="text-xs uppercase tracking-[0.18em] text-[#7a8ba0]">{label}</div><div className="mt-1 text-xl font-semibold text-[#10233f]">{value}</div></div></div><div className="mt-4 text-xs text-[#7a8ba0]">{detail}</div></CardContent></Card>;
+}
+
+function TokenHoldings({ tokens, loading }: { tokens: WalletTokenBalance[]; loading: boolean }) {
+  return (
+    <Card aria-labelledby="wallet-token-holdings-title">
+      <CardHeader>
+        <CardTitle id="wallet-token-holdings-title" className="flex items-center gap-2"><WalletCards className="h-5 w-5 text-[#175cd3]" /> Token holdings</CardTitle>
+        <CardDescription>All non-zero SPL Token and Token-2022 balances returned by Solana Mainnet RPC.</CardDescription>
+      </CardHeader>
+      <CardContent>
+        {loading && tokens.length === 0 ? <div className="py-4 text-sm text-[#5d6d82]">Loading token accounts...</div> : null}
+        {!loading && tokens.length === 0 ? <div className="rounded-[14px] border border-dashed border-[#dce5f0] px-4 py-6 text-center text-sm text-[#5d6d82]">No SPL token balances found for this wallet.</div> : null}
+        {tokens.length > 0 ? <div className="divide-y divide-[#edf1f6]">{tokens.map((token) => <div key={token.mint} className="flex flex-col gap-2 py-3 first:pt-0 sm:flex-row sm:items-center sm:justify-between"><div className="min-w-0"><div className="font-mono text-xs text-[#425570]">{token.mint}</div><div className="mt-1 flex flex-wrap gap-2 text-[11px] text-[#7a8ba0]">{token.programs.map((program) => <span key={program} className="rounded-full bg-[#f1f8ff] px-2 py-0.5">{program === "token-2022" ? "Token-2022" : "SPL Token"}</span>)}</div></div><div className="text-left text-sm font-semibold text-[#10233f] sm:text-right">{formatTokenAmount(token.amountBaseUnits, token.decimals)}<span className="ml-1 text-xs font-normal text-[#7a8ba0]">base units: {token.decimals} decimals</span></div></div>)}</div> : null}
+      </CardContent>
+    </Card>
+  );
 }
 
 function ActionLink({ href, icon: Icon, title, detail }: { href: string; icon: typeof Bot; title: string; detail: string }) {
