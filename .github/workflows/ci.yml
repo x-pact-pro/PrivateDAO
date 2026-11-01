@@ -43,18 +43,9 @@ jobs:
 
       - name: Install Anchor CLI
         run: |
-          timeout --signal=TERM --kill-after=30s 10m cargo install --git https://github.com/coral-xyz/anchor avm --locked --force
-          for attempt in 1 2 3; do
-            if timeout --signal=TERM --kill-after=30s 3m avm install 1.0.1; then
-              avm use 1.0.1
-              anchor --version
-              exit 0
-            fi
-            echo "avm install 1.0.1 failed on attempt ${attempt}; retrying after backoff" >&2
-            sleep $((attempt * 10))
-          done
-          echo "Failed to install Anchor CLI 1.0.1 after retries" >&2
-          exit 1
+          timeout --signal=TERM --kill-after=30s 10m \
+            cargo install --git https://github.com/otter-sec/anchor --tag v1.0.1 anchor-cli --locked --force
+          anchor --version
 
       - name: Install dependencies
         run: |
