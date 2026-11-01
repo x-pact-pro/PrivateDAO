@@ -105,6 +105,7 @@
     "test:runtime:payroll": "node --import tsx scripts/test-runtime-payroll.mjs",
     "test:runtime:evm-foundation": "node --import tsx scripts/test-evm-foundation.mjs",
     "test:runtime:zcash-foundation": "node --import tsx scripts/test-zcash-foundation.mjs",
+    "test:wallet:zallet-safety": "node --import tsx scripts/test-zallet-cli-safety.mjs",
     "test:zcash:testnet:e2e": "node --import tsx scripts/run-zcash-testnet-e2e.mjs",
     "compile:evm-verification": "bash scripts/compile-evm-verification.sh",
     "test:evm:phase2": "node --import tsx packages/evm-verification/scripts/run-e2e.mjs",

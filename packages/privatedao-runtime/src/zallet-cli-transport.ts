@@ -31,6 +31,10 @@ export interface ZalletCliTransportOptions {
   commandTimeoutMs?: number;
   pollIntervalMs?: number;
   confirmationDepth?: number;
+  /** Balance RPC is opt-in because it can expose wallet state to the local daemon. */
+  allowBalanceReadinessProbe?: boolean;
+  /** Broadcast is always opt-in and also requires the process-level safety gate. */
+  broadcastEnabled?: boolean;
 }
 
 type OperationRecord = {
@@ -62,11 +66,15 @@ export class ZalletCliTransport implements ZcashTransport {
   private readonly timeoutMs: number;
   private readonly pollMs: number;
   private readonly confirmations: number;
+  private readonly allowBalanceReadinessProbe: boolean;
+  private readonly broadcastEnabled: boolean;
 
   constructor(private readonly options: ZalletCliTransportOptions) {
     this.timeoutMs = options.commandTimeoutMs ?? 20_000;
     this.pollMs = options.pollIntervalMs ?? 2_000;
     this.confirmations = options.confirmationDepth ?? 1;
+    this.allowBalanceReadinessProbe = options.allowBalanceReadinessProbe === true;
+    this.broadcastEnabled = options.broadcastEnabled === true && process.env.PDAO_ZCASH_BROADCAST_ENABLED === "1";
   }
 
   async health(): Promise<{ ok: boolean; network: "zcash-testnet"; latencyMs?: number }> {
@@ -84,7 +92,7 @@ export class ZalletCliTransport implements ZcashTransport {
     // spend-readiness signal; keep the richer height check for providers
     // that expose it.
     let syncedToNode = nodeHeight >= 0 && walletHeight >= nodeHeight;
-    if (status.wallet_tip?.height === undefined || status.fully_synced_height === undefined) {
+    if (this.allowBalanceReadinessProbe && (status.wallet_tip?.height === undefined || status.fully_synced_height === undefined)) {
       try {
         await this.rpc("z_gettotalbalance");
         syncedToNode = nodeHeight >= 0;
@@ -125,6 +133,11 @@ export class ZalletCliTransport implements ZcashTransport {
     const record = this.executions.get(execution.executionId);
     if (!record) throw new Error("Unknown Zallet execution.");
     if (record.signature) return { executionId: execution.executionId, signatures: [record.signature] };
+    if (!this.broadcastEnabled) {
+      record.state = "failed";
+      record.errorCode = "ZALLET_BROADCAST_DISABLED";
+      throw new Error("Zcash broadcast is disabled; no transaction was sent.");
+    }
     if (record.state !== "awaiting_signature" && record.state !== "prepared") {
       throw new Error(`Cannot submit Zallet execution from ${record.state}.`);
     }
