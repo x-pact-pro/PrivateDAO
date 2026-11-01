@@ -642,6 +642,11 @@ test("MCP and A2A machine entrypoints remain callable", async () => {
   assert.ok(api.components.schemas.CreateJobRequest);
   assert.ok(api.components.schemas.ServiceInput_token_intelligence);
   assert.deepEqual(api.components.schemas.PaymentRequest.required, ["signature"]);
+  const autopilotPolicy = api.paths["/api/privatepay/autopilot/policies"].post.requestBody.content["application/json"].schema;
+  assert.deepEqual(autopilotPolicy.required, ["owner", "session_public_key", "budget_base_units", "max_per_operation_base_units", "max_operations", "ttl_ms"]);
+  assert.equal(autopilotPolicy.properties.ttl_ms.minimum, 60000);
+  assert.equal(Object.hasOwn(autopilotPolicy.properties, "expires_at"), false);
+  assert.deepEqual(api.paths["/api/privatepay/autopilot/challenge"].post.requestBody.content["application/json"].schema.required, autopilotPolicy.required);
   assert.ok(api.paths["/api/jobs"].post.requestBody);
   assert.equal(api.paths["/api/jobs/{jobId}"].get.responses["409"].description, "Job requires non-replaying recovery");
   assert.ok(api.paths["/api/jobs/{jobId}/payment"].post.requestBody);
