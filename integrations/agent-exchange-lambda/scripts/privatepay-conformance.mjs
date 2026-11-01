@@ -1,4 +1,4 @@
-import { Connection, PublicKey } from "@solana/web3.js";
+import { PublicKey } from "@solana/web3.js";
 import { digest } from "../src/canonical.mjs";
 
 const DEFAULT_RPC = "https://mainnet.magicblock.app";
@@ -28,28 +28,40 @@ function clientRefId(requestId) {
 const rpcUrl = option("rpc", process.env.PRIVATEPAY_MAINNET_RPC || DEFAULT_RPC);
 const mint = new PublicKey(option("mint", process.env.PRIVATEPAY_CONFIDENTIAL_MINT || DEFAULT_MINT));
 const limit = Math.min(Math.max(Number(option("limit", "100")) || 100, 1), 1000);
+const timeoutMs = Math.min(Math.max(Number(option("timeout-ms", process.env.PRIVATEPAY_AUDIT_TIMEOUT_MS || "8000")) || 8000, 1000), 30000);
 const requestId = option("request-id", "");
 const expectedClientRefId = requestId ? clientRefId(requestId) : null;
-const connection = new Connection(rpcUrl, "finalized");
-const identityResponse = await fetch(rpcUrl, {
-  method: "POST",
-  headers: { "content-type": "application/json" },
-  body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "getIdentity", params: [] }),
-});
-const identityPayload = await identityResponse.json();
-if (!identityResponse.ok || !identityPayload.result?.identity)
-  throw new Error("Mainnet RPC did not return a validator identity");
+let rpcId = 0;
+async function rpc(method, params) {
+  const response = await fetch(rpcUrl, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ jsonrpc: "2.0", id: ++rpcId, method, params }),
+    signal: AbortSignal.timeout(timeoutMs),
+  });
+  const payload = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(`${method} returned HTTP ${response.status}`);
+  if (payload.error) throw new Error(`${method} RPC error ${payload.error.code}: ${payload.error.message}`);
+  return payload.result;
+}
+
+let identityPayload;
+try {
+  identityPayload = { result: await rpc("getIdentity", []) };
+} catch (error) {
+  console.log(JSON.stringify({ readOnly: true, rpcUrl, timeoutMs, status: "unavailable", error: error instanceof Error ? error.message : String(error) }, null, 2));
+  process.exit(2);
+}
+if (!identityPayload?.result?.identity) throw new Error("Mainnet RPC did not return a validator identity");
 const validator = new PublicKey(identityPayload.result.identity);
 const queuePda = deriveQueuePda(mint, validator);
-const account = await connection.getAccountInfo(queuePda, "finalized");
-const signatures = await connection.getSignaturesForAddress(queuePda, { limit }, "finalized");
+const accountResult = await rpc("getAccountInfo", [queuePda.toBase58(), { commitment: "finalized", encoding: "base64" }]);
+const account = accountResult?.value || null;
+const signatures = await rpc("getSignaturesForAddress", [queuePda.toBase58(), { commitment: "finalized", limit }]);
 const settlements = [];
 
 for (const entry of signatures) {
-  const transaction = await connection.getParsedTransaction(entry.signature, {
-    commitment: "finalized",
-    maxSupportedTransactionVersion: 0,
-  });
+  const transaction = await rpc("getTransaction", [entry.signature, { commitment: "finalized", maxSupportedTransactionVersion: 0, encoding: "jsonParsed" }]);
   const logs = transaction?.meta?.logMessages || [];
   const execute = logs.some((line) => line.includes(EXECUTE_LINE));
   const reference = logs.map((line) => line.match(CLIENT_REF_RE)?.[1]).find(Boolean) || null;
