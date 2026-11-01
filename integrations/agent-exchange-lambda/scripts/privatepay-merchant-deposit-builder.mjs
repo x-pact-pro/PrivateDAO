@@ -4,7 +4,8 @@ import { mkdir, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 
 const apiBase = process.env.PRIVATEPAY_API_BASE || "https://payments.magicblock.app";
-const owner = process.env.PRIVATEPAY_MERCHANT_ADDRESS || "2BJ4ezxqV9YJXc38D9duKBkdn4su4jE1beKUHwH663sL";
+const role = process.env.PRIVATEPAY_DEPOSIT_ROLE || "merchant";
+const owner = process.env.PRIVATEPAY_DEPOSIT_OWNER || process.env.PRIVATEPAY_MERCHANT_ADDRESS || "2BJ4ezxqV9YJXc38D9duKBkdn4su4jE1beKUHwH663sL";
 const mint = process.env.PRIVATEPAY_MINT || "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v";
 const cluster = process.env.PRIVATEPAY_CLUSTER || "mainnet-private";
 const amount = Number(process.env.PRIVATEPAY_DEPOSIT_AMOUNT || "1");
@@ -41,6 +42,7 @@ if (!response.ok || typeof body.transactionBase64 !== "string") {
 
 const artifact = {
   generatedAt: new Date().toISOString(),
+  role,
   apiBase,
   cluster,
   owner,
@@ -60,6 +62,7 @@ await mkdir(dirname(outputPath), { recursive: true });
 await writeFile(outputPath, `${JSON.stringify(artifact, null, 2)}\n`, { mode: 0o600 });
 console.log(JSON.stringify({
   outputPath,
+  role,
   status: response.status,
   owner,
   mint,

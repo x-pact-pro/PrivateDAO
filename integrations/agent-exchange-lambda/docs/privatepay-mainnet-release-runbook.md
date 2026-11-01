@@ -61,6 +61,22 @@ browser profile as the owner wallet, inspect the artifact, connect the exact
 merchant address, review the confirmation checkbox, and use the explicit
 submit button. It does not expose or store a private key.
 
+The x402 `payTo` account is a separate required account. Build its unsigned
+deposit artifact with the same helper, but pass the ingress public address
+explicitly:
+
+```bash
+PRIVATEPAY_DEPOSIT_ROLE=payment_ingress \
+PRIVATEPAY_DEPOSIT_OWNER=<payment-ingress-public-address> \
+PRIVATEPAY_DEPOSIT_OUTPUT=output/privatepay/payment-ingress-deposit-unsigned.json \
+npm run privatepay:merchant-deposit
+```
+
+The owner of that ingress account must connect that exact wallet to the signing
+helper and approve the unsigned transaction after reviewing its instructions.
+The provider wallet, payer wallet, and merchant wallet are not interchangeable.
+The server never signs or broadcasts this transaction.
+
 ## Phase 2: read-only application checks
 
 Run these from this directory:
