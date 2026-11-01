@@ -18,10 +18,11 @@ function decodeBase64Url(value: string) {
   return Uint8Array.from(binary, (character) => character.charCodeAt(0));
 }
 
-function encodeBase64Url(value: Uint8Array) {
+// x402 HTTP headers use canonical standard Base64, not Base64URL.
+function encodeBase64(value: Uint8Array) {
   let binary = "";
   for (const byte of value) binary += String.fromCharCode(byte);
-  return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, "");
+  return btoa(binary);
 }
 
 function errorMessage(payload: unknown, status: number) {
@@ -82,9 +83,9 @@ export function PrivatePayX402Checkout() {
         x402Version: 2,
         resource: requirements.resource || RESOURCE,
         accepted,
-        payload: { paymentId, transaction: encodeBase64Url(signed.serialize()) },
+        payload: { paymentId, transaction: encodeBase64(signed.serialize()) },
       };
-      const paymentSignature = encodeBase64Url(new TextEncoder().encode(JSON.stringify(paymentPayload)));
+      const paymentSignature = encodeBase64(new TextEncoder().encode(JSON.stringify(paymentPayload)));
       setStatus("Submitting the signed payment for settlement...");
       const settlementResponse = await fetch(`${API_BASE}/api/privatepay/x402`, {
         method: "POST",
