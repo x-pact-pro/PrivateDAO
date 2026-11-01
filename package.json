@@ -388,11 +388,13 @@
     "@opentelemetry/api": "^1.9.1",
     "@solana/spl-token": "^0.4.14",
     "@solana/web3.js": "^1.98.4",
+    "@stellar/stellar-sdk": "^17.4.0",
     "ajv": "^8.17.1",
     "bigint-buffer": "file:vendor/bigint-buffer",
     "dotenv": "^16.4.5",
     "jose": "^6.2.12",
     "mongodb": "^7.7.0",
+    "tweetnacl": "^1.0.3",
     "viem": "2.56.6"
   },
   "devDependencies": {
