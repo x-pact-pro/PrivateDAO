@@ -640,6 +640,8 @@ test("MCP and A2A machine entrypoints remain callable", async () => {
     if (method === "post") assert.ok(operation.requestBody, `${path} needs a request schema`);
   }
   assert.ok(api.components.schemas.CreateJobRequest);
+  assert.equal(api.components.schemas.CreateJobRequest.properties.payer.pattern, "^[1-9A-HJ-NP-Za-km-z]{32,44}$");
+  assert.equal(api.components.schemas.CreateJobRequest.properties.payer.description.includes("PDAO eligibility quote"), true);
   assert.ok(api.components.schemas.ServiceInput_token_intelligence);
   assert.deepEqual(api.components.schemas.PaymentRequest.required, ["signature"]);
   const autopilotPolicy = api.paths["/api/privatepay/autopilot/policies"].post.requestBody.content["application/json"].schema;

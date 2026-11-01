@@ -790,6 +790,7 @@ function openapi() {
       service_id: { type: "string", enum: SERVICES.map((service) => service.id) },
       input: { oneOf: Object.values(serviceInputRefs) },
       payment_mode: { type: "string", enum: ["direct", "privatepay"], default: "direct", description: "Use privatepay only for a reviewed, enabled PrivatePAY x402 rail; ordinary direct payments remain unchanged." },
+      payer: { type: "string", pattern: "^[1-9A-HJ-NP-Za-km-z]{32,44}$", description: "Optional connected Solana payer. Supplying it lets PrivatePAY bind the PDAO eligibility quote to the wallet before any signing." },
     },
     required: ["service_id", "input"],
     additionalProperties: false,
@@ -3689,7 +3690,7 @@ async function executeMeasuredService(id, input) {
   };
 }
 
-async function createJob(serviceId, input, admin = false, currency = "USDC", metadata = {}, access = null, paymentMode = "direct") {
+async function createJob(serviceId, input, admin = false, currency = "USDC", metadata = {}, access = null, paymentMode = "direct", payer = "") {
   const service = serviceById(serviceId);
   if (!service) throw new Error("unknown service");
   const normalizedPaymentMode = String(paymentMode || "direct").trim().toLowerCase();
@@ -3754,6 +3755,7 @@ async function createJob(serviceId, input, admin = false, currency = "USDC", met
     job.quote_id = quote.quote_id;
     if (normalizedPaymentMode === "privatepay") {
       const privatePayment = await createPrivatePayRequirements(config, {
+        payer: String(payer || "").trim(),
         resource: `https://${config.domain}/api/jobs/${job.id}/privatepay`,
         provider_id: serviceId,
         amount_base_units: String(quote.amountAtomic),
@@ -5647,7 +5649,7 @@ async function handle(e) {
     return json(await issuePdaoChallenge({ config, storage: await store(), wallet: body.wallet, serviceId: body.service_id, input: body.input || {} }));
   }
   if (method === "POST" && path === "/api/jobs")
-    return json(await createJob(body.service_id, body.input || {}, false, "USDC", requestMetadata(e), body.pdao_access || body.token_holder_access || null, body.payment_mode || "direct"));
+    return json(await createJob(body.service_id, body.input || {}, false, "USDC", requestMetadata(e), body.pdao_access || body.token_holder_access || null, body.payment_mode || "direct", body.payer || body.wallet || ""));
   if (method === "POST" && path === "/api/checkout/batch")
     return json(await createBatchJob(body.items));
   if (method === "POST" && path === "/api/external/jobs")

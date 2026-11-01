@@ -98,7 +98,7 @@ export function PdaoWalletDashboard() {
 
       {connected && address ? <WalletFreeServicePanel wallet={address} /> : null}
 
-      <WalletOperationsPanel />
+      <WalletOperationsPanel wallet={address} />
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1.35fr)_minmax(280px,0.65fr)]">
         <Card>

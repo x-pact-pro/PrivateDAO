@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ArrowUpRight, Bot, CircleDollarSign, Loader2, RefreshCw, ShieldCheck } from "lucide-react";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { WalletPaidServicePanel } from "@/components/wallet-paid-service-panel";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -97,7 +98,7 @@ function readAutopilotStatus(payload: unknown): AutopilotStatus {
   };
 }
 
-export function WalletOperationsPanel() {
+export function WalletOperationsPanel({ wallet }: { wallet: string }) {
   const [services, setServices] = useState<ExchangeService[]>([]);
   const [privatePay, setPrivatePay] = useState<PrivatePayStatus>({});
   const [autopilot, setAutopilot] = useState<AutopilotStatus>({});
@@ -115,17 +116,19 @@ export function WalletOperationsPanel() {
       if (!servicesResponse.ok || !privatePayResponse.ok) {
         throw new Error("PrivateDAO service status is temporarily unavailable.");
       }
-      const [servicesPayload, privatePayPayload, autopilotPayload] = await Promise.all([
+      const [servicesPayload, privatePayPayload] = await Promise.all([
         servicesResponse.json(),
         privatePayResponse.json(),
-        fetch(`${API_BASE}/api/privatepay/autopilot/status`, { signal, headers: { accept: "application/json" } }).then((response) => {
-          if (!response.ok) throw new Error("Agent policy status is temporarily unavailable.");
-          return response.json();
-        }),
       ]);
       setServices(readServices(servicesPayload));
       setPrivatePay(readPrivatePayStatus(privatePayPayload));
-      setAutopilot(readAutopilotStatus(autopilotPayload));
+      try {
+        const autopilotResponse = await fetch(`${API_BASE}/api/privatepay/autopilot/status`, { signal, headers: { accept: "application/json" } });
+        setAutopilot(autopilotResponse.ok ? readAutopilotStatus(await autopilotResponse.json()) : { blockers: ["Agent policy status is temporarily unavailable."] });
+      } catch (autopilotError) {
+        if (autopilotError instanceof DOMException && autopilotError.name === "AbortError") return;
+        setAutopilot({ blockers: ["Agent policy status is temporarily unavailable."] });
+      }
       setState("ready");
     } catch (error) {
       if (error instanceof DOMException && error.name === "AbortError") return;
@@ -189,6 +192,8 @@ export function WalletOperationsPanel() {
           </CardContent>
         </Card>
       </div>
+
+      {wallet ? <WalletPaidServicePanel wallet={wallet} services={paidServices} /> : null}
 
       <Card>
         <CardHeader>
