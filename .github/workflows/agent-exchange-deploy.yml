@@ -428,6 +428,7 @@ jobs:
           (
             steps.deploy_code.outcome == 'failure' ||
             steps.route_api.outcome == 'failure' ||
+            steps.cors.outcome == 'failure' ||
             steps.smoke.outcome == 'failure' ||
             steps.payout_runtime.outcome == 'failure' ||
             steps.settlement_schedule.outcome == 'failure'
@@ -476,6 +477,7 @@ jobs:
           (
             steps.deploy_code.outcome == 'failure' ||
             steps.route_api.outcome == 'failure' ||
+            steps.cors.outcome == 'failure' ||
             steps.smoke.outcome == 'failure' ||
             steps.payout_runtime.outcome == 'failure' ||
             steps.settlement_schedule.outcome == 'failure'
@@ -492,6 +494,7 @@ jobs:
         if: >-
           steps.deploy_code.outcome == 'success' &&
           steps.route_api.outcome == 'success' &&
+          steps.cors.outcome == 'success' &&
           steps.smoke.outcome == 'success' &&
           steps.payout_runtime.outcome == 'success' &&
           steps.settlement_schedule.outcome == 'success'
