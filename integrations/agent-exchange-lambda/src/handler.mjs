@@ -5439,12 +5439,17 @@ async function handle(e) {
       : null;
     const paymentSignature = e.headers?.["PAYMENT-SIGNATURE"] || e.headers?.["payment-signature"];
     if (!paymentSignature) {
+      // A provider reuses an externalReference forever. The default must be
+      // fresh so a previously expired checkout cannot poison a new challenge.
+      // Callers that need idempotency can still supply an explicit reference.
+      const externalReference = String(x402Input.external_reference || x402Input.externalReference || "").trim()
+        || `privatepay-x402-${requirements.request_id.slice(3)}-${randomUUID().replaceAll("-", "")}`;
       const checkout = await createPrivatePayCheckout(config, {
         payer: x402Input.payer,
         resource: x402Input.resource,
         amount_base_units: x402Input.amount_base_units,
         description: x402Input.description || "PrivateDAO Agent Exchange service payment",
-        external_reference: x402Input.external_reference || `privatepay-x402-${requirements.request_id.slice(3)}`,
+        external_reference: externalReference,
         expires_in_seconds: x402Input.expires_in_seconds,
       });
       const challenge = await requestPrivatePayCheckoutChallenge(config, { payment_id: checkout.payment_id });

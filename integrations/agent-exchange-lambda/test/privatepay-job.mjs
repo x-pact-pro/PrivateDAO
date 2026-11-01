@@ -192,9 +192,11 @@ test("generic PrivatePAY x402 endpoint performs verify and settle with a redacte
   const originalFetch = globalThis.fetch;
   const calls = [];
   let facilitatorPayloads = [];
+  let checkoutRequest;
   globalThis.fetch = async (url, init = {}) => {
     const target = String(url);
     if (target.endsWith("/v1/payments")) {
+      checkoutRequest = JSON.parse(init.body || "{}");
       return new Response(JSON.stringify({ id: "a".repeat(64), status: "created" }), { status: 200, headers: { "content-type": "application/json" } });
     }
     if (target.includes("/v1/x402/payments/") && target.endsWith("/pay")) {
@@ -226,6 +228,7 @@ test("generic PrivatePAY x402 endpoint performs verify and settle with a redacte
     const input = { payer: "BkNcuvQZr6392aZCwcGnB6SQptV6vhWa7syJs5fgLz6", resource: "https://agents.example/api/generic", provider_id: "provider-1", amount_base_units: "1000" };
     const unpaid = await request("/api/privatepay/x402", "POST", input);
     assert.equal(unpaid.statusCode, 402);
+    assert.match(checkoutRequest.externalReference, /^privatepay-x402-[a-f0-9]{32}-[a-f0-9]{32}$/);
     const challenge = JSON.parse(unpaid.body);
     const paymentRequired = JSON.parse(Buffer.from(unpaid.headers["PAYMENT-REQUIRED"], "base64url").toString("utf8"));
     const signature = encodePaymentSignatureHeader({
