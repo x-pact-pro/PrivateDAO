@@ -178,6 +178,20 @@ test("MagicBlock merchant checkout never calls the provider while its explicit g
   assert.equal(called, false);
 });
 
+test("MagicBlock merchant checkout rejects non-HTTPS resources before the provider call", async () => {
+  let called = false;
+  await assert.rejects(
+    createPrivatePayCheckout(magicBlockCheckoutConfig(), {
+      payer: TEST_PAYER,
+      amount_base_units: "1000",
+      resource: "api://service",
+      external_reference: "job_fixture_invalid_resource",
+    }, async () => { called = true; }),
+    (error) => error.code === "PRIVATEPAY_INVALID_RESOURCE" && error.statusCode === 400,
+  );
+  assert.equal(called, false);
+});
+
 test("PrivatePAY rejects ordinary public USDC as the confidential asset", () => {
   const config = {
     privatePayEnabled: true,

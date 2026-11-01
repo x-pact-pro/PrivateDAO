@@ -825,7 +825,7 @@ function openapi() {
   const privatePayRequirementsInput = {
     type: "object",
     properties: {
-      resource: { type: "string", minLength: 1, maxLength: 2048, format: "uri", description: "HTTPS resource or service identifier being purchased." },
+      resource: { type: "string", minLength: 1, maxLength: 2048, format: "uri", pattern: "^https://", description: "HTTPS resource or service identifier being purchased." },
       provider_id: { type: "string", minLength: 1, maxLength: 200, description: "Merchant or provider identifier." },
       amount_base_units: { type: "string", pattern: "^[0-9]+$", description: "Quoted USDC amount in token base units." },
       payer: { type: "string", pattern: "^[1-9A-HJ-NP-Za-km-z]{32,44}$", description: "Solana wallet public key; never a private key." },
@@ -841,7 +841,7 @@ function openapi() {
       phase: { type: "string", enum: ["create", "challenge"], default: "create" },
       payment_id: { type: "string", pattern: "^[a-f0-9]{64}$", description: "Existing checkout identifier when phase is challenge." },
       payer: { type: "string", pattern: "^[1-9A-HJ-NP-Za-km-z]{32,44}$", description: "Solana payer wallet public key." },
-      resource: { type: "string", minLength: 1, maxLength: 2048, format: "uri" },
+      resource: { type: "string", minLength: 1, maxLength: 2048, format: "uri", pattern: "^https://", description: "HTTPS resource or service endpoint being purchased." },
       amount_base_units: { type: "string", pattern: "^[0-9]+$", description: "Quoted USDC amount in base units." },
       external_reference: { type: "string", minLength: 1, maxLength: 128 },
       description: { type: "string", maxLength: 256 },

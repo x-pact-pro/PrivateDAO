@@ -223,7 +223,7 @@ test("generic PrivatePAY x402 endpoint performs verify and settle with a redacte
   };
   try {
     resetForTests();
-    const input = { payer: "BkNcuvQZr6392aZCwcGnB6SQptV6vhWa7syJs5fgLz6", resource: "api://generic", provider_id: "provider-1", amount_base_units: "1000" };
+    const input = { payer: "BkNcuvQZr6392aZCwcGnB6SQptV6vhWa7syJs5fgLz6", resource: "https://agents.example/api/generic", provider_id: "provider-1", amount_base_units: "1000" };
     const unpaid = await request("/api/privatepay/x402", "POST", input);
     assert.equal(unpaid.statusCode, 402);
     const challenge = JSON.parse(unpaid.body);

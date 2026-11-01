@@ -563,6 +563,12 @@ export async function createPrivatePayCheckout(config, input = {}, fetchImpl = f
   const resource = String(input.resource || "").trim();
   if (!resource || resource.length > 2048)
     throw Object.assign(new Error("resource must be a non-empty URI of at most 2048 characters"), { statusCode: 400, code: "PRIVATEPAY_INVALID_RESOURCE" });
+  let parsedResource;
+  try { parsedResource = new URL(resource); } catch {
+    throw Object.assign(new Error("resource must be a valid HTTPS URL"), { statusCode: 400, code: "PRIVATEPAY_INVALID_RESOURCE" });
+  }
+  if (parsedResource.protocol !== "https:")
+    throw Object.assign(new Error("resource must use HTTPS for MagicBlock merchant checkout"), { statusCode: 400, code: "PRIVATEPAY_INVALID_RESOURCE" });
   const externalReference = String(input.external_reference || input.externalReference || "").trim();
   if (!externalReference || externalReference.length > 128)
     throw Object.assign(new Error("external_reference must be 1-128 characters"), { statusCode: 400, code: "PRIVATEPAY_INVALID_EXTERNAL_REFERENCE" });
