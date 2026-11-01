@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { ArrowUpRight, Bot, CircleDollarSign, Loader2, RefreshCw } from "lucide-react";
+import { ArrowUpRight, Bot, CircleDollarSign, Loader2, RefreshCw, ShieldCheck } from "lucide-react";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { buttonVariants } from "@/components/ui/button";
@@ -29,6 +29,20 @@ type PrivatePayStatus = {
   supported_payment_networks?: string[];
   activation_blockers?: string[];
   privacy_rail?: string;
+};
+
+type AutopilotStatus = {
+  enabled?: boolean;
+  configured?: boolean;
+  storage?: string;
+  blockers?: string[];
+  custody?: string;
+  reusable_x402_credentials?: boolean;
+  policy_limits?: {
+    max_ttl_ms?: number;
+    max_operations?: number;
+    max_budget_base_units?: string;
+  };
 };
 
 type LoadState = "loading" | "ready" | "error";
@@ -60,9 +74,35 @@ function readPrivatePayStatus(payload: unknown): PrivatePayStatus {
   };
 }
 
+function readAutopilotStatus(payload: unknown): AutopilotStatus {
+  if (!payload || typeof payload !== "object") return {};
+  const value = payload as Record<string, unknown>;
+  const limits = value.policy_limits;
+  return {
+    enabled: typeof value.enabled === "boolean" ? value.enabled : undefined,
+    configured: typeof value.configured === "boolean" ? value.configured : undefined,
+    storage: typeof value.storage === "string" ? value.storage : undefined,
+    blockers: Array.isArray(value.blockers)
+      ? value.blockers.filter((item): item is string => typeof item === "string")
+      : undefined,
+    custody: typeof value.custody === "string" ? value.custody : undefined,
+    reusable_x402_credentials: typeof value.reusable_x402_credentials === "boolean"
+      ? value.reusable_x402_credentials
+      : undefined,
+    policy_limits: limits && typeof limits === "object"
+      ? {
+        max_ttl_ms: typeof (limits as Record<string, unknown>).max_ttl_ms === "number" ? (limits as Record<string, unknown>).max_ttl_ms : undefined,
+        max_operations: typeof (limits as Record<string, unknown>).max_operations === "number" ? (limits as Record<string, unknown>).max_operations : undefined,
+        max_budget_base_units: typeof (limits as Record<string, unknown>).max_budget_base_units === "string" ? (limits as Record<string, unknown>).max_budget_base_units : undefined,
+      }
+      : undefined,
+  };
+}
+
 export function WalletOperationsPanel() {
   const [services, setServices] = useState<ExchangeService[]>([]);
   const [privatePay, setPrivatePay] = useState<PrivatePayStatus>({});
+  const [autopilot, setAutopilot] = useState<AutopilotStatus>({});
   const [state, setState] = useState<LoadState>("loading");
   const [message, setMessage] = useState<string | null>(null);
 
@@ -77,12 +117,17 @@ export function WalletOperationsPanel() {
       if (!servicesResponse.ok || !privatePayResponse.ok) {
         throw new Error("PrivateDAO service status is temporarily unavailable.");
       }
-      const [servicesPayload, privatePayPayload] = await Promise.all([
+      const [servicesPayload, privatePayPayload, autopilotPayload] = await Promise.all([
         servicesResponse.json(),
         privatePayResponse.json(),
+        fetch(`${API_BASE}/api/privatepay/autopilot/status`, { signal, headers: { accept: "application/json" } }).then((response) => {
+          if (!response.ok) throw new Error("Agent policy status is temporarily unavailable.");
+          return response.json();
+        }),
       ]);
       setServices(readServices(servicesPayload));
       setPrivatePay(readPrivatePayStatus(privatePayPayload));
+      setAutopilot(readAutopilotStatus(autopilotPayload));
       setState("ready");
     } catch (error) {
       if (error instanceof DOMException && error.name === "AbortError") return;
@@ -146,6 +191,28 @@ export function WalletOperationsPanel() {
           </CardContent>
         </Card>
       </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2"><ShieldCheck className="h-5 w-5 text-[#6d3bd1]" /> Agent wallet policies</CardTitle>
+          <CardDescription>Scoped execution is available only through signed policies. The wallet remains the final approval boundary.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-wrap items-center gap-3 text-sm">
+            <span className={cn("inline-flex items-center gap-2 rounded-full px-3 py-1 font-semibold", autopilot.enabled ? "bg-[#e5f8ee] text-[#16824c]" : "bg-[#fff5dc] text-[#8a641f]")}>
+              <span className={cn("h-2.5 w-2.5 rounded-full", autopilot.enabled ? "bg-[#16824c]" : "bg-[#c58a16]")} />
+              {state === "loading" ? "Checking policy rail" : autopilot.enabled ? "Ready for signed scoped policies" : "Explicit activation required"}
+            </span>
+            <span className="text-[#5d6d82]">Custody: {autopilot.custody === "session_wallet_only" ? "session wallet only" : "not reported"}</span>
+            <span className="text-[#5d6d82]">Reusable payment credentials: {autopilot.reusable_x402_credentials === false ? "disabled" : "not reported"}</span>
+          </div>
+          {autopilot.blockers?.length ? <p className="mt-3 text-sm leading-6 text-[#8a641f]">{autopilot.blockers.join(" · ")}</p> : null}
+          <div className="mt-4 flex flex-wrap gap-3">
+            <a href={`${API_BASE}/api/privatepay/autopilot/status`} target="_blank" rel="noreferrer" className={cn(buttonVariants({ size: "sm", variant: "outline" }))}>View policy status <ArrowUpRight className="h-4 w-4" /></a>
+            <a href={`${API_BASE}/marketplace`} target="_blank" rel="noreferrer" className={cn(buttonVariants({ size: "sm" }))}>Open agent services <ArrowUpRight className="h-4 w-4" /></a>
+          </div>
+        </CardContent>
+      </Card>
     </section>
   );
 }
