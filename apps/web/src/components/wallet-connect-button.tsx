@@ -301,7 +301,7 @@ export function WalletConnectButton({
                   <div className="text-[11px] uppercase tracking-[0.2em] text-white/44">Wallet-orchestrated flow</div>
                   <div className="inline-flex items-center gap-2 rounded-full border border-emerald-300/18 bg-emerald-300/10 px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-emerald-100">
                     <ShieldCheck className="h-3.5 w-3.5" />
-                    Mainnet payment-ready
+                    Wallet signing ready
                   </div>
                 </div>
                 <div className="mt-3 grid gap-2 text-sm text-white/72 sm:grid-cols-2">
