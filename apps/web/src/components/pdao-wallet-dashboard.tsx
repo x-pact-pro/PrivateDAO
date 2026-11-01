@@ -7,6 +7,7 @@ import { Activity, ArrowUpRight, Bot, CheckCircle2, CircleDollarSign, Clock3, Co
 
 import { WalletConnectButton } from "@/components/wallet-connect-button";
 import { WalletOperationsPanel } from "@/components/wallet-operations-panel";
+import { WalletFreeServicePanel } from "@/components/wallet-free-service-panel";
 import { WalletTransferPanel } from "@/components/wallet-transfer-panel";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -94,6 +95,8 @@ export function PdaoWalletDashboard() {
       </div>
 
       <WalletTransferPanel />
+
+      {connected && address ? <WalletFreeServicePanel wallet={address} /> : null}
 
       <WalletOperationsPanel />
 
