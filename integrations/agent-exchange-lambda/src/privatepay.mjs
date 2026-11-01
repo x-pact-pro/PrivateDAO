@@ -995,17 +995,45 @@ export async function probePrivatePayStealthHandle(config, fetchImpl = fetch) {
   }
 }
 
+export async function probePrivatePayMerchantDelegation(config, fetchImpl = fetch) {
+  if (!isMagicBlockRail(config)) return { status: "not_applicable", delegated: false };
+  const merchant = String(config.privatePayMerchantId || "").trim();
+  const mint = String(config.usdcMint || config.privatePayConfidentialMint || "").trim();
+  const providerUrl = String(config.privatePayProviderUrl || "").trim();
+  if (!SOLANA_ADDRESS.test(merchant) || !SOLANA_ADDRESS.test(mint) || !providerUrl)
+    return { status: "not_configured", delegated: false };
+  const url = new URL("/v1/spl/balance", providerUrl.replace(/\/$/, ""));
+  url.searchParams.set("address", merchant);
+  url.searchParams.set("mint", mint);
+  url.searchParams.set("cluster", MAGICBLOCK_PRIVATE_CLUSTER);
+  try {
+    const response = await fetchImpl(url, { signal: AbortSignal.timeout(5000) });
+    const body = await response.json().catch(() => ({}));
+    const delegation = body?.delegation && typeof body.delegation === "object" ? body.delegation : null;
+    const delegated = response.ok && delegation?.status === "delegated";
+    return {
+      status: response.ok ? (delegated ? "delegated" : "not_delegated") : `http_${response.status}`,
+      delegated,
+      validator: delegation?.validator || null,
+      location: body?.location || null,
+    };
+  } catch {
+    return { status: "unavailable", delegated: false };
+  }
+}
+
 export async function probePrivatePayRail(config, fetchImpl = fetch) {
   const status = privatePayStatus(config);
   const stealthHandleProbe = await probePrivatePayStealthHandle(config, fetchImpl);
+  const merchantDelegationProbe = await probePrivatePayMerchantDelegation(config, fetchImpl);
   if (!status.facilitator_configured || !status.confidential_mint_configured) {
-    return { ...status, provider_health: "not_checked", mint_status: "not_checked", facilitator_status: "not_checked", stealth_handle_status: stealthHandleProbe.status, operational: false };
+    return { ...status, provider_health: "not_checked", mint_status: "not_checked", facilitator_status: "not_checked", stealth_handle_status: stealthHandleProbe.status, merchant_account_delegation: merchantDelegationProbe, operational: false };
   }
   const base = String(config.privatePayProviderUrl || "").replace(/\/$/, "");
   const facilitator = String(config.privatePayFacilitatorUrl || "").replace(/\/$/, "");
   const mint = encodeURIComponent(config.privatePayConfidentialMint);
   const cluster = encodeURIComponent(providerCluster(config));
-  const result = { ...status, provider_health: "unavailable", mint_status: "unavailable", facilitator_status: "unavailable", stealth_handle_status: stealthHandleProbe.status, operational: false };
+  const result = { ...status, provider_health: "unavailable", mint_status: "unavailable", facilitator_status: "unavailable", stealth_handle_status: stealthHandleProbe.status, merchant_account_delegation: merchantDelegationProbe, operational: false };
   try {
     const health = await fetchImpl(`${base}/health`, { signal: AbortSignal.timeout(5000) });
     result.provider_health = health.ok ? "ok" : `http_${health.status}`;
@@ -1050,9 +1078,19 @@ export async function probePrivatePayRail(config, fetchImpl = fetch) {
   } catch {
     result.facilitator_status = "unavailable";
   }
+  result.merchant_accounts_delegated = isMagicBlockRail(config)
+    ? merchantDelegationProbe.delegated === true
+    : status.merchant_accounts_delegated;
+  if (isMagicBlockRail(config) && !result.merchant_accounts_delegated) {
+    result.activation_blockers = Array.from(new Set([
+      ...result.activation_blockers,
+      "MagicBlock merchant payment accounts are not currently delegated to the selected validator",
+    ]));
+  }
   result.operational = result.provider_health === "ok"
-    && (isMagicBlockRail(config) ? result.mint_status === "delegated_usdc_private_rollup" && result.facilitator_status === "exact_magicblock_v2_mainnet_private" && result.stealth_handle_status === "initialized" : result.mint_status === "initialized_confidential_token2022" && result.facilitator_status === "privatepay_v2_mainnet")
+    && (isMagicBlockRail(config) ? result.mint_status === "delegated_usdc_private_rollup" && result.facilitator_status === "exact_magicblock_v2_mainnet_private" && result.stealth_handle_status === "initialized" && result.merchant_accounts_delegated : result.mint_status === "initialized_confidential_token2022" && result.facilitator_status === "privatepay_v2_mainnet")
     && status.enabled;
+  result.enabled = result.operational;
   if (!result.operational) result.status = "not_ready";
   return result;
 }

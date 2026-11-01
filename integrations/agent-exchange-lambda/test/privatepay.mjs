@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { decodePaymentRequiredHeader } from "@x402/core/http";
 import { PublicKey, TransactionMessage, VersionedTransaction } from "@solana/web3.js";
-import { assertPrivatePayPaymentPayload, auditPrivatePayTrace, auditPreparedPrivatePayTransfer, createPrivatePayChallenge, createPrivatePayCheckout, createPrivatePayRequirements, decodePrivatePaySignature, preparePrivatePayDeposit, preparePrivatePayTransfer, preparePrivatePayWithdrawal, privatePayFacilitatorRequest, privatePayStatus, probePrivatePayRail, probePrivatePayStealthHandle, publicPrivatePayFacilitatorResult, requestPrivatePayCheckoutChallenge } from "../src/privatepay.mjs";
+import { assertPrivatePayPaymentPayload, auditPrivatePayTrace, auditPreparedPrivatePayTransfer, createPrivatePayChallenge, createPrivatePayCheckout, createPrivatePayRequirements, decodePrivatePaySignature, preparePrivatePayDeposit, preparePrivatePayTransfer, preparePrivatePayWithdrawal, privatePayFacilitatorRequest, privatePayStatus, probePrivatePayMerchantDelegation, probePrivatePayRail, probePrivatePayStealthHandle, publicPrivatePayFacilitatorResult, requestPrivatePayCheckoutChallenge } from "../src/privatepay.mjs";
 import { assertPrivatePayNetworkAdapter } from "../src/privatepay-networks.mjs";
 
 const TEST_CONFIDENTIAL_MINT = new PublicKey(new Uint8Array(32).fill(7)).toBase58();
@@ -492,6 +492,49 @@ test("PrivatePAY probes MagicBlock mainnet-private x402 support without a Token-
   });
   assert.ok(seen.includes("https://facilitator.example/v1/x402/supported"));
   assert.ok(!seen.some((url) => url.includes("is-mint-initialized")));
+});
+
+test("PrivatePAY readiness requires the live merchant USDC account to be delegated", async () => {
+  const config = {
+    privatePayEnabled: true,
+    privatePayPrivacyRail: "magicblock-private-ephemeral-rollup",
+    privatePayFacilitatorUrl: "https://facilitator.example",
+    privatePayFacilitatorApiKey: "test-magicblock-key",
+    privatePayProviderUrl: "https://payments.example",
+    privatePayMerchantId: "11111111111111111111111111111111",
+    privatePayProviderHandle: "provider@magicblock.id",
+    privatePayProviderHandleVerified: true,
+    privatePayPaymentIngress: "So11111111111111111111111111111111111111112",
+    privatePayConfidentialMint: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+    usdcMint: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+    privatePayConformanceVerified: true,
+    privatePayMainnetVerified: true,
+    privatePayRelationshipPrivacyVerified: true,
+    privatePayAmountPrivacyVerified: true,
+    privatePayTimingPrivacyVerified: true,
+    privatePayE2eVerified: true,
+    privatePayPublicTraceVerified: true,
+    privatePayProviderMetadataDisclosureVerified: true,
+    privatePayMerchantAccountsDelegated: true,
+    privatePayTreasurySplitVerified: true,
+    privatePayPdaoGateEnabled: false,
+  };
+  const delegation = await probePrivatePayMerchantDelegation(config, async (url) => {
+    assert.match(String(url), /\/v1\/spl\/balance\?address=11111111111111111111111111111111/);
+    return { ok: true, status: 200, async json() { return { location: "base", delegation: { status: "not_delegated" } }; } };
+  });
+  assert.deepEqual(delegation, { status: "not_delegated", delegated: false, validator: null, location: "base" });
+  const status = await probePrivatePayRail(config, async (url) => {
+    const target = String(url);
+    if (target.includes("/v1/spl/stealth-pool")) return { ok: true, status: 200, async json() { return { exists: true }; } };
+    if (target.endsWith("/health")) return { ok: true, status: 200, async json() { return { status: "ok" }; } };
+    if (target.includes("/v1/spl/balance")) return { ok: true, status: 200, async json() { return { location: "base", delegation: { status: "not_delegated" } }; } };
+    return { ok: true, status: 200, async json() { return { kinds: [{ x402Version: 2, scheme: "exact-magicblock", network: "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp", extra: { cluster: "mainnet-private" } }] }; } };
+  });
+  assert.equal(status.merchant_accounts_delegated, false);
+  assert.equal(status.merchant_account_delegation.status, "not_delegated");
+  assert.equal(status.operational, false);
+  assert.equal(status.status, "not_ready");
 });
 
 test("PrivatePAY emits the real MagicBlock x402 scheme and private-rollup requirements", async () => {

@@ -82,7 +82,7 @@ if (paymentId) {
   const challengeBody = await challenge.json().catch(() => ({}));
   output.challengeStatus = challenge.status;
   output.paymentRequiredHeaderPresent = Boolean(paymentRequired);
-  output.paymentRequiredHeaderLength = paymentRequired.length;
+  output.paymentRequiredHeaderLength = paymentRequired?.length || 0;
   output.challengeRequest = {
     method: "POST",
     url: `/v1/x402/payments/${paymentId}/pay`,
@@ -92,6 +92,7 @@ if (paymentId) {
   output.challengeErrorCode = challengeBody?.error?.code || challengeBody?.code || null;
   output.challengeErrorMessage = challengeBody?.error?.message || challengeBody?.message || null;
   output.challengePaymentStatus = challengeBody?.payment?.status || challengeBody?.status || null;
+  if (challenge.status !== 402 || !paymentRequired) process.exitCode = 4;
 }
 
 console.log(JSON.stringify(output, null, 2));
