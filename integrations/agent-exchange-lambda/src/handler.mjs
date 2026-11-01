@@ -48,6 +48,9 @@ import { encodePaymentResponseHeader } from "@x402/core/http";
 import { createQuestlineClient, participationMessage, validateAndPushQuest, assertSolanaWallet, verifyWalletSignature } from "./questline.mjs";
 
 const config = getConfig();
+const privatePayReadiness = () => process.env.AGENT_EXCHANGE_TEST_MODE === "true"
+  ? Promise.resolve(privatePayStatus(config))
+  : probePrivatePayRail(config);
 let storePromise;
 let configPromise;
 const store = () => (storePromise ||= createStore(config));
@@ -3390,7 +3393,7 @@ async function classifyWalletBot(config, input = {}) {
 }
 
 export async function executeService(id, input) {
-  if (id === PRIVATEPAY_SERVICE_ID) return createPrivatePayChallenge(config, input);
+  if (id === PRIVATEPAY_SERVICE_ID) return createPrivatePayChallenge(config, input, await privatePayReadiness());
   if (id === "github.repository") return repositoryEvidence(config, input);
   if (id === "sealkeeper.reputation") {
     const fetchImpl = (url, init = {}) => fetch(url, { ...init, signal: AbortSignal.timeout(config.sealkeeperTimeoutMs) });
@@ -3813,6 +3816,7 @@ async function createJob(serviceId, input, admin = false, currency = "USDC", met
 
 async function createPrivatePayJobChallenge({ jobId, serviceId, payer, amount_base_units }) {
   const resource = `https://${config.domain}/api/jobs/${jobId}/privatepay`;
+  const liveStatus = await privatePayReadiness();
   const localPayment = await createPrivatePayRequirements(config, {
     payer,
     resource,
@@ -3822,7 +3826,7 @@ async function createPrivatePayJobChallenge({ jobId, serviceId, payer, amount_ba
     // Ordinary Agent Exchange purchases must not require a PDAO holding.
     // Holder benefits remain handled separately through the access path.
     pdao_optional: true,
-  });
+  }, liveStatus);
   const checkout = await createPrivatePayCheckout(config, {
     payer,
     resource,
@@ -5501,7 +5505,8 @@ async function handle(e) {
     return json(await cancelPrivatePayAutopilotOperation(config, body));
   if (method === "POST" && path === "/api/privatepay/x402") {
     const x402Input = body.autopilot_operation_id && !body.nonce ? { ...body, nonce: body.autopilot_operation_id } : body;
-    const requirements = await createPrivatePayRequirements(config, { ...x402Input, pdao_optional: true });
+    const liveStatus = await privatePayReadiness();
+    const requirements = await createPrivatePayRequirements(config, { ...x402Input, pdao_optional: true }, liveStatus);
     const autopilot = x402Input.autopilot_policy_id && x402Input.autopilot_operation_id
       ? await validatePrivatePayAutopilotOperation(config, {
         policy_id: x402Input.autopilot_policy_id,
@@ -5568,7 +5573,7 @@ async function handle(e) {
     return json({ status: "paid", request_id: requirements.request_id, payment_response: paymentResponse, pdao_fee: pdaoFee, provider_visibility: "authenticated_provider_only" }, 200, { "PAYMENT-RESPONSE": encodePaymentResponseHeader(paymentResponse) });
   }
   if (method === "POST" && path === "/api/privatepay/x402/requirements")
-    return json(await createPrivatePayRequirements(config, { ...body, pdao_optional: true }));
+    return json(await createPrivatePayRequirements(config, { ...body, pdao_optional: true }, await privatePayReadiness()));
   if (method === "POST" && path === "/api/privatepay/x402/pdao-fee/transaction")
     return json(await buildPrivatePayPdaoFeeTransaction(config, body));
   if (method === "POST" && path === "/api/privatepay/x402/checkout") {
@@ -6411,7 +6416,7 @@ async function mcp(request) {
         rules: ["quote first", "do not pay an amount from catalog text alone", "do not send private keys or seed phrases", "target network is separate from payment network", "PDAO holder access uses a signed wallet challenge and sends no transaction", "do not substitute PDAO for the quoted USDC payment intent", "payment is not execution authorization for writes", "HTTP 409 recovery_required means do not replay the payment or service"],
       };
       else if (name === "privatepay_status") result = await probePrivatePayRail(config);
-      else if (name === "privatepay_challenge") result = await createPrivatePayChallenge(config, a);
+      else if (name === "privatepay_challenge") result = await createPrivatePayChallenge(config, a, await privatePayReadiness());
       else if (name === "privatepay_checkout") result = String(a.phase || "create").trim().toLowerCase() === "challenge"
         ? await requestPrivatePayCheckoutChallenge(config, a)
         : await createPrivatePayCheckout(config, a);

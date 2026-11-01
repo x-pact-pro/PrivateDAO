@@ -327,6 +327,22 @@ test("PrivatePAY remains fail-closed when x402 conformance is not verified", asy
   );
 });
 
+test("PrivatePAY requirements honor live rail readiness over stale activation flags", async () => {
+  const config = magicBlockCheckoutConfig();
+  const liveStatus = {
+    ...privatePayStatus(config),
+    status: "not_ready",
+    enabled: false,
+    operational: false,
+    merchant_accounts_delegated: false,
+    activation_blockers: ["MagicBlock merchant payment accounts are not currently delegated to the selected validator"],
+  };
+  await assert.rejects(
+    () => createPrivatePayRequirements(config, { resource: "api://example", provider_id: "provider-1", amount_base_units: "1000" }, liveStatus),
+    (error) => error.code === "PRIVATEPAY_NOT_READY" && error.statusCode === 503 && error.status.activation_blockers.length === 1,
+  );
+});
+
 test("PrivatePAY rejects a rail that has not independently passed Mainnet conformance", () => {
   const status = privatePayStatus({
     privatePayEnabled: true,
