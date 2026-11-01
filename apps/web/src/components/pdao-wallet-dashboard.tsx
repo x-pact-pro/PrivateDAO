@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { TOKEN_PROGRAM_ID, TOKEN_2022_PROGRAM_ID } from "@solana/web3.js";
+import { TOKEN_2022_PROGRAM_ID, TOKEN_PROGRAM_ID } from "@solana/spl-token";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { Activity, ArrowUpRight, Bot, CheckCircle2, CircleDollarSign, Clock3, Coins, ExternalLink, RefreshCw, ShieldCheck, WalletCards } from "lucide-react";
 
@@ -51,7 +51,7 @@ export function PdaoWalletDashboard() {
       });
       setSolBalance(BigInt(lamports));
       setTokens(aggregateTokenBalances(parsedAccounts));
-      setActivity(signatures.map(({ signature, blockTime, err }) => ({ signature, blockTime, err })));
+      setActivity(signatures.map(({ signature, blockTime, err }) => ({ signature, blockTime: blockTime ?? null, err })));
       setUpdatedAt(new Date());
     } catch (refreshError) {
       setError(refreshError instanceof Error ? refreshError.message : "Unable to load wallet data from Solana.");

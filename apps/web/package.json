@@ -25,6 +25,7 @@
     "@solana/wallet-adapter-react-ui": "^0.9.39",
     "@solana/wallet-adapter-solflare": "^0.6.33",
     "@solana/wallet-standard-wallet-adapter-react": "^1.1.4",
+    "@solana/spl-token": "^0.4.14",
     "@solana/web3.js": "^1.98.4",
     "@supabase/ssr": "^0.10.2",
     "@supabase/supabase-js": "^2.104.0",
