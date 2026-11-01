@@ -27,8 +27,8 @@ function parseUnits(value: string, decimals: number): bigint {
   if (!/^\d+(\.\d+)?$/.test(normalized)) throw new Error("Enter a valid positive amount.");
   const [whole, fraction = ""] = normalized.split(".");
   if (fraction.length > decimals) throw new Error(`This asset supports at most ${decimals} decimal places.`);
-  const units = BigInt(whole) * (10n ** BigInt(decimals)) + BigInt(fraction.padEnd(decimals, "0") || "0");
-  if (units <= 0n) throw new Error("Amount must be greater than zero.");
+  const units = BigInt(whole) * (BigInt(10) ** BigInt(decimals)) + BigInt(fraction.padEnd(decimals, "0") || "0");
+  if (units <= BigInt(0)) throw new Error("Amount must be greater than zero.");
   return units;
 }
 
@@ -81,7 +81,7 @@ export function WalletTransferPanel() {
           connection.getParsedTokenAccountsByOwner(publicKey, { programId: TOKEN_PROGRAM_ID }, "confirmed"),
           connection.getParsedTokenAccountsByOwner(publicKey, { programId: TOKEN_2022_PROGRAM_ID }, "confirmed"),
         ]);
-        const source = findTokenAccounts(classic).concat(findTokenAccounts(token2022)).find((account) => account.mint.equals(mint) && BigInt(account.amount) > 0n);
+        const source = findTokenAccounts(classic).concat(findTokenAccounts(token2022)).find((account) => account.mint.equals(mint) && BigInt(account.amount) > BigInt(0));
         if (!source) throw new Error("No funded USDC token account was found for this wallet.");
         const amountBaseUnits = parseUnits(amount, source.decimals);
         if (BigInt(source.amount) < amountBaseUnits) throw new Error("The wallet balance is lower than the requested amount.");
