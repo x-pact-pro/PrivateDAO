@@ -290,6 +290,47 @@ jobs:
 
           echo "API Gateway $API_ID routed to unqualified Lambda $FUNCTION_NAME"
 
+      - name: Reconcile API Gateway CORS for browser checkout
+        id: cors
+        if: steps.deploy_code.outcome == 'success' && steps.route_api.outcome == 'success'
+        run: |
+          set -euo pipefail
+
+          DOMAIN="${PUBLIC_BASE_URL#https://}"
+          DOMAIN="${DOMAIN%%/*}"
+          API_ID="$(aws apigatewayv2 get-api-mappings \
+            --domain-name "$DOMAIN" \
+            --region "$AWS_REGION" \
+            --query 'Items[0].ApiId' \
+            --output text)"
+          test -n "$API_ID" && test "$API_ID" != "None"
+
+          cors_configuration="$(jq -cn '{
+            AllowCredentials: false,
+            AllowHeaders: [
+              "content-type",
+              "authorization",
+              "cookie",
+              "x-pdao-owner-token",
+              "mcp-protocol-version",
+              "mcp-session-id",
+              "payment-signature",
+              "x-github-event",
+              "x-hub-signature-256"
+            ],
+            AllowMethods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+            AllowOrigins: ["*"],
+            ExposeHeaders: ["payment-required", "payment-response"],
+            MaxAge: 300
+          }')"
+
+          aws apigatewayv2 update-api \
+            --api-id "$API_ID" \
+            --region "$AWS_REGION" \
+            --cors-configuration "$cors_configuration" >/dev/null
+
+          echo "API Gateway CORS reconciled for browser x402 checkout: $API_ID"
+
       - name: Production smoke gate
         id: smoke
         if: >-
@@ -325,7 +366,17 @@ jobs:
           jq -e '[.providers[] | select(.provider == "mongodb" and .role == "visitor-accounts-favorites-cart" and .status == "configured")] | length == 1' /tmp/providers.json >/dev/null
           jq -e '.seller_tiers.free.listing_fee_usd == 0 and (.seller_tiers | has("basic") and has("pro"))' /tmp/marketplace-policy.json >/dev/null
 
-          echo "Production smoke gate passed, including MongoDB accounts and seller-tier policy."
+          preflight_headers="$(curl --fail --silent --show-error --dump-header - --output /dev/null \
+            -X OPTIONS "$PUBLIC_BASE_URL/api/privatepay/x402" \
+            -H 'Origin: https://privatedao.org' \
+            -H 'Access-Control-Request-Method: POST' \
+            -H 'Access-Control-Request-Headers: content-type,payment-signature')"
+          grep -Eiq '^access-control-allow-origin:[[:space:]]*\*' <<< "$preflight_headers"
+          grep -Eiq '^access-control-allow-methods:.*POST' <<< "$preflight_headers"
+          grep -Eiq '^access-control-allow-headers:.*payment-signature' <<< "$preflight_headers"
+          grep -Eiq '^access-control-expose-headers:.*payment-required' <<< "$preflight_headers"
+
+          echo "Production smoke gate passed, including MongoDB accounts, seller-tier policy, and browser x402 CORS."
 
       - name: Reconcile payout runtime configuration
         id: payout_runtime

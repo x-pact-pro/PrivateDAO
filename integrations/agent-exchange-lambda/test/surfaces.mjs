@@ -674,6 +674,8 @@ test("browser PrivatePAY clients receive x402 CORS headers", async () => {
   assert.equal(response.headers["access-control-allow-origin"], "*");
   assert.match(response.headers["access-control-allow-methods"], /POST/);
   assert.match(response.headers["access-control-allow-headers"], /payment-signature/);
+  assert.match(response.headers["access-control-expose-headers"], /payment-required/);
+  assert.match(response.headers["access-control-expose-headers"], /payment-response/);
 });
 
 test("MCP lifecycle, schemas, errors, and network aliases are protocol-safe", async () => {
