@@ -7,6 +7,7 @@ import { Activity, ArrowUpRight, Bot, CheckCircle2, CircleDollarSign, Clock3, Co
 
 import { WalletConnectButton } from "@/components/wallet-connect-button";
 import { WalletOperationsPanel } from "@/components/wallet-operations-panel";
+import { WalletTransferPanel } from "@/components/wallet-transfer-panel";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { buttonVariants } from "@/components/ui/button";
@@ -91,6 +92,8 @@ export function PdaoWalletDashboard() {
         <BalanceCard icon={CircleDollarSign} label="USDC" value={formatTokenAmount(usdc.amountBaseUnits, usdc.decimals)} detail="Mainnet USDC" />
         <BalanceCard icon={ShieldCheck} label="PDAO" value={formatTokenAmount(pdao.amountBaseUnits, pdao.decimals)} detail="Mainnet utility token" />
       </div>
+
+      <WalletTransferPanel />
 
       <WalletOperationsPanel />
 
