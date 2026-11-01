@@ -613,6 +613,7 @@ const json = (body, status = 200, headers = {}) => ({
     "access-control-allow-origin": config.corsOrigin,
     "access-control-allow-methods": "GET,POST,PUT,PATCH,DELETE,OPTIONS",
     "access-control-allow-headers": "content-type, authorization, cookie, x-pdao-owner-token, mcp-protocol-version, mcp-session-id, payment-signature, x-github-event, x-hub-signature-256",
+    "access-control-expose-headers": "payment-required, payment-response",
     ...headers,
   },
   body: JSON.stringify(body),
@@ -627,6 +628,7 @@ const text = (body, status = 200) => ({
     "access-control-allow-origin": config.corsOrigin,
     "access-control-allow-methods": "GET,POST,PUT,PATCH,DELETE,OPTIONS",
     "access-control-allow-headers": "content-type, authorization, cookie, x-pdao-owner-token, mcp-protocol-version, mcp-session-id, x-github-event, x-hub-signature-256",
+    "access-control-expose-headers": "payment-required, payment-response",
   },
   body,
 });
