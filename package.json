@@ -63,6 +63,7 @@
     "build:web-next-doc-viewer-plan": "ts-node scripts/build-web-next-doc-viewer-plan.ts",
     "verify:web-next-doc-viewer-plan": "ts-node scripts/verify-web-next-doc-viewer-plan.ts",
     "web:lint": "npm --prefix apps/web run lint",
+    "lint": "npm run web:lint",
     "start:read-node": "TS_NODE_FILES=true TS_NODE_PREFER_TS_EXTS=true ts-node scripts/run-read-node.ts",
     "start:chain-watcher": "TS_NODE_PREFER_TS_EXTS=true ts-node scripts/chain-watcher.ts",
     "probe:qvac-runtime": "node scripts/probe-qvac-sdk.mjs",
@@ -93,6 +94,11 @@
     "build:native-capability-matrix": "node --import tsx scripts/build-native-capability-matrix.mjs",
     "verify:native-capability-matrix": "node --import tsx scripts/verify-native-capability-matrix.mjs",
     "test:payment-rails": "node scripts/test-payment-rails.mjs",
+    "test:wallet-security-layer": "node --import tsx scripts/test-wallet-security-layer.mjs",
+    "test:wallet-security:autonomous-gateway": "node --import tsx scripts/test-autonomous-wallet-gateway-e2e.mjs",
+    "test:wallet-security:b2b-b2c-gateway": "node --import tsx scripts/test-b2b-b2c-wallet-gateway-e2e.mjs",
+    "verify:wallet-e2e-gates": "node scripts/verify-wallet-e2e-gates.mjs",
+    "verify:wallet-production-readiness": "node --import tsx scripts/verify-wallet-production-readiness.mjs",
     "test:pdao-wallet-assets": "node --experimental-strip-types scripts/test-pdao-wallet-assets.mjs",
     "test:vendored-bigint-buffer": "node scripts/test-vendored-bigint-buffer.mjs",
     "test:runtime:http-runtime": "node --import tsx scripts/test-runtime-http-runtime.mjs",
@@ -370,6 +376,7 @@
   },
   "dependencies": {
     "@aws-sdk/client-bedrock-runtime": "^3.1106.0",
+    "@aws-sdk/client-kms": "3.1106.0",
     "@aws-sdk/client-secrets-manager": "^3.1106.0",
     "@azure/identity": "^4.13.3",
     "@azure/keyvault-secrets": "^4.11.2",
@@ -377,6 +384,7 @@
     "@coral-xyz/anchor": "^0.32.1",
     "@ika.xyz/sdk": "^0.4.1",
     "@mysten/sui": "^2.17.0",
+    "@noble/post-quantum": "0.7.1",
     "@opentelemetry/api": "^1.9.1",
     "@solana/spl-token": "^0.4.14",
     "@solana/web3.js": "^1.98.4",
@@ -384,6 +392,7 @@
     "bigint-buffer": "file:vendor/bigint-buffer",
     "dotenv": "^16.4.5",
     "jose": "^6.2.12",
+    "mongodb": "^7.7.0",
     "viem": "2.56.6"
   },
   "devDependencies": {

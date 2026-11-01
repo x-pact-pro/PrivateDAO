@@ -1,4 +1,5 @@
 import { createRemoteJWKSet, jwtVerify, type JWTPayload } from "jose";
+import type { AuthenticatedTenantPrincipal, WalletRole } from "../wallet-security.js";
 
 export type EnterpriseRole = "maker" | "checker" | "approver" | "auditor" | "admin";
 
@@ -27,6 +28,20 @@ export interface TenantMembership {
   subject: string;
   roles: readonly EnterpriseRole[];
   active: boolean;
+}
+
+export function toWalletPrincipal(principal: EnterprisePrincipal, membership: TenantMembership, organizationId: string, authenticatedAt = new Date().toISOString()): AuthenticatedTenantPrincipal {
+  if (!membership.active) throw new EntraIdentityError("MEMBERSHIP_INACTIVE", "The PrivateDAO tenant membership is inactive.");
+  if (!organizationId || organizationId !== membership.tenantId) throw new EntraIdentityError("TENANT_NOT_MAPPED", "The organization is not bound to the authenticated PrivateDAO tenant.");
+  const roles: WalletRole[] = membership.roles.map((role) => role === "checker" ? "approver" : role);
+  return {
+    tenantId: membership.tenantId,
+    organizationId,
+    subjectId: principal.subject,
+    roles,
+    issuer: principal.issuer,
+    authenticatedAt,
+  };
 }
 
 export interface TenantMembershipStore {

@@ -67,6 +67,7 @@ export interface PreparedExecution<TUnsigned = unknown> {
   unsignedPayload: TUnsigned;
   requiredSigners: AccountReference[];
   state: "prepared" | "awaiting_signature";
+  signingMode?: "browser" | "server";
 }
 
 export interface ExecutionReceipt<TResult = unknown> {
@@ -78,6 +79,7 @@ export interface ExecutionReceipt<TResult = unknown> {
   state: Extract<ExecutionState, "confirmed" | "finalized" | "reconciled">;
   signatures: string[];
   result?: TResult;
+  metadata?: Readonly<Record<string, string | number | boolean | null>>;
   reconciliationId?: string;
   proofId?: string;
   createdAt: string;
@@ -92,6 +94,8 @@ export interface ExecutionReceipt<TResult = unknown> {
 export interface KernelProvider {
   readonly id: ProviderId;
   readonly networks: readonly NetworkId[];
+  /** True when the provider records/verifies policy without touching the chain. */
+  readonly offchainOnly?: boolean;
   supports(capability: CapabilityId): boolean;
   prepare<TPayload, TUnsigned>(intent: ExecutionIntent<TPayload>): Promise<PreparedExecution<TUnsigned>>;
   submit<TUnsigned>(execution: PreparedExecution<TUnsigned>, signedPayload: TUnsigned): Promise<{ executionId: string; signatures: string[] }>;
@@ -207,11 +211,81 @@ export type {
 } from "./payroll.js";
 export { registerCatalogCapabilities } from "./product-registry.js";
 export { ProductExecutionGateway } from "./product-gateway.js";
+export { SolanaBrowserExecutionProvider } from "./solana-browser-execution-provider.js";
+export type { SolanaBrowserExecutionPayload, SolanaBrowserSignedPayload } from "./solana-browser-execution-provider.js";
+export { BrowserEvmTransport } from "./browser-evm-transport.js";
+export type { BrowserEvmContractWritePayload, BrowserEvmSignedPayload } from "./browser-evm-transport.js";
+export { GovernancePolicyProvider } from "./governance-policy-provider.js";
+export type { GovernancePolicyPayload, GovernancePolicySignature } from "./governance-policy-provider.js";
+export { HyperCoreNetworkAdapter } from "./hypercore-network.js";
+export type { HyperCoreHealth, HyperCoreMetaSnapshot, HyperCorePreparedAction, HyperCoreSignedAction } from "./hypercore-network.js";
+export {
+  StellarAdapterError,
+  StellarHorizonTransport,
+  StellarNetworkAdapter,
+  STELLAR_KERNEL_CAPABILITIES,
+  STELLAR_NETWORK_CONFIGS,
+} from "./stellar-network.js";
+export type { StellarEnvironment, StellarNetworkConfig, StellarPaymentPayload, StellarSignedPayload, StellarUnsignedPayload } from "./stellar-network.js";
+export { validateStellarProductWorkflow } from "./stellar-product-workflow.js";
+export type { StellarProductWorkflow } from "./stellar-product-workflow.js";
+export { WalletExecutionGateway, createPersistentWalletExecutionGateway } from "./wallet-gateway.js";
+export type { WalletExecutionAuthorization } from "./wallet-gateway.js";
+export {
+  createHybridAuthorizationVerifierFromKms,
+  createHybridAuthorizationVerifierFromKmsEnv,
+  createKmsHybridAuthorizationEnvelope,
+} from "./kms-hybrid-authorization.js";
+export {
+  WalletSecurityGuard,
+  PersistentWalletSecurityGuard,
+  HybridAuthorizationKeyRing,
+  ConfiguredHybridAuthorizationVerifier,
+  assertTenantPrincipal,
+  assertWalletActionRequestShape,
+  assertWalletPolicyConfiguration,
+  createHybridAuthorizationEnvelope,
+  createHybridAuthorizationVerifierFromEnv,
+  createWalletAuthorizationMessage,
+  createNoblePqcProvider,
+  assertWalletPolicy,
+  quantumSecurityPosture,
+  verifyHybridAuthorizationEnvelope,
+} from "./wallet-security.js";
+export type {
+  AuthenticatedTenantPrincipal,
+  HybridAuthorizationEnvelope,
+  HybridAuthorizationEnvelopeInput,
+  HybridAuthorizationPublicKeys,
+  HybridAuthorizationVerifier,
+  PqcProvider,
+  QuantumSecurityPosture,
+  WalletAction,
+  WalletActionRequest,
+  WalletAuditEvent,
+  WalletOperationalAuditEvent,
+  WalletAuthorizationDecision,
+  WalletExecutionSession,
+  WalletMode,
+  WalletPolicy,
+  WalletRole,
+  WalletSecurityStore,
+  WalletSignerBoundary,
+} from "./wallet-security.js";
+export type { WalletReceiptRecord, WalletRecoveryRecord, WalletRecoveryState } from "./mongo-wallet-security-store.js";
+export async function createMongoWalletSecurityStoreFromEnv(env: NodeJS.ProcessEnv = process.env) {
+  if (!(env.PDAO_WALLET_MONGODB_URI || env.MONGODB_URI)) {
+    throw new Error("PDAO_WALLET_MONGODB_URI or MONGODB_URI is required for the production wallet store.");
+  }
+  const module = await import("./mongo-wallet-security-store.js");
+  return module.createMongoWalletSecurityStoreFromEnv(env);
+}
 export {
   EntraIdentityError,
   EntraTenantAuthorizer,
   EntraTokenVerifier,
   MapTenantMembershipStore,
+  toWalletPrincipal,
 } from "./identity/entra.js";
 export type {
   EnterprisePrincipal,
@@ -220,6 +294,12 @@ export type {
   TenantMembership,
   TenantMembershipStore,
 } from "./identity/entra.js";
+export {
+  CognitoIdentityError,
+  CognitoTenantAuthorizer,
+  CognitoTokenVerifier,
+} from "./identity/cognito.js";
+export type { CognitoIdentityConfig } from "./identity/cognito.js";
 export { AzureKeyVaultSecretProvider, EnvironmentSecretProvider, createSecretProvider } from "./azure/secrets.js";
 export type { SecretProvider } from "./azure/secrets.js";
 export { initializeAzureMonitor, SafeKernelTelemetry } from "./azure/monitor.js";

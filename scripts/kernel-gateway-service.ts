@@ -1,0 +1,914 @@
+import * as http from "node:http";
+import { GetSecretValueCommand, SecretsManagerClient } from "@aws-sdk/client-secrets-manager";
+import { createPublicClient, createWalletClient, defineChain, http as viemHttp } from "viem";
+import { privateKeyToAccount } from "viem/accounts";
+import { createClient as createTempoClient } from "viem/tempo";
+import { tempoModerato } from "viem/chains";
+
+import {
+  AuctionBidCommitProvider,
+  AuctionOutcomeProofProvider,
+  BlindPolicyProofProvider,
+  InMemoryProviderRegistry,
+  PayrollApprovalProvider,
+  GovernancePolicyProvider,
+  PayrollCalculationProvider,
+  RecordCreationProvider,
+  RecordVerificationProvider,
+  TreasuryPolicyProvider,
+  EVM_NETWORK_CONFIGS,
+  EvmNetworkAdapter,
+  BrowserEvmTransport,
+  ViemEvmTransport,
+  ZalletCliTransport,
+  ZcashNetworkAdapter,
+  ZCASH_NETWORK_CONFIGS,
+  HyperCoreNetworkAdapter,
+  StellarHorizonTransport,
+  StellarNetworkAdapter,
+  STELLAR_NETWORK_CONFIGS,
+  STELLAR_KERNEL_CAPABILITIES,
+  AgentDiscoveryProvider,
+  SolanaBrowserExecutionProvider,
+  createPrivateDaoRuntime,
+  createPersistentWalletExecutionGateway,
+  createHybridAuthorizationVerifierFromEnv,
+  createHybridAuthorizationVerifierFromKmsEnv,
+  isNetworkAvailable,
+  assertWalletActionRequestShape,
+  EntraTenantAuthorizer,
+  EntraTokenVerifier,
+  CognitoTenantAuthorizer,
+  CognitoTokenVerifier,
+  toWalletPrincipal,
+  buildNativeCapabilityRegistry,
+  type ExecutionIntent,
+  type KernelProvider,
+  type NetworkId,
+  type PreparedExecution,
+  type ProtocolRole,
+  type WalletExecutionGateway,
+  type WalletActionRequest,
+  type WalletPolicy,
+  type HybridAuthorizationVerifier,
+  type AuthenticatedTenantPrincipal,
+  type WalletExecutionSession,
+} from "../packages/privatedao-runtime/src/index.js";
+import type { MongoWalletSecurityStore } from "../packages/privatedao-runtime/src/mongo-wallet-security-store.js";
+import type { EnterprisePrincipal, TenantMembership } from "../packages/privatedao-runtime/src/identity/entra.js";
+
+export type KernelGatewayServiceOptions = {
+  allowedOrigin?: string;
+  requiredToken?: string;
+  maxBodyBytes?: number;
+  role?: ProtocolRole;
+  allowUnauthenticated?: boolean;
+  hybridVerifier?: HybridAuthorizationVerifier;
+  requireHybridAuthorization?: boolean;
+  serverEvmPrivateKey?: string;
+};
+
+const EVM_KERNEL_CAPABILITIES = [
+  "governance.proposal.execute",
+  "auction.bid.commit",
+  "auction.settle",
+] as const;
+
+const PUBLIC_EVM_TESTNET_RPC_URLS: Partial<Record<NetworkId, string>> = {
+  "ethereum-sepolia": "https://ethereum-sepolia-rpc.publicnode.com",
+  "arbitrum-sepolia": "https://sepolia-rollup.arbitrum.io/rpc",
+  "tempo-testnet": "https://rpc.moderato.tempo.xyz",
+  "base-sepolia": "https://sepolia.base.org",
+  "bnb-testnet": "https://bsc-testnet-dataseed.bnbchain.org",
+  "robinhood-testnet": "https://rpc.testnet.chain.robinhood.com",
+  // HyperEVM is the EVM surface of Hyperliquid. HyperCore remains a separate
+  // native exchange surface and is intentionally not routed through this map.
+  "hyperliquid-testnet": "https://rpc.hyperliquid-testnet.xyz/evm",
+};
+
+// An EVM RPC adapter can be healthy before a network has PrivateDAO product
+// contracts. Keep those lanes available for Kernel policy workflows until a
+// real contract deployment and independent E2E evidence are registered.
+const DEFAULT_EVM_PRODUCT_EXECUTION_NETWORKS = new Set<NetworkId>([
+  "ethereum-sepolia",
+  "arbitrum-sepolia",
+  "tempo-testnet",
+  "base-sepolia",
+  // Robinhood organizational contracts have independently verified Testnet
+  // receipts, so contract-write routing is enabled by default for its
+  // Kernel-backed Governance and Auction workflows.
+  "robinhood-testnet",
+]);
+
+type EvmProviderEntry = {
+  id: string;
+  network: NetworkId;
+};
+
+type KernelViemPublicClient = {
+  getChainId(): Promise<number>;
+  getTransaction(input: { hash: `0x${string}` }): Promise<{
+    chainId: number | bigint;
+    from: `0x${string}`;
+    to: `0x${string}` | null;
+    input: `0x${string}`;
+    value: bigint;
+  } | null>;
+  waitForTransactionReceipt(input: { hash: `0x${string}`; timeout?: number }): Promise<{ status: "success" | "reverted"; blockNumber: bigint }>;
+  estimateContractGas(input: Record<string, unknown>): Promise<bigint>;
+  getGasPrice(): Promise<bigint>;
+};
+
+type KernelViemWalletClient = {
+  writeContract(input: Record<string, unknown>): Promise<`0x${string}`>;
+};
+
+type JsonRecord = Record<string, unknown>;
+
+type WalletIdentityAuthorizer = {
+  authorize(authorizationHeader: string | undefined): Promise<{ principal: EnterprisePrincipal; membership: TenantMembership }>;
+};
+
+function isRecord(value: unknown): value is JsonRecord {
+  return Boolean(value && typeof value === "object" && !Array.isArray(value));
+}
+
+function scopedProvider(delegate: KernelProvider, network: NetworkId): KernelProvider {
+  return {
+    id: `${delegate.id}-${network}`,
+    networks: [network],
+    supports: (capability) => delegate.supports(capability),
+    prepare: (intent) => {
+      if (intent.context.network !== network) throw new Error("Provider/network mismatch.");
+      return delegate.prepare(intent);
+    },
+    submit: (execution, signedPayload) => delegate.submit(execution, signedPayload),
+    status: (executionId) => delegate.status(executionId),
+    receipt: (executionId) => delegate.receipt(executionId),
+  };
+}
+
+export class KernelGatewayService {
+  readonly supportedNetworks: readonly NetworkId[];
+  private readonly allowedOrigin: string;
+  private readonly requiredToken: string;
+  private readonly maxBodyBytes: number;
+  private readonly role: ProtocolRole;
+  private readonly allowUnauthenticated: boolean;
+  private readonly requireHybridAuthorization: boolean;
+  private readonly hybridVerifier?: HybridAuthorizationVerifier;
+  private readonly prepared = new Map<string, PreparedExecution<unknown>>();
+  private readonly walletPrepared = new Map<string, { prepared: PreparedExecution<unknown>; gateway: WalletExecutionGateway; subjectId: string; tenantId: string; organizationId: string; expiresAt: string }>();
+  private readonly evmProviders = new Map<NetworkId, EvmProviderEntry>();
+  private readonly evmAdapters = new Map<NetworkId, EvmNetworkAdapter>();
+  private readonly zcashAdapter?: ZcashNetworkAdapter;
+  private readonly hypercoreAdapter?: HyperCoreNetworkAdapter;
+  private readonly stellarAdapter?: StellarNetworkAdapter;
+  private readonly runtime;
+  private readonly walletStorePromise?: Promise<MongoWalletSecurityStore>;
+  private readonly walletIdentityPromise?: Promise<WalletIdentityAuthorizer>;
+  private readonly serverEvmPrivateKey?: string;
+
+  constructor(options: KernelGatewayServiceOptions = {}) {
+    const runtimeMode = process.env.NODE_ENV?.trim().toLowerCase();
+    const explicitlyNonProduction = runtimeMode === "development" || runtimeMode === "test";
+    this.allowedOrigin = options.allowedOrigin?.trim()
+      || process.env.PDAO_KERNEL_GATEWAY_ALLOWED_ORIGIN?.trim()
+      || (explicitlyNonProduction ? "*" : "https://privatedao.org");
+    this.requiredToken = options.requiredToken ?? process.env.PDAO_KERNEL_GATEWAY_TOKEN?.trim() ?? "";
+    this.maxBodyBytes = parseMaxBodyBytes(options.maxBodyBytes ?? process.env.PDAO_KERNEL_GATEWAY_MAX_BODY_BYTES);
+    this.role = parseGatewayRole(options.role ?? process.env.PDAO_KERNEL_GATEWAY_ROLE);
+    this.allowUnauthenticated = explicitlyNonProduction && (
+      options.allowUnauthenticated === true
+      || process.env.PDAO_KERNEL_GATEWAY_ALLOW_UNAUTHENTICATED === "1"
+    );
+    this.hybridVerifier = options.hybridVerifier ?? createHybridAuthorizationVerifierFromEnv();
+    this.requireHybridAuthorization = options.requireHybridAuthorization === true
+      || process.env.PDAO_PQC_REQUIRE_HYBRID_AUTHORIZATION === "1";
+    this.serverEvmPrivateKey = options.serverEvmPrivateKey?.trim();
+    if (this.requireHybridAuthorization && !this.hybridVerifier) {
+      throw new Error("PDAO_PQC_REQUIRE_HYBRID_AUTHORIZATION requires a configured PQC public-key verifier.");
+    }
+
+    const walletMongoUri = process.env.PDAO_WALLET_MONGODB_URI?.trim() || process.env.MONGODB_URI?.trim();
+    const walletMongoDatabase = process.env.PDAO_WALLET_MONGODB_DATABASE?.trim() || process.env.MONGODB_DATABASE?.trim() || "privatedao_wallet";
+    const identityProvider = process.env.PDAO_IDENTITY_PROVIDER?.trim().toLowerCase() || (process.env.PDAO_ENTRA_TENANT_ID?.trim() ? "entra" : "");
+    const entraTenantId = process.env.PDAO_ENTRA_TENANT_ID?.trim();
+    const entraAudience = process.env.PDAO_ENTRA_AUDIENCE?.trim();
+    const cognitoUserPoolId = process.env.PDAO_COGNITO_USER_POOL_ID?.trim();
+    const cognitoIssuer = process.env.PDAO_COGNITO_ISSUER?.trim();
+    const cognitoAudience = process.env.PDAO_COGNITO_AUDIENCE?.trim();
+    if (walletMongoUri && ((identityProvider === "entra" && entraTenantId && entraAudience) || (identityProvider === "aws-cognito" && cognitoUserPoolId && cognitoIssuer && cognitoAudience))) {
+      this.walletStorePromise = import("../packages/privatedao-runtime/src/mongo-wallet-security-store.js")
+        .then(({ MongoWalletSecurityStore: Store }) => new Store({ uri: walletMongoUri, database: walletMongoDatabase }));
+      this.walletIdentityPromise = this.walletStorePromise.then((store) => identityProvider === "aws-cognito"
+        ? new CognitoTenantAuthorizer(new CognitoTokenVerifier({ userPoolId: cognitoUserPoolId!, issuer: cognitoIssuer!, audience: cognitoAudience! }), store)
+        : new EntraTenantAuthorizer(new EntraTokenVerifier({ tenantId: entraTenantId!, audience: entraAudience! }), store));
+    }
+
+    const evmNetworks: readonly NetworkId[] = [
+      "ethereum-sepolia",
+      "arbitrum-sepolia",
+      "tempo-testnet",
+      "base-sepolia",
+      "bnb-testnet",
+      "robinhood-testnet",
+      "hyperliquid-testnet",
+    ];
+    const kernelNetworks: readonly NetworkId[] = ["solana-devnet", ...evmNetworks, "zcash-testnet", "stellar-testnet", "hypercore-testnet"];
+    const zcashConfigured = Boolean(
+      process.env.PDAO_ZCASH_ZALLET_BINARY?.trim()
+      && process.env.PDAO_ZCASH_ZALLET_DATA_DIR?.trim()
+      && process.env.PDAO_ZCASH_ZALLET_CONFIG?.trim(),
+    );
+    // Kernel policy and verification workflows do not require a Zcash wallet.
+    // The wallet-backed settlement adapter remains conditional below.
+    this.supportedNetworks = kernelNetworks;
+    if (process.env.PDAO_HYPERCORE_API_ENABLED === "1") {
+      this.hypercoreAdapter = new HyperCoreNetworkAdapter();
+    }
+
+    const registry = new InMemoryProviderRegistry();
+    this.registerConfiguredEvmAdapters(registry, evmNetworks);
+    const stellarConfig = STELLAR_NETWORK_CONFIGS.find((entry) => entry.network === "stellar-testnet");
+    if (!stellarConfig) throw new Error("Stellar Testnet configuration is missing from the Kernel network matrix.");
+    const stellarAdapter = new StellarNetworkAdapter({
+      id: "privatedao-stellar-testnet-horizon",
+      config: stellarConfig,
+      capabilities: STELLAR_KERNEL_CAPABILITIES,
+      transport: new StellarHorizonTransport(),
+    });
+    this.stellarAdapter = stellarAdapter;
+    registry.register(stellarAdapter);
+    for (const network of this.supportedNetworks) {
+      const networkIsAvailable = isNetworkAvailable(network);
+      const providers: KernelProvider[] = [
+        new PayrollCalculationProvider(),
+        new PayrollApprovalProvider(),
+        new TreasuryPolicyProvider(),
+        new RecordCreationProvider(),
+        new RecordVerificationProvider(),
+        new BlindPolicyProofProvider(),
+        new AuctionBidCommitProvider(),
+        new AuctionOutcomeProofProvider(),
+      ];
+      if (networkIsAvailable) {
+        for (const provider of providers) registry.register(scopedProvider(provider, network));
+      }
+      // Keep policy governance available on every non-Solana lane. A real
+      // contract-write payload is still resolved to the network adapter;
+      // policy payloads must remain executable when a network has no product
+      // contract deployment yet.
+      if (network !== "solana-devnet") registry.register(new GovernancePolicyProvider(network));
+    }
+    registry.register(new AgentDiscoveryProvider());
+    registry.register(new SolanaBrowserExecutionProvider());
+
+    if (zcashConfigured) {
+      const config = ZCASH_NETWORK_CONFIGS.find((entry) => entry.network === "zcash-testnet");
+      if (!config) throw new Error("Zcash Testnet configuration is missing from the Kernel network matrix.");
+      const transport = new ZalletCliTransport({
+        binaryPath: process.env.PDAO_ZCASH_ZALLET_BINARY!.trim(),
+        dataDirectory: process.env.PDAO_ZCASH_ZALLET_DATA_DIR!.trim(),
+        configPath: process.env.PDAO_ZCASH_ZALLET_CONFIG!.trim(),
+        network: "zcash-testnet",
+        explorerBaseUrl: config.explorerBaseUrl,
+        confirmationDepth: Number(process.env.PDAO_ZCASH_CONFIRMATIONS || 1),
+        allowBalanceReadinessProbe: process.env.PDAO_ZCASH_ALLOW_BALANCE_CHECK === "1",
+        broadcastEnabled: process.env.PDAO_ZCASH_BROADCAST_ENABLED === "1",
+      });
+      const zcashAdapter = new ZcashNetworkAdapter({
+        id: "privatedao-zcash-testnet-zallet",
+        config,
+        capabilities: ["payroll.settle"],
+        transport,
+      });
+      this.zcashAdapter = zcashAdapter;
+      registry.register(zcashAdapter);
+    }
+    this.runtime = createPrivateDaoRuntime(registry);
+  }
+
+  private registerConfiguredEvmAdapters(registry: InMemoryProviderRegistry, networks: readonly NetworkId[]): void {
+    const serverEnabled = process.env.PDAO_KERNEL_EVM_ENABLED === "1";
+    const browserEnabled = process.env.PDAO_KERNEL_EVM_BROWSER_ENABLED !== "0";
+    if (!serverEnabled && !browserEnabled) return;
+
+    const account = serverEnabled ? this.serverEvmAccount() : undefined;
+    const allowedContracts = (process.env.PDAO_KERNEL_EVM_ALLOWED_CONTRACTS || "")
+      .split(",").map((value) => value.trim()).filter(Boolean);
+    const allowedFunctions = (process.env.PDAO_KERNEL_EVM_ALLOWED_FUNCTIONS || "")
+      .split(",").map((value) => value.trim()).filter(Boolean);
+    const allowedFunctionSelectors = (process.env.PDAO_KERNEL_EVM_ALLOWED_FUNCTION_SELECTORS || "")
+      .split(",").map((value) => value.trim()).filter(Boolean);
+    const configuredSelection = (process.env.PDAO_KERNEL_EVM_NETWORKS || "").trim();
+    const selectionIsExplicit = configuredSelection.length > 0;
+    const selected = new Set(
+      configuredSelection
+        .split(",")
+        .map((value) => value.trim())
+        .filter(Boolean),
+    );
+    if (selected.size === 0) for (const network of networks) selected.add(network);
+    const unknown = [...selected].filter((network) => !networks.includes(network as NetworkId));
+    if (unknown.length > 0) throw new Error(`PDAO_KERNEL_EVM_NETWORKS contains unsupported gateway networks: ${unknown.join(", ")}`);
+    const productExecutionSelection = (process.env.PDAO_KERNEL_EVM_PRODUCT_EXECUTION_NETWORKS || "")
+      .split(",")
+      .map((value) => value.trim())
+      .filter(Boolean);
+    const productExecutionNetworks = productExecutionSelection.length > 0
+      ? new Set(productExecutionSelection as NetworkId[])
+      : DEFAULT_EVM_PRODUCT_EXECUTION_NETWORKS;
+
+    for (const network of networks) {
+      const config = EVM_NETWORK_CONFIGS.find((entry) => entry.network === network);
+      if (!config || config.environment !== "testnet" || !selected.has(network)) continue;
+      const rpcUrl = process.env[config.rpcUrlEnv]?.trim() || (!serverEnabled ? PUBLIC_EVM_TESTNET_RPC_URLS[network] : undefined);
+      if (!rpcUrl) {
+        // Future lanes remain visible through the Kernel policy providers until
+        // an operator supplies the network's RPC. An explicit selection is a
+        // configuration error; an implicit selection is simply not configured.
+        if (selectionIsExplicit) throw new Error(`${config.rpcUrlEnv} is required when ${network} is explicitly enabled.`);
+        continue;
+      }
+      if (!/^https:\/\//i.test(rpcUrl)) {
+        throw new Error(`${config.rpcUrlEnv} must be an HTTPS testnet RPC URL when ${network} is enabled.`);
+      }
+
+      const transport = viemHttp(rpcUrl, { timeout: 30_000 });
+      const chain = network === "tempo-testnet"
+        ? tempoModerato
+        : defineChain({
+          id: Number(config.chainId),
+          name: config.label,
+          nativeCurrency: { name: config.nativeAsset, symbol: config.nativeAsset, decimals: 18 },
+          rpcUrls: { default: { http: [rpcUrl] } },
+        });
+      const publicClient = createPublicClient({ chain, transport });
+      const inner = serverEnabled
+          ? new ViemEvmTransport(
+          publicClient as unknown as KernelViemPublicClient,
+          (network === "tempo-testnet"
+            ? createTempoClient({ account: account!, chain: tempoModerato, transport })
+            : createWalletClient({ account: account!, chain, transport })) as unknown as KernelViemWalletClient,
+          network,
+          config.chainId,
+          "testnet",
+          config.explorerBaseUrl,
+          config.nativeAsset,
+          account!.address,
+          { requireAllowlist: true, allowedContracts, allowedFunctions, allowedFunctionSelectors },
+        )
+        : new BrowserEvmTransport(
+          publicClient as unknown as ConstructorParameters<typeof BrowserEvmTransport>[0],
+          network,
+          config.chainId,
+          config.explorerBaseUrl,
+          config.nativeAsset,
+        );
+      const providerId = `privatedao-evm-${network}${serverEnabled ? "" : "-browser"}`;
+      const adapter = new EvmNetworkAdapter({
+        id: providerId,
+        config,
+        capabilities: EVM_KERNEL_CAPABILITIES,
+        transport: {
+          health: () => inner.health(),
+          prepare: (intent) => inner.prepare(intent),
+          submit: (execution, signedPayload) => {
+            if (serverEnabled && process.env.PDAO_KERNEL_EVM_BROADCAST_ENABLED !== "1") {
+              throw new Error("EVM testnet broadcast is disabled; enable it explicitly for an approved E2E run.");
+            }
+            return inner.submit(execution, signedPayload);
+          },
+          status: (executionId) => inner.status(executionId),
+          receipt: (executionId) => inner.receipt(executionId),
+          estimateFee: (intent) => inner.estimateFee(intent),
+        },
+      });
+      if (productExecutionNetworks.has(network)) registry.register(adapter);
+      this.evmAdapters.set(network, adapter);
+      this.evmProviders.set(network, { id: providerId, network });
+    }
+  }
+
+  private serverEvmAccount() {
+    const runtimeMode = process.env.NODE_ENV?.trim().toLowerCase();
+    const rawKey = this.serverEvmPrivateKey || (runtimeMode === "production" ? undefined : process.env.PDAO_EVM_DEPLOYER_PRIVATE_KEY?.trim());
+    if (!rawKey || !/^0x?[0-9a-fA-F]{64}$/.test(rawKey)) {
+      throw new Error("PDAO_KERNEL_EVM_ENABLED requires a managed signer loaded from the approved secret provider.");
+    }
+    const privateKey = rawKey.startsWith("0x") ? rawKey : `0x${rawKey}`;
+    return privateKeyToAccount(privateKey as `0x${string}`);
+  }
+
+  async handle(req: http.IncomingMessage, res: http.ServerResponse): Promise<boolean> {
+    const incomingPath = new URL(req.url || "/", `http://${req.headers.host || "localhost"}`).pathname.replace(/\/+$/, "") || "/";
+    const path = incomingPath.startsWith("/api/") ? incomingPath.slice(4) : incomingPath;
+    if (path === "/healthz" && req.method === "GET") {
+      const [evmReadiness, zcashReadiness, stellarReadiness, hypercoreReadiness] = await Promise.all([
+        Promise.all([...this.evmAdapters.entries()].map(async ([network, adapter]) => [network, await this.probe(() => adapter.health())] as const)),
+        this.zcashAdapter ? this.probe(() => this.zcashAdapter!.health()) : Promise.resolve(null),
+        this.probe(() => this.stellarAdapter!.health()),
+        this.hypercoreAdapter ? this.hypercoreAdapter.health() : Promise.resolve(null),
+      ]);
+      const walletReadiness = this.walletStorePromise
+        ? await this.probe(async () => (await this.walletStorePromise!).health())
+        : { ok: false, reason: "not_configured" };
+      const evmReady = Object.fromEntries(evmReadiness.map(([network, result]) => [network, result.ok]));
+      const capabilityStatus = buildNativeCapabilityRegistry()
+        .filter((entry) => entry.declared)
+        .map((entry) => ({
+          product: entry.product,
+          capability: entry.capability,
+          network: entry.network,
+          status: entry.status,
+          evidence: entry.evidence,
+          provider: entry.provider,
+          supportsExecution: entry.supportsExecution,
+          supportsReceipt: entry.supportsReceipt,
+        }));
+      this.writeJson(res, 200, {
+        ok: true,
+        service: "privatedao-kernel-gateway",
+        mode: "kernel",
+        networks: this.supportedNetworks,
+        capabilityStatus,
+        networkModes: this.supportedNetworks.map((network) => ({
+          network,
+          provider: network === "zcash-testnet"
+            ? this.zcashAdapter?.id || "privatedao-kernel-policy"
+            : network === "stellar-testnet"
+              ? this.stellarAdapter?.id || "privatedao-kernel-policy"
+            : network === "solana-devnet"
+              ? "kernel-native"
+            : this.evmProviders.get(network)?.id
+              || (["bnb-testnet", "robinhood-testnet", "hyperliquid-testnet", "hypercore-testnet"].includes(network)
+                ? "privatedao-kernel-policy"
+                : "kernel-native"),
+            onchainAdapter: network === "zcash-testnet"
+              ? Boolean(this.zcashAdapter)
+              : network === "stellar-testnet"
+                ? Boolean(this.stellarAdapter)
+              : network === "solana-devnet"
+                ? false
+              : this.evmProviders.has(network),
+            nativeReadAdapter: network === "hypercore-testnet" ? this.hypercoreAdapter?.id || null : null,
+            nativeReadReady: network === "hypercore-testnet" ? Boolean(hypercoreReadiness?.ok) : false,
+          ready: network === "zcash-testnet"
+            ? Boolean(zcashReadiness?.ok)
+            : network === "stellar-testnet"
+              ? Boolean(stellarReadiness?.ok)
+            : network === "solana-devnet"
+              ? false
+            : network in evmReady
+              ? Boolean(evmReady[network])
+              : false,
+        })),
+        evm: {
+          configured: this.evmProviders.size > 0,
+          networks: [...this.evmProviders.keys()],
+          ready: evmReady,
+          broadcastEnabled: process.env.PDAO_KERNEL_EVM_BROADCAST_ENABLED === "1",
+        },
+        wallet: {
+          configured: Boolean(this.walletStorePromise && this.walletIdentityPromise),
+          ready: walletReadiness.ok,
+          readinessReason: walletReadiness.reason || (walletReadiness.ok ? "ready" : "mongodb_unavailable"),
+          durableStore: "mongodb",
+          identity: process.env.PDAO_IDENTITY_PROVIDER?.trim().toLowerCase() || "aws-cognito",
+        },
+          zcash: {
+          configured: Boolean(this.zcashAdapter),
+          policyReady: true,
+          ready: Boolean(zcashReadiness?.ok),
+          readinessReason: zcashReadiness?.reason || (zcashReadiness?.ok ? "ready" : this.zcashAdapter ? "rpc_unavailable" : "policy_only_wallet_not_configured"),
+          testnetOnly: true,
+          broadcastEnabled: process.env.PDAO_ZCASH_BROADCAST_ENABLED === "1",
+          },
+        stellar: {
+          configured: Boolean(this.stellarAdapter),
+          ready: Boolean(stellarReadiness?.ok),
+          readinessReason: stellarReadiness?.reason || (stellarReadiness?.ok ? "ready" : "horizon_unavailable"),
+          testnetOnly: true,
+          broadcastEnabled: Boolean(this.stellarAdapter?.broadcastEnabled),
+        },
+        hypercore: {
+          configured: Boolean(this.hypercoreAdapter),
+          nativeReadAdapter: this.hypercoreAdapter?.id || null,
+          ready: Boolean(hypercoreReadiness?.ok),
+          universeSize: hypercoreReadiness?.universeSize,
+          readinessReason: hypercoreReadiness?.reason || (hypercoreReadiness?.ok ? "ready" : this.hypercoreAdapter ? "api_unavailable" : "native_read_adapter_not_configured"),
+          testnetOnly: true,
+          executionEnabled: false,
+        },
+      });
+      return true;
+    }
+    if (path.startsWith("/v1/wallet/")) {
+      if (!this.authorized(req)) {
+        this.writeJson(res, 401, { ok: false, error: "Kernel gateway authentication required." });
+        return true;
+      }
+      if (!this.walletStorePromise || !this.walletIdentityPromise) {
+        this.writeJson(res, 503, { ok: false, error: "Wallet gateway requires MongoDB and configured identity-provider production configuration." });
+        return true;
+      }
+      const walletStore = await this.walletStorePromise;
+      const walletStoreHealth = await walletStore.health();
+      if (!walletStoreHealth.ok) {
+        this.writeJson(res, 503, { ok: false, error: "Wallet durable store is not ready." });
+        return true;
+      }
+      if (req.method === "POST" && path === "/v1/wallet/recovery/request") {
+        try {
+          const body = await this.readJson(req);
+          if (!isRecord(body) || typeof body.walletId !== "string" || body.walletId.length < 8 || body.walletId.length > 200) throw new Error("walletId is required.");
+          const identity = await (await this.walletIdentityPromise).authorize(req.headers.authorization);
+          const principal = toWalletPrincipal(identity.principal, identity.membership, identity.membership.tenantId);
+          assertWalletRecoveryRole(principal.roles);
+          const mode = body.mode;
+          if (mode !== "b2b" && mode !== "b2c" && mode !== "autonomous") throw new Error("A valid wallet mode is required.");
+          const policy = await walletStore.loadPolicy({ tenantId: principal.tenantId, organizationId: principal.organizationId, mode });
+          if (!policy) throw new Error("No server-side wallet policy is configured for this tenant and mode.");
+          const recovery = await walletStore.requestRecovery({
+            walletId: body.walletId,
+            tenantId: principal.tenantId,
+            organizationId: principal.organizationId,
+            subjectId: principal.subjectId,
+            requestedAt: new Date().toISOString(),
+            recoveryWindowSeconds: policy.recoveryWindowSeconds,
+          });
+          await walletStore.appendOperationalAudit?.({
+            eventId: `wallet_recovery_requested_${principal.tenantId}_${body.walletId}`,
+            eventType: "wallet.recovery.requested",
+            tenantId: principal.tenantId,
+            organizationId: principal.organizationId,
+            subjectId: principal.subjectId,
+            walletId: body.walletId,
+            occurredAt: recovery.requestedAt || new Date().toISOString(),
+            metadata: { recoveryWindowSeconds: policy.recoveryWindowSeconds },
+          });
+          this.writeJson(res, 200, recovery as unknown as JsonRecord);
+        } catch (error) {
+          this.writeJson(res, gatewayStatus(error), publicGatewayError(error));
+        }
+        return true;
+      }
+      if (req.method === "POST" && path === "/v1/wallet/recovery/finalize") {
+        try {
+          const body = await this.readJson(req);
+          if (!isRecord(body) || typeof body.walletId !== "string" || body.walletId.length < 8 || body.walletId.length > 200) throw new Error("walletId is required.");
+          const identity = await (await this.walletIdentityPromise).authorize(req.headers.authorization);
+          const principal = toWalletPrincipal(identity.principal, identity.membership, identity.membership.tenantId);
+          assertWalletRecoveryRole(principal.roles);
+          const recovery = await walletStore.finalizeRecovery({ walletId: body.walletId, tenantId: principal.tenantId, organizationId: principal.organizationId, recoveredBy: principal.subjectId, now: new Date().toISOString() });
+          await walletStore.appendOperationalAudit?.({
+            eventId: `wallet_recovery_finalized_${principal.tenantId}_${body.walletId}_${recovery.recoveredAt}`,
+            eventType: "wallet.recovery.finalized",
+            tenantId: principal.tenantId,
+            organizationId: principal.organizationId,
+            subjectId: principal.subjectId,
+            walletId: body.walletId,
+            occurredAt: recovery.recoveredAt || new Date().toISOString(),
+            metadata: { recoveredBy: principal.subjectId },
+          });
+          this.writeJson(res, 200, recovery as unknown as JsonRecord);
+        } catch (error) {
+          this.writeJson(res, 400, publicGatewayError(error));
+        }
+        return true;
+      }
+      if (req.method === "POST" && path === "/v1/wallet/executions/prepare") {
+        try {
+          const body = await this.readJson(req);
+          if (!isRecord(body) || !isRecord(body.intent) || !isRecord(body.intent.context) || !isRecord(body.walletRequest)) {
+            throw new Error("intent and walletRequest are required.");
+          }
+          const identity = await (await this.walletIdentityPromise).authorize(req.headers.authorization);
+          const principal = toWalletPrincipal(identity.principal, identity.membership, identity.membership.tenantId);
+          const input = body.walletRequest as Record<string, unknown>;
+          const requestedSubjectId = typeof input.subjectId === "string" ? input.subjectId : principal.subjectId;
+          const request = {
+            ...input,
+            tenantId: principal.tenantId,
+            organizationId: principal.organizationId,
+            subjectId: requestedSubjectId,
+            actorSubjectId: principal.subjectId,
+          } as unknown as WalletActionRequest;
+          if (typeof request.requestId !== "string" || typeof request.idempotencyKey !== "string" || typeof request.mode !== "string" || typeof request.action !== "string" || typeof request.network !== "string" || typeof request.asset !== "string" || typeof request.destination !== "string" || typeof request.createdAt !== "string") {
+            throw new Error("walletRequest has invalid required fields.");
+          }
+          if (typeof input.amountAtomic !== "string" && typeof input.amountAtomic !== "number") throw new Error("walletRequest.amountAtomic must be a decimal string or number.");
+          request.amountAtomic = BigInt(String(input.amountAtomic));
+          assertWalletActionRequestShape(request);
+          const policy = await (await this.walletStorePromise).loadPolicy({ tenantId: principal.tenantId, organizationId: principal.organizationId, mode: request.mode });
+          if (!policy) throw new Error("No server-side wallet policy is configured for this tenant and mode.");
+          this.assertHybridPolicy(policy);
+          const intentNetwork = body.intent.context.network;
+          if (typeof intentNetwork !== "string" || !this.supportedNetworks.includes(intentNetwork as NetworkId)) throw new Error("The selected wallet network is not enabled in this gateway.");
+          const intent = this.routeNetworkAdapter(body.intent as unknown as ExecutionIntent);
+          if (intent.context.network !== request.network) throw new Error("Wallet network does not match the execution intent.");
+          const walletGateway = createPersistentWalletExecutionGateway(this.runtime.gateway, await this.walletStorePromise, undefined, this.hybridVerifier);
+          const result = await walletGateway.prepare(intent, this.role, { principal, policy, request });
+          const createdAt = new Date().toISOString();
+          const expiresAt = new Date(Date.now() + 15 * 60 * 1000).toISOString();
+          const context = walletGateway.executionSession(result.executionId);
+          if (!context) throw new Error("Wallet execution session context was not created.");
+          this.prepared.set(result.executionId, result as PreparedExecution<unknown>);
+          this.walletPrepared.set(result.executionId, {
+            prepared: result as PreparedExecution<unknown>,
+            gateway: walletGateway,
+            subjectId: principal.subjectId,
+            tenantId: principal.tenantId,
+            organizationId: principal.organizationId,
+            expiresAt,
+          });
+          await walletStore.saveExecutionSession?.({
+            ...context,
+            subjectId: principal.subjectId,
+            prepared: result,
+            createdAt,
+            expiresAt,
+          });
+          this.writeJson(res, 200, result as unknown as JsonRecord);
+        } catch (error) {
+          this.writeJson(res, gatewayStatus(error), publicGatewayError(error));
+        }
+        return true;
+      }
+      if (req.method === "POST" && path === "/v1/wallet/executions/submit") {
+        try {
+          const body = await this.readJson(req);
+          if (!isRecord(body) || !isRecord(body.execution) || typeof body.execution.executionId !== "string") throw new Error("execution is required.");
+          const identity = await (await this.walletIdentityPromise).authorize(req.headers.authorization);
+          const principal = toWalletPrincipal(identity.principal, identity.membership, identity.membership.tenantId);
+          const walletExecution = await this.loadWalletExecution(body.execution.executionId, principal);
+          this.writeJson(res, 200, await walletExecution.gateway.submit(walletExecution.prepared, body.signedPayload, this.role));
+        } catch (error) {
+          this.writeJson(res, 400, publicGatewayError(error));
+        }
+        return true;
+      }
+      const walletRead = path.match(/^\/v1\/wallet\/executions\/([^/]+)\/(status|receipt)$/);
+      if (req.method === "GET" && walletRead) {
+        try {
+          const executionId = decodeURIComponent(walletRead[1]);
+          const identity = await (await this.walletIdentityPromise).authorize(req.headers.authorization);
+          const principal = toWalletPrincipal(identity.principal, identity.membership, identity.membership.tenantId);
+          const walletExecution = await this.loadWalletExecution(executionId, principal);
+          if (walletRead[2] === "status") this.writeJson(res, 200, await walletExecution.gateway.status(walletExecution.prepared, this.role));
+          else this.writeJson(res, 200, await walletExecution.gateway.receipt(walletExecution.prepared, this.role) as unknown as JsonRecord);
+        } catch (error) {
+          this.writeJson(res, 400, publicGatewayError(error));
+        }
+        return true;
+      }
+      this.writeJson(res, 404, { ok: false, error: "Unknown wallet route." });
+      return true;
+    }
+    if (!path.startsWith("/v1/executions/")) return false;
+    if (!this.authorized(req)) {
+      this.writeJson(res, 401, { ok: false, error: "Kernel gateway authentication required." });
+      return true;
+    }
+    try {
+      const body = await this.readJson(req);
+      if (!isRecord(body)) throw new Error("Request body must be an object.");
+      const role = this.roleFrom(req, body);
+      if (req.method === "POST" && path === "/v1/executions/prepare") {
+        const intent = body.intent;
+        if (!isRecord(intent) || !isRecord(intent.context)) throw new Error("intent.context is required.");
+        const network = intent.context.network;
+        if (typeof network !== "string" || !this.supportedNetworks.includes(network as NetworkId)) throw new Error("The selected network is not enabled in this gateway.");
+        const routedIntent = this.routeNetworkAdapter(intent as unknown as ExecutionIntent);
+        const result = await this.runtime.gateway.prepare(routedIntent, role);
+        this.prepared.set(result.executionId, result as PreparedExecution<unknown>);
+        this.writeJson(res, 200, result as unknown as JsonRecord);
+        return true;
+      }
+      if (req.method === "POST" && path === "/v1/executions/submit") {
+        const execution = body.execution;
+        if (!isRecord(execution) || typeof execution.executionId !== "string") throw new Error("execution is required.");
+        const stored = this.prepared.get(execution.executionId);
+        if (!stored) throw new Error("Execution is not present in this gateway session.");
+        this.writeJson(res, 200, await this.runtime.gateway.submit(stored, body.signedPayload, role));
+        return true;
+      }
+      const match = path.match(/^\/v1\/executions\/([^/]+)\/(status|receipt)$/);
+      if (req.method === "GET" && match) {
+        const execution = this.prepared.get(decodeURIComponent(match[1]));
+        if (!execution) throw new Error("Execution is not present in this gateway session.");
+        if (match[2] === "status") this.writeJson(res, 200, await this.runtime.gateway.status(execution, role));
+        else this.writeJson(res, 200, await this.runtime.gateway.receipt(execution, role) as unknown as JsonRecord);
+        return true;
+      }
+      this.writeJson(res, 404, { ok: false, error: "Unknown execution route." });
+      return true;
+    } catch (error) {
+      this.writeJson(res, 400, publicGatewayError(error));
+      return true;
+    }
+  }
+
+  private routeNetworkAdapter(intent: ExecutionIntent): ExecutionIntent {
+    if (intent.context.provider || !isRecord(intent.payload)) return intent;
+    if (
+      intent.context.capability === "governance.proposal.execute"
+      && intent.payload.kind !== "contract-write"
+      && intent.context.network !== "solana-devnet"
+      && intent.context.network !== "stellar-testnet"
+    ) {
+      return {
+        ...intent,
+        context: { ...intent.context, provider: `privatedao-governance-policy-${intent.context.network}` },
+      };
+    }
+    if (intent.payload.kind !== "contract-write") return intent;
+    const provider = this.evmProviders.get(intent.context.network);
+    if (!provider) return intent;
+    return {
+      ...intent,
+      context: { ...intent.context, provider: provider.id },
+    };
+  }
+
+  private async loadWalletExecution(executionId: string, principal: AuthenticatedTenantPrincipal): Promise<{ prepared: PreparedExecution<unknown>; gateway: WalletExecutionGateway; subjectId: string; tenantId: string; organizationId: string }> {
+    const cached = this.walletPrepared.get(executionId);
+    if (cached) {
+      if (cached.tenantId !== principal.tenantId || cached.organizationId !== principal.organizationId || cached.subjectId !== principal.subjectId) {
+        throw new Error("Wallet execution belongs to a different authenticated principal.");
+      }
+      this.assertWalletExecutionActive(executionId, cached.expiresAt);
+      return cached;
+    }
+    if (!this.walletStorePromise) throw new Error("Wallet durable store is not configured.");
+    const store = await this.walletStorePromise;
+    const session = await store.loadExecutionSession?.({
+      executionId,
+      tenantId: principal.tenantId,
+      organizationId: principal.organizationId,
+      subjectId: principal.subjectId,
+    });
+    if (!session) throw new Error("Wallet execution is not present in the durable gateway session.");
+    const prepared = session.prepared as PreparedExecution<unknown>;
+    if (!prepared || prepared.executionId !== executionId) throw new Error("Wallet execution session is invalid.");
+    this.assertWalletExecutionActive(executionId, session.expiresAt);
+    const gateway = createPersistentWalletExecutionGateway(this.runtime.gateway, store, undefined, this.hybridVerifier);
+    gateway.restoreExecutionSession(session);
+    const restored = { prepared, gateway, subjectId: session.subjectId, tenantId: session.tenantId, organizationId: session.organizationId, expiresAt: session.expiresAt };
+    this.walletPrepared.set(executionId, restored);
+    return restored;
+  }
+
+  private assertWalletExecutionActive(executionId: string, expiresAt: string): void {
+    const expiry = Date.parse(expiresAt);
+    if (!Number.isFinite(expiry) || expiry <= Date.now()) {
+      this.walletPrepared.delete(executionId);
+      this.prepared.delete(executionId);
+      throw new Error("Wallet execution session has expired.");
+    }
+  }
+
+  private assertHybridPolicy(policy: WalletPolicy): void {
+    if (this.requireHybridAuthorization && policy.requireHybridAuthorization !== true) {
+      throw new Error("Production wallet policies must require hybrid authorization.");
+    }
+  }
+
+  private authorized(req: http.IncomingMessage): boolean {
+    if (this.allowUnauthenticated) return true;
+    if (this.requiredToken.length === 0 || req.headers["x-pdao-gateway-token"] !== this.requiredToken) return false;
+    const requestOrigin = typeof req.headers.origin === "string" ? req.headers.origin.trim() : "";
+    return !requestOrigin || this.allowedOrigin === "*" || requestOrigin === this.allowedOrigin;
+  }
+
+  private roleFrom(_req: http.IncomingMessage, _body: JsonRecord): ProtocolRole {
+    // The caller cannot elevate itself by supplying a role in a request.
+    return this.role;
+  }
+
+  private async readJson(req: http.IncomingMessage): Promise<unknown> {
+    let size = 0;
+    const chunks: Buffer[] = [];
+    for await (const chunk of req) {
+      const buffer = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk);
+      size += buffer.length;
+      if (size > this.maxBodyBytes) throw new Error("Request body is too large.");
+      chunks.push(buffer);
+    }
+    if (chunks.length === 0) return {};
+    return JSON.parse(Buffer.concat(chunks).toString("utf8"));
+  }
+
+  private writeJson(res: http.ServerResponse, status: number, body: JsonRecord): void {
+    res.statusCode = status;
+    res.setHeader("Content-Type", "application/json; charset=utf-8");
+    res.setHeader("Access-Control-Allow-Origin", this.allowedOrigin);
+    res.setHeader("Access-Control-Allow-Headers", "content-type, x-pdao-gateway-token");
+    res.setHeader("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
+    res.end(JSON.stringify(body));
+  }
+
+  private async probe<T>(operation: () => Promise<T>): Promise<{ ok: boolean; reason?: string }> {
+    try {
+      const result = await Promise.race([
+        operation(),
+        new Promise<never>((_, reject) => setTimeout(() => reject(new Error("probe_timeout")), 2_000)),
+      ]);
+      if (isRecord(result) && result.ok === false) {
+        return { ok: false, reason: typeof result.reason === "string" ? result.reason : "provider_not_ready" };
+      }
+      return { ok: true };
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      return { ok: false, reason: /timeout/i.test(message) ? "probe_timeout" : "rpc_unavailable" };
+    }
+  }
+}
+
+export function createKernelGatewayService(options?: KernelGatewayServiceOptions): KernelGatewayService {
+  return new KernelGatewayService(options);
+}
+
+/**
+ * Production entrypoint: load the EVM signer from Secrets Manager before the
+ * gateway is constructed. The secret value may be a raw private key or a JSON
+ * object with a `privateKey` field; neither form is logged or returned.
+ */
+export async function createKernelGatewayServiceFromManagedSecret(options: KernelGatewayServiceOptions = {}): Promise<KernelGatewayService> {
+  const runtimeMode = process.env.NODE_ENV?.trim().toLowerCase();
+  const provider = process.env.PDAO_AUTONOMOUS_SIGNER_PROVIDER?.trim().toLowerCase();
+  const kmsHybridVerifier = await createHybridAuthorizationVerifierFromKmsEnv();
+  const gatewayToken = await loadManagedGatewayToken();
+  if (runtimeMode !== "production" || provider !== "aws-secrets-manager") {
+    return new KernelGatewayService({ ...options, requiredToken: options.requiredToken ?? gatewayToken, hybridVerifier: options.hybridVerifier ?? kmsHybridVerifier });
+  }
+  const secretId = process.env.PDAO_AUTONOMOUS_SIGNER_SECRET_ID?.trim();
+  if (!secretId) throw new Error("PDAO_AUTONOMOUS_SIGNER_SECRET_ID is required for the production managed signer.");
+  const client = new SecretsManagerClient({ region: process.env.AWS_REGION || process.env.AWS_DEFAULT_REGION || "eu-north-1" });
+  const response = await client.send(new GetSecretValueCommand({ SecretId: secretId }));
+  const raw = response.SecretString?.trim();
+  if (!raw) throw new Error("The managed signer secret has no SecretString value.");
+  let privateKey = raw;
+  try {
+    const parsed = JSON.parse(raw) as { privateKey?: unknown };
+    if (typeof parsed.privateKey === "string") privateKey = parsed.privateKey.trim();
+  } catch {
+    // A plain private-key SecretString is also accepted.
+  }
+  if (!/^0x?[0-9a-fA-F]{64}$/.test(privateKey)) throw new Error("The managed signer secret is not a valid EVM private key.");
+  return new KernelGatewayService({ ...options, requiredToken: options.requiredToken ?? gatewayToken, hybridVerifier: options.hybridVerifier ?? kmsHybridVerifier, serverEvmPrivateKey: privateKey });
+}
+
+async function loadManagedGatewayToken(): Promise<string | undefined> {
+  if (process.env.PDAO_KERNEL_GATEWAY_TOKEN?.trim()) return process.env.PDAO_KERNEL_GATEWAY_TOKEN.trim();
+  const secretId = process.env.PDAO_KERNEL_GATEWAY_TOKEN_SECRET_ID?.trim();
+  if (!secretId) return undefined;
+  const client = new SecretsManagerClient({ region: process.env.AWS_REGION || process.env.AWS_DEFAULT_REGION || "eu-north-1" });
+  const response = await client.send(new GetSecretValueCommand({ SecretId: secretId }));
+  const token = response.SecretString?.trim();
+  if (!token) throw new Error("The managed gateway token secret has no SecretString value.");
+  return token;
+}
+
+function parseGatewayRole(value: string | undefined): ProtocolRole {
+  const role = value?.trim();
+  if (!role) return "maker";
+  if (role === "maker" || role === "checker" || role === "auditor" || role === "admin" || role === "agent") return role;
+  throw new Error("PDAO_KERNEL_GATEWAY_ROLE must be maker, checker, auditor, admin, or agent.");
+}
+
+function parseMaxBodyBytes(value: number | string | undefined): number {
+  const parsed = typeof value === "number" ? value : Number(value ?? 1_000_000);
+  if (!Number.isFinite(parsed) || parsed < 1) return 1_000_000;
+  return Math.min(Math.floor(parsed), 10_000_000);
+}
+
+function assertWalletRecoveryRole(roles: readonly string[]): void {
+  if (!roles.includes("owner") && !roles.includes("admin")) throw new Error("Wallet recovery requires an owner or admin role.");
+}
+
+function publicGatewayError(error: unknown): JsonRecord {
+  const code = isRecord(error) && typeof error.code === "string" ? error.code : undefined;
+  const messages: Record<string, string> = {
+    INVALID_INTENT: "Invalid execution request.",
+    APPROVAL_REQUIRED: "A distinct approved principal must authorize this wallet action.",
+    INTENT_EXPIRED: "Execution request has expired.",
+    DUPLICATE_IDEMPOTENCY_KEY: "Execution request was already used.",
+    PROVIDER_NOT_FOUND: "No provider is available for this request.",
+    CAPABILITY_UNSUPPORTED: "The requested capability is not supported.",
+    UNSUPPORTED_NETWORK: "The selected network is not available for this request.",
+    EXECUTION_NOT_FOUND: "Execution was not found.",
+    INVALID_STATE: "Execution is not in a valid state for this request.",
+    PROVIDER_FAILURE: "Execution provider failed.",
+  };
+  const details = code === "APPROVAL_REQUIRED" && isRecord(error) && isRecord(error.details) && typeof error.details.receiptCommitment === "string"
+    ? { receiptCommitment: error.details.receiptCommitment }
+    : {};
+  return { ok: false, error: code && messages[code] ? messages[code] : "Kernel gateway request failed.", ...(code ? { code } : {}), ...details };
+}
+
+function gatewayStatus(error: unknown): number {
+  if (isRecord(error) && (error.code === "APPROVAL_REQUIRED" || error.code === "DUPLICATE_IDEMPOTENCY_KEY")) return 409;
+  return 400;
+}
