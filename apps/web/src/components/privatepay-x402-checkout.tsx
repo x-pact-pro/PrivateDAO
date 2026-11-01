@@ -27,9 +27,13 @@ function encodeBase64(value: Uint8Array) {
 
 function errorMessage(payload: unknown, status: number) {
   if (payload && typeof payload === "object") {
-    const record = payload as { message?: unknown; error?: unknown; code?: unknown };
-    const message = typeof record.message === "string" ? record.message : typeof record.error === "string" ? record.error : "";
-    if (message) return `${message}${record.code ? ` (${String(record.code)})` : ""}`;
+    const record = payload as { message?: unknown; error?: unknown; code?: unknown; response?: unknown };
+    const nested = record.error && typeof record.error === "object" ? record.error as { message?: unknown; code?: unknown } : null;
+    const response = record.response && typeof record.response === "object" ? record.response as { message?: unknown; code?: unknown } : null;
+    const message = [record.message, typeof record.error === "string" ? record.error : nested?.message, response?.message]
+      .find((value): value is string => typeof value === "string" && value.length > 0);
+    const code = [record.code, nested?.code, response?.code].find((value): value is string | number => typeof value === "string" || typeof value === "number");
+    if (message) return `${message}${code ? ` (${String(code)})` : ""}`;
   }
   return `PrivatePAY request failed (HTTP ${status}).`;
 }
@@ -40,6 +44,7 @@ export function PrivatePayX402Checkout() {
   const [status, setStatus] = useState("Ready. Connect a wallet to request an exact quote.");
   const [busy, setBusy] = useState(false);
   const [settled, setSettled] = useState(false);
+  const [paymentId, setPaymentId] = useState<string | null>(null);
 
   async function pay() {
     if (!publicKey || !signTransaction) {
@@ -54,6 +59,7 @@ export function PrivatePayX402Checkout() {
     const amountBaseUnits = String(Math.round(numericAmount * 1_000_000));
     setBusy(true);
     setSettled(false);
+    setPaymentId(null);
     try {
       const request = { payer: publicKey.toBase58(), resource: RESOURCE, provider_id: "privatepay.x402", amount_base_units: amountBaseUnits, pdao_optional: true };
       setStatus("Requesting the exact PrivatePAY challenge...");
@@ -73,6 +79,7 @@ export function PrivatePayX402Checkout() {
       const transactionBase64 = accepted?.extra?.transaction;
       const paymentId = accepted?.extra?.paymentId;
       if (!accepted || !transactionBase64 || !paymentId) throw new Error("PrivatePAY returned an incomplete payment challenge.");
+      setPaymentId(paymentId);
       if (accepted.network !== "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp") throw new Error("The challenge is not for Solana Mainnet.");
       if (accepted.amount !== amountBaseUnits) throw new Error("The returned amount differs from the requested amount.");
 
@@ -94,12 +101,12 @@ export function PrivatePayX402Checkout() {
       });
       const settlement = await settlementResponse.json().catch(() => ({}));
       if (settlementResponse.status === 202) {
-        setStatus("Payment accepted for processing. Check the service status before retrying; no second payment was created.");
+        setStatus(`Payment accepted for processing (${paymentId}). Check the service status before retrying; no second payment was created.`);
         return;
       }
       if (!settlementResponse.ok) throw new Error(errorMessage(settlement, settlementResponse.status));
       setSettled(true);
-      setStatus("Payment settled. The service receipt is ready in the response.");
+      setStatus(`Payment settled (${paymentId}). The service receipt is ready in the response.`);
     } catch (error) {
       setStatus(error instanceof Error ? error.message : "PrivatePAY could not complete the request.");
     } finally {
@@ -122,6 +129,7 @@ export function PrivatePayX402Checkout() {
         <div className="flex flex-wrap gap-3"><WalletConnectButton variant="outline" connectLabel="Choose wallet" connectedLabelPrefix="Connected" /><button type="button" onClick={() => void pay()} disabled={!connected || busy} className={cn(buttonVariants({ size: "default" }), "bg-[#175cd3] hover:bg-[#124eb8]")}>{busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <ArrowRight className="h-4 w-4" />} {busy ? "Processing..." : "Request and pay"}</button></div>
       </div>
       <div role="status" aria-live="polite" className="mt-5 rounded-[14px] border border-[#d6e6df] bg-white px-4 py-3 font-mono text-xs leading-6 text-[#425570]">{status}</div>
+      {paymentId ? <div className="mt-3 break-all rounded-[14px] border border-[#d6e6df] bg-white px-4 py-3 font-mono text-[11px] leading-5 text-[#5d6d82]">Payment ID: {paymentId}</div> : null}
     </section>
   );
 }
