@@ -3166,7 +3166,7 @@ async function makeQuote(serviceId, jobId, admin = false, currency = "USDC", tar
 async function externalServiceById(serviceId) {
   return (await externalServiceManifests()).find((service) => service.id === serviceId);
 }
-async function createExternalJob(serviceId, input = {}, access = null, paymentMode = "direct") {
+async function createExternalJob(serviceId, input = {}, access = null, paymentMode = "direct", payer = "") {
   const service = await externalServiceById(serviceId);
   if (!service) throw Object.assign(new Error("unknown external service"), { statusCode: 404 });
   const normalizedPaymentMode = String(paymentMode || "direct").trim().toLowerCase();
@@ -3201,16 +3201,17 @@ async function createExternalJob(serviceId, input = {}, access = null, paymentMo
   job.quote_id = quote.quote_id;
   await storage.put("Jobs", id, job);
   if (normalizedPaymentMode === "privatepay") {
-    const privatePayment = await createPrivatePayRequirements(config, {
-      resource: `https://${config.domain}/api/jobs/${job.id}/privatepay`,
-      provider_id: service.id,
+    const privatePayment = await createPrivatePayJobChallenge({
+      jobId: job.id,
+      serviceId: service.id,
+      payer: String(payer || "").trim(),
       amount_base_units: String(quote.amountAtomic),
-      mime_type: "application/json",
     });
     job.privatepay_request_id = privatePayment.request_id;
     job.privatepay_requirements = privatePayment.requirements;
     job.privatepay_pdao = privatePayment.pdao;
     job.privatepay_payment_required_header = privatePayment.header;
+    job.privatepay_checkout_id = privatePayment.checkout_id;
     await storage.put("Jobs", job.id, job);
     const privateError = new Error("PrivatePAY payment required");
     privateError.statusCode = 402;
@@ -3754,17 +3755,17 @@ async function createJob(serviceId, input, admin = false, currency = "USDC", met
     }
     job.quote_id = quote.quote_id;
     if (normalizedPaymentMode === "privatepay") {
-      const privatePayment = await createPrivatePayRequirements(config, {
+      const privatePayment = await createPrivatePayJobChallenge({
+        jobId: job.id,
+        serviceId,
         payer: String(payer || "").trim(),
-        resource: `https://${config.domain}/api/jobs/${job.id}/privatepay`,
-        provider_id: serviceId,
         amount_base_units: String(quote.amountAtomic),
-        mime_type: "application/json",
       });
       job.privatepay_request_id = privatePayment.request_id;
       job.privatepay_requirements = privatePayment.requirements;
       job.privatepay_pdao = privatePayment.pdao;
       job.privatepay_payment_required_header = privatePayment.header;
+      job.privatepay_checkout_id = privatePayment.checkout_id;
       await storage.put("Jobs", job.id, job);
       const privateError = new Error("PrivatePAY payment required");
       privateError.statusCode = 402;
@@ -3807,6 +3808,36 @@ async function createJob(serviceId, input, admin = false, currency = "USDC", met
   await (await store()).put("Jobs", job.id, job);
   const execution = await executeMeasuredService(serviceId, input);
   return await completeJob(job, execution.result, null, execution.telemetry);
+}
+
+async function createPrivatePayJobChallenge({ jobId, serviceId, payer, amount_base_units }) {
+  const resource = `https://${config.domain}/api/jobs/${jobId}/privatepay`;
+  const localPayment = await createPrivatePayRequirements(config, {
+    payer,
+    resource,
+    provider_id: serviceId,
+    amount_base_units,
+    mime_type: "application/json",
+    // Ordinary Agent Exchange purchases must not require a PDAO holding.
+    // Holder benefits remain handled separately through the access path.
+    pdao_optional: true,
+  });
+  const checkout = await createPrivatePayCheckout(config, {
+    payer,
+    resource,
+    amount_base_units,
+    description: `PrivateDAO Agent Exchange service ${serviceId}`,
+    external_reference: `privatepay-job-${jobId}`,
+  });
+  const challenge = await requestPrivatePayCheckoutChallenge(config, { payment_id: checkout.payment_id });
+  const providerRequirements = decodePrivatePayRequiredHeader(challenge.payment_required_header);
+  return {
+    request_id: localPayment.request_id,
+    requirements: providerRequirements,
+    header: challenge.payment_required_header,
+    pdao: localPayment.pdao,
+    checkout_id: checkout.payment_id,
+  };
 }
 
 async function cancelJob(jobId, reason = "cancelled_by_request") {
@@ -5658,7 +5689,7 @@ async function handle(e) {
   if (method === "POST" && path === "/api/checkout/batch")
     return json(await createBatchJob(body.items));
   if (method === "POST" && path === "/api/external/jobs")
-    return json(await createExternalJob(body.service_id, body.input || {}, body.pdao_access || body.token_holder_access || null, body.payment_mode || "direct"), 201);
+    return json(await createExternalJob(body.service_id, body.input || {}, body.pdao_access || body.token_holder_access || null, body.payment_mode || "direct", body.payer || body.wallet || ""), 201);
   const externalPayment = path.match(/^\/api\/external\/jobs\/([^/]+)\/payment$/);
   if (method === "POST" && externalPayment) {
     const result = await submitExternalPayment(decodeURIComponent(externalPayment[1]), body);

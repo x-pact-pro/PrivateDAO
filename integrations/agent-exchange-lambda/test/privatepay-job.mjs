@@ -79,8 +79,25 @@ test("PrivatePAY wallet balance lookup is read-only and rejects invalid wallets"
 test("PrivatePAY job lifecycle verifies, settles, executes once, and redacts public payment data", async () => {
   const originalFetch = globalThis.fetch;
   const calls = [];
+  let checkoutRequest;
   globalThis.fetch = async (url, init = {}) => {
     const target = String(url);
+    if (target.endsWith("/v1/payments")) {
+      checkoutRequest = JSON.parse(init.body || "{}");
+      return new Response(JSON.stringify({ id: "b".repeat(64), status: "created" }), { status: 200, headers: { "content-type": "application/json" } });
+    }
+    if (target.includes("/v1/x402/payments/") && target.endsWith("/pay")) {
+      const accepted = {
+        scheme: "exact-magicblock",
+        network: "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+        asset: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+        amount: checkoutRequest.amount,
+        payTo: "2BJ4ezxqV9YJXc38D9duKBkdn4su4jE1beKUHwH663sL",
+        maxTimeoutSeconds: 60,
+        extra: { paymentId: "b".repeat(64), cluster: "mainnet-private", settlement: "ephemeral-rollup", transaction: "AQID" },
+      };
+      return new Response(JSON.stringify({}), { status: 402, headers: { "content-type": "application/json", "PAYMENT-REQUIRED": encodePaymentRequiredHeader({ x402Version: 2, resource: { url: checkoutRequest.resource, description: "fixture" }, accepts: [accepted] }) } });
+    }
     if (target.endsWith("/verify")) {
       calls.push("verify");
       return new Response(JSON.stringify({ isValid: true }), { status: 200, headers: { "content-type": "application/json" } });
@@ -100,6 +117,7 @@ test("PrivatePAY job lifecycle verifies, settles, executes once, and redacts pub
       service_id: "verify.deep",
       payment_mode: "privatepay",
       input: { record: { lifecycle: "privatepay-fixture" } },
+      payer: "BkNcuvQZr6392aZCwcGnB6SQptV6vhWa7syJs5fgLz6",
     });
     assert.equal(created.statusCode, 402);
     assert.match(created.headers["PAYMENT-REQUIRED"], /^[A-Za-z0-9+/=_-]+$/);
@@ -107,6 +125,9 @@ test("PrivatePAY job lifecycle verifies, settles, executes once, and redacts pub
     assert.equal(challenge.error, "payment_required");
     assert.equal(challenge.payment_required.accepts[0].scheme, "exact-magicblock");
     assert.equal(challenge.payment_required.accepts[0].amount, "550000");
+    assert.equal(challenge.payment_required.accepts[0].extra.transaction, "AQID");
+    assert.equal(checkoutRequest.payer, "BkNcuvQZr6392aZCwcGnB6SQptV6vhWa7syJs5fgLz6");
+    assert.equal(Object.hasOwn(challenge.payment_required.accepts[0].extra, "pdao_fee_base_units"), false);
     assert.equal(Object.hasOwn(challenge, "payment_intent"), false);
     const jobId = challenge.payment_required.resource.url.split("/api/jobs/")[1].split("/")[0];
 

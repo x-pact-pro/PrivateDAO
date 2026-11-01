@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { encodePaymentSignatureHeader } from "@x402/core/http";
+import { encodePaymentRequiredHeader, encodePaymentSignatureHeader } from "@x402/core/http";
 
 process.env.NODE_ENV = "test";
 process.env.AGENT_EXCHANGE_TEST_MODE = "true";
@@ -27,6 +27,7 @@ process.env.PRIVATEPAY_PROVIDER_METADATA_DISCLOSURE_VERIFIED = "true";
 process.env.PRIVATEPAY_MERCHANT_ACCOUNTS_DELEGATED = "true";
 process.env.PRIVATEPAY_PDAO_GATE_ENABLED = "false";
 process.env.PRIVATEPAY_REQUIRE_ONCHAIN_SETTLEMENT_PROOF = "false";
+process.env.PRIVATEPAY_MERCHANT_CHECKOUT_ENABLED = "true";
 
 const { handler, resetForTests } = await import("../src/handler.mjs");
 
@@ -65,8 +66,25 @@ test("PrivatePAY prepare REST route exposes unsigned deposit and withdrawal legs
 
 test("external PrivatePAY lifecycle keeps public receipts redacted and provider audit scoped", async () => {
   const originalFetch = globalThis.fetch;
+  let checkoutRequest;
   globalThis.fetch = async (url, options = {}) => {
     const target = String(url);
+    if (target.endsWith("/v1/payments")) {
+      checkoutRequest = JSON.parse(options.body || "{}");
+      return new Response(JSON.stringify({ id: "d".repeat(64), status: "created" }), { status: 200, headers: { "content-type": "application/json" } });
+    }
+    if (target.includes("/v1/x402/payments/") && target.endsWith("/pay")) {
+      const accepted = {
+        scheme: "exact-magicblock",
+        network: "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+        asset: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+        amount: checkoutRequest.amount,
+        payTo: "2BJ4ezxqV9YJXc38D9duKBkdn4su4jE1beKUHwH663sL",
+        maxTimeoutSeconds: 60,
+        extra: { paymentId: "d".repeat(64), cluster: "mainnet-private", settlement: "ephemeral-rollup", transaction: Buffer.from("fixture-private-transfer").toString("base64") },
+      };
+      return new Response(JSON.stringify({}), { status: 402, headers: { "content-type": "application/json", "PAYMENT-REQUIRED": encodePaymentRequiredHeader({ x402Version: 2, resource: { url: checkoutRequest.resource, description: "fixture" }, accepts: [accepted] }) } });
+    }
     if (target.endsWith("/v1/x402/verify"))
       return new Response(JSON.stringify({ isValid: true }), { status: 200, headers: { "content-type": "application/json" } });
     if (target.endsWith("/v1/x402/settle"))
@@ -96,7 +114,7 @@ test("external PrivatePAY lifecycle keeps public receipts redacted and provider 
     const listing = await request("/api/marketplace/seller-listings/quote", "POST", { agent_id: seller.id, owner_token: seller.owner_token, tier: "free", accept_terms: true, terms_version: "seller-marketplace-v1" });
     assert.equal(listing.statusCode, 201, listing.body);
     const serviceId = `external.${seller.id}.read`;
-    const created = await request("/api/external/jobs", "POST", { service_id: serviceId, payment_mode: "privatepay", input: { query: "private" } });
+    const created = await request("/api/external/jobs", "POST", { service_id: serviceId, payment_mode: "privatepay", input: { query: "private" }, payer: "BkNcuvQZr6392aZCwcGnB6SQptV6vhWa7syJs5fgLz6" });
     assert.equal(created.statusCode, 402, created.body);
     const challenge = JSON.parse(created.body);
     const accepted = challenge.payment_required.accepts[0];
