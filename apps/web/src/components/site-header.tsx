@@ -22,6 +22,7 @@ const menus: Record<string, { label: string; columns: readonly MenuColumn[] }> =
         { href: "/govern", label: "Private Governance", description: "Make decisions with the right people.", icon: Users },
       ] },
       { title: "Transact privately", links: [
+        { href: "/wallet", label: "PDAO Wallet", description: "View Mainnet assets and continue into a service.", icon: WalletCards },
         { href: "/auctions", label: "Confidential Auctions", description: "Keep competing offers private until the result.", icon: Gavel },
         { href: "/payments", label: "Private Settlement", description: "Move an approved transaction through its final step.", icon: WalletCards },
       ] },
