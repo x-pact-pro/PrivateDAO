@@ -62,11 +62,19 @@ jobs:
           wait_for_workflow() {
             local workflow_name="$1"
             local state="missing"
+            local allowed_events='["push"]'
+
+            if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+              # A manual deployment may be preceded by manually dispatched
+              # verification workflows when a merge provider does not emit a
+              # push check for the squashed main revision.
+              allowed_events='["push","workflow_dispatch"]'
+            fi
 
             for attempt in $(seq 1 40); do
-              runs="$(gh api "/repos/${GITHUB_REPOSITORY}/actions/runs?head_sha=${DEPLOY_SHA}&event=push&per_page=100")"
-              state="$(jq -r --arg name "$workflow_name" '
-                [.workflow_runs[] | select(.name == $name)]
+              runs="$(gh api "/repos/${GITHUB_REPOSITORY}/actions/runs?head_sha=${DEPLOY_SHA}&per_page=100")"
+              state="$(jq -r --arg name "$workflow_name" --argjson allowed_events "$allowed_events" '
+                [.workflow_runs[] | select(.name == $name and (.event as $event | $allowed_events | index($event)))]
                 | sort_by(.created_at)
                 | last
                 | if . == null then "missing" else (.status + ":" + (.conclusion // "none")) end
