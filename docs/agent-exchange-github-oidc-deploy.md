@@ -90,6 +90,23 @@ Attach a policy scoped to the Agent Exchange function. Replace
 The workflow also calls `sts:GetCallerIdentity`, which does not require an
 identity policy permission.
 
+The browser checkout also requires the role to reconcile the HTTP API CORS
+configuration during deployment. Add this narrowly scoped statement for the
+production API only:
+
+```json
+{
+  "Sid": "ReconcileAgentExchangeBrowserCors",
+  "Effect": "Allow",
+  "Action": "apigateway:PATCH",
+  "Resource": "arn:aws:apigateway:eu-north-1::/apis/<API_ID>"
+}
+```
+
+`<API_ID>` is the HTTP API mapped to `agents.privatedao.org`. The deployment
+workflow resolves it from the custom-domain mapping and fails closed if CORS
+cannot be reconciled. It also rolls back the Lambda code when that step fails.
+
 Do not grant this role Lambda configuration writes, IAM administration,
 Secrets Manager reads, DynamoDB writes, or broad `lambda:*` unless a future
 deployment design explicitly requires them.
