@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ArrowRight, Bot, CheckCircle2, LockKeyhole, ReceiptText, ShieldCheck } from "lucide-react";
 
 import { OperationsShell } from "@/components/operations-shell";
+import { PrivatePayX402Checkout } from "@/components/privatepay-x402-checkout";
 import { buttonVariants } from "@/components/ui/button";
 import { buildRouteMetadata } from "@/lib/route-metadata";
 import { cn } from "@/lib/utils";
@@ -43,6 +44,7 @@ export default function PrivatePayPage() {
         { label: "x402 v2", variant: "warning" },
       ]}
     >
+      <PrivatePayX402Checkout />
       <section className="grid gap-4 md:grid-cols-3">
         <div className="rounded-[20px] border border-[#bfe4d2] bg-[#f2fbf6] p-5">
           <CheckCircle2 className="h-5 w-5 text-[#16824c]" />
