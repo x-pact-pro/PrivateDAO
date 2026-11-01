@@ -44,7 +44,7 @@ jobs:
       - name: Install Anchor CLI
         run: |
           timeout --signal=TERM --kill-after=30s 10m \
-            cargo install --git https://github.com/otter-sec/anchor --tag v1.0.1 anchor-cli --locked --force
+            cargo install anchor-cli --version 1.0.1 --locked --force
           anchor --version
 
       - name: Install dependencies
