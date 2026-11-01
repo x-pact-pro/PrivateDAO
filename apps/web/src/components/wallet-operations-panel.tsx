@@ -78,6 +78,10 @@ function readAutopilotStatus(payload: unknown): AutopilotStatus {
   if (!payload || typeof payload !== "object") return {};
   const value = payload as Record<string, unknown>;
   const limits = value.policy_limits;
+  const rawLimits = limits && typeof limits === "object" ? limits as Record<string, unknown> : undefined;
+  const maxTtlMs = typeof rawLimits?.max_ttl_ms === "number" ? rawLimits.max_ttl_ms : undefined;
+  const maxOperations = typeof rawLimits?.max_operations === "number" ? rawLimits.max_operations : undefined;
+  const maxBudgetBaseUnits = typeof rawLimits?.max_budget_base_units === "string" ? rawLimits.max_budget_base_units : undefined;
   return {
     enabled: typeof value.enabled === "boolean" ? value.enabled : undefined,
     configured: typeof value.configured === "boolean" ? value.configured : undefined,
@@ -89,13 +93,7 @@ function readAutopilotStatus(payload: unknown): AutopilotStatus {
     reusable_x402_credentials: typeof value.reusable_x402_credentials === "boolean"
       ? value.reusable_x402_credentials
       : undefined,
-    policy_limits: limits && typeof limits === "object"
-      ? {
-        max_ttl_ms: typeof (limits as Record<string, unknown>).max_ttl_ms === "number" ? (limits as Record<string, unknown>).max_ttl_ms : undefined,
-        max_operations: typeof (limits as Record<string, unknown>).max_operations === "number" ? (limits as Record<string, unknown>).max_operations : undefined,
-        max_budget_base_units: typeof (limits as Record<string, unknown>).max_budget_base_units === "string" ? (limits as Record<string, unknown>).max_budget_base_units : undefined,
-      }
-      : undefined,
+    policy_limits: rawLimits ? { max_ttl_ms: maxTtlMs, max_operations: maxOperations, max_budget_base_units: maxBudgetBaseUnits } : undefined,
   };
 }
 
