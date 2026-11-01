@@ -7,14 +7,35 @@ const addresses = [
   {
     label: "merchant",
     address: process.env.PRIVATEPAY_MERCHANT_ADDRESS || "2BJ4ezxqV9YJXc38D9duKBkdn4su4jE1beKUHwH663sL",
+    required: true,
+  },
+  {
+    label: "payment_ingress",
+    address: process.env.PRIVATEPAY_PAYMENT_INGRESS || "",
+    required: true,
   },
   {
     label: "test-provider",
     address: "Fpi5ze2ueWmarWhyKuhpgT6DtfPRARCFj8CV9htkiwkz",
+    required: false,
   },
 ];
 
 async function readBalance(entry) {
+  if (!entry.address) {
+    return {
+      label: entry.label,
+      required: entry.required,
+      configured: false,
+      address: null,
+      status: null,
+      ata: null,
+      location: null,
+      balanceBaseUnits: null,
+      delegation: null,
+      error: "address_not_configured",
+    };
+  }
   const url = new URL("/v1/spl/balance", API_BASE);
   url.searchParams.set("address", entry.address);
   url.searchParams.set("mint", MINT);
@@ -28,6 +49,8 @@ async function readBalance(entry) {
   } catch (error) {
     return {
       label: entry.label,
+      required: entry.required,
+      configured: true,
       address: entry.address,
       status: null,
       ata: null,
@@ -39,6 +62,8 @@ async function readBalance(entry) {
   }
   return {
     label: entry.label,
+    required: entry.required,
+    configured: true,
     address: entry.address,
     status: response.status,
     ata: body.ata || null,
@@ -50,16 +75,21 @@ async function readBalance(entry) {
 }
 
 const results = await Promise.all(addresses.map(readBalance));
-const merchant = results.find((entry) => entry.label === "merchant");
+const requiredResults = results.filter((entry) => entry.required);
+const requiredAccountsDelegated = requiredResults.length > 0 && requiredResults.every((entry) =>
+  entry.status === 200 && entry.delegation?.status === "delegated",
+);
 
 console.log(JSON.stringify({
   checkedAt: new Date().toISOString(),
   apiBase: API_BASE,
   cluster: CLUSTER,
   mint: MINT,
-  merchantReady: merchant?.status === 200 ? merchant.delegation?.status === "delegated" : null,
+  paymentIngressConfigured: results.find((entry) => entry.label === "payment_ingress")?.configured === true,
+  merchantReady: requiredAccountsDelegated,
+  requiredAccountsDelegated,
   results,
 }, null, 2));
 
-if (merchant?.status !== 200) process.exitCode = 3;
-else if (merchant.delegation?.status !== "delegated") process.exitCode = 2;
+if (!requiredResults.every((entry) => entry.status === 200)) process.exitCode = 3;
+else if (!requiredAccountsDelegated) process.exitCode = 2;
