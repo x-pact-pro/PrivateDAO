@@ -13,6 +13,7 @@ import { isNetworkAvailable } from "./networks.js";
 
 export type KernelErrorCode =
   | "INVALID_INTENT"
+  | "APPROVAL_REQUIRED"
   | "APPLICATION_BOUNDARY_VIOLATION"
   | "INTENT_EXPIRED"
   | "DUPLICATE_IDEMPOTENCY_KEY"
@@ -73,7 +74,7 @@ export class InMemoryProviderRegistry implements ProviderRegistry {
     if (this.providers.has(provider.id)) {
       throw new KernelError("PROVIDER_FAILURE", `Provider is already registered: ${provider.id}`);
     }
-    const unavailableNetwork = provider.networks.find((network) => !isNetworkAvailable(network));
+    const unavailableNetwork = provider.offchainOnly ? undefined : provider.networks.find((network) => !isNetworkAvailable(network));
     if (unavailableNetwork) {
       throw new KernelError("UNSUPPORTED_NETWORK", "A provider cannot be registered for a network without an available adapter.", {
         network: unavailableNetwork,

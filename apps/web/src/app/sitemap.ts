@@ -23,6 +23,7 @@ const coreRoutes = [
   "/private-governance",
   "/sealed-auctions",
   "/agents",
+  "/wallet",
   "/developers",
   "/docs",
   "/architecture",

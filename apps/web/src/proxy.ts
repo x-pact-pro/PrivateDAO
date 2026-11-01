@@ -18,7 +18,7 @@ const legacyRedirects: Record<string, string> = {
   "/governance-template": "/govern",
   "/payment-template": "/treasury",
   "/runtime-template": "/whitepaper",
-  "/wallet-template": "/contact",
+  "/wallet-template": "/wallet",
   "/whiteprint": "/whitepaper",
   "/rpc-services": "/whitepaper",
   "/api-status": "/whitepaper",

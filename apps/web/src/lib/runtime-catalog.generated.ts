@@ -399,9 +399,9 @@ export const runtimeCatalog = {
             },
             {
               "network": "stellar-testnet",
-              "stage": "planned",
+              "stage": "available",
               "environment": "testnet",
-              "chainId": null,
+              "chainId": "Test SDF Network ; September 2015",
               "declared": false,
               "mode": "unbound",
               "evidenceStatus": "planned",
@@ -413,7 +413,25 @@ export const runtimeCatalog = {
               "supportedAssets": [
                 "XLM"
               ],
-              "provider": null
+              "provider": "stellar-testnet-horizon"
+            },
+            {
+              "network": "hypercore-testnet",
+              "stage": "available",
+              "environment": "testnet",
+              "chainId": null,
+              "declared": false,
+              "mode": "unbound",
+              "evidenceStatus": "planned",
+              "evidence": "none",
+              "executable": false,
+              "supportsProof": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "supportedAssets": [
+                "USDC"
+              ],
+              "provider": "hyperliquid-core-testnet"
             }
           ]
         }
@@ -815,9 +833,9 @@ export const runtimeCatalog = {
             },
             {
               "network": "stellar-testnet",
-              "stage": "planned",
+              "stage": "available",
               "environment": "testnet",
-              "chainId": null,
+              "chainId": "Test SDF Network ; September 2015",
               "declared": false,
               "mode": "unbound",
               "evidenceStatus": "planned",
@@ -829,7 +847,25 @@ export const runtimeCatalog = {
               "supportedAssets": [
                 "XLM"
               ],
-              "provider": null
+              "provider": "stellar-testnet-horizon"
+            },
+            {
+              "network": "hypercore-testnet",
+              "stage": "available",
+              "environment": "testnet",
+              "chainId": null,
+              "declared": false,
+              "mode": "unbound",
+              "evidenceStatus": "planned",
+              "evidence": "none",
+              "executable": false,
+              "supportsProof": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "supportedAssets": [
+                "USDC"
+              ],
+              "provider": "hyperliquid-core-testnet"
             }
           ]
         },
@@ -1217,9 +1253,9 @@ export const runtimeCatalog = {
             },
             {
               "network": "stellar-testnet",
-              "stage": "planned",
+              "stage": "available",
               "environment": "testnet",
-              "chainId": null,
+              "chainId": "Test SDF Network ; September 2015",
               "declared": false,
               "mode": "unbound",
               "evidenceStatus": "planned",
@@ -1231,7 +1267,25 @@ export const runtimeCatalog = {
               "supportedAssets": [
                 "XLM"
               ],
-              "provider": null
+              "provider": "stellar-testnet-horizon"
+            },
+            {
+              "network": "hypercore-testnet",
+              "stage": "available",
+              "environment": "testnet",
+              "chainId": null,
+              "declared": false,
+              "mode": "unbound",
+              "evidenceStatus": "planned",
+              "evidence": "none",
+              "executable": false,
+              "supportsProof": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "supportedAssets": [
+                "USDC"
+              ],
+              "provider": "hyperliquid-core-testnet"
             }
           ]
         }
@@ -1561,9 +1615,9 @@ export const runtimeCatalog = {
             },
             {
               "network": "stellar-testnet",
-              "stage": "planned",
+              "stage": "available",
               "environment": "testnet",
-              "chainId": null,
+              "chainId": "Test SDF Network ; September 2015",
               "declared": false,
               "mode": "unbound",
               "evidenceStatus": "planned",
@@ -1575,7 +1629,25 @@ export const runtimeCatalog = {
               "supportedAssets": [
                 "XLM"
               ],
-              "provider": null
+              "provider": "stellar-testnet-horizon"
+            },
+            {
+              "network": "hypercore-testnet",
+              "stage": "available",
+              "environment": "testnet",
+              "chainId": null,
+              "declared": false,
+              "mode": "unbound",
+              "evidenceStatus": "planned",
+              "evidence": "none",
+              "executable": false,
+              "supportsProof": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "supportedAssets": [
+                "USDC"
+              ],
+              "provider": "hyperliquid-core-testnet"
             }
           ]
         },
@@ -1895,9 +1967,9 @@ export const runtimeCatalog = {
             },
             {
               "network": "stellar-testnet",
-              "stage": "planned",
+              "stage": "available",
               "environment": "testnet",
-              "chainId": null,
+              "chainId": "Test SDF Network ; September 2015",
               "declared": false,
               "mode": "unbound",
               "evidenceStatus": "planned",
@@ -1909,7 +1981,25 @@ export const runtimeCatalog = {
               "supportedAssets": [
                 "XLM"
               ],
-              "provider": null
+              "provider": "stellar-testnet-horizon"
+            },
+            {
+              "network": "hypercore-testnet",
+              "stage": "available",
+              "environment": "testnet",
+              "chainId": null,
+              "declared": false,
+              "mode": "unbound",
+              "evidenceStatus": "planned",
+              "evidence": "none",
+              "executable": false,
+              "supportsProof": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "supportedAssets": [
+                "USDC"
+              ],
+              "provider": "hyperliquid-core-testnet"
             }
           ]
         },
@@ -2229,9 +2319,9 @@ export const runtimeCatalog = {
             },
             {
               "network": "stellar-testnet",
-              "stage": "planned",
+              "stage": "available",
               "environment": "testnet",
-              "chainId": null,
+              "chainId": "Test SDF Network ; September 2015",
               "declared": false,
               "mode": "unbound",
               "evidenceStatus": "planned",
@@ -2243,7 +2333,25 @@ export const runtimeCatalog = {
               "supportedAssets": [
                 "XLM"
               ],
-              "provider": null
+              "provider": "stellar-testnet-horizon"
+            },
+            {
+              "network": "hypercore-testnet",
+              "stage": "available",
+              "environment": "testnet",
+              "chainId": null,
+              "declared": false,
+              "mode": "unbound",
+              "evidenceStatus": "planned",
+              "evidence": "none",
+              "executable": false,
+              "supportsProof": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "supportedAssets": [
+                "USDC"
+              ],
+              "provider": "hyperliquid-core-testnet"
             }
           ]
         }
@@ -2645,9 +2753,9 @@ export const runtimeCatalog = {
             },
             {
               "network": "stellar-testnet",
-              "stage": "planned",
+              "stage": "available",
               "environment": "testnet",
-              "chainId": null,
+              "chainId": "Test SDF Network ; September 2015",
               "declared": false,
               "mode": "unbound",
               "evidenceStatus": "planned",
@@ -2659,7 +2767,25 @@ export const runtimeCatalog = {
               "supportedAssets": [
                 "XLM"
               ],
-              "provider": null
+              "provider": "stellar-testnet-horizon"
+            },
+            {
+              "network": "hypercore-testnet",
+              "stage": "available",
+              "environment": "testnet",
+              "chainId": null,
+              "declared": false,
+              "mode": "unbound",
+              "evidenceStatus": "planned",
+              "evidence": "none",
+              "executable": false,
+              "supportsProof": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "supportedAssets": [
+                "USDC"
+              ],
+              "provider": "hyperliquid-core-testnet"
             }
           ]
         }
@@ -3061,9 +3187,9 @@ export const runtimeCatalog = {
             },
             {
               "network": "stellar-testnet",
-              "stage": "planned",
+              "stage": "available",
               "environment": "testnet",
-              "chainId": null,
+              "chainId": "Test SDF Network ; September 2015",
               "declared": false,
               "mode": "unbound",
               "evidenceStatus": "planned",
@@ -3075,7 +3201,25 @@ export const runtimeCatalog = {
               "supportedAssets": [
                 "XLM"
               ],
-              "provider": null
+              "provider": "stellar-testnet-horizon"
+            },
+            {
+              "network": "hypercore-testnet",
+              "stage": "available",
+              "environment": "testnet",
+              "chainId": null,
+              "declared": false,
+              "mode": "unbound",
+              "evidenceStatus": "planned",
+              "evidence": "none",
+              "executable": false,
+              "supportsProof": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "supportedAssets": [
+                "USDC"
+              ],
+              "provider": "hyperliquid-core-testnet"
             }
           ]
         }
@@ -3477,9 +3621,9 @@ export const runtimeCatalog = {
             },
             {
               "network": "stellar-testnet",
-              "stage": "planned",
+              "stage": "available",
               "environment": "testnet",
-              "chainId": null,
+              "chainId": "Test SDF Network ; September 2015",
               "declared": false,
               "mode": "unbound",
               "evidenceStatus": "planned",
@@ -3491,7 +3635,25 @@ export const runtimeCatalog = {
               "supportedAssets": [
                 "XLM"
               ],
-              "provider": null
+              "provider": "stellar-testnet-horizon"
+            },
+            {
+              "network": "hypercore-testnet",
+              "stage": "available",
+              "environment": "testnet",
+              "chainId": null,
+              "declared": false,
+              "mode": "unbound",
+              "evidenceStatus": "planned",
+              "evidence": "none",
+              "executable": false,
+              "supportsProof": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "supportedAssets": [
+                "USDC"
+              ],
+              "provider": "hyperliquid-core-testnet"
             }
           ]
         },
@@ -3879,9 +4041,9 @@ export const runtimeCatalog = {
             },
             {
               "network": "stellar-testnet",
-              "stage": "planned",
+              "stage": "available",
               "environment": "testnet",
-              "chainId": null,
+              "chainId": "Test SDF Network ; September 2015",
               "declared": false,
               "mode": "unbound",
               "evidenceStatus": "planned",
@@ -3893,7 +4055,25 @@ export const runtimeCatalog = {
               "supportedAssets": [
                 "XLM"
               ],
-              "provider": null
+              "provider": "stellar-testnet-horizon"
+            },
+            {
+              "network": "hypercore-testnet",
+              "stage": "available",
+              "environment": "testnet",
+              "chainId": null,
+              "declared": false,
+              "mode": "unbound",
+              "evidenceStatus": "planned",
+              "evidence": "none",
+              "executable": false,
+              "supportsProof": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "supportedAssets": [
+                "USDC"
+              ],
+              "provider": "hyperliquid-core-testnet"
             }
           ]
         }
@@ -4241,9 +4421,9 @@ export const runtimeCatalog = {
             },
             {
               "network": "stellar-testnet",
-              "stage": "planned",
+              "stage": "available",
               "environment": "testnet",
-              "chainId": null,
+              "chainId": "Test SDF Network ; September 2015",
               "declared": false,
               "mode": "unbound",
               "evidenceStatus": "planned",
@@ -4255,7 +4435,25 @@ export const runtimeCatalog = {
               "supportedAssets": [
                 "XLM"
               ],
-              "provider": null
+              "provider": "stellar-testnet-horizon"
+            },
+            {
+              "network": "hypercore-testnet",
+              "stage": "available",
+              "environment": "testnet",
+              "chainId": null,
+              "declared": false,
+              "mode": "unbound",
+              "evidenceStatus": "planned",
+              "evidence": "none",
+              "executable": false,
+              "supportsProof": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "supportedAssets": [
+                "USDC"
+              ],
+              "provider": "hyperliquid-core-testnet"
             }
           ]
         },
@@ -4592,9 +4790,9 @@ export const runtimeCatalog = {
             },
             {
               "network": "stellar-testnet",
-              "stage": "planned",
+              "stage": "available",
               "environment": "testnet",
-              "chainId": null,
+              "chainId": "Test SDF Network ; September 2015",
               "declared": false,
               "mode": "unbound",
               "evidenceStatus": "planned",
@@ -4606,7 +4804,25 @@ export const runtimeCatalog = {
               "supportedAssets": [
                 "XLM"
               ],
-              "provider": null
+              "provider": "stellar-testnet-horizon"
+            },
+            {
+              "network": "hypercore-testnet",
+              "stage": "available",
+              "environment": "testnet",
+              "chainId": null,
+              "declared": false,
+              "mode": "unbound",
+              "evidenceStatus": "planned",
+              "evidence": "none",
+              "executable": false,
+              "supportsProof": false,
+              "supportsReceipt": false,
+              "supportsReconciliation": false,
+              "supportedAssets": [
+                "USDC"
+              ],
+              "provider": "hyperliquid-core-testnet"
             }
           ]
         }
@@ -4757,8 +4973,18 @@ export const runtimeCatalog = {
       "id": "stellar-testnet",
       "label": "Stellar Testnet",
       "family": "stellar",
-      "stage": "planned",
-      "environment": "testnet"
+      "stage": "available",
+      "environment": "testnet",
+      "chainId": "Test SDF Network ; September 2015",
+      "adapterId": "stellar-testnet-horizon"
+    },
+    {
+      "id": "hypercore-testnet",
+      "label": "HyperCore Testnet",
+      "family": "exchange",
+      "stage": "available",
+      "environment": "testnet",
+      "adapterId": "hyperliquid-core-testnet"
     }
   ],
   "paymentRails": [
