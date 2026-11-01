@@ -48,8 +48,8 @@ export default function PrivatePayPage() {
       <section className="grid gap-4 md:grid-cols-3">
         <div className="rounded-[20px] border border-[#bfe4d2] bg-[#f2fbf6] p-5">
           <CheckCircle2 className="h-5 w-5 text-[#16824c]" />
-          <h2 className="mt-3 text-lg font-semibold text-[#10233f]">Live on Mainnet</h2>
-          <p className="mt-2 text-sm leading-6 text-[#52657c]">The verified PrivatePAY rail is enabled and operational for the Solana private path.</p>
+          <h2 className="mt-3 text-lg font-semibold text-[#10233f]">Solana Mainnet endpoint</h2>
+          <p className="mt-2 text-sm leading-6 text-[#52657c]">The checkout checks provider readiness live and remains fail-closed until every required settlement account is delegated.</p>
         </div>
         <div className="rounded-[20px] border border-[#cfe0f3] bg-[#f5f9ff] p-5">
           <Bot className="h-5 w-5 text-[#175cd3]" />
@@ -58,8 +58,8 @@ export default function PrivatePayPage() {
         </div>
         <div className="rounded-[20px] border border-[#ead7ba] bg-[#fffaf1] p-5">
           <ReceiptText className="h-5 w-5 text-[#a46708]" />
-          <h2 className="mt-3 text-lg font-semibold text-[#10233f]">Commercially ready</h2>
-          <p className="mt-2 text-sm leading-6 text-[#52657c]">Quotes, fees, settlement status, and receipts are returned in a machine-readable format.</p>
+          <h2 className="mt-3 text-lg font-semibold text-[#10233f]">Structured receipts</h2>
+          <p className="mt-2 text-sm leading-6 text-[#52657c]">When a provider is active, quotes, fees, settlement status, and receipts are returned in a machine-readable format.</p>
         </div>
       </section>
 
