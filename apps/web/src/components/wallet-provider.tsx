@@ -48,7 +48,7 @@ export function WalletProviderShell({ children }: WalletProviderShellProps) {
   const wallets = useMemo(() => {
     const unique = new Map<string, (typeof standardWallets)[number]>();
     for (const entry of standardWallets) {
-      const name = entry.adapter.name;
+      const name = entry.name;
       if (!unique.has(name)) unique.set(name, entry);
     }
     return [...unique.values()];
