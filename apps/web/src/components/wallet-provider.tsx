@@ -44,7 +44,15 @@ export function WalletProviderShell({ children }: WalletProviderShellProps) {
       new BackpackWalletAdapter(),
     ];
   }, [isMounted, network]);
-  const wallets = useStandardWalletAdapters(configuredWallets);
+  const standardWallets = useStandardWalletAdapters(configuredWallets);
+  const wallets = useMemo(() => {
+    const unique = new Map<string, (typeof standardWallets)[number]>();
+    for (const entry of standardWallets) {
+      const name = entry.adapter.name;
+      if (!unique.has(name)) unique.set(name, entry);
+    }
+    return [...unique.values()];
+  }, [standardWallets]);
 
   return (
     <ConnectionProvider endpoint={endpoint}>
