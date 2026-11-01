@@ -5,10 +5,11 @@ export type WalletTokenBalance = {
   mint: string;
   amountBaseUnits: bigint;
   decimals: number;
+  programs: Array<"spl-token" | "token-2022">;
 };
 
 export function aggregateTokenBalances(
-  accounts: Array<{ mint?: unknown; amount?: unknown; decimals?: unknown }>,
+  accounts: Array<{ mint?: unknown; amount?: unknown; decimals?: unknown; program?: unknown }>,
 ): WalletTokenBalance[] {
   const balances = new Map<string, WalletTokenBalance>();
 
@@ -18,11 +19,13 @@ export function aggregateTokenBalances(
     const decimals = typeof account.decimals === "number" && Number.isInteger(account.decimals) && account.decimals >= 0
       ? account.decimals
       : 0;
+    const program = account.program === "token-2022" ? "token-2022" : "spl-token";
     const current = balances.get(account.mint);
     balances.set(account.mint, {
       mint: account.mint,
       amountBaseUnits: (current?.amountBaseUnits ?? BigInt(0)) + BigInt(account.amount),
       decimals: current?.decimals ?? decimals,
+      programs: current?.programs.includes(program) ? current.programs : [...(current?.programs ?? []), program],
     });
   }
 
@@ -39,5 +42,5 @@ export function formatTokenAmount(amountBaseUnits: bigint, decimals: number, max
 }
 
 export function tokenBalanceForMint(balances: WalletTokenBalance[], mint: string) {
-  return balances.find((balance) => balance.mint === mint) ?? { mint, amountBaseUnits: BigInt(0), decimals: 6 };
+  return balances.find((balance) => balance.mint === mint) ?? { mint, amountBaseUnits: BigInt(0), decimals: 6, programs: [] };
 }
