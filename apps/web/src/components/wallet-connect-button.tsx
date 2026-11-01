@@ -222,8 +222,7 @@ export function WalletConnectButton({
             return;
           }
           setIsActionsOpen(false);
-          setIsWalletPickerOpen(false);
-          setWalletModalVisible(true);
+          setIsWalletPickerOpen(true);
         }}
       >
         <Wallet className="h-4 w-4" />
