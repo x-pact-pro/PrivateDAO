@@ -463,9 +463,9 @@ export async function preparePrivatePayWithdrawal(config, input = {}, fetchImpl 
   return preparePrivatePayBaseTransaction(config, "withdraw", "/v1/spl/withdraw", body, requestId, fetchImpl);
 }
 
-export async function createPrivatePayRequirements(config, input = {}) {
+export async function createPrivatePayRequirements(config, input = {}, liveStatus = null) {
   assertPrivatePayNetworkAdapter(config);
-  const status = privatePayStatus(config);
+  const status = liveStatus && typeof liveStatus === "object" ? liveStatus : privatePayStatus(config);
   if (!status.enabled) {
     throw Object.assign(new Error("PrivatePAY is fail-closed until a reviewed privacy rail and x402 facilitator are configured"), {
       statusCode: 503,
@@ -950,8 +950,8 @@ export function privatePayStatus(config) {
   };
 }
 
-export async function createPrivatePayChallenge(config, input = {}) {
-  const { request_id: requestId, requirements, header, pdao } = await createPrivatePayRequirements(config, { ...input, require_pdao_wallet: true });
+export async function createPrivatePayChallenge(config, input = {}, liveStatus = null) {
+  const { request_id: requestId, requirements, header, pdao } = await createPrivatePayRequirements(config, { ...input, require_pdao_wallet: true }, liveStatus);
   if (pdao.required && pdao.status !== "verified") throw Object.assign(new Error("PrivatePAY PDAO entry requirement is not verified"), { statusCode: 503, code: "PRIVATEPAY_PDAO_NOT_VERIFIED", pdao });
   return {
     x402Version: 2,
