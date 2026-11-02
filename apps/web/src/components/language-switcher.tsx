@@ -10,12 +10,12 @@ export function LanguageSwitcher({ compact = false }: { compact?: boolean }) {
   const locales = useSupportedLocales();
 
   return (
-    <label className={cn("inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 py-2 text-xs text-white/72", compact ? "px-2" : "px-3")}>
-      <Languages className="h-4 w-4 text-cyan-200" />
+    <label className={cn("inline-flex items-center gap-2 rounded-full border border-[#c5d4e4] bg-white py-2 text-xs font-medium text-[#10233f]", compact ? "px-2" : "px-3")}>
+      <Languages className="h-4 w-4 text-[#175cd3]" />
       <span className={compact ? "sr-only" : "hidden sm:inline"}>{copy.chrome.language}</span>
       <select
         aria-label={copy.chrome.language}
-        className={cn("bg-transparent text-xs text-white outline-none", compact && "max-w-[3.25rem]")}
+        className={cn("commercial-language-select bg-transparent text-xs font-medium text-[#10233f]", compact && "max-w-[4.5rem]")}
         value={selectedLocale}
         onChange={(event) => setLocale(event.target.value as typeof selectedLocale)}
       >

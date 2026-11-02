@@ -374,6 +374,15 @@ body::after {
   position: static;
 }
 
+.commercial-menu-trigger:focus-visible,
+.commercial-language-select:focus-visible {
+  --tw-outline-style: solid;
+  outline: 2px solid #175cd3 !important;
+  outline-offset: 3px !important;
+  box-shadow: 0 0 0 3px rgba(23, 92, 211, 0.28);
+  transition: none;
+}
+
 .commercial-menu-trigger-open {
   background: #edf4ff !important;
   color: #175cd3 !important;
@@ -401,7 +410,7 @@ body::after {
 }
 
 .commercial-mega-column-title {
-  color: #7a8ba0;
+  color: #52647d;
   font-size: 0.66rem;
   font-weight: 800;
   letter-spacing: 0.15em;

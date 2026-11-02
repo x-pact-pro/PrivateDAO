@@ -115,7 +115,7 @@ export function WalletFreeServicePanel({ wallet }: { wallet: string }) {
         <div role="status" aria-live="polite" className="rounded-[12px] border border-[#dce5f0] bg-white px-4 py-3 text-sm leading-6 text-[#425570]">{status}</div>
         {job ? <div className="rounded-[12px] border border-[#dce5f0] bg-white p-4 text-sm">
           <div className="flex items-center justify-between gap-3"><span className="font-semibold text-[#10233f]">Job status</span><span className="font-mono text-xs text-[#5d6d82]">{job.status || "unknown"}</span></div>
-          {jobId ? <div className="mt-2 break-all font-mono text-xs text-[#7a8ba0]">{jobId}</div> : null}
+          {jobId ? <div className="mt-2 break-all font-mono text-xs text-[#52647d]">{jobId}</div> : null}
           {receiptId ? <a href={`${API_BASE}/api/receipts/${encodeURIComponent(receiptId)}`} target="_blank" rel="noreferrer" className={cn(buttonVariants({ size: "sm", variant: "outline" }), "mt-3")}><ReceiptText className="h-4 w-4" /> Open receipt <ExternalLink className="h-3.5 w-3.5" /></a> : null}
         </div> : null}
       </CardContent>

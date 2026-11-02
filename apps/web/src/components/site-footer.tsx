@@ -42,12 +42,12 @@ export function SiteFooter() {
         </div>
 
         <nav aria-label="Solution links" className="grid content-start gap-2 text-sm">
-          <div className="mb-2 text-[11px] font-bold uppercase tracking-[0.24em] text-[#7a8ba0]">Solutions</div>
+          <div className="mb-2 text-[11px] font-bold uppercase tracking-[0.24em] text-[#52647d]">Solutions</div>
           {solutionLinks.map(([label, href]) => <Link key={href} href={href} className="text-[#52647d] transition hover:text-[#175cd3]">{label}</Link>)}
         </nav>
 
         <nav aria-label="Company links" className="grid content-start gap-2 text-sm">
-          <div className="mb-2 text-[11px] font-bold uppercase tracking-[0.24em] text-[#7a8ba0]">Company</div>
+          <div className="mb-2 text-[11px] font-bold uppercase tracking-[0.24em] text-[#52647d]">Company</div>
           {companyLinks.map(([label, href]) => <Link key={href} href={href} className="text-[#52647d] transition hover:text-[#175cd3]">{label}</Link>)}
           <Link href="/agents" className="text-[#52647d] transition hover:text-[#175cd3]">Agent ecosystem</Link>
           <a href={agentExchangeUrl} target="_blank" rel="noreferrer" className="text-[#52647d] transition hover:text-[#175cd3]">Agent Exchange</a>
@@ -59,7 +59,7 @@ export function SiteFooter() {
       </div>
 
       <div className="border-t border-[#dce5f0]">
-        <div className="mx-auto flex w-full max-w-7xl flex-col gap-3 px-4 py-4 text-xs text-[#7a8ba0] sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
+        <div className="mx-auto flex w-full max-w-7xl flex-col gap-3 px-4 py-4 text-xs text-[#52647d] sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
           <div className="flex flex-wrap items-center gap-x-4 gap-y-2"><span>Official channels</span>{communityLinks.map((item) => <a key={item.href} href={item.href} target="_blank" rel="noreferrer" className="font-medium text-[#52647d] hover:text-[#175cd3]">{item.title}</a>)}</div>
           <span>© PrivateDAO. Private decisions. Verifiable outcomes.</span>
         </div>
