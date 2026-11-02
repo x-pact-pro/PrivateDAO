@@ -141,16 +141,16 @@ async function main() {
       await picker.waitFor({ state: "visible", timeout: 5000 });
       const pickerDialog = page.locator("div.fixed.inset-0").filter({ has: picker }).first();
       await pickerDialog.waitFor({ state: "visible", timeout: 5000 });
-      const pickerText = await pickerDialog.innerText();
       for (const walletName of ["Solflare", "Phantom", "Glow", "Backpack"]) {
-        if (!pickerText.includes(walletName)) throw new Error(`${viewport.name}: wallet picker is missing ${walletName}.`);
+        const walletOption = pickerDialog.locator("button, a").filter({ hasText: walletName }).first();
+        if (!(await walletOption.isVisible())) throw new Error(`${viewport.name}: wallet picker is missing selectable ${walletName}.`);
       }
       await page.getByRole("button", { name: /open all wallet options/i }).click();
       const walletModal = page.locator(".wallet-adapter-modal:visible").first();
       await walletModal.waitFor({ state: "visible", timeout: 5000 });
       const walletModalText = await walletModal.innerText();
-      if (!walletModalText.includes("Solflare") && !walletModalText.includes("Phantom")) {
-        throw new Error(`${viewport.name}: adapter modal did not expose a Solana wallet option.`);
+      for (const walletName of ["Solflare", "Phantom", "Glow", "Backpack"]) {
+        if (!walletModalText.includes(walletName)) throw new Error(`${viewport.name}: adapter modal is missing ${walletName}.`);
       }
       if (failures.length > 0) throw new Error(`${viewport.name}: wallet surface emitted failures:\n${failures.join("\n")}`);
       await page.close();
@@ -167,6 +167,7 @@ function isAllowedExternalRequest(requestUrl: string): boolean {
   try {
     const url = new URL(requestUrl);
     if (url.hostname === "fonts.googleapis.com" || url.hostname === "fonts.gstatic.com") return true;
+    if (url.hostname === "api.qrserver.com" && url.pathname === "/v1/create-qr-code/") return true;
     if (url.hostname !== "api.privatedao.org") return false;
     return url.pathname.startsWith("/api/v1/freshness/") || url.pathname.startsWith("/api/v1/visitors/");
   } catch {

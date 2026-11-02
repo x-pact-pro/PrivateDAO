@@ -10,6 +10,7 @@ on:
       - "apps/web/**"
       - "scripts/build-web-mirror-bundle.sh"
       - "scripts/build-github-pages-redirect.mjs"
+      - "scripts/verify-wallet-connect-surface.ts"
   workflow_dispatch:
 
 permissions:
