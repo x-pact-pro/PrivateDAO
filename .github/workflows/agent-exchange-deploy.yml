@@ -219,9 +219,9 @@ jobs:
 
           {
             echo "### Rollback snapshot"
-            echo "- Function: `$FUNCTION_NAME`"
-            echo "- Previous CodeSha256: `$PREVIOUS_CODE_SHA`"
-            echo "- Previous LastModified: `$PREVIOUS_LAST_MODIFIED`"
+            echo "- Function: $FUNCTION_NAME"
+            echo "- Previous CodeSha256: $PREVIOUS_CODE_SHA"
+            echo "- Previous LastModified: $PREVIOUS_LAST_MODIFIED"
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Deploy verified package and publish immutable version
@@ -254,9 +254,9 @@ jobs:
 
           {
             echo "### Deployment"
-            echo "- Commit: `$DEPLOY_SHA`"
-            echo "- CodeSha256: `$DEPLOYED_CODE_SHA`"
-            echo "- Published rollback/reference version: `$VERSION`"
+            echo "- Commit: $DEPLOY_SHA"
+            echo "- CodeSha256: $DEPLOYED_CODE_SHA"
+            echo "- Published rollback/reference version: $VERSION"
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Route API Gateway to current Lambda
@@ -482,7 +482,7 @@ jobs:
 
           {
             echo "### Automatic rollback"
-            echo "- Restored CodeSha256: `$RESTORED_CODE_SHA`"
+            echo "- Restored CodeSha256: $RESTORED_CODE_SHA"
             echo "- Reason: deployment verification or production smoke gate failed."
           } >> "$GITHUB_STEP_SUMMARY"
 
@@ -517,8 +517,8 @@ jobs:
           {
             echo "### Production release healthy"
             echo "- URL: $PUBLIC_BASE_URL"
-            echo "- Commit: `$DEPLOY_SHA`"
-            echo "- Lambda version: `$DEPLOYED_VERSION`"
-            echo "- CodeSha256: `$DEPLOYED_CODE_SHA`"
+            echo "- Commit: $DEPLOY_SHA"
+            echo "- Lambda version: $DEPLOYED_VERSION"
+            echo "- CodeSha256: $DEPLOYED_CODE_SHA"
             echo "- Rollback package was captured before deployment and was not needed."
           } >> "$GITHUB_STEP_SUMMARY"
