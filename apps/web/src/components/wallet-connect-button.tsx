@@ -284,7 +284,7 @@ export function WalletConnectButton({
                 <div className="text-[11px] uppercase tracking-[0.24em] text-white/44">Wallet-first connect</div>
                 <h3 className="mt-3 text-2xl font-semibold text-white">Choose a supported wallet</h3>
                 <p className="mt-3 text-sm leading-7 text-white/62">
-                  Wallets are auto-detected in this browser. Select any detected wallet, open the full Solana wallet modal, or scan the session QR from mobile. The flow is always review first, sign second, verify third.
+                  Wallets are auto-detected in this browser. Select any detected wallet, open the full Solana wallet modal, or open this page inside a mobile wallet. The flow is always review first, sign second, verify third.
                 </p>
               </div>
               <button
@@ -305,7 +305,7 @@ export function WalletConnectButton({
                   </div>
                 </div>
                 <div className="mt-3 grid gap-2 text-sm text-white/72 sm:grid-cols-2">
-                  <div>1. Pick a wallet or scan the mobile session QR.</div>
+                  <div>1. Pick a wallet or open the page on mobile.</div>
                   <div>2. Confirm the wallet is on Solana {SOLANA_NETWORK_LABEL}.</div>
                   <div>3. Review DAO action, privacy policy, and proof route.</div>
                   <div>4. Sign, return, and verify the receipt from the app.</div>
@@ -315,7 +315,7 @@ export function WalletConnectButton({
                     Desktop: detected extension wallets appear first with direct browser connect.
                   </div>
                   <div className="rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2">
-                    Mobile: use deep links or scan the session QR, then return to the app flow.
+                    Mobile: use a wallet deep link or scan the page QR, then return to the app flow.
                   </div>
                   <div className="rounded-xl border border-emerald-300/15 bg-emerald-300/[0.07] px-3 py-2">
                     PrivateDAO never asks for a seed phrase or private key.
@@ -442,7 +442,7 @@ export function WalletConnectButton({
                 Mobile QR connect
               </div>
               <div className="mt-2 text-sm leading-7 text-white/72">
-                Scan to open this exact PrivateDAO session in a mobile wallet browser, then connect on Solana {SOLANA_NETWORK_LABEL} and sign the same review-first flow.
+                Scan or open this page inside a mobile wallet browser, then connect on Solana {SOLANA_NETWORK_LABEL} and sign the same review-first flow.
               </div>
               {sessionUrl ? (
                 <div className="mt-3 flex flex-wrap items-center gap-4">
