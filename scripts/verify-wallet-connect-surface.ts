@@ -139,7 +139,9 @@ async function main() {
       await button.click();
       const picker = page.getByRole("heading", { name: /choose a supported wallet/i });
       await picker.waitFor({ state: "visible", timeout: 5000 });
-      const pickerText = await page.locator("body").innerText();
+      const pickerDialog = page.locator("div.fixed.inset-0").filter({ has: picker }).first();
+      await pickerDialog.waitFor({ state: "visible", timeout: 5000 });
+      const pickerText = await pickerDialog.innerText();
       for (const walletName of ["Solflare", "Phantom", "Glow", "Backpack"]) {
         if (!pickerText.includes(walletName)) throw new Error(`${viewport.name}: wallet picker is missing ${walletName}.`);
       }
