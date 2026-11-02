@@ -1139,6 +1139,16 @@ a {
   background: linear-gradient(135deg, rgba(20, 241, 149, 0.3), rgba(0, 194, 255, 0.22), rgba(153, 69, 255, 0.34));
 }
 
+.wallet-adapter-shell .wallet-adapter-button.wallet-connect-light {
+  background: white;
+  box-shadow: inset 0 0 0 1px #b9d8f2;
+  color: #10233f;
+}
+
+.wallet-adapter-shell .wallet-adapter-button.wallet-connect-light:hover {
+  background: #f1f8ff;
+}
+
 .wallet-adapter-shell .wallet-adapter-button-trigger {
   justify-content: center;
 }
