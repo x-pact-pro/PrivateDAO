@@ -625,7 +625,7 @@ const json = (body, status = 200, headers = {}) => ({
 });
 export const paymentStatusCode = (result) => result?.status === "recovery_required"
   ? 409
-  : ["verifying", "processing"].includes(result?.status) ? 202 : 200;
+  : ["verifying", "processing", "pending"].includes(result?.status) ? 202 : 200;
 const text = (body, status = 200) => ({
   statusCode: status,
   headers: {
@@ -3796,6 +3796,7 @@ async function createJob(serviceId, input, admin = false, currency = "USDC", met
         serviceId,
         payer: String(payer || "").trim(),
         amount_base_units: String(quote.amountAtomic),
+        pdao_benefits: input.pdao_benefits === true || input.pdaoBenefits === true,
       });
       job.privatepay_request_id = privatePayment.request_id;
       job.privatepay_requirements = privatePayment.requirements;
@@ -3846,7 +3847,7 @@ async function createJob(serviceId, input, admin = false, currency = "USDC", met
   return await completeJob(job, execution.result, null, execution.telemetry);
 }
 
-async function createPrivatePayJobChallenge({ jobId, serviceId, payer, amount_base_units }) {
+async function createPrivatePayJobChallenge({ jobId, serviceId, payer, amount_base_units, pdao_benefits = false }) {
   const resource = `https://${config.domain}/api/jobs/${jobId}/privatepay`;
   const liveStatus = await privatePayReadiness();
   const localPayment = await createPrivatePayRequirements(config, {
@@ -3858,6 +3859,7 @@ async function createPrivatePayJobChallenge({ jobId, serviceId, payer, amount_ba
     // Ordinary Agent Exchange purchases must not require a PDAO holding.
     // Holder benefits remain handled separately through the access path.
     pdao_optional: true,
+    pdao_benefits,
   }, liveStatus);
   const checkout = await createPrivatePayCheckout(config, {
     payer,
@@ -3931,12 +3933,12 @@ async function submitPrivatePayPayment(jobId, event, body = {}) {
   }
   const payer = String(body.payer || body.wallet || "").trim();
   const pdaoFeeSignature = body.pdao_fee_signature || event.headers?.["X-PrivatePAY-PDAO-Fee-Signature"] || event.headers?.["x-privatepay-pdao-fee-signature"];
-  const pdaoFee = job.privatepay_requirements?.accepts?.[0]?.extra?.pdao_benefits_selected !== true
+  const pdaoFee = job.privatepay_pdao?.selected !== true
     ? { required: false, status: "disabled_by_configuration" }
     : await verifyPrivatePayPdaoFee(config, {
       payer,
       signature: pdaoFeeSignature,
-      pdao_fee_base_units: job.privatepay_requirements.accepts?.[0]?.extra?.pdao_fee_base_units,
+      pdao_fee_base_units: job.privatepay_pdao?.fee_base_units,
       amount_base_units: job.privatepay_requirements.accepts?.[0]?.amount,
       request_id: job.privatepay_request_id,
     });
@@ -3954,18 +3956,22 @@ async function submitPrivatePayPayment(jobId, event, body = {}) {
     const current = await storage.get("Jobs", jobId);
     if (current?.status === "completed" && current.receipt_id)
       return completeJob(current, current.result, null);
-    return { job_id: jobId, status: "recovery_required", recovery_required: true, message: "private payment claim already exists; execution requires non-replaying recovery", retryAfterSeconds: 30 };
+    if (!["settling", "settlement_pending", "settled"].includes(existingPayment.state))
+      return { job_id: jobId, status: "recovery_required", recovery_required: true, message: "private payment claim already exists; execution requires non-replaying recovery", retryAfterSeconds: 30 };
   }
-  const verification = await privatePayFacilitatorRequest(config, "verify", facilitatorPayload);
-  if (verification.status === "pending")
-    return { job_id: jobId, status: "pending", retryAfterSeconds: verification.retry_after_seconds || 2 };
-  if (verification.isValid !== true) {
-    throw Object.assign(new Error("PrivatePAY payment was not accepted by the facilitator"), {
-      statusCode: 402,
-      code: "PRIVATEPAY_PAYMENT_INVALID",
-    });
-  }
-  const paymentClaim = {
+  let paymentClaim = existingPayment;
+  let settlement = existingPayment?.settlement || null;
+  if (!paymentClaim) {
+    const verification = await privatePayFacilitatorRequest(config, "verify", facilitatorPayload);
+    if (verification.status === "pending")
+      return { job_id: jobId, status: "pending", retryAfterSeconds: verification.retry_after_seconds || 2 };
+    if (verification.isValid !== true) {
+      throw Object.assign(new Error("PrivatePAY payment was not accepted by the facilitator"), {
+        statusCode: 402,
+        code: "PRIVATEPAY_PAYMENT_INVALID",
+      });
+    }
+    paymentClaim = {
     id: paymentId,
     job_id: jobId,
     payment_mode: "privatepay",
@@ -3975,31 +3981,38 @@ async function submitPrivatePayPayment(jobId, event, body = {}) {
     pdao_fee: pdaoFee,
     state: "settling",
     consumed_at: now(),
-  };
-  try {
-    await storage.put("Payments", paymentId, paymentClaim, true);
-  } catch (error) {
-    const claimed = await storage.get("Payments", paymentId);
-    if (claimed) return { job_id: jobId, status: "recovery_required", recovery_required: true, message: "private payment claim already exists; execution requires non-replaying recovery", retryAfterSeconds: 30 };
-    throw error;
+    };
+    try {
+      await storage.put("Payments", paymentId, paymentClaim, true);
+    } catch (error) {
+      const claimed = await storage.get("Payments", paymentId);
+      if (!claimed) throw error;
+      if (claimed.job_id !== jobId || !["settling", "settlement_pending", "settled"].includes(claimed.state))
+        return { job_id: jobId, status: "recovery_required", recovery_required: true, message: "private payment claim already exists; execution requires non-replaying recovery", retryAfterSeconds: 30 };
+      paymentClaim = claimed;
+      settlement = claimed.settlement || null;
+    }
   }
-  let settlement;
-  try {
-    settlement = await privatePayFacilitatorRequest(config, "settle", facilitatorPayload);
-    if (settlement.status === "pending")
-      return { job_id: jobId, status: "pending", retryAfterSeconds: settlement.retry_after_seconds || 2 };
-    if (settlement.success !== true)
-      throw new Error("PrivatePAY settlement was not confirmed by the facilitator");
-    const onchainVerification = await verifyPrivatePayMainnetSettlement(config, {
-      requestId: job.privatepay_request_id,
-      amountBaseUnits: job.privatepay_requirements.accepts[0].amount,
-      settlement,
-    });
-    settlement = { ...settlement, onchain_verification: onchainVerification };
-    await storage.put("Payments", paymentId, { ...paymentClaim, state: "settled", settlement });
-  } catch (error) {
-    await storage.put("Payments", paymentId, { ...paymentClaim, state: "settlement_failed", settlement_error: String(error.message || error).slice(0, 240) });
-    throw Object.assign(new Error("PrivatePAY settlement was not confirmed by the facilitator"), { statusCode: 503, code: "PRIVATEPAY_SETTLEMENT_UNCONFIRMED" });
+  if (!settlement) {
+    try {
+      settlement = await privatePayFacilitatorRequest(config, "settle", facilitatorPayload);
+      if (settlement.status === "pending") {
+        await storage.put("Payments", paymentId, { ...paymentClaim, state: "settlement_pending", retry_after_seconds: settlement.retry_after_seconds || 2, updated_at: now() });
+        return { job_id: jobId, status: "pending", retryAfterSeconds: settlement.retry_after_seconds || 2 };
+      }
+      if (settlement.success !== true)
+        throw new Error("PrivatePAY settlement was not confirmed by the facilitator");
+      const onchainVerification = await verifyPrivatePayMainnetSettlement(config, {
+        requestId: job.privatepay_request_id,
+        amountBaseUnits: job.privatepay_requirements.accepts[0].amount,
+        settlement,
+      });
+      settlement = { ...settlement, onchain_verification: onchainVerification };
+      await storage.put("Payments", paymentId, { ...paymentClaim, state: "settled", settlement, updated_at: now() });
+    } catch (error) {
+      await storage.put("Payments", paymentId, { ...paymentClaim, state: "settlement_failed", settlement_error: String(error.message || error).slice(0, 240), updated_at: now() });
+      throw Object.assign(new Error("PrivatePAY settlement was not confirmed by the facilitator"), { statusCode: 503, code: "PRIVATEPAY_SETTLEMENT_UNCONFIRMED" });
+    }
   }
   job.execution_started_at = now();
   const executionJob = { ...job, privatepay_settlement: settlement, privatepay_pdao_fee: pdaoFee };
@@ -5555,19 +5568,21 @@ async function handle(e) {
       : null;
     const paymentSignature = e.headers?.["PAYMENT-SIGNATURE"] || e.headers?.["payment-signature"];
     if (!paymentSignature) {
-      // A provider reuses an externalReference forever. The default must be
-      // fresh so a previously expired checkout cannot poison a new challenge.
-      // Callers that need idempotency can still supply an explicit reference.
+      // A pending response carries the provider payment id. Reusing it must
+      // resume the same checkout instead of creating a second charge.
+      const existingPaymentId = String(x402Input.payment_id || x402Input.paymentId || "").trim();
       const externalReference = String(x402Input.external_reference || x402Input.externalReference || "").trim()
         || `privatepay-x402-${requirements.request_id.slice(3)}-${randomUUID().replaceAll("-", "")}`;
-      const checkout = await createPrivatePayCheckout(config, {
-        payer: x402Input.payer,
-        resource: x402Input.resource,
-        amount_base_units: x402Input.amount_base_units,
-        description: x402Input.description || "PrivateDAO Agent Exchange service payment",
-        external_reference: externalReference,
-        expires_in_seconds: x402Input.expires_in_seconds,
-      });
+      const checkout = existingPaymentId
+        ? { payment_id: existingPaymentId, status: "resuming", expires_at: null }
+        : await createPrivatePayCheckout(config, {
+          payer: x402Input.payer,
+          resource: x402Input.resource,
+          amount_base_units: x402Input.amount_base_units,
+          description: x402Input.description || "PrivateDAO Agent Exchange service payment",
+          external_reference: externalReference,
+          expires_in_seconds: x402Input.expires_in_seconds,
+        });
       if (checkout.status === "pending")
         return json({ error: "payment_pending", payment_id: checkout.payment_id, status: "pending", retry_after_seconds: 2 }, 202, { "retry-after": "2" });
       const challenge = await requestPrivatePayCheckoutChallenge(config, { payment_id: checkout.payment_id });

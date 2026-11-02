@@ -56,8 +56,13 @@ jobs:
         run: |
           set -euo pipefail
           if ! command -v anchor >/dev/null 2>&1 || ! anchor --version | grep -q 'anchor-cli 1.0.1'; then
-            timeout --signal=TERM --kill-after=30s 10m \
-              cargo install anchor-cli --version 1.0.1 --locked --force
+            anchor_path="$HOME/.cargo/bin/anchor"
+            mkdir -p "$(dirname "$anchor_path")"
+            curl --fail --silent --show-error --location \
+              https://github.com/otter-sec/anchor/releases/download/v1.0.1/anchor-1.0.1-x86_64-unknown-linux-gnu \
+              --output "$anchor_path"
+            echo "8427407220983e9847abcc1e1767dbc6654288957535a5d653f449860871a8df  $anchor_path" | sha256sum --check --status
+            chmod +x "$anchor_path"
           else
             echo "Using cached Anchor CLI 1.0.1"
           fi

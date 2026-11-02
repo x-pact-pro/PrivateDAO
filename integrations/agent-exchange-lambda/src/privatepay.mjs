@@ -73,7 +73,7 @@ function pdaoFeeBaseUnits({ amountBaseUnits: amount, priceUsd, decimals, feeBps,
 
 async function privatePayPdaoQuote(config, input, amount, { requireWallet = false, optional = false } = {}) {
   const benefitsSelected = input.pdao_benefits === true || input.pdaoBenefits === true;
-  if (!benefitsSelected || optional || config.privatePayPdaoGateEnabled === false)
+  if (!benefitsSelected || config.privatePayPdaoGateEnabled === false)
     return { required: false, selected: false, status: "optional", benefits_available: true };
   const payer = String(input.payer || input.wallet || "").trim();
   if (!SOLANA_ADDRESS.test(payer)) {
@@ -126,7 +126,9 @@ export async function buildPrivatePayPdaoFeeTransaction(config, input = {}) {
   const payer = String(input.payer || input.wallet || "").trim();
   if (!SOLANA_ADDRESS.test(payer)) throw Object.assign(new Error("payer must be a valid Solana address"), { statusCode: 400, code: "PRIVATEPAY_PDAO_WALLET_REQUIRED" });
   const amount = amountBaseUnits(input);
-  const pdao = await privatePayPdaoQuote(config, { ...input, payer }, amount, { requireWallet: true });
+  const pdao = await privatePayPdaoQuote(config, { ...input, payer, pdao_benefits: true }, amount, { requireWallet: true });
+  if (pdao.selected !== true || !pdao.fee_base_units)
+    throw Object.assign(new Error("PDAO benefits are not enabled for this payment"), { statusCode: 400, code: "PRIVATEPAY_PDAO_BENEFITS_NOT_SELECTED" });
   const parts = pdaoFeeParts(input.pdao_fee_base_units || pdao.fee_base_units);
   const payerKey = new PublicKey(payer);
   const mint = new PublicKey(config.pdaoMint);
@@ -165,7 +167,9 @@ export async function verifyPrivatePayPdaoFee(config, input = {}) {
   if (!isSolanaTransactionSignature(signature)) throw Object.assign(new Error("a finalized PDAO fee signature is required"), { statusCode: 400, code: "PRIVATEPAY_PDAO_FEE_SIGNATURE_REQUIRED" });
   if (!SOLANA_ADDRESS.test(payer)) throw Object.assign(new Error("payer must be a valid Solana address"), { statusCode: 400, code: "PRIVATEPAY_PDAO_WALLET_REQUIRED" });
   const amount = amountBaseUnits(input);
-  const pdao = await privatePayPdaoQuote(config, { ...input, payer }, amount, { requireWallet: true });
+  const pdao = await privatePayPdaoQuote(config, { ...input, payer, pdao_benefits: true }, amount, { requireWallet: true });
+  if (pdao.selected !== true || !pdao.fee_base_units)
+    throw Object.assign(new Error("PDAO benefits are not enabled for this payment"), { statusCode: 400, code: "PRIVATEPAY_PDAO_BENEFITS_NOT_SELECTED" });
   const parts = pdaoFeeParts(input.pdao_fee_base_units || pdao.fee_base_units);
   const expectedDestination = getAssociatedTokenAddressSync(new PublicKey(config.pdaoMint), new PublicKey(config.privatePayPdaoTreasury || config.treasury), false, TOKEN_PROGRAM_ID, ASSOCIATED_TOKEN_PROGRAM_ID).toBase58();
   const response = await readRpc(config, "getTransaction", [signature, { commitment: "finalized", encoding: "jsonParsed", maxSupportedTransactionVersion: 0 }]);

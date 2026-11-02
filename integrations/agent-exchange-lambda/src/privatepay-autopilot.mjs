@@ -216,7 +216,9 @@ export async function completePrivatePayAutopilotOperation(config, policyId, ope
   const { policies, operations } = await collections(config);
   const operation = await operations.findOne({ id: operationId, policy_id: policyId, status: "reserved" });
   if (!operation) return { completed: false, reason: "operation_not_reserved" };
-  if (Date.parse(operation.expires_at) <= Date.now()) return { completed: false, reason: "operation_expired" };
+  // The operation was freshness-checked before x402 verification. Once the
+  // provider has settled, accounting must be allowed to finish even if the
+  // short authorization TTL elapsed while the provider was processing.
   const now = new Date().toISOString();
   const claimed = await operations.updateOne({ id: operationId, policy_id: policyId, status: "reserved" }, { $set: { status: "completing", updated_at: now } });
   if (claimed.modifiedCount !== 1) return { completed: false, reason: "operation_already_claimed" };
@@ -231,11 +233,11 @@ export async function completePrivatePayAutopilotOperation(config, policyId, ope
 
 export async function cancelPrivatePayAutopilotOperation(config, input = {}) {
   requireEnabled(config);
-  const { policy } = await activePolicy(config, input.policy_id);
   const { operations, policies } = await collections(config);
+  const policy = await policies.findOne({ id: String(input.policy_id || ""), kind: "privatepay_autopilot_policy", status: "active" });
+  if (!policy) fail("autopilot policy is inactive or expired", "PRIVATEPAY_AUTOPILOT_POLICY_INACTIVE", 403);
   const operation = await operations.findOne({ id: String(input.operation_id || ""), policy_id: policy.id, status: "reserved" });
   if (!operation) return { cancelled: false, reason: "operation_not_reserved" };
-  if (Date.parse(operation.expires_at) <= Date.now()) return { cancelled: false, reason: "operation_expired" };
   const message = canonicalMessage("cancel", { operation_id: operation.id, policy_id: policy.id });
   verifySignedMessage(policy.session_public_key, message, input.session_signature, "session_signature");
   const now = new Date().toISOString();
