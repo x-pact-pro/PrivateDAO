@@ -625,7 +625,7 @@ const json = (body, status = 200, headers = {}) => ({
 });
 export const paymentStatusCode = (result) => result?.status === "recovery_required"
   ? 409
-  : ["verifying", "processing"].includes(result?.status) ? 202 : 200;
+  : ["verifying", "processing", "pending"].includes(result?.status) ? 202 : 200;
 const text = (body, status = 200) => ({
   statusCode: status,
   headers: {
@@ -935,7 +935,7 @@ function openapi() {
                 properties: {
                   service_id: { type: "string" },
                   input: { type: "object" },
-                  payment_mode: { type: "string", enum: ["direct", "privatepay"], default: "direct", description: "Use privatepay only when the reviewed PrivatePAY rail is explicitly enabled." },
+                  payment_mode: { type: "string", enum: ["direct", "privatepay"], default: "direct", description: "Use privatepay only when the reviewed PrivatePAY rail is explicitly enabled. The response includes the frozen commerce_pricing breakdown before signing." },
                 },
                 additionalProperties: false,
               },
@@ -2994,7 +2994,7 @@ async function recordRevenue(job, payment) {
       revenueClass: firstParty ? "first_party_service" : "external_seller_service",
       seller_agent_id: job.seller_agent_id || null,
       grossAmount,
-      providerAmount: grossAmount - protocolFee,
+      providerAmount: grossAmount,
       protocolFee,
       platformFeeAmount: protocolFee,
       feeBps,
@@ -3033,8 +3033,10 @@ function errorResponse(error) {
       ...(privatePayCode ? { code: error.code } : {}),
       ...(privatePayCode && error.status && typeof error.status === "object" ? { privatepay_status: error.status } : {}),
       ...(error.payment_intent ? { payment_intent: error.payment_intent } : {}),
+      ...(error.payment_id ? { payment_id: error.payment_id } : {}),
       ...(error.payment_required ? { payment_required: error.payment_required } : {}),
       ...(error.request_id ? { request_id: error.request_id } : {}),
+      ...(error.job_id ? { job_id: error.job_id } : {}),
       ...(error.quote ? { quote: error.quote } : {}),
       ...(error.retryAfterSeconds ? { retry_after_seconds: error.retryAfterSeconds } : {}),
     },
@@ -3202,17 +3204,23 @@ async function createExternalJob(serviceId, input = {}, access = null, paymentMo
   const platformFee = Number(((grossAmount * policy.platform_fee_bps) / 10000).toFixed(6));
   const processingFee = Number(((grossAmount * policy.processing_fee_bps) / 10000).toFixed(6));
   const privatePayFee = normalizedPaymentMode === "privatepay" ? privatePayCommercialFee(grossAmount) : 0;
-  const sellerNet = Number((grossAmount - platformFee).toFixed(6));
+  // The provider price is paid to the provider. Marketplace and route fees
+  // are added to the buyer total instead of silently reducing payout.
+  const sellerNet = grossAmount;
   const ata = await treasuryTokenAccount(config);
   const sellerPayoutConfig = service.payout || (await storage.get("Registry", service.seller_agent_id))?.payout || null;
   if (!sellerPayoutConfig?.address) throw Object.assign(new Error("seller payout is not configured"), { statusCode: 409 });
-  const buyerTotal = Number((grossAmount + processingFee + privatePayFee).toFixed(6));
+  const buyerTotal = Number((grossAmount + platformFee + processingFee + privatePayFee).toFixed(6));
   const quote = { created_at: now(), quote_id: `q_${randomUUID()}`, job_id: id, service_id: service.id, external: true, seller_agent_id: service.seller_agent_id, seller_service_id: service.service_id, seller_tool: service.tool, amount: buyerTotal, amountAtomic: Math.round(buyerTotal * 1e6), gross_amount: grossAmount, platform_fee_bps: policy.platform_fee_bps, platform_fee_amount: platformFee, processing_fee_bps: policy.processing_fee_bps, processing_fee_amount: processingFee, privatepay_fee_bps: normalizedPaymentMode === "privatepay" ? config.privatePayFeeBps : 0, privatepay_fee_amount: privatePayFee, network_fee_policy: "payer_direct", protocol_fee: platformFee, seller_net_amount: sellerNet, seller_amount: sellerNet, currency: service.asset, network: "solana-mainnet-beta", target_network: service.network, mint: config.usdcMint, treasuryOwner: config.treasury, treasuryTokenAccount: ata, recipient: config.treasury, paymentReference: `PDAOJOB:${id}`, expires_at: new Date(Date.now() + 1800000).toISOString(), payment_required: true, seller_payout: sellerPayoutConfig };
+  quote.settlement_route = normalizedPaymentMode === "privatepay" ? "privatepay-x402" : "solana-direct";
+  quote.magicblock_fee_amount = 0;
+  quote.magicblock_fee_status = "not_applicable";
   quote.commerce_pricing = commercePricingForExistingQuote({
     serviceAmountBaseUnits: String(Math.round(grossAmount * 1e6)),
     privateDaoFeeBps: quote.privatepay_fee_bps,
     privateDaoFeeFloorBaseUnits: String(Math.round(config.privatePayMinimumFeeUsd * 1e6)),
     privateDaoFeeBaseUnits: String(Math.round(privatePayFee * 1e6)),
+    platformFeeBaseUnits: String(Math.round(platformFee * 1e6)),
     processingFeeBaseUnits: String(Math.round(processingFee * 1e6)),
     totalBaseUnits: String(quote.amountAtomic),
   });
@@ -3232,6 +3240,18 @@ async function createExternalJob(serviceId, input = {}, access = null, paymentMo
     job.privatepay_pdao = privatePayment.pdao;
     job.privatepay_payment_required_header = privatePayment.header;
     job.privatepay_checkout_id = privatePayment.checkout_id;
+    if (privatePayment.status === "pending") {
+      job.privatepay_status = "pending";
+      await storage.put("Jobs", job.id, job);
+      const pending = new Error("PrivatePAY checkout is still pending");
+      pending.statusCode = 202;
+      pending.code = "PRIVATEPAY_CHECKOUT_PENDING";
+      pending.job_id = job.id;
+      pending.payment_id = privatePayment.payment_id;
+      pending.request_id = privatePayment.request_id;
+      pending.retryAfterSeconds = privatePayment.retry_after_seconds || 2;
+      throw pending;
+    }
     await storage.put("Jobs", job.id, job);
     const privateError = new Error("PrivatePAY payment required");
     privateError.statusCode = 402;
@@ -3240,7 +3260,7 @@ async function createExternalJob(serviceId, input = {}, access = null, paymentMo
     privateError.payment_required_header = privatePayment.header;
     throw privateError;
   }
-  return { job_id: id, status: "awaiting_payment", seller: { agent_id: service.seller_agent_id, name: service.provider }, payment_intent: { jobId: id, quoteId: quote.quote_id, amount: quote.amount.toFixed(6), amountBaseUnits: String(quote.amountAtomic), mint: quote.mint, network: quote.network, target_network: quote.target_network, treasuryOwner: quote.treasuryOwner, treasuryTokenAccount: quote.treasuryTokenAccount, paymentReference: quote.paymentReference, expiresAtUtc: quote.expires_at } };
+  return { job_id: id, status: "awaiting_payment", seller: { agent_id: service.seller_agent_id, name: service.provider }, payment_intent: { jobId: id, quoteId: quote.quote_id, amount: quote.amount.toFixed(6), amountBaseUnits: String(quote.amountAtomic), mint: quote.mint, network: quote.network, target_network: quote.target_network, settlement_route: quote.settlement_route, commerce_pricing: quote.commerce_pricing, treasuryOwner: quote.treasuryOwner, treasuryTokenAccount: quote.treasuryTokenAccount, paymentReference: quote.paymentReference, expiresAtUtc: quote.expires_at } };
 }
 async function completeExternalJob(job, execution, payment) {
   const storage = await store();
@@ -3257,7 +3277,9 @@ async function completeExternalJob(job, execution, payment) {
   const processingFeeBps = Number(quote?.processing_fee_bps ?? policy.processing_fee_bps ?? 0);
   const processingFee = Number(quote?.processing_fee_amount ?? ((grossAmount * processingFeeBps) / 10000).toFixed(6));
   const privatePayFee = Number(quote?.privatepay_fee_amount ?? 0);
-  const sellerNet = Number((grossAmount - platformFee).toFixed(6));
+  // Seller quotes are gross provider prices; buyer-paid fees do not reduce
+  // the provider payout.
+  const sellerNet = grossAmount;
   const privatePayment = payment?.payment_mode === "privatepay";
   const persistence = await persistEvidence(config, { job_id: job.id, service: job.service_id, input_hash: job.input_hash, completed_at: now(), result });
   const settlement = { id: `seller_settlement_${job.id}`, kind: "seller_settlement", job_id: job.id, seller_agent_id: job.seller_agent_id, gross_amount: grossAmount, buyer_amount: Number(payment?.accounting_amount ?? payment?.amount ?? quote?.amount ?? grossAmount), platform_fee_amount: platformFee, platform_fee_bps: feeBps, processing_fee_amount: processingFee, processing_fee_bps: processingFee, privatepay_fee_amount: privatePayFee, privatepay_fee_bps: Number(quote?.privatepay_fee_bps ?? 0), network_fee_lamports: Number(payment?.feeLamports || 0), network_fee_policy: privatePayment ? "private_rail_fee_payer_not_public" : "payer_direct", protocol_fee: platformFee, treasury_revenue_amount: Number((platformFee + privatePayFee).toFixed(6)), seller_net_amount: sellerNet, seller_amount: sellerNet, asset: payment?.currency || job.payment_asset, payout: (await storage.get("Registry", job.seller_agent_id))?.payout || null, status: "payable_pending_scheduled_settlement", created_at: now() };
@@ -3787,12 +3809,25 @@ async function createJob(serviceId, input, admin = false, currency = "USDC", met
         serviceId,
         payer: String(payer || "").trim(),
         amount_base_units: String(quote.amountAtomic),
+        pdao_benefits: input.pdao_benefits === true || input.pdaoBenefits === true,
       });
       job.privatepay_request_id = privatePayment.request_id;
       job.privatepay_requirements = privatePayment.requirements;
       job.privatepay_pdao = privatePayment.pdao;
       job.privatepay_payment_required_header = privatePayment.header;
       job.privatepay_checkout_id = privatePayment.checkout_id;
+      if (privatePayment.status === "pending") {
+        job.privatepay_status = "pending";
+        await storage.put("Jobs", job.id, job);
+        const pending = new Error("PrivatePAY checkout is still pending");
+        pending.statusCode = 202;
+        pending.code = "PRIVATEPAY_CHECKOUT_PENDING";
+        pending.job_id = job.id;
+        pending.payment_id = privatePayment.payment_id;
+        pending.request_id = privatePayment.request_id;
+        pending.retryAfterSeconds = privatePayment.retry_after_seconds || 2;
+        throw pending;
+      }
       await storage.put("Jobs", job.id, job);
       const privateError = new Error("PrivatePAY payment required");
       privateError.statusCode = 402;
@@ -3837,7 +3872,7 @@ async function createJob(serviceId, input, admin = false, currency = "USDC", met
   return await completeJob(job, execution.result, null, execution.telemetry);
 }
 
-async function createPrivatePayJobChallenge({ jobId, serviceId, payer, amount_base_units }) {
+async function createPrivatePayJobChallenge({ jobId, serviceId, payer, amount_base_units, pdao_benefits = false }) {
   const resource = `https://${config.domain}/api/jobs/${jobId}/privatepay`;
   const liveStatus = await privatePayReadiness();
   const localPayment = await createPrivatePayRequirements(config, {
@@ -3849,6 +3884,7 @@ async function createPrivatePayJobChallenge({ jobId, serviceId, payer, amount_ba
     // Ordinary Agent Exchange purchases must not require a PDAO holding.
     // Holder benefits remain handled separately through the access path.
     pdao_optional: true,
+    pdao_benefits,
   }, liveStatus);
   const checkout = await createPrivatePayCheckout(config, {
     payer,
@@ -3857,7 +3893,27 @@ async function createPrivatePayJobChallenge({ jobId, serviceId, payer, amount_ba
     description: `PrivateDAO Agent Exchange service ${serviceId}`,
     external_reference: `privatepay-job-${jobId}`,
   });
+  if (checkout.status === "pending") {
+    return {
+      request_id: localPayment.request_id,
+      pdao: localPayment.pdao,
+      checkout_id: checkout.payment_id,
+      payment_id: checkout.payment_id,
+      status: "pending",
+      retry_after_seconds: 2,
+    };
+  }
   const challenge = await requestPrivatePayCheckoutChallenge(config, { payment_id: checkout.payment_id });
+  if (challenge.status === "pending") {
+    return {
+      request_id: localPayment.request_id,
+      pdao: localPayment.pdao,
+      checkout_id: checkout.payment_id,
+      payment_id: checkout.payment_id,
+      status: "pending",
+      retry_after_seconds: challenge.retry_after_seconds || 2,
+    };
+  }
   const providerRequirements = decodePrivatePayRequiredHeader(challenge.payment_required_header);
   return {
     request_id: localPayment.request_id,
@@ -3898,7 +3954,7 @@ function privatePayPaymentHeader(event, body = {}) {
 
 async function submitPrivatePayPayment(jobId, event, body = {}) {
   const storage = await store();
-  const job = await storage.get("Jobs", jobId);
+  let job = await storage.get("Jobs", jobId);
   if (!job) throw Object.assign(new Error("job not found"), { statusCode: 404 });
   if (job.payment_mode !== "privatepay")
     throw Object.assign(new Error("job is not configured for privatepay"), { statusCode: 400 });
@@ -3906,10 +3962,25 @@ async function submitPrivatePayPayment(jobId, event, body = {}) {
     return completeJob(job, job.result, null);
   if (job.status === "recovery_required")
     return { job_id: jobId, status: "recovery_required", recovery_required: true, message: "private payment was accepted but execution requires non-replaying recovery", retryAfterSeconds: 30 };
+  if (job.status === "running" && job.claim_expires_at && Date.parse(job.claim_expires_at) > Date.now())
+    return { job_id: jobId, status: "pending", message: "private payment is already executing; do not submit another payment", retryAfterSeconds: 3 };
   if (job.status !== "awaiting_payment")
     throw Object.assign(new Error("job is not awaiting private payment"), { statusCode: 409 });
-  if (!job.privatepay_requirements || !job.privatepay_payment_required_header)
-    throw Object.assign(new Error("private payment requirements are unavailable"), { statusCode: 503, code: "PRIVATEPAY_REQUIREMENTS_MISSING" });
+  if (!job.privatepay_requirements || !job.privatepay_payment_required_header) {
+    if (!job.privatepay_checkout_id)
+      throw Object.assign(new Error("private payment requirements are unavailable"), { statusCode: 503, code: "PRIVATEPAY_REQUIREMENTS_MISSING" });
+    const challenge = await requestPrivatePayCheckoutChallenge(config, { payment_id: job.privatepay_checkout_id });
+    if (challenge.status === "pending")
+      return { job_id: jobId, status: "pending", payment_id: job.privatepay_checkout_id, retryAfterSeconds: challenge.retry_after_seconds || 2 };
+    const providerRequirements = decodePrivatePayRequiredHeader(challenge.payment_required_header);
+    job = {
+      ...job,
+      privatepay_status: "payment_required",
+      privatepay_requirements: providerRequirements,
+      privatepay_payment_required_header: challenge.payment_required_header,
+    };
+    await storage.put("Jobs", job.id, job);
+  }
 
   const signatureHeader = privatePayPaymentHeader(event, body);
   if (!signatureHeader) {
@@ -3922,12 +3993,12 @@ async function submitPrivatePayPayment(jobId, event, body = {}) {
   }
   const payer = String(body.payer || body.wallet || "").trim();
   const pdaoFeeSignature = body.pdao_fee_signature || event.headers?.["X-PrivatePAY-PDAO-Fee-Signature"] || event.headers?.["x-privatepay-pdao-fee-signature"];
-  const pdaoFee = config.privatePayPdaoGateEnabled === false
+  const pdaoFee = job.privatepay_pdao?.selected !== true
     ? { required: false, status: "disabled_by_configuration" }
     : await verifyPrivatePayPdaoFee(config, {
       payer,
       signature: pdaoFeeSignature,
-      pdao_fee_base_units: job.privatepay_requirements.accepts?.[0]?.extra?.pdao_fee_base_units,
+      pdao_fee_base_units: job.privatepay_pdao?.fee_base_units,
       amount_base_units: job.privatepay_requirements.accepts?.[0]?.amount,
       request_id: job.privatepay_request_id,
     });
@@ -3945,16 +4016,22 @@ async function submitPrivatePayPayment(jobId, event, body = {}) {
     const current = await storage.get("Jobs", jobId);
     if (current?.status === "completed" && current.receipt_id)
       return completeJob(current, current.result, null);
-    return { job_id: jobId, status: "recovery_required", recovery_required: true, message: "private payment claim already exists; execution requires non-replaying recovery", retryAfterSeconds: 30 };
+    if (!["settling", "settlement_pending", "settled"].includes(existingPayment.state))
+      return { job_id: jobId, status: "recovery_required", recovery_required: true, message: "private payment claim already exists; execution requires non-replaying recovery", retryAfterSeconds: 30 };
   }
-  const verification = await privatePayFacilitatorRequest(config, "verify", facilitatorPayload);
-  if (verification.isValid !== true) {
-    throw Object.assign(new Error("PrivatePAY payment was not accepted by the facilitator"), {
-      statusCode: 402,
-      code: "PRIVATEPAY_PAYMENT_INVALID",
-    });
-  }
-  const paymentClaim = {
+  let paymentClaim = existingPayment;
+  let settlement = existingPayment?.settlement || null;
+  if (!paymentClaim) {
+    const verification = await privatePayFacilitatorRequest(config, "verify", facilitatorPayload);
+    if (verification.status === "pending")
+      return { job_id: jobId, status: "pending", retryAfterSeconds: verification.retry_after_seconds || 2 };
+    if (verification.isValid !== true) {
+      throw Object.assign(new Error("PrivatePAY payment was not accepted by the facilitator"), {
+        statusCode: 402,
+        code: "PRIVATEPAY_PAYMENT_INVALID",
+      });
+    }
+    paymentClaim = {
     id: paymentId,
     job_id: jobId,
     payment_mode: "privatepay",
@@ -3964,37 +4041,81 @@ async function submitPrivatePayPayment(jobId, event, body = {}) {
     pdao_fee: pdaoFee,
     state: "settling",
     consumed_at: now(),
+    };
+    try {
+      await storage.put("Payments", paymentId, paymentClaim, true);
+    } catch (error) {
+      const claimed = await storage.get("Payments", paymentId);
+      if (!claimed) throw error;
+      if (claimed.job_id !== jobId || !["settling", "settlement_pending", "settled"].includes(claimed.state))
+        return { job_id: jobId, status: "recovery_required", recovery_required: true, message: "private payment claim already exists; execution requires non-replaying recovery", retryAfterSeconds: 30 };
+      paymentClaim = claimed;
+      settlement = claimed.settlement || null;
+    }
+  }
+  if (!settlement) {
+    const settlementClaim = {
+      claim_started_at: now(),
+      claim_expires_at: new Date(Date.now() + 15000).toISOString(),
+      claim_installation_id: `privatepay-settlement:${paymentId}:${randomUUID()}`,
+    };
+    try {
+      await storage.claim("Payments", paymentId, settlementClaim);
+      paymentClaim = await storage.get("Payments", paymentId);
+    } catch {
+      const current = await storage.get("Payments", paymentId);
+      if (current?.settlement) {
+        settlement = current.settlement;
+        paymentClaim = current;
+      } else {
+        return { job_id: jobId, status: "pending", message: "private payment settlement is already in progress; do not submit another payment", retryAfterSeconds: 2 };
+      }
+    }
+  }
+  if (!settlement) {
+    try {
+      settlement = await privatePayFacilitatorRequest(config, "settle", facilitatorPayload);
+      if (settlement.status === "pending") {
+        await storage.put("Payments", paymentId, { ...paymentClaim, state: "settlement_pending", claim_expires_at: new Date(0).toISOString(), retry_after_seconds: settlement.retry_after_seconds || 2, updated_at: now() });
+        return { job_id: jobId, status: "pending", retryAfterSeconds: settlement.retry_after_seconds || 2 };
+      }
+      if (settlement.success !== true)
+        throw new Error("PrivatePAY settlement was not confirmed by the facilitator");
+      const onchainVerification = await verifyPrivatePayMainnetSettlement(config, {
+        requestId: job.privatepay_request_id,
+        amountBaseUnits: job.privatepay_requirements.accepts[0].amount,
+        settlement,
+      });
+      settlement = { ...settlement, onchain_verification: onchainVerification };
+      await storage.put("Payments", paymentId, { ...paymentClaim, state: "settled", settlement, updated_at: now() });
+    } catch (error) {
+      await storage.put("Payments", paymentId, { ...paymentClaim, state: "settlement_failed", settlement_error: String(error.message || error).slice(0, 240), updated_at: now() });
+      throw Object.assign(new Error("PrivatePAY settlement was not confirmed by the facilitator"), { statusCode: 503, code: "PRIVATEPAY_SETTLEMENT_UNCONFIRMED" });
+    }
+  }
+  const executionClaim = {
+    claim_started_at: now(),
+    claim_expires_at: new Date(Date.now() + 300000).toISOString(),
+    claim_installation_id: `privatepay-execution:${paymentId}:${randomUUID()}`,
   };
+  let claimedJob;
   try {
-    await storage.put("Payments", paymentId, paymentClaim, true);
-  } catch (error) {
-    const claimed = await storage.get("Payments", paymentId);
-    if (claimed) return { job_id: jobId, status: "recovery_required", recovery_required: true, message: "private payment claim already exists; execution requires non-replaying recovery", retryAfterSeconds: 30 };
-    throw error;
+    claimedJob = await storage.claim("Jobs", job.id, executionClaim);
+  } catch {
+    const current = await storage.get("Jobs", job.id);
+    if (current?.status === "completed" && current.receipt_id)
+      return completeJob(current, current.result, null);
+    return { job_id: jobId, status: "pending", message: "private payment execution is already in progress; do not submit another payment", retryAfterSeconds: 3 };
   }
-  let settlement;
-  try {
-    settlement = await privatePayFacilitatorRequest(config, "settle", facilitatorPayload);
-    if (settlement.success !== true)
-      throw new Error("PrivatePAY settlement was not confirmed by the facilitator");
-    const onchainVerification = await verifyPrivatePayMainnetSettlement(config, {
-      requestId: job.privatepay_request_id,
-      amountBaseUnits: job.privatepay_requirements.accepts[0].amount,
-      settlement,
-    });
-    settlement = { ...settlement, onchain_verification: onchainVerification };
-    await storage.put("Payments", paymentId, { ...paymentClaim, state: "settled", settlement });
-  } catch (error) {
-    await storage.put("Payments", paymentId, { ...paymentClaim, state: "settlement_failed", settlement_error: String(error.message || error).slice(0, 240) });
-    throw Object.assign(new Error("PrivatePAY settlement was not confirmed by the facilitator"), { statusCode: 503, code: "PRIVATEPAY_SETTLEMENT_UNCONFIRMED" });
-  }
-  job.execution_started_at = now();
-  const executionJob = { ...job, privatepay_settlement: settlement, privatepay_pdao_fee: pdaoFee };
+  const executionJob = { ...job, ...claimedJob, privatepay_settlement: settlement, privatepay_pdao_fee: pdaoFee };
+  executionJob.status = "running";
+  executionJob.execution_started_at = now();
+  executionJob.privatepay_execution_claim = executionClaim.claim_installation_id;
   await storage.put("Jobs", job.id, executionJob);
-  const executionInput = executionJob.execution_input || body.input || {};
-  if (digest(executionInput) !== executionJob.input_hash)
-    throw Object.assign(new Error("quoted job input is unavailable or changed"), { statusCode: 400 });
   try {
+    const executionInput = executionJob.execution_input || body.input || {};
+    if (digest(executionInput) !== executionJob.input_hash)
+      throw Object.assign(new Error("quoted job input is unavailable or changed"), { statusCode: 400 });
     if (job.kind === "external") {
       const agent = await storage.get("Registry", job.seller_agent_id);
       if (!activeRegistryAgent(agent)) throw new Error("seller is no longer active");
@@ -4841,7 +4962,7 @@ async function sellerDashboard(agentId, ownerToken) {
   const sellerQuotes = quotes.filter((item) => item.seller_agent_id === agentId || item.listing_id === `seller_listing_${agentId}` || item.seller_agent_id === agentId);
   const sellerReceipts = receipts.filter((item) => item.seller_agent_id === agentId).map((item) => ({ receipt_id: item.receipt_id, job_id: item.job_id || null, service: item.service || null, gross_amount: item.gross_amount ?? item.amount ?? 0, platform_fee_amount: item.platform_fee_amount ?? 0, processing_fee_amount: item.processing_fee_amount ?? 0, network_fee_lamports: item.network_fee_lamports ?? 0, seller_net_amount: item.seller_net_amount ?? 0, asset: item.asset || null, status: item.status, verification_url: item.verification_url || null, completed_at: item.completed_at || null }));
   const sellerSettlements = settlements.filter((item) => item.kind === "seller_settlement" && item.seller_agent_id === agentId).map((item) => ({ id: item.id, job_id: item.job_id || null, gross_amount: item.gross_amount ?? 0, buyer_amount: item.buyer_amount ?? item.gross_amount ?? 0, platform_fee_amount: item.platform_fee_amount ?? 0, processing_fee_amount: item.processing_fee_amount ?? 0, network_fee_lamports: item.network_fee_lamports ?? 0, seller_net_amount: item.seller_net_amount ?? 0, asset: item.asset || null, payout: item.payout || null, payout_signature: item.payout_signature || null, status: item.status, created_at: item.created_at || null, settled_at: item.settled_at || null }));
-  const sellerRevenue = revenue.filter((item) => item.seller_agent_id === agentId || item.jobId && item.seller_agent_id === agentId).map((item) => ({ id: item.id, gross_amount: item.grossAmount ?? 0, buyer_amount: item.buyerAmount ?? item.grossAmount ?? 0, platform_fee_amount: item.platformFeeAmount ?? item.protocolFee ?? 0, processing_fee_amount: item.processingFeeAmount ?? 0, network_fee_lamports: item.networkFeeLamports ?? 0, seller_net_amount: Number((Number(item.grossAmount || 0) - Number(item.platformFeeAmount ?? item.protocolFee ?? 0)).toFixed(6)), asset: item.asset || null, timestamp: item.timestamp || null }));
+  const sellerRevenue = revenue.filter((item) => item.seller_agent_id === agentId || item.jobId && item.seller_agent_id === agentId).map((item) => ({ id: item.id, gross_amount: item.grossAmount ?? 0, buyer_amount: item.buyerAmount ?? item.grossAmount ?? 0, platform_fee_amount: item.platformFeeAmount ?? item.protocolFee ?? 0, processing_fee_amount: item.processingFeeAmount ?? 0, network_fee_lamports: item.networkFeeLamports ?? 0, seller_net_amount: Number(item.providerAmount ?? item.grossAmount ?? 0), asset: item.asset || null, timestamp: item.timestamp || null }));
   const accountingSales = sellerSettlements;
   return { agent: publicRegistryAgent(agent), readiness, listing: listing ? { id: listing.id, status: listing.status, payment_status: listing.payment_status, listing_fee_status: listing.listing_fee_status, commercial_publication_status: listing.commercial_publication_status, service_ids: listing.service_ids || [], receipt_id: listing.receipt_id || null } : null, quote_count: sellerQuotes.length, sales: { receipt_count: sellerReceipts.length, settlement_count: accountingSales.length, gross_amount: accountingSales.reduce((n, item) => n + Number(item.gross_amount || 0), 0), platform_fee_amount: accountingSales.reduce((n, item) => n + Number(item.platform_fee_amount || 0), 0), processing_fee_amount: accountingSales.reduce((n, item) => n + Number(item.processing_fee_amount || 0), 0), network_fee_lamports: accountingSales.reduce((n, item) => n + Number(item.network_fee_lamports || 0), 0), seller_net_amount: accountingSales.reduce((n, item) => n + Number(item.seller_net_amount || 0), 0), receipts: sellerReceipts }, settlements: sellerSettlements, revenue: sellerRevenue };
 }
@@ -5468,7 +5589,7 @@ async function handle(e) {
     const item = await (await store()).get("Jobs", paymentIntent[1]);
     if (item?.payment_mode === "privatepay") {
       if (!item.privatepay_requirements || !item.privatepay_payment_required_header)
-        return json({ error: "privatepay_not_ready" }, 503);
+        return json({ jobId: item.id, status: item.privatepay_status || "pending", paymentMode: "privatepay", paymentId: item.privatepay_checkout_id || null, retryAfterSeconds: 2 }, 202);
       return json({
         jobId: item.id,
         status: item.status,
@@ -5540,23 +5661,104 @@ async function handle(e) {
         session_signature: x402Input.autopilot_session_signature,
       })
       : null;
+    const checkoutStore = await store();
+    const checkoutBinding = {
+      kind: "privatepay_checkout",
+      payer: String(x402Input.payer || "").trim(),
+      resource: String(x402Input.resource || "").trim(),
+      provider_id: String(x402Input.provider_id || "").trim(),
+      amount_base_units: String(x402Input.amount_base_units || ""),
+      request_id: requirements.request_id,
+      pdao_selected: requirements.pdao.selected === true,
+      pdao_fee_base_units: requirements.pdao.selected === true ? String(requirements.pdao.fee_base_units || "") : null,
+    };
+    const bindingMatches = (record) => record
+      && record.payer === checkoutBinding.payer
+      && record.resource === checkoutBinding.resource
+      && record.provider_id === checkoutBinding.provider_id
+      && record.amount_base_units === checkoutBinding.amount_base_units
+      && record.request_id === checkoutBinding.request_id
+      && record.pdao_selected === checkoutBinding.pdao_selected
+      && record.pdao_fee_base_units === checkoutBinding.pdao_fee_base_units;
+    const requestKey = `privatepay_checkout_request_${digest({ payer: checkoutBinding.payer, request_id: checkoutBinding.request_id }).slice(0, 32)}`;
+    const checkoutExpired = (record) => {
+      const expiry = record?.checkout_expires_at || record?.expires_at;
+      return Boolean(expiry && Date.parse(expiry) <= Date.now());
+    };
+    const checkoutTerminal = (record) => ["paid", "settled", "expired", "failed", "settlement_failed"].includes(record?.state);
+    const reusableCheckout = (record) => Boolean(record?.payment_id && !checkoutTerminal(record) && !checkoutExpired(record));
     const paymentSignature = e.headers?.["PAYMENT-SIGNATURE"] || e.headers?.["payment-signature"];
     if (!paymentSignature) {
-      // A provider reuses an externalReference forever. The default must be
-      // fresh so a previously expired checkout cannot poison a new challenge.
-      // Callers that need idempotency can still supply an explicit reference.
+      const suppliedPaymentId = String(x402Input.payment_id || x402Input.paymentId || "").trim();
+      const paymentKey = suppliedPaymentId ? `privatepay_checkout_${suppliedPaymentId}` : null;
+      const suppliedRecord = paymentKey ? await checkoutStore.get("Payments", paymentKey) : null;
+      const requestRecord = await checkoutStore.get("Payments", requestKey);
+      if (suppliedPaymentId && !bindingMatches(suppliedRecord))
+        throw Object.assign(new Error("payment_id is not bound to this payer, resource, provider, and amount"), { statusCode: 409, code: "PRIVATEPAY_CHECKOUT_BINDING_MISMATCH" });
+      if (suppliedPaymentId && suppliedRecord?.state === "paid")
+        throw Object.assign(new Error("this PrivatePAY checkout was already paid"), { statusCode: 409, code: "PRIVATEPAY_CHECKOUT_ALREADY_PAID" });
+      if (suppliedPaymentId && suppliedRecord && !reusableCheckout(suppliedRecord))
+        throw Object.assign(new Error("this PrivatePAY checkout has expired; generate a fresh checkout"), { statusCode: 409, code: "PRIVATEPAY_CHECKOUT_EXPIRED" });
+      if (requestRecord && !bindingMatches(requestRecord))
+        throw Object.assign(new Error("existing PrivatePAY checkout binding does not match this request"), { statusCode: 409, code: "PRIVATEPAY_CHECKOUT_BINDING_MISMATCH" });
+      if (requestRecord?.state === "paid")
+        throw Object.assign(new Error("this PrivatePAY checkout was already paid"), { statusCode: 409, code: "PRIVATEPAY_CHECKOUT_ALREADY_PAID" });
+      // A pending response carries the provider payment id. Reusing it must
+      // resume the same checkout instead of creating a second charge.
+      const existingPaymentId = suppliedPaymentId || (reusableCheckout(requestRecord) ? requestRecord.payment_id : "");
       const externalReference = String(x402Input.external_reference || x402Input.externalReference || "").trim()
-        || `privatepay-x402-${requirements.request_id.slice(3)}-${randomUUID().replaceAll("-", "")}`;
-      const checkout = await createPrivatePayCheckout(config, {
-        payer: x402Input.payer,
-        resource: x402Input.resource,
-        amount_base_units: x402Input.amount_base_units,
-        description: x402Input.description || "PrivateDAO Agent Exchange service payment",
-        external_reference: externalReference,
-        expires_in_seconds: x402Input.expires_in_seconds,
-      });
+        || `privatepay-x402-${digest({ payer: checkoutBinding.payer, request_id: requirements.request_id }).slice(0, 32)}`;
+      let checkout;
+      let storedBinding;
+      if (existingPaymentId) {
+        checkout = { payment_id: existingPaymentId, status: "resuming", expires_at: requestRecord?.checkout_expires_at || null };
+      } else {
+        const claimExpiresAt = new Date(Date.now() + 15000).toISOString();
+        try {
+          storedBinding = await checkoutStore.claim("Payments", requestKey, {
+            ...checkoutBinding,
+            state: "creating",
+            claim_started_at: now(),
+            claim_expires_at: claimExpiresAt,
+            claim_installation_id: `privatepay-checkout:${requestKey}:${randomUUID()}`,
+          });
+        } catch {
+          const current = await checkoutStore.get("Payments", requestKey);
+          const currentClaimActive = current?.claim_expires_at && Date.parse(current.claim_expires_at) > Date.now();
+          if (currentClaimActive && current?.payment_id && reusableCheckout(current))
+            return json({ error: "payment_pending", payment_id: current.payment_id, status: "pending", retry_after_seconds: 2 }, 202, { "retry-after": "2" });
+          return json({ error: "payment_pending", status: "pending", retry_after_seconds: 2 }, 202, { "retry-after": "2" });
+        }
+        if (storedBinding?.state === "paid")
+          throw Object.assign(new Error("this PrivatePAY checkout was already paid"), { statusCode: 409, code: "PRIVATEPAY_CHECKOUT_ALREADY_PAID" });
+        checkout = await createPrivatePayCheckout(config, {
+          payer: x402Input.payer,
+          resource: x402Input.resource,
+          amount_base_units: x402Input.amount_base_units,
+          description: x402Input.description || "PrivateDAO Agent Exchange service payment",
+          external_reference: externalReference,
+          expires_in_seconds: x402Input.expires_in_seconds,
+        });
+      }
+      const localExpiry = checkout.expires_at || new Date(Date.now() + Math.min(86400, Math.max(60, Number(x402Input.expires_in_seconds || 3600))) * 1000).toISOString();
+      const nextBinding = { ...checkoutBinding, payment_id: checkout.payment_id, external_reference: externalReference, checkout_expires_at: localExpiry, state: "checkout_created", updated_at: now() };
+      await checkoutStore.put("Payments", `privatepay_checkout_${checkout.payment_id}`, nextBinding);
+      await checkoutStore.put("Payments", requestKey, nextBinding);
+      if (checkout.status === "pending")
+        return json({ error: "payment_pending", payment_id: checkout.payment_id, status: "pending", retry_after_seconds: 2 }, 202, { "retry-after": "2" });
       const challenge = await requestPrivatePayCheckoutChallenge(config, { payment_id: checkout.payment_id });
+      if (challenge.status === "pending")
+        return json({ error: "payment_pending", payment_id: checkout.payment_id, status: "pending", retry_after_seconds: challenge.retry_after_seconds || 2 }, 202, { "retry-after": String(challenge.retry_after_seconds || 2) });
       const providerRequirements = decodePrivatePayRequiredHeader(challenge.payment_required_header);
+      const providerAccepts = providerRequirements.accepts[0];
+      const localAccepts = requirements.requirements.accepts[0];
+      if (providerAccepts?.extra?.paymentId !== checkout.payment_id
+        || providerAccepts?.amount !== localAccepts.amount
+        || providerAccepts?.asset !== localAccepts.asset
+        || providerAccepts?.network !== localAccepts.network)
+        throw Object.assign(new Error("MagicBlock returned a challenge for a different checkout"), { statusCode: 502, code: "PRIVATEPAY_CHECKOUT_BINDING_MISMATCH" });
+      await checkoutStore.put("Payments", requestKey, { ...nextBinding, state: "payment_required", updated_at: now() });
+      await checkoutStore.put("Payments", `privatepay_checkout_${checkout.payment_id}`, { ...nextBinding, state: "payment_required", updated_at: now() });
       return json({
         error: "payment_required",
         x402: providerRequirements,
@@ -5567,14 +5769,24 @@ async function handle(e) {
       }, 402, { "PAYMENT-REQUIRED": challenge.payment_required_header });
     }
     const pdaoFeeSignature = x402Input.pdao_fee_signature || e.headers?.["X-PrivatePAY-PDAO-Fee-Signature"] || e.headers?.["x-privatepay-pdao-fee-signature"];
-    const pdaoFee = requirements.pdao.required
+    const pdaoFee = requirements.pdao.selected === true
       ? await verifyPrivatePayPdaoFee(config, { payer: x402Input.payer, signature: pdaoFeeSignature, pdao_fee_base_units: requirements.pdao.fee_base_units, amount_base_units: x402Input.amount_base_units, request_id: requirements.request_id })
       : { required: false, status: "not_required" };
     const paymentPayload = decodePrivatePaySignature(paymentSignature);
+    const signedPaymentId = String(paymentPayload.accepted?.extra?.paymentId || "").trim();
+    const signedPaymentRecord = signedPaymentId ? await checkoutStore.get("Payments", `privatepay_checkout_${signedPaymentId}`) : null;
+    if (signedPaymentRecord && !bindingMatches(signedPaymentRecord))
+      throw Object.assign(new Error("payment signature is not bound to this payer, resource, provider, and amount"), { statusCode: 409, code: "PRIVATEPAY_CHECKOUT_BINDING_MISMATCH" });
+    if (signedPaymentRecord?.state === "paid")
+      return json({ status: "paid", request_id: requirements.request_id, payment_response: signedPaymentRecord.payment_response, pdao_fee: pdaoFee, provider_visibility: "authenticated_provider_only" }, 200, { "PAYMENT-RESPONSE": encodePaymentResponseHeader(signedPaymentRecord.payment_response) });
     const verification = await privatePayMagicBlockFacilitatorRequest(config, "verify", paymentPayload);
+    if (verification.status === "pending")
+      return json({ error: "privatepay_verification_pending", request_id: requirements.request_id, payment_id: verification.payment_id, status: "pending", retry_after_seconds: verification.retry_after_seconds || 2 }, 202, { "retry-after": String(verification.retry_after_seconds || 2) });
     if (verification.isValid !== true)
       return json({ error: "privatepay_payment_invalid", request_id: requirements.request_id, status: "rejected" }, 402);
     const settlement = await privatePayMagicBlockFacilitatorRequest(config, "settle", paymentPayload);
+    if (settlement.status === "pending")
+      return json({ error: "privatepay_settlement_pending", request_id: requirements.request_id, payment_id: settlement.payment_id, status: "pending", retry_after_seconds: settlement.retry_after_seconds || 2 }, 202, { "retry-after": String(settlement.retry_after_seconds || 2) });
     if (settlement.success !== true)
       return json({ error: "privatepay_settlement_unconfirmed", request_id: requirements.request_id, status: "pending" }, 503);
     const onchainVerification = await verifyPrivatePayMainnetSettlement(config, {
@@ -5593,6 +5805,9 @@ async function handle(e) {
       network: requirements.requirements.accepts[0].network,
       extensions: { privacy_boundary: "provider_audit_only", request_id: requirements.request_id, onchain_verification: onchainVerification.status, pdao_fee: pdaoFee, ...(autopilot ? { autopilot_operation_id: x402Input.autopilot_operation_id } : {}) },
     };
+    const paidBinding = { ...checkoutBinding, payment_id: signedPaymentId || null, state: "paid", paid_at: now(), payment_response: paymentResponse, settlement_transaction: settlement.transaction || null, updated_at: now() };
+    await checkoutStore.put("Payments", requestKey, paidBinding);
+    if (signedPaymentId) await checkoutStore.put("Payments", `privatepay_checkout_${signedPaymentId}`, paidBinding);
     return json({ status: "paid", request_id: requirements.request_id, payment_response: paymentResponse, pdao_fee: pdaoFee, provider_visibility: "authenticated_provider_only" }, 200, { "PAYMENT-RESPONSE": encodePaymentResponseHeader(paymentResponse) });
   }
   if (method === "POST" && path === "/api/privatepay/x402/requirements")

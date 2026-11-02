@@ -79,6 +79,7 @@ test("PrivatePAY wallet balance lookup is read-only and rejects invalid wallets"
 test("PrivatePAY job lifecycle verifies, settles, executes once, and redacts public payment data", async () => {
   const originalFetch = globalThis.fetch;
   const calls = [];
+  let settleAttempts = 0;
   let checkoutRequest;
   globalThis.fetch = async (url, init = {}) => {
     const target = String(url);
@@ -104,6 +105,9 @@ test("PrivatePAY job lifecycle verifies, settles, executes once, and redacts pub
     }
     if (target.endsWith("/settle")) {
       calls.push("settle");
+      settleAttempts += 1;
+      if (settleAttempts === 1)
+        return new Response(JSON.stringify({ status: "pending", paymentId: "b".repeat(64) }), { status: 202, headers: { "content-type": "application/json", "retry-after": "1" } });
       return new Response(JSON.stringify({ success: true, transaction: "private-settlement-fixture" }), { status: 200, headers: { "content-type": "application/json" } });
     }
     const payload = JSON.parse(init.body || "{}");
@@ -147,6 +151,9 @@ test("PrivatePAY job lifecycle verifies, settles, executes once, and redacts pub
         transaction: "AQID",
       },
     });
+    const pending = await request(`/api/jobs/${jobId}/privatepay`, "POST", undefined, { "PAYMENT-SIGNATURE": paymentSignature });
+    assert.equal(pending.statusCode, 202);
+    assert.equal(JSON.parse(pending.body).status, "pending");
     const completed = await request(`/api/jobs/${jobId}/privatepay`, "POST", undefined, { "PAYMENT-SIGNATURE": paymentSignature });
     assert.equal(completed.statusCode, 200);
     const result = JSON.parse(completed.body);
@@ -156,7 +163,7 @@ test("PrivatePAY job lifecycle verifies, settles, executes once, and redacts pub
     assert.equal(result.receipt.amount, 0);
     assert.equal(result.receipt.gross_amount, 0);
     assert.equal(result.receipt.payment_signature, null);
-    assert.deepEqual(calls, ["verify", "settle"]);
+    assert.deepEqual(calls, ["verify", "settle", "settle"]);
 
     const publicJob = await request(`/api/jobs/${jobId}`);
     assert.equal(publicJob.statusCode, 200);
@@ -203,7 +210,64 @@ test("PrivatePAY job lifecycle verifies, settles, executes once, and redacts pub
     const replay = await request(`/api/jobs/${jobId}/privatepay`, "POST", undefined, { "PAYMENT-SIGNATURE": paymentSignature });
     assert.equal(replay.statusCode, 200);
     assert.equal(JSON.parse(replay.body).receipt.receipt_id, result.receipt.receipt_id);
-    assert.deepEqual(calls, ["verify", "settle"]);
+    assert.deepEqual(calls, ["verify", "settle", "settle"]);
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
+
+test("PrivatePAY jobs persist a pending checkout and fetch its challenge on retry", async () => {
+  const originalFetch = globalThis.fetch;
+  let checkoutCreates = 0;
+  let challengeRequests = 0;
+  const checkoutPayment = "d".repeat(64);
+  globalThis.fetch = async (url, init = {}) => {
+    const target = String(url);
+    const payload = JSON.parse(init.body || "{}");
+    if (payload.method === "getAccountInfo")
+      return new Response(JSON.stringify({ jsonrpc: "2.0", id: 1, result: { value: null } }), { status: 200, headers: { "content-type": "application/json" } });
+    if (target.endsWith("/v1/payments")) {
+      checkoutCreates += 1;
+      return new Response(JSON.stringify({ id: checkoutPayment, status: "pending" }), { status: 202, headers: { "content-type": "application/json" } });
+    }
+    if (target.endsWith(`/v1/x402/payments/${checkoutPayment}/pay`)) {
+      challengeRequests += 1;
+      const accepted = {
+        scheme: "exact-magicblock",
+        network: "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+        asset: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+        amount: "550000",
+        payTo: "2BJ4ezxqV9YJXc38D9duKBkdn4su4jE1beKUHwH663sL",
+        maxTimeoutSeconds: 60,
+        extra: { paymentId: checkoutPayment, cluster: "mainnet-private", settlement: "ephemeral-rollup", transaction: "AQID" },
+      };
+      return new Response(JSON.stringify({}), { status: 402, headers: { "content-type": "application/json", "PAYMENT-REQUIRED": encodePaymentRequiredHeader({ x402Version: 2, resource: { url: "api://job-pending" }, accepts: [accepted] }) } });
+    }
+    throw new Error(`unexpected fixture request: ${target}`);
+  };
+  try {
+    resetForTests();
+    const created = await request("/api/jobs", "POST", {
+      service_id: "verify.deep",
+      payment_mode: "privatepay",
+      input: { record: { lifecycle: "pending-checkout" } },
+      payer: "BkNcuvQZr6392aZCwcGnB6SQptV6vhWa7syJs5fgLz6",
+    });
+    assert.equal(created.statusCode, 202);
+    const pending = JSON.parse(created.body);
+    assert.equal(pending.code, "PRIVATEPAY_CHECKOUT_PENDING");
+    assert.equal(pending.payment_id, checkoutPayment);
+    assert.equal(checkoutCreates, 1);
+    const jobId = pending.job_id;
+    const intent = await request(`/api/jobs/${jobId}/payment-intent`);
+    assert.equal(intent.statusCode, 202);
+    assert.equal(JSON.parse(intent.body).paymentId, checkoutPayment);
+    const challenge = await request(`/api/jobs/${jobId}/privatepay`, "POST");
+    assert.equal(challenge.statusCode, 402);
+    assert.equal(JSON.parse(challenge.body).payment_required.accepts[0].extra.paymentId, checkoutPayment);
+    assert.equal(challengeRequests, 1);
+    const retryIntent = await request(`/api/jobs/${jobId}/payment-intent`);
+    assert.equal(retryIntent.statusCode, 200);
   } finally {
     globalThis.fetch = originalFetch;
   }
@@ -249,7 +313,7 @@ test("generic PrivatePAY x402 endpoint performs verify and settle with a redacte
     const input = { payer: "BkNcuvQZr6392aZCwcGnB6SQptV6vhWa7syJs5fgLz6", resource: "https://agents.example/api/generic", provider_id: "provider-1", amount_base_units: "1000" };
     const unpaid = await request("/api/privatepay/x402", "POST", input);
     assert.equal(unpaid.statusCode, 402);
-    assert.match(checkoutRequest.externalReference, /^privatepay-x402-[a-f0-9]{32}-[a-f0-9]{32}$/);
+    assert.match(checkoutRequest.externalReference, /^privatepay-x402-[a-f0-9]{32}$/);
     const challenge = JSON.parse(unpaid.body);
     const paymentRequired = JSON.parse(Buffer.from(unpaid.headers["PAYMENT-REQUIRED"], "base64url").toString("utf8"));
     const signature = encodePaymentSignatureHeader({
@@ -270,6 +334,100 @@ test("generic PrivatePAY x402 endpoint performs verify and settle with a redacte
     assert.deepEqual(calls, ["verify", "settle"]);
     assert.equal(Object.hasOwn(facilitatorPayloads[0].paymentRequirements, "accepts"), false);
     assert.equal(facilitatorPayloads[0].paymentRequirements.amount, "1000");
+    const unpaidReplay = await request("/api/privatepay/x402", "POST", input);
+    assert.equal(unpaidReplay.statusCode, 409);
+    assert.equal(JSON.parse(unpaidReplay.body).code, "PRIVATEPAY_CHECKOUT_ALREADY_PAID");
+    assert.deepEqual(calls, ["verify", "settle"]);
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
+
+test("generic PrivatePAY x402 resumes a pending checkout by payment id", async () => {
+  const originalFetch = globalThis.fetch;
+  let checkoutCreates = 0;
+  let checkoutPayment;
+  globalThis.fetch = async (url, init = {}) => {
+    const target = String(url);
+    if (target.endsWith("/v1/payments")) {
+      checkoutCreates += 1;
+      checkoutPayment = "c".repeat(64);
+      return new Response(JSON.stringify({ id: checkoutPayment, status: "pending" }), { status: 202, headers: { "content-type": "application/json", "retry-after": "1" } });
+    }
+    if (target.endsWith(`/v1/x402/payments/${checkoutPayment}/pay`)) {
+      const accepted = {
+        scheme: "exact-magicblock",
+        network: "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+        asset: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+        amount: "1000",
+        payTo: "2BJ4ezxqV9YJXc38D9duKBkdn4su4jE1beKUHwH663sL",
+        maxTimeoutSeconds: 60,
+        extra: { paymentId: checkoutPayment, cluster: "mainnet-private", settlement: "ephemeral-rollup", transaction: "AQID" },
+      };
+      return new Response(JSON.stringify({}), { status: 402, headers: { "content-type": "application/json", "PAYMENT-REQUIRED": encodePaymentRequiredHeader({ x402Version: 2, resource: { url: "api://resume" }, accepts: [accepted] }) } });
+    }
+    throw new Error(`unexpected fixture request: ${target}`);
+  };
+  try {
+    resetForTests();
+    const input = { payer: "BkNcuvQZr6392aZCwcGnB6SQptV6vhWa7syJs5fgLz6", resource: "https://agents.example/api/resume", provider_id: "provider-1", amount_base_units: "1000" };
+    const first = await request("/api/privatepay/x402", "POST", input);
+    assert.equal(first.statusCode, 202);
+    const firstBody = JSON.parse(first.body);
+    assert.equal(firstBody.payment_id, checkoutPayment);
+    const resumed = await request("/api/privatepay/x402", "POST", { ...input, payment_id: checkoutPayment });
+    assert.equal(resumed.statusCode, 402);
+    assert.equal(JSON.parse(resumed.body).payment_id, checkoutPayment);
+    const resumedWithoutId = await request("/api/privatepay/x402", "POST", input);
+    assert.equal(resumedWithoutId.statusCode, 402);
+    assert.equal(JSON.parse(resumedWithoutId.body).payment_id, checkoutPayment);
+    const foreign = await request("/api/privatepay/x402", "POST", { ...input, payment_id: "e".repeat(64) });
+    assert.equal(foreign.statusCode, 409);
+    assert.equal(checkoutCreates, 1);
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
+
+test("generic PrivatePAY x402 isolates checkout bindings per payer", async () => {
+  const originalFetch = globalThis.fetch;
+  let checkoutCreates = 0;
+  globalThis.fetch = async (url, init = {}) => {
+    const target = String(url);
+    const payload = JSON.parse(init.body || "{}");
+    if (target.endsWith("/v1/payments")) {
+      checkoutCreates += 1;
+      const paymentId = ["f", "e"][checkoutCreates - 1].repeat(64);
+      return new Response(JSON.stringify({ id: paymentId, status: "created" }), { status: 200, headers: { "content-type": "application/json" } });
+    }
+    if (target.includes("/v1/x402/payments/") && target.endsWith("/pay")) {
+      const paymentId = target.split("/v1/x402/payments/")[1].split("/")[0];
+      const accepted = {
+        scheme: "exact-magicblock",
+        network: "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+        asset: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+        amount: "1000",
+        payTo: "2BJ4ezxqV9YJXc38D9duKBkdn4su4jE1beKUHwH663sL",
+        maxTimeoutSeconds: 60,
+        extra: { paymentId, cluster: "mainnet-private", settlement: "ephemeral-rollup", transaction: "AQID" },
+      };
+      return new Response(JSON.stringify({}), { status: 402, headers: { "content-type": "application/json", "PAYMENT-REQUIRED": encodePaymentRequiredHeader({ x402Version: 2, resource: { url: "api://per-payer" }, accepts: [accepted] }) } });
+    }
+    throw new Error(`unexpected fixture request: ${target}`);
+  };
+  try {
+    resetForTests();
+    const firstInput = { payer: "BkNcuvQZr6392aZCwcGnB6SQptV6vhWa7syJs5fgLz6", resource: "https://agents.example/api/per-payer", provider_id: "provider-1", amount_base_units: "1000" };
+    const secondInput = { ...firstInput, payer: "H2qTahnGPy83GZ3H29eHk5sG6bGZLPRATUPvVKfCrqsi" };
+    const first = await request("/api/privatepay/x402", "POST", firstInput);
+    const second = await request("/api/privatepay/x402", "POST", secondInput);
+    assert.equal(first.statusCode, 402);
+    assert.equal(second.statusCode, 402);
+    assert.notEqual(JSON.parse(first.body).payment_id, JSON.parse(second.body).payment_id);
+    assert.equal(checkoutCreates, 2);
+    const firstRetry = await request("/api/privatepay/x402", "POST", firstInput);
+    assert.equal(firstRetry.statusCode, 402);
+    assert.equal(checkoutCreates, 2);
   } finally {
     globalThis.fetch = originalFetch;
   }

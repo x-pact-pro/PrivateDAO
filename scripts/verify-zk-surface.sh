@@ -75,14 +75,18 @@ if search_placeholders "$placeholder_pattern" \
   exit 1
 fi
 
-echo "[verify-zk-surface] rebuilding zk registry"
-npm run build:zk-registry >/dev/null
+if [[ "${CI:-}" == "true" ]]; then
+  echo "[verify-zk-surface] CI detected; validating committed ZK artifacts"
+else
+  echo "[verify-zk-surface] rebuilding zk registry"
+  npm run build:zk-registry >/dev/null
 
-echo "[verify-zk-surface] rebuilding zk transcript"
-npm run build:zk-transcript >/dev/null
+  echo "[verify-zk-surface] rebuilding zk transcript"
+  npm run build:zk-transcript >/dev/null
 
-echo "[verify-zk-surface] rebuilding zk attestation"
-npm run build:zk-attestation >/dev/null
+  echo "[verify-zk-surface] rebuilding zk attestation"
+  npm run build:zk-attestation >/dev/null
+fi
 
 echo "[verify-zk-surface] verifying sample proof"
 npm run zk:verify:sample >/dev/null

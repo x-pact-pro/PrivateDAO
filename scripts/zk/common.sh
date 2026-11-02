@@ -13,3 +13,11 @@ zk_circuits() {
     "private_dao_blind_underwriting" \
     "private_dao_auction_outcome"
 }
+
+zk_sample_circuits() {
+  printf '%s\n' \
+    "private_dao_vote_overlay" \
+    "private_dao_delegation_overlay" \
+    "private_dao_tally_overlay" \
+    "private_dao_blind_policy_overlay"
+}

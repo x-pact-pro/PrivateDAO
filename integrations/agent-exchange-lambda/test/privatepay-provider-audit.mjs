@@ -158,7 +158,7 @@ test("external PrivatePAY lifecycle keeps public receipts redacted and provider 
     assert.equal(sales.settlement_count, 1);
     assert.equal(sales.gross_amount, 0.03);
     assert.equal(sales.platform_fee_amount, 0.003);
-    assert.equal(sales.seller_net_amount, 0.027);
+    assert.equal(sales.seller_net_amount, 0.03);
     assert.doesNotMatch(completed.body, /0\.03|0\.003|0\.027/);
     const unauthorized = await request(`/api/seller/dashboard/${seller.id}/privatepay-audit`);
     assert.equal(unauthorized.statusCode, 403);

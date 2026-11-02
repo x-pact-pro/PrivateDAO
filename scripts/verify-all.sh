@@ -78,11 +78,18 @@ npm run verify:test-wallet-live-proof:v3 >/dev/null
 echo "[verify-all] checking strategy surface"
 npm run verify:strategy-surface >/dev/null
 
-echo "[verify-all] rebuilding zk registry / transcript / attestation"
-run_parallel_group \
-  "zk registry" "npm run build:zk-registry >/dev/null" \
-  "zk transcript" "npm run build:zk-transcript >/dev/null" \
-  "zk attestation" "npm run build:zk-attestation >/dev/null"
+echo "[verify-all] validating zk registry / transcript / attestation"
+if [[ "${CI:-}" == "true" ]]; then
+  echo "[verify-all] CI detected; using committed ZK reviewer artifacts to avoid empty or RPC-dependent regeneration"
+  npm run verify:zk-surface >/dev/null
+  npm run verify:zk-docs >/dev/null
+  npm run verify:zk-attestation >/dev/null
+else
+  run_parallel_group \
+    "zk registry" "npm run build:zk-registry >/dev/null" \
+    "zk transcript" "npm run build:zk-transcript >/dev/null" \
+    "zk attestation" "npm run build:zk-attestation >/dev/null"
+fi
 
 echo "[verify-all] checking frontend surface"
 npm run verify:frontend-surface >/dev/null

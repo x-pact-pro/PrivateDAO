@@ -72,12 +72,13 @@ function pdaoFeeBaseUnits({ amountBaseUnits: amount, priceUsd, decimals, feeBps,
 }
 
 async function privatePayPdaoQuote(config, input, amount, { requireWallet = false, optional = false } = {}) {
-  if (config.privatePayPdaoGateEnabled === false) return { required: false, status: "disabled_by_configuration" };
-  if (optional) return { required: false, status: "optional" };
+  const benefitsSelected = input.pdao_benefits === true || input.pdaoBenefits === true;
+  if (!benefitsSelected || config.privatePayPdaoGateEnabled === false)
+    return { required: false, selected: false, status: "optional", benefits_available: true };
   const payer = String(input.payer || input.wallet || "").trim();
   if (!SOLANA_ADDRESS.test(payer)) {
     if (requireWallet) throw Object.assign(new Error("payer wallet is required for the private PDAO gate"), { statusCode: 400, code: "PRIVATEPAY_PDAO_WALLET_REQUIRED" });
-    return { required: true, status: "wallet_required", min_hold_usd: Number(config.privatePayPdaoMinHoldUsd), fee_bps: Number(config.privatePayPdaoFeeBps), fee_floor_usd: Number(config.privatePayPdaoFeeFloorUsd), fee_split: String(config.privatePayPdaoFeeSplit), fee_collection: "separate_signed_pdao_transaction_required" };
+    return { required: false, selected: true, status: "wallet_required", min_hold_usd: Number(config.privatePayPdaoMinHoldUsd), fee_bps: Number(config.privatePayPdaoFeeBps), fee_floor_usd: Number(config.privatePayPdaoFeeFloorUsd), fee_split: String(config.privatePayPdaoFeeSplit), fee_collection: "separate_signed_pdao_transaction_required" };
   }
   if (String(config.pdaoMint || "") !== "9isGuumtaqvJeJeyLF44fvfskk2cv5mYsopexMBfpump") throw Object.assign(new Error("PrivatePAY PDAO mint configuration mismatch"), { statusCode: 503, code: "PRIVATEPAY_PDAO_MINT_MISMATCH" });
   let balance;
@@ -96,7 +97,8 @@ async function privatePayPdaoQuote(config, input, amount, { requireWallet = fals
     });
   }
   return {
-    required: true,
+    required: false,
+    selected: true,
     status: "verified",
     mint: config.pdaoMint,
     wallet: payer,
@@ -124,7 +126,9 @@ export async function buildPrivatePayPdaoFeeTransaction(config, input = {}) {
   const payer = String(input.payer || input.wallet || "").trim();
   if (!SOLANA_ADDRESS.test(payer)) throw Object.assign(new Error("payer must be a valid Solana address"), { statusCode: 400, code: "PRIVATEPAY_PDAO_WALLET_REQUIRED" });
   const amount = amountBaseUnits(input);
-  const pdao = await privatePayPdaoQuote(config, { ...input, payer }, amount, { requireWallet: true });
+  const pdao = await privatePayPdaoQuote(config, { ...input, payer, pdao_benefits: true }, amount, { requireWallet: true });
+  if (pdao.selected !== true || !pdao.fee_base_units)
+    throw Object.assign(new Error("PDAO benefits are not enabled for this payment"), { statusCode: 400, code: "PRIVATEPAY_PDAO_BENEFITS_NOT_SELECTED" });
   const parts = pdaoFeeParts(input.pdao_fee_base_units || pdao.fee_base_units);
   const payerKey = new PublicKey(payer);
   const mint = new PublicKey(config.pdaoMint);
@@ -163,7 +167,9 @@ export async function verifyPrivatePayPdaoFee(config, input = {}) {
   if (!isSolanaTransactionSignature(signature)) throw Object.assign(new Error("a finalized PDAO fee signature is required"), { statusCode: 400, code: "PRIVATEPAY_PDAO_FEE_SIGNATURE_REQUIRED" });
   if (!SOLANA_ADDRESS.test(payer)) throw Object.assign(new Error("payer must be a valid Solana address"), { statusCode: 400, code: "PRIVATEPAY_PDAO_WALLET_REQUIRED" });
   const amount = amountBaseUnits(input);
-  const pdao = await privatePayPdaoQuote(config, { ...input, payer }, amount, { requireWallet: true });
+  const pdao = await privatePayPdaoQuote(config, { ...input, payer, pdao_benefits: true }, amount, { requireWallet: true });
+  if (pdao.selected !== true || !pdao.fee_base_units)
+    throw Object.assign(new Error("PDAO benefits are not enabled for this payment"), { statusCode: 400, code: "PRIVATEPAY_PDAO_BENEFITS_NOT_SELECTED" });
   const parts = pdaoFeeParts(input.pdao_fee_base_units || pdao.fee_base_units);
   const expectedDestination = getAssociatedTokenAddressSync(new PublicKey(config.pdaoMint), new PublicKey(config.privatePayPdaoTreasury || config.treasury), false, TOKEN_PROGRAM_ID, ASSOCIATED_TOKEN_PROGRAM_ID).toBase58();
   const response = await readRpc(config, "getTransaction", [signature, { commitment: "finalized", encoding: "jsonParsed", maxSupportedTransactionVersion: 0 }]);
@@ -368,7 +374,7 @@ export async function preparePrivatePayTransfer(config, input = {}, fetchImpl = 
   });
   const payload = await response.json().catch(() => ({}));
   if (!response.ok)
-    throw Object.assign(new Error(`PrivatePAY provider rejected transfer preparation (${response.status})`), { statusCode: 503, code: "PRIVATEPAY_PROVIDER_REJECTED", provider_status: response.status });
+    throw Object.assign(new Error(`PrivatePAY provider rejected transfer preparation (${response.status})`), { statusCode: splProviderStatusCode(response.status), code: "PRIVATEPAY_PROVIDER_REJECTED", provider_status: response.status });
   if (payload.kind !== "transfer" || typeof payload.transactionBase64 !== "string" || !Array.isArray(payload.requiredSigners))
     throw Object.assign(new Error("PrivatePAY provider returned an invalid transfer transaction"), { statusCode: 503, code: "PRIVATEPAY_INVALID_PROVIDER_RESPONSE" });
   const prepared = {
@@ -416,7 +422,7 @@ async function preparePrivatePayBaseTransaction(config, kind, path, body, reques
   });
   const payload = await response.json().catch(() => ({}));
   if (!response.ok)
-    throw Object.assign(new Error(`PrivatePAY provider rejected ${kind} preparation (${response.status})`), { statusCode: 503, code: "PRIVATEPAY_PROVIDER_REJECTED", provider_status: response.status });
+    throw Object.assign(new Error(`PrivatePAY provider rejected ${kind} preparation (${response.status})`), { statusCode: splProviderStatusCode(response.status), code: "PRIVATEPAY_PROVIDER_REJECTED", provider_status: response.status });
   if (payload.kind !== kind || typeof payload.transactionBase64 !== "string" || !Array.isArray(payload.requiredSigners))
     throw Object.assign(new Error(`PrivatePAY provider returned an invalid ${kind} transaction`), { statusCode: 503, code: "PRIVATEPAY_INVALID_PROVIDER_RESPONSE" });
   return {
@@ -477,7 +483,7 @@ export async function createPrivatePayRequirements(config, input = {}, liveStatu
   const providerId = String(input.provider_id || "").trim();
   if (!resource || !providerId) throw Object.assign(new Error("resource and provider_id are required"), { statusCode: 400 });
   const amount = amountBaseUnits(input);
-  const pdao = await privatePayPdaoQuote(config, input, amount, { requireWallet: input.require_pdao_wallet === true, optional: input.pdao_optional === true });
+  const pdao = await privatePayPdaoQuote(config, input, amount, { optional: input.pdao_optional === true });
   const magicBlockRail = isMagicBlockRail(config);
   const requestId = `pp_${digest({ resource, providerId, amount, nonce: input.nonce || null }).slice(0, 32)}`;
   const requirements = {
@@ -493,9 +499,13 @@ export async function createPrivatePayRequirements(config, input = {}, liveStatu
         privacy_rail: config.privatePayPrivacyRail,
         provider_commitment: digest(providerId),
         request_id: requestId,
-        paymentId: digest({ requestId, resource, providerId, amount }),
-        pdao_required: pdao.required,
-        ...(pdao.required ? {
+        // Keep the provider payment id unique per payer even when the public
+        // resource quote is identical for multiple buyers.
+        paymentId: digest({ requestId, payer: String(input.payer || "").trim(), resource, providerId, amount }),
+        pdao_required: false,
+        pdao_optional: true,
+        pdao_benefits_selected: pdao.selected === true,
+        ...(pdao.selected ? {
           pdao_mint: pdao.mint,
           pdao_fee_bps: pdao.fee_bps,
           pdao_fee_floor_usd: pdao.fee_floor_usd,
@@ -540,14 +550,38 @@ function readResponseHeader(response, name) {
   return headers[name] || headers[name.toLowerCase()] || headers[name.toUpperCase()] || "";
 }
 
-function checkoutResponseBody(payload) {
+function providerStatusCode(status) {
+  const value = Number(status);
+  return [202, 400, 401, 409, 503].includes(value) ? value : 503;
+}
+
+function splProviderStatusCode(status) {
+  const value = Number(status);
+  return [400, 403, 422, 503].includes(value) ? value : 503;
+}
+
+function providerRejectedError(message, code, response, payload = {}) {
+  const payment = payload?.payment && typeof payload.payment === "object" ? payload.payment : payload;
+  const paymentId = String(payment?.id || payment?.paymentId || payment?.payment_id || "").trim();
+  return Object.assign(new Error(`${message} (${response.status})`), {
+    statusCode: providerStatusCode(response.status),
+    code,
+    provider_status: response.status,
+    facilitator_status: response.status,
+    ...(PRIVATEPAY_ID.test(paymentId) ? { payment_id: paymentId } : {}),
+    ...(response.status === 202 ? { retryAfterSeconds: 2 } : {}),
+  });
+}
+
+function checkoutResponseBody(payload, providerStatus = 200) {
   const payment = payload?.payment && typeof payload.payment === "object" ? payload.payment : payload;
   const id = String(payment?.id || payment?.paymentId || payment?.payment_id || "").trim();
   if (!PRIVATEPAY_ID.test(id))
     throw Object.assign(new Error("MagicBlock returned an invalid checkout id"), { statusCode: 503, code: "PRIVATEPAY_INVALID_CHECKOUT_RESPONSE" });
   return {
     payment_id: id,
-    status: nonEmpty(payment.status) ? payment.status : "created",
+    status: providerStatus === 202 ? "pending" : (nonEmpty(payment.status) ? payment.status : "created"),
+    provider_status: providerStatus,
     expires_at: payment.expiresAt || payment.expires_at || null,
     external_reference: payment.externalReference || payment.external_reference || null,
     cluster: payment.cluster || MAGICBLOCK_PRIVATE_CLUSTER,
@@ -596,9 +630,11 @@ export async function createPrivatePayCheckout(config, input = {}, fetchImpl = f
     signal: AbortSignal.timeout(8000),
   });
   const payload = await response.json().catch(() => ({}));
+  if (response.status === 202)
+    return checkoutResponseBody(payload, response.status);
   if (!response.ok)
-    throw Object.assign(new Error(`MagicBlock rejected checkout creation (${response.status})`), { statusCode: 503, code: "PRIVATEPAY_CHECKOUT_REJECTED", provider_status: response.status });
-  return checkoutResponseBody(payload);
+    throw providerRejectedError("MagicBlock rejected checkout creation", "PRIVATEPAY_CHECKOUT_REJECTED", response, payload);
+  return checkoutResponseBody(payload, response.status);
 }
 
 export async function requestPrivatePayCheckoutChallenge(config, input = {}, fetchImpl = fetch) {
@@ -618,9 +654,11 @@ export async function requestPrivatePayCheckoutChallenge(config, input = {}, fet
       throw Object.assign(new Error("MagicBlock returned 402 without PAYMENT-REQUIRED"), { statusCode: 503, code: "PRIVATEPAY_MISSING_PAYMENT_REQUIRED" });
     return { payment_id: paymentId, status: "payment_required", payment_required_header: paymentRequiredHeader };
   }
+  if (response.status === 202)
+    return { payment_id: paymentId, status: "pending", provider_status: 202, retry_after_seconds: 2 };
   const payload = await response.json().catch(() => ({}));
   if (!response.ok)
-    throw Object.assign(new Error(`MagicBlock rejected checkout challenge (${response.status})`), { statusCode: 503, code: "PRIVATEPAY_CHALLENGE_REJECTED", provider_status: response.status });
+    throw providerRejectedError("MagicBlock rejected checkout challenge", "PRIVATEPAY_CHALLENGE_REJECTED", response, payload);
   return { payment_id: paymentId, status: nonEmpty(payload.status) ? payload.status : "accepted" };
 }
 
@@ -662,9 +700,11 @@ export async function privatePayMagicBlockFacilitatorRequest(config, operation, 
   });
   const result = await response.json().catch(() => ({}));
   if (!response.ok)
-    throw Object.assign(new Error(`MagicBlock facilitator rejected ${operation} (${response.status})`), { statusCode: 503, code: "PRIVATEPAY_FACILITATOR_REJECTED", facilitator_status: response.status });
+    throw providerRejectedError(`MagicBlock facilitator rejected ${operation}`, "PRIVATEPAY_FACILITATOR_REJECTED", response, result);
   if (!result || typeof result !== "object" || Array.isArray(result))
     throw Object.assign(new Error(`MagicBlock facilitator returned an invalid ${operation} response`), { statusCode: 503, code: "PRIVATEPAY_INVALID_FACILITATOR_RESPONSE" });
+  if (response.status === 202)
+    return { operation, ...result, status: "pending", provider_status: 202, retry_after_seconds: 2, payment_id: paymentRequirements.extra.paymentId };
   return { operation, ...result, payment_id: paymentRequirements.extra.paymentId };
 }
 
@@ -749,9 +789,11 @@ export async function privatePayFacilitatorRequest(config, operation, payload, f
   });
   const result = await response.json().catch(() => ({}));
   if (!response.ok)
-    throw Object.assign(new Error(`PrivatePAY facilitator rejected ${operation} (${response.status})`), { statusCode: 503, code: "PRIVATEPAY_FACILITATOR_REJECTED", facilitator_status: response.status });
+    throw providerRejectedError(`PrivatePAY facilitator rejected ${operation}`, "PRIVATEPAY_FACILITATOR_REJECTED", response, result);
   if (!result || typeof result !== "object" || Array.isArray(result))
     throw Object.assign(new Error(`PrivatePAY facilitator returned an invalid ${operation} response`), { statusCode: 503, code: "PRIVATEPAY_INVALID_FACILITATOR_RESPONSE" });
+  if (response.status === 202)
+    return { operation, ...result, status: "pending", provider_status: 202, retry_after_seconds: 2 };
   return { operation, ...result };
 }
 
@@ -920,7 +962,9 @@ export function privatePayStatus(config) {
     privacy_audit_verified: privacyAuditVerified,
     payment_bound_quote_required: config.privatePayRequirePaymentBoundQuote === true,
     autopilot: privatePayAutopilotStatus(config),
-    pdao_required: config.privatePayPdaoGateEnabled !== false,
+    pdao_required: false,
+    pdao_optional: true,
+    pdao_benefits: "optional_holder_access_credits_discounts_and_priority",
     pdao_mint: config.pdaoMint || null,
     min_hold_usd: Number(config.privatePayPdaoMinHoldUsd || 25),
     fee_bps: Number(config.privatePayPdaoFeeBps || 100),
@@ -951,8 +995,7 @@ export function privatePayStatus(config) {
 }
 
 export async function createPrivatePayChallenge(config, input = {}, liveStatus = null) {
-  const { request_id: requestId, requirements, header, pdao } = await createPrivatePayRequirements(config, { ...input, require_pdao_wallet: true }, liveStatus);
-  if (pdao.required && pdao.status !== "verified") throw Object.assign(new Error("PrivatePAY PDAO entry requirement is not verified"), { statusCode: 503, code: "PRIVATEPAY_PDAO_NOT_VERIFIED", pdao });
+  const { request_id: requestId, requirements, header, pdao } = await createPrivatePayRequirements(config, input, liveStatus);
   return {
     x402Version: 2,
     request_id: requestId,

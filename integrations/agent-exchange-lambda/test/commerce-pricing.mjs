@@ -57,3 +57,19 @@ test("includes processing fees in the line items and atomic total", () => {
   assert.equal(quote.processing_fee.base_units, "20000");
   assert.equal(quote.total.base_units, "2070000");
 });
+
+test("adds marketplace commission to the buyer total without adding MagicBlock by default", () => {
+  const quote = commercePricingForExistingQuote({
+    serviceAmountBaseUnits: "30000",
+    privateDaoFeeBaseUnits: "750",
+    platformFeeBaseUnits: "3000",
+    processingFeeBaseUnits: "0",
+    totalBaseUnits: "33750",
+  });
+  assert.equal(quote.service_base.base_units, "30000");
+  assert.equal(quote.platform_fee.base_units, "3000");
+  assert.equal(quote.private_dao_commission.base_units, "750");
+  assert.equal(quote.magicblock_fee.base_units, "0");
+  assert.equal(quote.magicblock_fee.status, "not_observed");
+  assert.equal(quote.total.base_units, "33750");
+});

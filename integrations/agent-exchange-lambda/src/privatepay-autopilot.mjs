@@ -19,12 +19,23 @@ function address(value, field) {
   return text;
 }
 
-function signature(value, field) {
+export function decodeAutopilotSignature(value, field = "signature") {
   const text = String(value || "").trim();
+  if (!/^[A-Za-z0-9+/]*={0,2}$/.test(text) || text.length % 4 !== 0)
+    fail(`${field} must be canonical base64`);
   let bytes;
   try { bytes = Buffer.from(text, "base64"); } catch { fail(`${field} must be base64`); }
   if (bytes.length !== 64) fail(`${field} must contain a 64-byte Ed25519 signature`);
   return bytes;
+}
+
+export function assertAutopilotOperationFresh(operation, now = Date.now()) {
+  if (!operation || !operation.expires_at || Date.parse(operation.expires_at) <= now)
+    fail("autopilot operation is expired", "PRIVATEPAY_AUTOPILOT_OPERATION_EXPIRED", 403);
+}
+
+function signature(value, field) {
+  return decodeAutopilotSignature(value, field);
 }
 
 function positiveUnits(value, field, max) {
@@ -195,6 +206,7 @@ export async function validatePrivatePayAutopilotOperation(config, input = {}) {
   const { operations } = await collections(config);
   const operation = await operations.findOne({ id: String(input.operation_id || ""), policy_id: policy.id, status: "reserved" });
   if (!operation || operation.resource !== String(input.resource || "") || operation.provider_id !== String(input.provider_id || "") || operation.amount_base_units !== String(input.amount_base_units || "")) fail("autopilot operation does not match this x402 request", "PRIVATEPAY_AUTOPILOT_OPERATION_MISMATCH", 403);
+  assertAutopilotOperationFresh(operation);
   if (input.session_signature) verifySignedMessage(policy.session_public_key, operation.authorization_message, input.session_signature, "autopilot_session_signature");
   else fail("autopilot_session_signature is required for the x402 request", "PRIVATEPAY_AUTOPILOT_SESSION_SIGNATURE_REQUIRED", 403);
   return { policy, operation };
@@ -204,6 +216,9 @@ export async function completePrivatePayAutopilotOperation(config, policyId, ope
   const { policies, operations } = await collections(config);
   const operation = await operations.findOne({ id: operationId, policy_id: policyId, status: "reserved" });
   if (!operation) return { completed: false, reason: "operation_not_reserved" };
+  // The operation was freshness-checked before x402 verification. Once the
+  // provider has settled, accounting must be allowed to finish even if the
+  // short authorization TTL elapsed while the provider was processing.
   const now = new Date().toISOString();
   const claimed = await operations.updateOne({ id: operationId, policy_id: policyId, status: "reserved" }, { $set: { status: "completing", updated_at: now } });
   if (claimed.modifiedCount !== 1) return { completed: false, reason: "operation_already_claimed" };
@@ -218,8 +233,12 @@ export async function completePrivatePayAutopilotOperation(config, policyId, ope
 
 export async function cancelPrivatePayAutopilotOperation(config, input = {}) {
   requireEnabled(config);
-  const { policy } = await activePolicy(config, input.policy_id);
   const { operations, policies } = await collections(config);
+  // Cancellation must remain available after the short operation TTL so an
+  // expired reservation can release the policy budget. Never allow this path
+  // to authorize a new operation; it only moves an existing reservation out.
+  const policy = await policies.findOne({ id: String(input.policy_id || ""), kind: "privatepay_autopilot_policy" });
+  if (!policy || !["active", "expired"].includes(policy.status)) fail("autopilot policy is inactive", "PRIVATEPAY_AUTOPILOT_POLICY_INACTIVE", 403);
   const operation = await operations.findOne({ id: String(input.operation_id || ""), policy_id: policy.id, status: "reserved" });
   if (!operation) return { cancelled: false, reason: "operation_not_reserved" };
   const message = canonicalMessage("cancel", { operation_id: operation.id, policy_id: policy.id });
