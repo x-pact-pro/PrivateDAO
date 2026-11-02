@@ -234,8 +234,11 @@ export async function completePrivatePayAutopilotOperation(config, policyId, ope
 export async function cancelPrivatePayAutopilotOperation(config, input = {}) {
   requireEnabled(config);
   const { operations, policies } = await collections(config);
-  const policy = await policies.findOne({ id: String(input.policy_id || ""), kind: "privatepay_autopilot_policy", status: "active" });
-  if (!policy) fail("autopilot policy is inactive or expired", "PRIVATEPAY_AUTOPILOT_POLICY_INACTIVE", 403);
+  // Cancellation must remain available after the short operation TTL so an
+  // expired reservation can release the policy budget. Never allow this path
+  // to authorize a new operation; it only moves an existing reservation out.
+  const policy = await policies.findOne({ id: String(input.policy_id || ""), kind: "privatepay_autopilot_policy" });
+  if (!policy || !["active", "expired"].includes(policy.status)) fail("autopilot policy is inactive", "PRIVATEPAY_AUTOPILOT_POLICY_INACTIVE", 403);
   const operation = await operations.findOne({ id: String(input.operation_id || ""), policy_id: policy.id, status: "reserved" });
   if (!operation) return { cancelled: false, reason: "operation_not_reserved" };
   const message = canonicalMessage("cancel", { operation_id: operation.id, policy_id: policy.id });

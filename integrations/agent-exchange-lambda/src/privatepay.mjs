@@ -499,7 +499,9 @@ export async function createPrivatePayRequirements(config, input = {}, liveStatu
         privacy_rail: config.privatePayPrivacyRail,
         provider_commitment: digest(providerId),
         request_id: requestId,
-        paymentId: digest({ requestId, resource, providerId, amount }),
+        // Keep the provider payment id unique per payer even when the public
+        // resource quote is identical for multiple buyers.
+        paymentId: digest({ requestId, payer: String(input.payer || "").trim(), resource, providerId, amount }),
         pdao_required: false,
         pdao_optional: true,
         pdao_benefits_selected: pdao.selected === true,

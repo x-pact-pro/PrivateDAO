@@ -313,7 +313,7 @@ test("generic PrivatePAY x402 endpoint performs verify and settle with a redacte
     const input = { payer: "BkNcuvQZr6392aZCwcGnB6SQptV6vhWa7syJs5fgLz6", resource: "https://agents.example/api/generic", provider_id: "provider-1", amount_base_units: "1000" };
     const unpaid = await request("/api/privatepay/x402", "POST", input);
     assert.equal(unpaid.statusCode, 402);
-    assert.match(checkoutRequest.externalReference, /^privatepay-x402-pp_[a-f0-9]{32}$/);
+    assert.match(checkoutRequest.externalReference, /^privatepay-x402-[a-f0-9]{32}$/);
     const challenge = JSON.parse(unpaid.body);
     const paymentRequired = JSON.parse(Buffer.from(unpaid.headers["PAYMENT-REQUIRED"], "base64url").toString("utf8"));
     const signature = encodePaymentSignatureHeader({
@@ -334,6 +334,10 @@ test("generic PrivatePAY x402 endpoint performs verify and settle with a redacte
     assert.deepEqual(calls, ["verify", "settle"]);
     assert.equal(Object.hasOwn(facilitatorPayloads[0].paymentRequirements, "accepts"), false);
     assert.equal(facilitatorPayloads[0].paymentRequirements.amount, "1000");
+    const unpaidReplay = await request("/api/privatepay/x402", "POST", input);
+    assert.equal(unpaidReplay.statusCode, 409);
+    assert.equal(JSON.parse(unpaidReplay.body).code, "PRIVATEPAY_CHECKOUT_ALREADY_PAID");
+    assert.deepEqual(calls, ["verify", "settle"]);
   } finally {
     globalThis.fetch = originalFetch;
   }
@@ -380,6 +384,50 @@ test("generic PrivatePAY x402 resumes a pending checkout by payment id", async (
     const foreign = await request("/api/privatepay/x402", "POST", { ...input, payment_id: "e".repeat(64) });
     assert.equal(foreign.statusCode, 409);
     assert.equal(checkoutCreates, 1);
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
+
+test("generic PrivatePAY x402 isolates checkout bindings per payer", async () => {
+  const originalFetch = globalThis.fetch;
+  let checkoutCreates = 0;
+  globalThis.fetch = async (url, init = {}) => {
+    const target = String(url);
+    const payload = JSON.parse(init.body || "{}");
+    if (target.endsWith("/v1/payments")) {
+      checkoutCreates += 1;
+      const paymentId = ["f", "e"][checkoutCreates - 1].repeat(64);
+      return new Response(JSON.stringify({ id: paymentId, status: "created" }), { status: 200, headers: { "content-type": "application/json" } });
+    }
+    if (target.includes("/v1/x402/payments/") && target.endsWith("/pay")) {
+      const paymentId = target.split("/v1/x402/payments/")[1].split("/")[0];
+      const accepted = {
+        scheme: "exact-magicblock",
+        network: "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+        asset: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+        amount: "1000",
+        payTo: "2BJ4ezxqV9YJXc38D9duKBkdn4su4jE1beKUHwH663sL",
+        maxTimeoutSeconds: 60,
+        extra: { paymentId, cluster: "mainnet-private", settlement: "ephemeral-rollup", transaction: "AQID" },
+      };
+      return new Response(JSON.stringify({}), { status: 402, headers: { "content-type": "application/json", "PAYMENT-REQUIRED": encodePaymentRequiredHeader({ x402Version: 2, resource: { url: "api://per-payer" }, accepts: [accepted] }) } });
+    }
+    throw new Error(`unexpected fixture request: ${target}`);
+  };
+  try {
+    resetForTests();
+    const firstInput = { payer: "BkNcuvQZr6392aZCwcGnB6SQptV6vhWa7syJs5fgLz6", resource: "https://agents.example/api/per-payer", provider_id: "provider-1", amount_base_units: "1000" };
+    const secondInput = { ...firstInput, payer: "H2qTahnGPy83GZ3H29eHk5sG6bGZLPRATUPvVKfCrqsi" };
+    const first = await request("/api/privatepay/x402", "POST", firstInput);
+    const second = await request("/api/privatepay/x402", "POST", secondInput);
+    assert.equal(first.statusCode, 402);
+    assert.equal(second.statusCode, 402);
+    assert.notEqual(JSON.parse(first.body).payment_id, JSON.parse(second.body).payment_id);
+    assert.equal(checkoutCreates, 2);
+    const firstRetry = await request("/api/privatepay/x402", "POST", firstInput);
+    assert.equal(firstRetry.statusCode, 402);
+    assert.equal(checkoutCreates, 2);
   } finally {
     globalThis.fetch = originalFetch;
   }
