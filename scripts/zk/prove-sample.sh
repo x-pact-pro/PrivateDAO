@@ -13,7 +13,7 @@ mkdir -p "$INPUT_DIR" "$PROOF_DIR"
 if (($#)); then
   circuits=("$@")
 else
-  mapfile -t circuits < <(zk_circuits)
+  mapfile -t circuits < <(zk_sample_circuits)
 fi
 
 for circuit in "${circuits[@]}"; do

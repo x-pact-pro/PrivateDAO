@@ -9,7 +9,7 @@ PROOF_DIR="$ROOT_DIR/zk/proofs"
 if (($#)); then
   circuits=("$@")
 else
-  mapfile -t circuits < <(zk_circuits)
+  mapfile -t circuits < <(zk_sample_circuits)
 fi
 
 for circuit in "${circuits[@]}"; do
