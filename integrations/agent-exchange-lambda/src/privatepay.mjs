@@ -78,7 +78,7 @@ async function privatePayPdaoQuote(config, input, amount, { requireWallet = fals
   const payer = String(input.payer || input.wallet || "").trim();
   if (!SOLANA_ADDRESS.test(payer)) {
     if (requireWallet) throw Object.assign(new Error("payer wallet is required for the private PDAO gate"), { statusCode: 400, code: "PRIVATEPAY_PDAO_WALLET_REQUIRED" });
-    return { required: true, status: "wallet_required", min_hold_usd: Number(config.privatePayPdaoMinHoldUsd), fee_bps: Number(config.privatePayPdaoFeeBps), fee_floor_usd: Number(config.privatePayPdaoFeeFloorUsd), fee_split: String(config.privatePayPdaoFeeSplit), fee_collection: "separate_signed_pdao_transaction_required" };
+    return { required: false, selected: true, status: "wallet_required", min_hold_usd: Number(config.privatePayPdaoMinHoldUsd), fee_bps: Number(config.privatePayPdaoFeeBps), fee_floor_usd: Number(config.privatePayPdaoFeeFloorUsd), fee_split: String(config.privatePayPdaoFeeSplit), fee_collection: "separate_signed_pdao_transaction_required" };
   }
   if (String(config.pdaoMint || "") !== "9isGuumtaqvJeJeyLF44fvfskk2cv5mYsopexMBfpump") throw Object.assign(new Error("PrivatePAY PDAO mint configuration mismatch"), { statusCode: 503, code: "PRIVATEPAY_PDAO_MINT_MISMATCH" });
   let balance;
@@ -97,7 +97,7 @@ async function privatePayPdaoQuote(config, input, amount, { requireWallet = fals
     });
   }
   return {
-    required: true,
+    required: false,
     selected: true,
     status: "verified",
     mint: config.pdaoMint,
