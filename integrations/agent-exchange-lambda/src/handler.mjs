@@ -3033,6 +3033,7 @@ function errorResponse(error) {
       ...(privatePayCode ? { code: error.code } : {}),
       ...(privatePayCode && error.status && typeof error.status === "object" ? { privatepay_status: error.status } : {}),
       ...(error.payment_intent ? { payment_intent: error.payment_intent } : {}),
+      ...(error.payment_id ? { payment_id: error.payment_id } : {}),
       ...(error.payment_required ? { payment_required: error.payment_required } : {}),
       ...(error.request_id ? { request_id: error.request_id } : {}),
       ...(error.quote ? { quote: error.quote } : {}),
@@ -5555,7 +5556,11 @@ async function handle(e) {
         external_reference: externalReference,
         expires_in_seconds: x402Input.expires_in_seconds,
       });
+      if (checkout.status === "pending")
+        return json({ error: "payment_pending", payment_id: checkout.payment_id, status: "pending", retry_after_seconds: 2 }, 202, { "retry-after": "2" });
       const challenge = await requestPrivatePayCheckoutChallenge(config, { payment_id: checkout.payment_id });
+      if (challenge.status === "pending")
+        return json({ error: "payment_pending", payment_id: checkout.payment_id, status: "pending", retry_after_seconds: challenge.retry_after_seconds || 2 }, 202, { "retry-after": String(challenge.retry_after_seconds || 2) });
       const providerRequirements = decodePrivatePayRequiredHeader(challenge.payment_required_header);
       return json({
         error: "payment_required",

@@ -540,14 +540,33 @@ function readResponseHeader(response, name) {
   return headers[name] || headers[name.toLowerCase()] || headers[name.toUpperCase()] || "";
 }
 
-function checkoutResponseBody(payload) {
+function providerStatusCode(status) {
+  const value = Number(status);
+  return [202, 400, 401, 409, 503].includes(value) ? value : 503;
+}
+
+function providerRejectedError(message, code, response, payload = {}) {
+  const payment = payload?.payment && typeof payload.payment === "object" ? payload.payment : payload;
+  const paymentId = String(payment?.id || payment?.paymentId || payment?.payment_id || "").trim();
+  return Object.assign(new Error(`${message} (${response.status})`), {
+    statusCode: providerStatusCode(response.status),
+    code,
+    provider_status: response.status,
+    facilitator_status: response.status,
+    ...(PRIVATEPAY_ID.test(paymentId) ? { payment_id: paymentId } : {}),
+    ...(response.status === 202 ? { retryAfterSeconds: 2 } : {}),
+  });
+}
+
+function checkoutResponseBody(payload, providerStatus = 200) {
   const payment = payload?.payment && typeof payload.payment === "object" ? payload.payment : payload;
   const id = String(payment?.id || payment?.paymentId || payment?.payment_id || "").trim();
   if (!PRIVATEPAY_ID.test(id))
     throw Object.assign(new Error("MagicBlock returned an invalid checkout id"), { statusCode: 503, code: "PRIVATEPAY_INVALID_CHECKOUT_RESPONSE" });
   return {
     payment_id: id,
-    status: nonEmpty(payment.status) ? payment.status : "created",
+    status: providerStatus === 202 ? "pending" : (nonEmpty(payment.status) ? payment.status : "created"),
+    provider_status: providerStatus,
     expires_at: payment.expiresAt || payment.expires_at || null,
     external_reference: payment.externalReference || payment.external_reference || null,
     cluster: payment.cluster || MAGICBLOCK_PRIVATE_CLUSTER,
@@ -596,9 +615,11 @@ export async function createPrivatePayCheckout(config, input = {}, fetchImpl = f
     signal: AbortSignal.timeout(8000),
   });
   const payload = await response.json().catch(() => ({}));
+  if (response.status === 202)
+    return checkoutResponseBody(payload, response.status);
   if (!response.ok)
-    throw Object.assign(new Error(`MagicBlock rejected checkout creation (${response.status})`), { statusCode: 503, code: "PRIVATEPAY_CHECKOUT_REJECTED", provider_status: response.status });
-  return checkoutResponseBody(payload);
+    throw providerRejectedError("MagicBlock rejected checkout creation", "PRIVATEPAY_CHECKOUT_REJECTED", response, payload);
+  return checkoutResponseBody(payload, response.status);
 }
 
 export async function requestPrivatePayCheckoutChallenge(config, input = {}, fetchImpl = fetch) {
@@ -618,9 +639,11 @@ export async function requestPrivatePayCheckoutChallenge(config, input = {}, fet
       throw Object.assign(new Error("MagicBlock returned 402 without PAYMENT-REQUIRED"), { statusCode: 503, code: "PRIVATEPAY_MISSING_PAYMENT_REQUIRED" });
     return { payment_id: paymentId, status: "payment_required", payment_required_header: paymentRequiredHeader };
   }
+  if (response.status === 202)
+    return { payment_id: paymentId, status: "pending", provider_status: 202, retry_after_seconds: 2 };
   const payload = await response.json().catch(() => ({}));
   if (!response.ok)
-    throw Object.assign(new Error(`MagicBlock rejected checkout challenge (${response.status})`), { statusCode: 503, code: "PRIVATEPAY_CHALLENGE_REJECTED", provider_status: response.status });
+    throw providerRejectedError("MagicBlock rejected checkout challenge", "PRIVATEPAY_CHALLENGE_REJECTED", response, payload);
   return { payment_id: paymentId, status: nonEmpty(payload.status) ? payload.status : "accepted" };
 }
 
@@ -662,7 +685,7 @@ export async function privatePayMagicBlockFacilitatorRequest(config, operation, 
   });
   const result = await response.json().catch(() => ({}));
   if (!response.ok)
-    throw Object.assign(new Error(`MagicBlock facilitator rejected ${operation} (${response.status})`), { statusCode: 503, code: "PRIVATEPAY_FACILITATOR_REJECTED", facilitator_status: response.status });
+    throw providerRejectedError(`MagicBlock facilitator rejected ${operation}`, "PRIVATEPAY_FACILITATOR_REJECTED", response, result);
   if (!result || typeof result !== "object" || Array.isArray(result))
     throw Object.assign(new Error(`MagicBlock facilitator returned an invalid ${operation} response`), { statusCode: 503, code: "PRIVATEPAY_INVALID_FACILITATOR_RESPONSE" });
   return { operation, ...result, payment_id: paymentRequirements.extra.paymentId };
@@ -749,7 +772,7 @@ export async function privatePayFacilitatorRequest(config, operation, payload, f
   });
   const result = await response.json().catch(() => ({}));
   if (!response.ok)
-    throw Object.assign(new Error(`PrivatePAY facilitator rejected ${operation} (${response.status})`), { statusCode: 503, code: "PRIVATEPAY_FACILITATOR_REJECTED", facilitator_status: response.status });
+    throw providerRejectedError(`PrivatePAY facilitator rejected ${operation}`, "PRIVATEPAY_FACILITATOR_REJECTED", response, result);
   if (!result || typeof result !== "object" || Array.isArray(result))
     throw Object.assign(new Error(`PrivatePAY facilitator returned an invalid ${operation} response`), { statusCode: 503, code: "PRIVATEPAY_INVALID_FACILITATOR_RESPONSE" });
   return { operation, ...result };

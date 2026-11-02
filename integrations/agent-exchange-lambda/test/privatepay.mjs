@@ -155,6 +155,30 @@ test("MagicBlock merchant checkout accepts the provider's nested payment respons
   assert.doesNotMatch(JSON.stringify(result), /accessToken|redacted-by-test|payer/);
 });
 
+test("MagicBlock merchant adapter preserves documented provider status classes", async () => {
+  for (const [providerStatus, expectedStatus] of [[202, 202], [400, 400], [401, 401], [409, 409], [500, 503], [503, 503]]) {
+    const request = createPrivatePayCheckout(magicBlockCheckoutConfig(), {
+        payer: TEST_PAYER,
+        amount_base_units: "1000",
+        resource: "https://agents.example/api/service/verify",
+        external_reference: `job_status_${providerStatus}`,
+      }, async () => response(providerStatus, providerStatus === 202 ? { id: TEST_PAYMENT_ID, status: "pending" } : { error: { code: "fixture" } }));
+    if (providerStatus === 202) {
+      const pending = await request;
+      assert.deepEqual({ status: pending.status, provider_status: pending.provider_status, payment_id: pending.payment_id }, { status: "pending", provider_status: expectedStatus, payment_id: TEST_PAYMENT_ID });
+      continue;
+    }
+    await assert.rejects(request, (error) => error.code === "PRIVATEPAY_CHECKOUT_REJECTED"
+      && error.statusCode === expectedStatus
+      && error.provider_status === providerStatus);
+  }
+});
+
+test("MagicBlock checkout challenge preserves pending status without requiring a header", async () => {
+  const result = await requestPrivatePayCheckoutChallenge(magicBlockCheckoutConfig(), { payment_id: TEST_PAYMENT_ID }, async () => response(202, { status: "pending" }));
+  assert.deepEqual(result, { payment_id: TEST_PAYMENT_ID, status: "pending", provider_status: 202, retry_after_seconds: 2 });
+});
+
 test("MagicBlock checkout challenge returns the provider PAYMENT-REQUIRED header without signing", async () => {
   const calls = [];
   const header = "eyJ4NDAyVmVyc2lvbiI6Mn0=";
