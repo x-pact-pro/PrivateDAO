@@ -3771,6 +3771,13 @@ async function createJob(serviceId, input, admin = false, currency = "USDC", met
       quote.privatepay_fee_discount_bps = holderBenefit.privatepay_fee_discount_bps;
       quote.payment_required = quote.amount > 0;
       quote.private_dao_revenue_amount = quote.amount;
+      quote.commerce_pricing = commercePricingForExistingQuote({
+        serviceAmountBaseUnits: String(Math.round(quote.gross_amount * 1e6)),
+        privateDaoFeeBps: quote.privatepay_fee_bps,
+        privateDaoFeeFloorBaseUnits: String(Math.round(config.privatePayMinimumFeeUsd * 1e6)),
+        privateDaoFeeBaseUnits: String(Math.round(quote.privatepay_fee_amount * 1e6)),
+        totalBaseUnits: String(quote.amountAtomic),
+      });
       await storage.put("Quotes", quote.quote_id, quote);
     }
     job.quote_id = quote.quote_id;

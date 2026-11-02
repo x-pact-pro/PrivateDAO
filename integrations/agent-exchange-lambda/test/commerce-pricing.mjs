@@ -44,3 +44,16 @@ test("preserves the existing quote total while exposing its fee breakdown", () =
   assert.equal(quote.total.base_units, "550000");
   assert.equal(quote.private_dao_commission.base_units, "50000");
 });
+
+test("includes processing fees in the line items and atomic total", () => {
+  const quote = commercePricingForExistingQuote({
+    serviceAmountBaseUnits: "2000000",
+    privateDaoFeeBps: 250,
+    privateDaoFeeFloorBaseUnits: "50000",
+    privateDaoFeeBaseUnits: "50000",
+    processingFeeBaseUnits: "20000",
+    totalBaseUnits: "2070000",
+  });
+  assert.equal(quote.processing_fee.base_units, "20000");
+  assert.equal(quote.total.base_units, "2070000");
+});

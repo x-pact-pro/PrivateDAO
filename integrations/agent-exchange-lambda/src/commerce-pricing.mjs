@@ -84,12 +84,14 @@ export function commercePricingForExistingQuote({
   privateDaoFeeBps = 0,
   privateDaoFeeFloorBaseUnits = 0,
   privateDaoFeeBaseUnits,
+  processingFeeBaseUnits = 0,
   totalBaseUnits,
 }) {
   const pricing = buildCommercePricing({
     serviceAmountBaseUnits,
     privateDaoFeeBps,
     privateDaoFeeFloorBaseUnits,
+    processingFeeBaseUnits,
   });
   if (privateDaoFeeBaseUnits != null) pricing.private_dao_commission = amount(privateDaoFeeBaseUnits);
   if (totalBaseUnits != null) pricing.total = amount(totalBaseUnits);
