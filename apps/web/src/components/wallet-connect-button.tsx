@@ -363,6 +363,7 @@ export function WalletConnectButton({
                   <button
                     key={entry.adapter.name}
                     type="button"
+                    data-wallet-option={entry.adapter.name}
                     className="flex items-center justify-between gap-3 rounded-[24px] border border-white/10 bg-white/[0.04] px-4 py-4 text-left transition hover:border-cyan-300/25 hover:bg-white/[0.07]"
                     onClick={() => void handleWalletSelection(entry.adapter.name)}
                   >

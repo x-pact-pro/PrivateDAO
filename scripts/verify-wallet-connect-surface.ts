@@ -142,7 +142,7 @@ async function main() {
       const pickerDialog = page.locator("div.fixed.inset-0").filter({ has: picker }).first();
       await pickerDialog.waitFor({ state: "visible", timeout: 5000 });
       for (const walletName of ["Solflare", "Phantom", "Glow", "Backpack"]) {
-        const walletOption = pickerDialog.locator("button, a").filter({ hasText: walletName }).first();
+        const walletOption = pickerDialog.locator(`[data-wallet-option="${walletName}"]`);
         if (!(await walletOption.isVisible())) throw new Error(`${viewport.name}: wallet picker is missing selectable ${walletName}.`);
       }
       await page.getByRole("button", { name: /open all wallet options/i }).click();
