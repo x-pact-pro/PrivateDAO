@@ -46,6 +46,7 @@ import { authorizePrivatePayAutopilotOperation, cancelPrivatePayAutopilotOperati
 import { handleAlibabaSpi } from "./alibaba-marketplace.mjs";
 import { encodePaymentResponseHeader } from "@x402/core/http";
 import { createQuestlineClient, participationMessage, validateAndPushQuest, assertSolanaWallet, verifyWalletSignature } from "./questline.mjs";
+import { commercePricingForExistingQuote } from "./commerce-pricing.mjs";
 
 const config = getConfig();
 const privatePayReadiness = () => process.env.AGENT_EXCHANGE_TEST_MODE === "true"
@@ -1529,7 +1530,7 @@ function serviceManifest(service) {
     },
     output_schema: { type: "object", description: service.output },
     payment: isPrivatePay
-      ? { required: true, price: null, currency: service.currency, flow: "quote_then_privatepay_x402_challenge", commercial_fee_model: "2.5% of the quoted service subtotal, minimum 0.05 USDC, separate from PDAO promotions and seller commissions", commercial_fee_bps: config.privatePayFeeBps, commercial_fee_minimum_usd: config.privatePayMinimumFeeUsd, treasury_split_required: true }
+      ? { required: true, price: null, currency: service.currency, flow: "quote_then_privatepay_x402_challenge", commercial_fee_model: "PrivateDAO commission is calculated from the service subtotal; verified MagicBlock provider fees are added only when returned by the provider", commercial_fee_bps: config.privatePayFeeBps, commercial_fee_minimum_usd: config.privatePayMinimumFeeUsd, magicblock_fee_status: "provider_quote_required", single_authorization: true, treasury_split_required: true }
       : service.access === "free"
       ? { required: false, price: 0, currency: service.currency, flow: "execute_immediately" }
       : { required: true, price: service.price, currency: service.currency, flow: "quote_then_finalized_solana_payment_then_execute" },
@@ -3163,6 +3164,13 @@ async function makeQuote(serviceId, jobId, admin = false, currency = "USDC", tar
     payment_required: Boolean(buyerAmount),
     ata_required: ataExists === false,
   };
+  quote.commerce_pricing = commercePricingForExistingQuote({
+    serviceAmountBaseUnits: String(Math.round(amount * 1e6)),
+    privateDaoFeeBps: quote.privatepay_fee_bps,
+    privateDaoFeeFloorBaseUnits: String(Math.round(config.privatePayMinimumFeeUsd * 1e6)),
+    privateDaoFeeBaseUnits: String(Math.round(privatePayFeeAmount * 1e6)),
+    totalBaseUnits: String(quote.amountAtomic),
+  });
   await (await store()).put("Quotes", quote.quote_id, quote, true);
   return quote;
 }
@@ -3200,6 +3208,14 @@ async function createExternalJob(serviceId, input = {}, access = null, paymentMo
   if (!sellerPayoutConfig?.address) throw Object.assign(new Error("seller payout is not configured"), { statusCode: 409 });
   const buyerTotal = Number((grossAmount + processingFee + privatePayFee).toFixed(6));
   const quote = { created_at: now(), quote_id: `q_${randomUUID()}`, job_id: id, service_id: service.id, external: true, seller_agent_id: service.seller_agent_id, seller_service_id: service.service_id, seller_tool: service.tool, amount: buyerTotal, amountAtomic: Math.round(buyerTotal * 1e6), gross_amount: grossAmount, platform_fee_bps: policy.platform_fee_bps, platform_fee_amount: platformFee, processing_fee_bps: policy.processing_fee_bps, processing_fee_amount: processingFee, privatepay_fee_bps: normalizedPaymentMode === "privatepay" ? config.privatePayFeeBps : 0, privatepay_fee_amount: privatePayFee, network_fee_policy: "payer_direct", protocol_fee: platformFee, seller_net_amount: sellerNet, seller_amount: sellerNet, currency: service.asset, network: "solana-mainnet-beta", target_network: service.network, mint: config.usdcMint, treasuryOwner: config.treasury, treasuryTokenAccount: ata, recipient: config.treasury, paymentReference: `PDAOJOB:${id}`, expires_at: new Date(Date.now() + 1800000).toISOString(), payment_required: true, seller_payout: sellerPayoutConfig };
+  quote.commerce_pricing = commercePricingForExistingQuote({
+    serviceAmountBaseUnits: String(Math.round(grossAmount * 1e6)),
+    privateDaoFeeBps: quote.privatepay_fee_bps,
+    privateDaoFeeFloorBaseUnits: String(Math.round(config.privatePayMinimumFeeUsd * 1e6)),
+    privateDaoFeeBaseUnits: String(Math.round(privatePayFee * 1e6)),
+    processingFeeBaseUnits: String(Math.round(processingFee * 1e6)),
+    totalBaseUnits: String(quote.amountAtomic),
+  });
   job.platform_fee_bps = policy.platform_fee_bps;
   await storage.put("Quotes", quote.quote_id, quote, true);
   job.quote_id = quote.quote_id;
