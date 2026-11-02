@@ -357,12 +357,13 @@ export function WalletConnectButton({
               <div className="mt-4 text-[11px] uppercase tracking-[0.2em] text-white/44">Available on this device</div>
             </div>
             <div className="mt-3 grid gap-3">
-              {(detectedWallets.length > 0 ? detectedWallets : availableWallets).map((entry) => {
+              {detectedWallets.map((entry) => {
                 const isCurrent = wallet?.adapter.name === entry.adapter.name;
                 return (
                   <button
                     key={entry.adapter.name}
                     type="button"
+                    data-wallet-option={entry.adapter.name}
                     className="flex items-center justify-between gap-3 rounded-[24px] border border-white/10 bg-white/[0.04] px-4 py-4 text-left transition hover:border-cyan-300/25 hover:bg-white/[0.07]"
                     onClick={() => void handleWalletSelection(entry.adapter.name)}
                   >
@@ -393,6 +394,11 @@ export function WalletConnectButton({
                   </button>
                 );
               })}
+              {detectedWallets.length === 0 ? (
+                <div className="rounded-[24px] border border-white/10 bg-black/20 px-4 py-4 text-sm leading-6 text-white/64">
+                  No browser wallet is connected yet. Install or open one of the supported wallets below, then reopen this picker.
+                </div>
+              ) : null}
             </div>
             {installableWallets.length > 0 ? (
               <>
@@ -402,6 +408,7 @@ export function WalletConnectButton({
                     <a
                       key={`install-${entry.adapter.name}`}
                       href={getWalletInstallUrl(entry.adapter.name)}
+                      data-wallet-option={entry.adapter.name}
                       target="_blank"
                       rel="noreferrer"
                       className="flex items-center justify-between rounded-[24px] border border-white/10 bg-black/20 px-4 py-4 text-left transition hover:border-cyan-300/25 hover:bg-white/[0.07]"

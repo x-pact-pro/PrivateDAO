@@ -10,6 +10,7 @@ on:
       - "apps/web/**"
       - "scripts/build-web-mirror-bundle.sh"
       - "scripts/build-github-pages-redirect.mjs"
+      - "scripts/verify-wallet-connect-surface.ts"
   workflow_dispatch:
 
 permissions:
@@ -41,6 +42,9 @@ jobs:
 
       - name: Build root web mirror bundle
         run: npm run web:bundle:root
+
+      - name: Verify wallet connect surface desktop and mobile
+        run: PDAO_WALLET_SURFACE_DIR="$GITHUB_WORKSPACE/dist/web-mirror-root" node --import tsx scripts/verify-wallet-connect-surface.ts
 
       - name: Build GitHub Pages redirect artifact
         run: node scripts/build-github-pages-redirect.mjs
