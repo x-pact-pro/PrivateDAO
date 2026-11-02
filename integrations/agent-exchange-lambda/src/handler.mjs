@@ -3036,6 +3036,7 @@ function errorResponse(error) {
       ...(error.payment_id ? { payment_id: error.payment_id } : {}),
       ...(error.payment_required ? { payment_required: error.payment_required } : {}),
       ...(error.request_id ? { request_id: error.request_id } : {}),
+      ...(error.job_id ? { job_id: error.job_id } : {}),
       ...(error.quote ? { quote: error.quote } : {}),
       ...(error.retryAfterSeconds ? { retry_after_seconds: error.retryAfterSeconds } : {}),
     },
@@ -3239,6 +3240,18 @@ async function createExternalJob(serviceId, input = {}, access = null, paymentMo
     job.privatepay_pdao = privatePayment.pdao;
     job.privatepay_payment_required_header = privatePayment.header;
     job.privatepay_checkout_id = privatePayment.checkout_id;
+    if (privatePayment.status === "pending") {
+      job.privatepay_status = "pending";
+      await storage.put("Jobs", job.id, job);
+      const pending = new Error("PrivatePAY checkout is still pending");
+      pending.statusCode = 202;
+      pending.code = "PRIVATEPAY_CHECKOUT_PENDING";
+      pending.job_id = job.id;
+      pending.payment_id = privatePayment.payment_id;
+      pending.request_id = privatePayment.request_id;
+      pending.retryAfterSeconds = privatePayment.retry_after_seconds || 2;
+      throw pending;
+    }
     await storage.put("Jobs", job.id, job);
     const privateError = new Error("PrivatePAY payment required");
     privateError.statusCode = 402;
@@ -3803,6 +3816,18 @@ async function createJob(serviceId, input, admin = false, currency = "USDC", met
       job.privatepay_pdao = privatePayment.pdao;
       job.privatepay_payment_required_header = privatePayment.header;
       job.privatepay_checkout_id = privatePayment.checkout_id;
+      if (privatePayment.status === "pending") {
+        job.privatepay_status = "pending";
+        await storage.put("Jobs", job.id, job);
+        const pending = new Error("PrivatePAY checkout is still pending");
+        pending.statusCode = 202;
+        pending.code = "PRIVATEPAY_CHECKOUT_PENDING";
+        pending.job_id = job.id;
+        pending.payment_id = privatePayment.payment_id;
+        pending.request_id = privatePayment.request_id;
+        pending.retryAfterSeconds = privatePayment.retry_after_seconds || 2;
+        throw pending;
+      }
       await storage.put("Jobs", job.id, job);
       const privateError = new Error("PrivatePAY payment required");
       privateError.statusCode = 402;
@@ -3868,7 +3893,27 @@ async function createPrivatePayJobChallenge({ jobId, serviceId, payer, amount_ba
     description: `PrivateDAO Agent Exchange service ${serviceId}`,
     external_reference: `privatepay-job-${jobId}`,
   });
+  if (checkout.status === "pending") {
+    return {
+      request_id: localPayment.request_id,
+      pdao: localPayment.pdao,
+      checkout_id: checkout.payment_id,
+      payment_id: checkout.payment_id,
+      status: "pending",
+      retry_after_seconds: 2,
+    };
+  }
   const challenge = await requestPrivatePayCheckoutChallenge(config, { payment_id: checkout.payment_id });
+  if (challenge.status === "pending") {
+    return {
+      request_id: localPayment.request_id,
+      pdao: localPayment.pdao,
+      checkout_id: checkout.payment_id,
+      payment_id: checkout.payment_id,
+      status: "pending",
+      retry_after_seconds: challenge.retry_after_seconds || 2,
+    };
+  }
   const providerRequirements = decodePrivatePayRequiredHeader(challenge.payment_required_header);
   return {
     request_id: localPayment.request_id,
@@ -3909,7 +3954,7 @@ function privatePayPaymentHeader(event, body = {}) {
 
 async function submitPrivatePayPayment(jobId, event, body = {}) {
   const storage = await store();
-  const job = await storage.get("Jobs", jobId);
+  let job = await storage.get("Jobs", jobId);
   if (!job) throw Object.assign(new Error("job not found"), { statusCode: 404 });
   if (job.payment_mode !== "privatepay")
     throw Object.assign(new Error("job is not configured for privatepay"), { statusCode: 400 });
@@ -3917,10 +3962,25 @@ async function submitPrivatePayPayment(jobId, event, body = {}) {
     return completeJob(job, job.result, null);
   if (job.status === "recovery_required")
     return { job_id: jobId, status: "recovery_required", recovery_required: true, message: "private payment was accepted but execution requires non-replaying recovery", retryAfterSeconds: 30 };
+  if (job.status === "running")
+    return { job_id: jobId, status: "pending", message: "private payment is already executing; do not submit another payment", retryAfterSeconds: 3 };
   if (job.status !== "awaiting_payment")
     throw Object.assign(new Error("job is not awaiting private payment"), { statusCode: 409 });
-  if (!job.privatepay_requirements || !job.privatepay_payment_required_header)
-    throw Object.assign(new Error("private payment requirements are unavailable"), { statusCode: 503, code: "PRIVATEPAY_REQUIREMENTS_MISSING" });
+  if (!job.privatepay_requirements || !job.privatepay_payment_required_header) {
+    if (!job.privatepay_checkout_id)
+      throw Object.assign(new Error("private payment requirements are unavailable"), { statusCode: 503, code: "PRIVATEPAY_REQUIREMENTS_MISSING" });
+    const challenge = await requestPrivatePayCheckoutChallenge(config, { payment_id: job.privatepay_checkout_id });
+    if (challenge.status === "pending")
+      return { job_id: jobId, status: "pending", payment_id: job.privatepay_checkout_id, retryAfterSeconds: challenge.retry_after_seconds || 2 };
+    const providerRequirements = decodePrivatePayRequiredHeader(challenge.payment_required_header);
+    job = {
+      ...job,
+      privatepay_status: "payment_required",
+      privatepay_requirements: providerRequirements,
+      privatepay_payment_required_header: challenge.payment_required_header,
+    };
+    await storage.put("Jobs", job.id, job);
+  }
 
   const signatureHeader = privatePayPaymentHeader(event, body);
   if (!signatureHeader) {
@@ -4014,8 +4074,23 @@ async function submitPrivatePayPayment(jobId, event, body = {}) {
       throw Object.assign(new Error("PrivatePAY settlement was not confirmed by the facilitator"), { statusCode: 503, code: "PRIVATEPAY_SETTLEMENT_UNCONFIRMED" });
     }
   }
-  job.execution_started_at = now();
   const executionJob = { ...job, privatepay_settlement: settlement, privatepay_pdao_fee: pdaoFee };
+  const executionClaim = {
+    claim_started_at: now(),
+    claim_expires_at: new Date(Date.now() + 300000).toISOString(),
+    claim_installation_id: `privatepay-execution:${paymentId}:${randomUUID()}`,
+  };
+  try {
+    await storage.claim("Jobs", job.id, executionClaim);
+  } catch {
+    const current = await storage.get("Jobs", job.id);
+    if (current?.status === "completed" && current.receipt_id)
+      return completeJob(current, current.result, null);
+    return { job_id: jobId, status: "pending", message: "private payment execution is already in progress; do not submit another payment", retryAfterSeconds: 3 };
+  }
+  executionJob.status = "running";
+  executionJob.execution_started_at = now();
+  executionJob.privatepay_execution_claim = executionClaim.claim_installation_id;
   await storage.put("Jobs", job.id, executionJob);
   const executionInput = executionJob.execution_input || body.input || {};
   if (digest(executionInput) !== executionJob.input_hash)
@@ -5494,7 +5569,7 @@ async function handle(e) {
     const item = await (await store()).get("Jobs", paymentIntent[1]);
     if (item?.payment_mode === "privatepay") {
       if (!item.privatepay_requirements || !item.privatepay_payment_required_header)
-        return json({ error: "privatepay_not_ready" }, 503);
+        return json({ jobId: item.id, status: item.privatepay_status || "pending", paymentMode: "privatepay", paymentId: item.privatepay_checkout_id || null, retryAfterSeconds: 2 }, 202);
       return json({
         jobId: item.id,
         status: item.status,

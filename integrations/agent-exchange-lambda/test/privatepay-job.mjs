@@ -216,6 +216,63 @@ test("PrivatePAY job lifecycle verifies, settles, executes once, and redacts pub
   }
 });
 
+test("PrivatePAY jobs persist a pending checkout and fetch its challenge on retry", async () => {
+  const originalFetch = globalThis.fetch;
+  let checkoutCreates = 0;
+  let challengeRequests = 0;
+  const checkoutPayment = "d".repeat(64);
+  globalThis.fetch = async (url, init = {}) => {
+    const target = String(url);
+    const payload = JSON.parse(init.body || "{}");
+    if (payload.method === "getAccountInfo")
+      return new Response(JSON.stringify({ jsonrpc: "2.0", id: 1, result: { value: null } }), { status: 200, headers: { "content-type": "application/json" } });
+    if (target.endsWith("/v1/payments")) {
+      checkoutCreates += 1;
+      return new Response(JSON.stringify({ id: checkoutPayment, status: "pending" }), { status: 202, headers: { "content-type": "application/json" } });
+    }
+    if (target.endsWith(`/v1/x402/payments/${checkoutPayment}/pay`)) {
+      challengeRequests += 1;
+      const accepted = {
+        scheme: "exact-magicblock",
+        network: "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+        asset: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+        amount: "550000",
+        payTo: "2BJ4ezxqV9YJXc38D9duKBkdn4su4jE1beKUHwH663sL",
+        maxTimeoutSeconds: 60,
+        extra: { paymentId: checkoutPayment, cluster: "mainnet-private", settlement: "ephemeral-rollup", transaction: "AQID" },
+      };
+      return new Response(JSON.stringify({}), { status: 402, headers: { "content-type": "application/json", "PAYMENT-REQUIRED": encodePaymentRequiredHeader({ x402Version: 2, resource: { url: "api://job-pending" }, accepts: [accepted] }) } });
+    }
+    throw new Error(`unexpected fixture request: ${target}`);
+  };
+  try {
+    resetForTests();
+    const created = await request("/api/jobs", "POST", {
+      service_id: "verify.deep",
+      payment_mode: "privatepay",
+      input: { record: { lifecycle: "pending-checkout" } },
+      payer: "BkNcuvQZr6392aZCwcGnB6SQptV6vhWa7syJs5fgLz6",
+    });
+    assert.equal(created.statusCode, 202);
+    const pending = JSON.parse(created.body);
+    assert.equal(pending.code, "PRIVATEPAY_CHECKOUT_PENDING");
+    assert.equal(pending.payment_id, checkoutPayment);
+    assert.equal(checkoutCreates, 1);
+    const jobId = pending.job_id;
+    const intent = await request(`/api/jobs/${jobId}/payment-intent`);
+    assert.equal(intent.statusCode, 202);
+    assert.equal(JSON.parse(intent.body).paymentId, checkoutPayment);
+    const challenge = await request(`/api/jobs/${jobId}/privatepay`, "POST");
+    assert.equal(challenge.statusCode, 402);
+    assert.equal(JSON.parse(challenge.body).payment_required.accepts[0].extra.paymentId, checkoutPayment);
+    assert.equal(challengeRequests, 1);
+    const retryIntent = await request(`/api/jobs/${jobId}/payment-intent`);
+    assert.equal(retryIntent.statusCode, 200);
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
+
 test("generic PrivatePAY x402 endpoint performs verify and settle with a redacted response", async () => {
   const originalFetch = globalThis.fetch;
   const calls = [];
