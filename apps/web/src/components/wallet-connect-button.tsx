@@ -403,6 +403,7 @@ export function WalletConnectButton({
                     <a
                       key={`install-${entry.adapter.name}`}
                       href={getWalletInstallUrl(entry.adapter.name)}
+                      data-wallet-option={entry.adapter.name}
                       target="_blank"
                       rel="noreferrer"
                       className="flex items-center justify-between rounded-[24px] border border-white/10 bg-black/20 px-4 py-4 text-left transition hover:border-cyan-300/25 hover:bg-white/[0.07]"
