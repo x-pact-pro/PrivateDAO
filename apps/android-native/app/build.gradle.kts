@@ -7,6 +7,25 @@ plugins {
     id("org.jetbrains.kotlin.plugin.compose")
 }
 
+// Release signing reads these names only. Values come from the environment or
+// from Gradle properties (-P or a local, untracked gradle.properties). Never
+// commit a keystore, store password, key alias, or key password.
+private fun releaseCredential(name: String): String? {
+    val fromEnv = System.getenv(name)?.trim()?.takeIf { it.isNotEmpty() }
+    if (fromEnv != null) return fromEnv
+    return (findProperty(name) as? String)?.trim()?.takeIf { it.isNotEmpty() }
+}
+
+val releaseStoreFile = releaseCredential("PDAO_RELEASE_STORE_FILE")
+val releaseStorePassword = releaseCredential("PDAO_RELEASE_STORE_PASSWORD")
+val releaseKeyAlias = releaseCredential("PDAO_RELEASE_KEY_ALIAS")
+val releaseKeyPassword = releaseCredential("PDAO_RELEASE_KEY_PASSWORD")
+val releaseStore = releaseStoreFile?.let { file(it) }?.takeIf { it.isFile }
+val releaseSigningReady = releaseStore != null &&
+    !releaseStorePassword.isNullOrEmpty() &&
+    !releaseKeyAlias.isNullOrEmpty() &&
+    !releaseKeyPassword.isNullOrEmpty()
+
 android {
     namespace = "io.xpact.privatedao.android"
     compileSdk = 36
@@ -22,9 +41,31 @@ android {
         vectorDrawables.useSupportLibrary = true
     }
 
+    signingConfigs {
+        if (releaseSigningReady) {
+            create("release") {
+                storeFile = releaseStore
+                storePassword = releaseStorePassword
+                keyAlias = releaseKeyAlias
+                keyPassword = releaseKeyPassword
+            }
+        }
+    }
+
     buildTypes {
+        debug {
+            // The published testnet artifact is this variant. debuggable and the
+            // debug certificate are expected here and must not leak into release.
+            isDebuggable = true
+        }
         release {
+            isDebuggable = false
             isMinifyEnabled = false
+            // Absent credentials leave the release artifact unsigned. Do not fall
+            // back to the debug keystore.
+            if (releaseSigningReady) {
+                signingConfig = signingConfigs.getByName("release")
+            }
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",
@@ -69,7 +110,6 @@ dependencies {
     implementation("androidx.navigation:navigation-compose:2.9.0")
     implementation("androidx.compose.material3:material3")
     implementation("androidx.compose.ui:ui")
-    implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.foundation:foundation")
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
@@ -79,6 +119,10 @@ dependencies {
 
     implementation("com.solanamobile:mobile-wallet-adapter-clientlib-ktx:2.1.0")
 
+    // Preview, tooling, and instrumentation activities stay off the release classpath.
+    // ui-test-manifest is what merges PreviewActivity, ComponentActivity, and the
+    // three androidx.test InstrumentationActivityInvoker activities into debug APKs.
     debugImplementation("androidx.compose.ui:ui-tooling")
+    debugImplementation("androidx.compose.ui:ui-tooling-preview")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
 }

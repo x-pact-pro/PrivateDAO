@@ -4958,7 +4958,7 @@ async function fetchJupiterOrder(body: Record<string, unknown>) {
           requestId: null,
           transactionAvailable: false,
         },
-        raw: quoteRaw,
+        raw: stripJupiterOrderTransaction(quoteRaw),
       };
     }
   }
@@ -4981,10 +4981,17 @@ async function fetchJupiterOrder(body: Record<string, unknown>) {
       outAmount: typeof raw?.outAmount === "string" ? raw.outAmount : null,
       priceImpact: typeof raw?.priceImpact === "number" ? raw.priceImpact : null,
       requestId: typeof raw?.requestId === "string" ? raw.requestId : null,
-      transactionAvailable: typeof raw?.transaction === "string" && raw.transaction.length > 0,
+      transactionAvailable: false,
     },
-    raw,
+    raw: stripJupiterOrderTransaction(raw),
   };
+}
+
+function stripJupiterOrderTransaction(raw: Record<string, unknown> | null) {
+  if (!raw) return raw;
+  const quote = { ...raw };
+  delete quote.transaction;
+  return quote;
 }
 
 async function handleIkaCustodyPrepare(body: Record<string, unknown>) {

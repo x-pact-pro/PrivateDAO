@@ -4,3 +4,7 @@ build/
 app/build/
 .idea/
 captures/
+*.jks
+*.keystore
+keystore.properties
+release-signing.properties

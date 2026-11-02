@@ -93,7 +93,12 @@ export async function POST(request: Request) {
       );
     }
 
-    const routePlan = Array.isArray(raw?.routePlan) ? raw.routePlan : [];
+    // Quote-only until the order-transaction path is independently verified.
+    // Drop the executable swap transaction before it can reach a browser bundle.
+    const quoteRaw = raw ? { ...raw } : null;
+    if (quoteRaw) delete quoteRaw.transaction;
+
+    const routePlan = Array.isArray(quoteRaw?.routePlan) ? quoteRaw.routePlan : [];
     const topRoutes = routePlan.slice(0, 4).map((entry) => {
       const item = (entry ?? {}) as Record<string, unknown>;
       const swapInfo = ((item.swapInfo ?? {}) as Record<string, unknown>);
@@ -127,13 +132,14 @@ export async function POST(request: Request) {
           outUsdValue: typeof raw?.outUsdValue === "number" ? raw.outUsdValue : null,
           priceImpact: typeof raw?.priceImpact === "number" ? raw.priceImpact : null,
           slippageBps: typeof raw?.slippageBps === "number" ? raw.slippageBps : null,
-          gasless: typeof raw?.gasless === "boolean" ? raw.gasless : null,
-          requestId: typeof raw?.requestId === "string" ? raw.requestId : null,
-          totalTime: typeof raw?.totalTime === "number" ? raw.totalTime : null,
-          transactionAvailable: typeof raw?.transaction === "string" ? raw.transaction.length > 0 : false,
+          gasless: typeof quoteRaw?.gasless === "boolean" ? quoteRaw.gasless : null,
+          requestId: typeof quoteRaw?.requestId === "string" ? quoteRaw.requestId : null,
+          totalTime: typeof quoteRaw?.totalTime === "number" ? quoteRaw.totalTime : null,
+          transactionAvailable: false,
         },
+        executionBoundary: "quote-only-no-order-transaction-until-server-api-key",
         topRoutes,
-        raw,
+        raw: quoteRaw,
       },
       { status: 200 },
     );

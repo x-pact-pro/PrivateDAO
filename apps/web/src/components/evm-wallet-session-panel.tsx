@@ -62,7 +62,7 @@ export function EvmWalletSessionPanel() {
       const chain = await provider.request({ method: "eth_chainId" }) as string;
       setAddress(accounts[0] ?? null);
       setActiveChainId(chain);
-      setStatus(chain.toLowerCase() === toChainHex(selected.chainId).toLowerCase() ? `${selected.label} is ready for this session.` : "Wallet connected. Switch to the selected network before signing.");
+      setStatus(chain.toLowerCase() === toChainHex(selected.chainId).toLowerCase() ? `${selected.label} is connected. This session stays read-only.` : "Wallet connected. Switch networks only to read the selected chain. This session does not sign.");
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "Wallet connection was cancelled.");
     }
@@ -79,7 +79,7 @@ export function EvmWalletSessionPanel() {
       await provider.request({ method: "wallet_switchEthereumChain", params: [{ chainId: toChainHex(selected.chainId) }] });
       const chain = await provider.request({ method: "eth_chainId" }) as string;
       setActiveChainId(chain);
-      setStatus(`${selected.label} is ready for this session.`);
+      setStatus(`${selected.label} is connected. This session stays read-only.`);
     } catch (cause) {
       const code = typeof cause === "object" && cause !== null && "code" in cause ? (cause as { code?: number }).code : undefined;
       if (code === 4902) {
@@ -88,7 +88,7 @@ export function EvmWalletSessionPanel() {
             method: "wallet_addEthereumChain",
             params: [{ chainId: toChainHex(selected.chainId), chainName: selected.label, nativeCurrency: { name: selected.currency, symbol: selected.currency, decimals: 18 }, rpcUrls: [selected.rpcUrl], blockExplorerUrls: [selected.explorer] }],
           });
-          setStatus(`${selected.label} was added to the wallet. Review the selected network before signing.`);
+          setStatus(`${selected.label} was added to the wallet. This session stays read-only.`);
           return;
         } catch (addCause) {
           setError(addCause instanceof Error ? addCause.message : "The wallet did not add this network.");
@@ -105,9 +105,9 @@ export function EvmWalletSessionPanel() {
     <section className="mt-8 rounded-3xl border border-white/10 bg-white/[0.035] p-5 sm:p-7">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <div className="text-xs font-semibold uppercase tracking-[0.22em] text-cyan-200/80">Wallet session</div>
+          <div className="text-xs font-semibold uppercase tracking-[0.22em] text-cyan-200/80">Read-only wallet session</div>
           <h2 className="mt-2 text-xl font-semibold text-white">Connect through the network your organization chooses.</h2>
-          <p className="mt-2 max-w-2xl text-sm leading-6 text-white/60">This check only confirms wallet access and network selection. No transaction is created or signed here.</p>
+          <p className="mt-2 max-w-2xl text-sm leading-6 text-white/60">Read-only. This panel only confirms wallet access and the selected test network. It does not create a transfer, swap, approval, or signature on Ethereum, Base, Arbitrum, or any other chain.</p>
         </div>
         <Wallet className="h-6 w-6 text-cyan-200" />
       </div>
