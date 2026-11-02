@@ -313,7 +313,7 @@ test("generic PrivatePAY x402 endpoint performs verify and settle with a redacte
     const input = { payer: "BkNcuvQZr6392aZCwcGnB6SQptV6vhWa7syJs5fgLz6", resource: "https://agents.example/api/generic", provider_id: "provider-1", amount_base_units: "1000" };
     const unpaid = await request("/api/privatepay/x402", "POST", input);
     assert.equal(unpaid.statusCode, 402);
-    assert.match(checkoutRequest.externalReference, /^privatepay-x402-[a-f0-9]{32}-[a-f0-9]{32}$/);
+    assert.match(checkoutRequest.externalReference, /^privatepay-x402-pp_[a-f0-9]{32}$/);
     const challenge = JSON.parse(unpaid.body);
     const paymentRequired = JSON.parse(Buffer.from(unpaid.headers["PAYMENT-REQUIRED"], "base64url").toString("utf8"));
     const signature = encodePaymentSignatureHeader({
@@ -374,6 +374,11 @@ test("generic PrivatePAY x402 resumes a pending checkout by payment id", async (
     const resumed = await request("/api/privatepay/x402", "POST", { ...input, payment_id: checkoutPayment });
     assert.equal(resumed.statusCode, 402);
     assert.equal(JSON.parse(resumed.body).payment_id, checkoutPayment);
+    const resumedWithoutId = await request("/api/privatepay/x402", "POST", input);
+    assert.equal(resumedWithoutId.statusCode, 402);
+    assert.equal(JSON.parse(resumedWithoutId.body).payment_id, checkoutPayment);
+    const foreign = await request("/api/privatepay/x402", "POST", { ...input, payment_id: "e".repeat(64) });
+    assert.equal(foreign.statusCode, 409);
     assert.equal(checkoutCreates, 1);
   } finally {
     globalThis.fetch = originalFetch;

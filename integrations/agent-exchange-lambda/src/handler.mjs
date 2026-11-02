@@ -4054,10 +4054,29 @@ async function submitPrivatePayPayment(jobId, event, body = {}) {
     }
   }
   if (!settlement) {
+    const settlementClaim = {
+      claim_started_at: now(),
+      claim_expires_at: new Date(Date.now() + 15000).toISOString(),
+      claim_installation_id: `privatepay-settlement:${paymentId}:${randomUUID()}`,
+    };
+    try {
+      await storage.claim("Payments", paymentId, settlementClaim);
+      paymentClaim = await storage.get("Payments", paymentId);
+    } catch {
+      const current = await storage.get("Payments", paymentId);
+      if (current?.settlement) {
+        settlement = current.settlement;
+        paymentClaim = current;
+      } else {
+        return { job_id: jobId, status: "pending", message: "private payment settlement is already in progress; do not submit another payment", retryAfterSeconds: 2 };
+      }
+    }
+  }
+  if (!settlement) {
     try {
       settlement = await privatePayFacilitatorRequest(config, "settle", facilitatorPayload);
       if (settlement.status === "pending") {
-        await storage.put("Payments", paymentId, { ...paymentClaim, state: "settlement_pending", retry_after_seconds: settlement.retry_after_seconds || 2, updated_at: now() });
+        await storage.put("Payments", paymentId, { ...paymentClaim, state: "settlement_pending", claim_expires_at: new Date(0).toISOString(), retry_after_seconds: settlement.retry_after_seconds || 2, updated_at: now() });
         return { job_id: jobId, status: "pending", retryAfterSeconds: settlement.retry_after_seconds || 2 };
       }
       if (settlement.success !== true)
@@ -5643,11 +5662,39 @@ async function handle(e) {
       : null;
     const paymentSignature = e.headers?.["PAYMENT-SIGNATURE"] || e.headers?.["payment-signature"];
     if (!paymentSignature) {
+      const checkoutStore = await store();
+      const binding = {
+        kind: "privatepay_checkout",
+        payer: String(x402Input.payer || "").trim(),
+        resource: String(x402Input.resource || "").trim(),
+        provider_id: String(x402Input.provider_id || "").trim(),
+        amount_base_units: String(x402Input.amount_base_units || ""),
+        request_id: requirements.request_id,
+        pdao_selected: requirements.pdao.selected === true,
+        pdao_fee_base_units: requirements.pdao.selected === true ? String(requirements.pdao.fee_base_units || "") : null,
+      };
+      const bindingMatches = (record) => record
+        && record.payer === binding.payer
+        && record.resource === binding.resource
+        && record.provider_id === binding.provider_id
+        && record.amount_base_units === binding.amount_base_units
+        && record.request_id === binding.request_id
+        && record.pdao_selected === binding.pdao_selected
+        && record.pdao_fee_base_units === binding.pdao_fee_base_units;
+      const suppliedPaymentId = String(x402Input.payment_id || x402Input.paymentId || "").trim();
+      const requestKey = `privatepay_checkout_request_${requirements.request_id}`;
+      const paymentKey = suppliedPaymentId ? `privatepay_checkout_${suppliedPaymentId}` : null;
+      const suppliedRecord = paymentKey ? await checkoutStore.get("Payments", paymentKey) : null;
+      const requestRecord = await checkoutStore.get("Payments", requestKey);
+      if (suppliedPaymentId && !bindingMatches(suppliedRecord))
+        throw Object.assign(new Error("payment_id is not bound to this payer, resource, provider, and amount"), { statusCode: 409, code: "PRIVATEPAY_CHECKOUT_BINDING_MISMATCH" });
+      if (requestRecord && !bindingMatches(requestRecord))
+        throw Object.assign(new Error("existing PrivatePAY checkout binding does not match this request"), { statusCode: 409, code: "PRIVATEPAY_CHECKOUT_BINDING_MISMATCH" });
       // A pending response carries the provider payment id. Reusing it must
       // resume the same checkout instead of creating a second charge.
-      const existingPaymentId = String(x402Input.payment_id || x402Input.paymentId || "").trim();
+      const existingPaymentId = suppliedPaymentId || requestRecord?.payment_id || "";
       const externalReference = String(x402Input.external_reference || x402Input.externalReference || "").trim()
-        || `privatepay-x402-${requirements.request_id.slice(3)}-${randomUUID().replaceAll("-", "")}`;
+        || `privatepay-x402-${requirements.request_id}`;
       const checkout = existingPaymentId
         ? { payment_id: existingPaymentId, status: "resuming", expires_at: null }
         : await createPrivatePayCheckout(config, {
@@ -5658,12 +5705,22 @@ async function handle(e) {
           external_reference: externalReference,
           expires_in_seconds: x402Input.expires_in_seconds,
         });
+      const checkoutBinding = { ...binding, payment_id: checkout.payment_id, external_reference: externalReference, state: "checkout_created", updated_at: now() };
+      await checkoutStore.put("Payments", `privatepay_checkout_${checkout.payment_id}`, checkoutBinding);
+      await checkoutStore.put("Payments", requestKey, checkoutBinding);
       if (checkout.status === "pending")
         return json({ error: "payment_pending", payment_id: checkout.payment_id, status: "pending", retry_after_seconds: 2 }, 202, { "retry-after": "2" });
       const challenge = await requestPrivatePayCheckoutChallenge(config, { payment_id: checkout.payment_id });
       if (challenge.status === "pending")
         return json({ error: "payment_pending", payment_id: checkout.payment_id, status: "pending", retry_after_seconds: challenge.retry_after_seconds || 2 }, 202, { "retry-after": String(challenge.retry_after_seconds || 2) });
       const providerRequirements = decodePrivatePayRequiredHeader(challenge.payment_required_header);
+      const providerAccepts = providerRequirements.accepts[0];
+      const localAccepts = requirements.requirements.accepts[0];
+      if (providerAccepts?.extra?.paymentId !== checkout.payment_id
+        || providerAccepts?.amount !== localAccepts.amount
+        || providerAccepts?.asset !== localAccepts.asset
+        || providerAccepts?.network !== localAccepts.network)
+        throw Object.assign(new Error("MagicBlock returned a challenge for a different checkout"), { statusCode: 502, code: "PRIVATEPAY_CHECKOUT_BINDING_MISMATCH" });
       return json({
         error: "payment_required",
         x402: providerRequirements,
