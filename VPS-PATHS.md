@@ -23,6 +23,8 @@ Standalone Agent Exchange repository:
 
 GitHub, AWS, MongoDB, and hosted domains remain authoritative. The VPS checkout is a build/reference copy, not an automatic deployment source.
 
+Current VPS checkout note: `/home/pdaoops/workspaces/privatedao-commercial` was observed with an invalid Git object (`bad tree object HEAD`). Do not build from it or repair it in place. Use a trusted Git archive or a fresh clone into a disposable build directory.
+
 ## Mount and SSH
 
 ```bash
