@@ -684,6 +684,20 @@ test("PrivatePAY challenge has one explicit payment_required object and honest p
   assert.match(challenge.public_disclosure, /does not hide payment metadata from the authenticated provider/);
 });
 
+test("PrivatePAY never requires PDAO holdings for ordinary x402 execution", async () => {
+  const result = await createPrivatePayRequirements(magicBlockCheckoutConfig({ privatePayPdaoGateEnabled: true }), {
+    resource: "https://agents.example/api/service/verify",
+    provider_id: "provider-fixture",
+    amount_base_units: "1000",
+  }, { enabled: true });
+  const extra = result.requirements.accepts[0].extra;
+  assert.equal(result.pdao.required, false);
+  assert.equal(result.pdao.selected, false);
+  assert.equal(extra.pdao_required, false);
+  assert.equal(extra.pdao_optional, true);
+  assert.equal(Object.hasOwn(extra, "pdao_fee_base_units"), false);
+});
+
 test("PrivatePAY forwards MagicBlock verify to its versioned facilitator endpoint", async () => {
   const accepted = {
     scheme: "exact-magicblock",

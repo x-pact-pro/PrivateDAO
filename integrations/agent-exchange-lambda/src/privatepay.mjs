@@ -72,8 +72,9 @@ function pdaoFeeBaseUnits({ amountBaseUnits: amount, priceUsd, decimals, feeBps,
 }
 
 async function privatePayPdaoQuote(config, input, amount, { requireWallet = false, optional = false } = {}) {
-  if (config.privatePayPdaoGateEnabled === false) return { required: false, status: "disabled_by_configuration" };
-  if (optional) return { required: false, status: "optional" };
+  const benefitsSelected = input.pdao_benefits === true || input.pdaoBenefits === true;
+  if (!benefitsSelected || optional || config.privatePayPdaoGateEnabled === false)
+    return { required: false, selected: false, status: "optional", benefits_available: true };
   const payer = String(input.payer || input.wallet || "").trim();
   if (!SOLANA_ADDRESS.test(payer)) {
     if (requireWallet) throw Object.assign(new Error("payer wallet is required for the private PDAO gate"), { statusCode: 400, code: "PRIVATEPAY_PDAO_WALLET_REQUIRED" });
@@ -97,6 +98,7 @@ async function privatePayPdaoQuote(config, input, amount, { requireWallet = fals
   }
   return {
     required: true,
+    selected: true,
     status: "verified",
     mint: config.pdaoMint,
     wallet: payer,
@@ -477,7 +479,7 @@ export async function createPrivatePayRequirements(config, input = {}, liveStatu
   const providerId = String(input.provider_id || "").trim();
   if (!resource || !providerId) throw Object.assign(new Error("resource and provider_id are required"), { statusCode: 400 });
   const amount = amountBaseUnits(input);
-  const pdao = await privatePayPdaoQuote(config, input, amount, { requireWallet: input.require_pdao_wallet === true, optional: input.pdao_optional === true });
+  const pdao = await privatePayPdaoQuote(config, input, amount, { optional: input.pdao_optional === true });
   const magicBlockRail = isMagicBlockRail(config);
   const requestId = `pp_${digest({ resource, providerId, amount, nonce: input.nonce || null }).slice(0, 32)}`;
   const requirements = {
@@ -494,8 +496,10 @@ export async function createPrivatePayRequirements(config, input = {}, liveStatu
         provider_commitment: digest(providerId),
         request_id: requestId,
         paymentId: digest({ requestId, resource, providerId, amount }),
-        pdao_required: pdao.required,
-        ...(pdao.required ? {
+        pdao_required: false,
+        pdao_optional: true,
+        pdao_benefits_selected: pdao.selected === true,
+        ...(pdao.selected ? {
           pdao_mint: pdao.mint,
           pdao_fee_bps: pdao.fee_bps,
           pdao_fee_floor_usd: pdao.fee_floor_usd,
@@ -952,7 +956,9 @@ export function privatePayStatus(config) {
     privacy_audit_verified: privacyAuditVerified,
     payment_bound_quote_required: config.privatePayRequirePaymentBoundQuote === true,
     autopilot: privatePayAutopilotStatus(config),
-    pdao_required: config.privatePayPdaoGateEnabled !== false,
+    pdao_required: false,
+    pdao_optional: true,
+    pdao_benefits: "optional_holder_access_credits_discounts_and_priority",
     pdao_mint: config.pdaoMint || null,
     min_hold_usd: Number(config.privatePayPdaoMinHoldUsd || 25),
     fee_bps: Number(config.privatePayPdaoFeeBps || 100),
@@ -983,8 +989,7 @@ export function privatePayStatus(config) {
 }
 
 export async function createPrivatePayChallenge(config, input = {}, liveStatus = null) {
-  const { request_id: requestId, requirements, header, pdao } = await createPrivatePayRequirements(config, { ...input, require_pdao_wallet: true }, liveStatus);
-  if (pdao.required && pdao.status !== "verified") throw Object.assign(new Error("PrivatePAY PDAO entry requirement is not verified"), { statusCode: 503, code: "PRIVATEPAY_PDAO_NOT_VERIFIED", pdao });
+  const { request_id: requestId, requirements, header, pdao } = await createPrivatePayRequirements(config, input, liveStatus);
   return {
     x402Version: 2,
     request_id: requestId,

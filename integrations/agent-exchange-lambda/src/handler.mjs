@@ -3923,7 +3923,7 @@ async function submitPrivatePayPayment(jobId, event, body = {}) {
   }
   const payer = String(body.payer || body.wallet || "").trim();
   const pdaoFeeSignature = body.pdao_fee_signature || event.headers?.["X-PrivatePAY-PDAO-Fee-Signature"] || event.headers?.["x-privatepay-pdao-fee-signature"];
-  const pdaoFee = config.privatePayPdaoGateEnabled === false
+  const pdaoFee = job.privatepay_requirements?.accepts?.[0]?.extra?.pdao_benefits_selected !== true
     ? { required: false, status: "disabled_by_configuration" }
     : await verifyPrivatePayPdaoFee(config, {
       payer,
@@ -5576,7 +5576,7 @@ async function handle(e) {
       }, 402, { "PAYMENT-REQUIRED": challenge.payment_required_header });
     }
     const pdaoFeeSignature = x402Input.pdao_fee_signature || e.headers?.["X-PrivatePAY-PDAO-Fee-Signature"] || e.headers?.["x-privatepay-pdao-fee-signature"];
-    const pdaoFee = requirements.pdao.required
+    const pdaoFee = requirements.pdao.selected === true
       ? await verifyPrivatePayPdaoFee(config, { payer: x402Input.payer, signature: pdaoFeeSignature, pdao_fee_base_units: requirements.pdao.fee_base_units, amount_base_units: x402Input.amount_base_units, request_id: requirements.request_id })
       : { required: false, status: "not_required" };
     const paymentPayload = decodePrivatePaySignature(paymentSignature);
