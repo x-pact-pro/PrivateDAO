@@ -84,6 +84,10 @@ export function commercePricingForExistingQuote({
   privateDaoFeeBps = 0,
   privateDaoFeeFloorBaseUnits = 0,
   privateDaoFeeBaseUnits,
+  magicBlockFeeBaseUnits = null,
+  magicBlockFeeStatus = "not_observed",
+  magicBlockFeeSource = null,
+  platformFeeBaseUnits = 0,
   processingFeeBaseUnits = 0,
   totalBaseUnits,
 }) {
@@ -91,6 +95,10 @@ export function commercePricingForExistingQuote({
     serviceAmountBaseUnits,
     privateDaoFeeBps,
     privateDaoFeeFloorBaseUnits,
+    magicBlockFeeBaseUnits,
+    magicBlockFeeStatus,
+    magicBlockFeeSource,
+    platformFeeBaseUnits,
     processingFeeBaseUnits,
   });
   if (privateDaoFeeBaseUnits != null) pricing.private_dao_commission = amount(privateDaoFeeBaseUnits);

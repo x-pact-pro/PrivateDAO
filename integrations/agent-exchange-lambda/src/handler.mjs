@@ -935,7 +935,7 @@ function openapi() {
                 properties: {
                   service_id: { type: "string" },
                   input: { type: "object" },
-                  payment_mode: { type: "string", enum: ["direct", "privatepay"], default: "direct", description: "Use privatepay only when the reviewed PrivatePAY rail is explicitly enabled." },
+                  payment_mode: { type: "string", enum: ["direct", "privatepay"], default: "direct", description: "Use privatepay only when the reviewed PrivatePAY rail is explicitly enabled. The response includes the frozen commerce_pricing breakdown before signing." },
                 },
                 additionalProperties: false,
               },
@@ -2994,7 +2994,7 @@ async function recordRevenue(job, payment) {
       revenueClass: firstParty ? "first_party_service" : "external_seller_service",
       seller_agent_id: job.seller_agent_id || null,
       grossAmount,
-      providerAmount: grossAmount - protocolFee,
+      providerAmount: grossAmount,
       protocolFee,
       platformFeeAmount: protocolFee,
       feeBps,
@@ -3203,17 +3203,23 @@ async function createExternalJob(serviceId, input = {}, access = null, paymentMo
   const platformFee = Number(((grossAmount * policy.platform_fee_bps) / 10000).toFixed(6));
   const processingFee = Number(((grossAmount * policy.processing_fee_bps) / 10000).toFixed(6));
   const privatePayFee = normalizedPaymentMode === "privatepay" ? privatePayCommercialFee(grossAmount) : 0;
-  const sellerNet = Number((grossAmount - platformFee).toFixed(6));
+  // The provider price is paid to the provider. Marketplace and route fees
+  // are added to the buyer total instead of silently reducing payout.
+  const sellerNet = grossAmount;
   const ata = await treasuryTokenAccount(config);
   const sellerPayoutConfig = service.payout || (await storage.get("Registry", service.seller_agent_id))?.payout || null;
   if (!sellerPayoutConfig?.address) throw Object.assign(new Error("seller payout is not configured"), { statusCode: 409 });
-  const buyerTotal = Number((grossAmount + processingFee + privatePayFee).toFixed(6));
+  const buyerTotal = Number((grossAmount + platformFee + processingFee + privatePayFee).toFixed(6));
   const quote = { created_at: now(), quote_id: `q_${randomUUID()}`, job_id: id, service_id: service.id, external: true, seller_agent_id: service.seller_agent_id, seller_service_id: service.service_id, seller_tool: service.tool, amount: buyerTotal, amountAtomic: Math.round(buyerTotal * 1e6), gross_amount: grossAmount, platform_fee_bps: policy.platform_fee_bps, platform_fee_amount: platformFee, processing_fee_bps: policy.processing_fee_bps, processing_fee_amount: processingFee, privatepay_fee_bps: normalizedPaymentMode === "privatepay" ? config.privatePayFeeBps : 0, privatepay_fee_amount: privatePayFee, network_fee_policy: "payer_direct", protocol_fee: platformFee, seller_net_amount: sellerNet, seller_amount: sellerNet, currency: service.asset, network: "solana-mainnet-beta", target_network: service.network, mint: config.usdcMint, treasuryOwner: config.treasury, treasuryTokenAccount: ata, recipient: config.treasury, paymentReference: `PDAOJOB:${id}`, expires_at: new Date(Date.now() + 1800000).toISOString(), payment_required: true, seller_payout: sellerPayoutConfig };
+  quote.settlement_route = normalizedPaymentMode === "privatepay" ? "privatepay-x402" : "solana-direct";
+  quote.magicblock_fee_amount = 0;
+  quote.magicblock_fee_status = "not_applicable";
   quote.commerce_pricing = commercePricingForExistingQuote({
     serviceAmountBaseUnits: String(Math.round(grossAmount * 1e6)),
     privateDaoFeeBps: quote.privatepay_fee_bps,
     privateDaoFeeFloorBaseUnits: String(Math.round(config.privatePayMinimumFeeUsd * 1e6)),
     privateDaoFeeBaseUnits: String(Math.round(privatePayFee * 1e6)),
+    platformFeeBaseUnits: String(Math.round(platformFee * 1e6)),
     processingFeeBaseUnits: String(Math.round(processingFee * 1e6)),
     totalBaseUnits: String(quote.amountAtomic),
   });
@@ -3241,7 +3247,7 @@ async function createExternalJob(serviceId, input = {}, access = null, paymentMo
     privateError.payment_required_header = privatePayment.header;
     throw privateError;
   }
-  return { job_id: id, status: "awaiting_payment", seller: { agent_id: service.seller_agent_id, name: service.provider }, payment_intent: { jobId: id, quoteId: quote.quote_id, amount: quote.amount.toFixed(6), amountBaseUnits: String(quote.amountAtomic), mint: quote.mint, network: quote.network, target_network: quote.target_network, treasuryOwner: quote.treasuryOwner, treasuryTokenAccount: quote.treasuryTokenAccount, paymentReference: quote.paymentReference, expiresAtUtc: quote.expires_at } };
+  return { job_id: id, status: "awaiting_payment", seller: { agent_id: service.seller_agent_id, name: service.provider }, payment_intent: { jobId: id, quoteId: quote.quote_id, amount: quote.amount.toFixed(6), amountBaseUnits: String(quote.amountAtomic), mint: quote.mint, network: quote.network, target_network: quote.target_network, settlement_route: quote.settlement_route, commerce_pricing: quote.commerce_pricing, treasuryOwner: quote.treasuryOwner, treasuryTokenAccount: quote.treasuryTokenAccount, paymentReference: quote.paymentReference, expiresAtUtc: quote.expires_at } };
 }
 async function completeExternalJob(job, execution, payment) {
   const storage = await store();
@@ -3258,7 +3264,9 @@ async function completeExternalJob(job, execution, payment) {
   const processingFeeBps = Number(quote?.processing_fee_bps ?? policy.processing_fee_bps ?? 0);
   const processingFee = Number(quote?.processing_fee_amount ?? ((grossAmount * processingFeeBps) / 10000).toFixed(6));
   const privatePayFee = Number(quote?.privatepay_fee_amount ?? 0);
-  const sellerNet = Number((grossAmount - platformFee).toFixed(6));
+  // Seller quotes are gross provider prices; buyer-paid fees do not reduce
+  // the provider payout.
+  const sellerNet = grossAmount;
   const privatePayment = payment?.payment_mode === "privatepay";
   const persistence = await persistEvidence(config, { job_id: job.id, service: job.service_id, input_hash: job.input_hash, completed_at: now(), result });
   const settlement = { id: `seller_settlement_${job.id}`, kind: "seller_settlement", job_id: job.id, seller_agent_id: job.seller_agent_id, gross_amount: grossAmount, buyer_amount: Number(payment?.accounting_amount ?? payment?.amount ?? quote?.amount ?? grossAmount), platform_fee_amount: platformFee, platform_fee_bps: feeBps, processing_fee_amount: processingFee, processing_fee_bps: processingFee, privatepay_fee_amount: privatePayFee, privatepay_fee_bps: Number(quote?.privatepay_fee_bps ?? 0), network_fee_lamports: Number(payment?.feeLamports || 0), network_fee_policy: privatePayment ? "private_rail_fee_payer_not_public" : "payer_direct", protocol_fee: platformFee, treasury_revenue_amount: Number((platformFee + privatePayFee).toFixed(6)), seller_net_amount: sellerNet, seller_amount: sellerNet, asset: payment?.currency || job.payment_asset, payout: (await storage.get("Registry", job.seller_agent_id))?.payout || null, status: "payable_pending_scheduled_settlement", created_at: now() };
@@ -4846,7 +4854,7 @@ async function sellerDashboard(agentId, ownerToken) {
   const sellerQuotes = quotes.filter((item) => item.seller_agent_id === agentId || item.listing_id === `seller_listing_${agentId}` || item.seller_agent_id === agentId);
   const sellerReceipts = receipts.filter((item) => item.seller_agent_id === agentId).map((item) => ({ receipt_id: item.receipt_id, job_id: item.job_id || null, service: item.service || null, gross_amount: item.gross_amount ?? item.amount ?? 0, platform_fee_amount: item.platform_fee_amount ?? 0, processing_fee_amount: item.processing_fee_amount ?? 0, network_fee_lamports: item.network_fee_lamports ?? 0, seller_net_amount: item.seller_net_amount ?? 0, asset: item.asset || null, status: item.status, verification_url: item.verification_url || null, completed_at: item.completed_at || null }));
   const sellerSettlements = settlements.filter((item) => item.kind === "seller_settlement" && item.seller_agent_id === agentId).map((item) => ({ id: item.id, job_id: item.job_id || null, gross_amount: item.gross_amount ?? 0, buyer_amount: item.buyer_amount ?? item.gross_amount ?? 0, platform_fee_amount: item.platform_fee_amount ?? 0, processing_fee_amount: item.processing_fee_amount ?? 0, network_fee_lamports: item.network_fee_lamports ?? 0, seller_net_amount: item.seller_net_amount ?? 0, asset: item.asset || null, payout: item.payout || null, payout_signature: item.payout_signature || null, status: item.status, created_at: item.created_at || null, settled_at: item.settled_at || null }));
-  const sellerRevenue = revenue.filter((item) => item.seller_agent_id === agentId || item.jobId && item.seller_agent_id === agentId).map((item) => ({ id: item.id, gross_amount: item.grossAmount ?? 0, buyer_amount: item.buyerAmount ?? item.grossAmount ?? 0, platform_fee_amount: item.platformFeeAmount ?? item.protocolFee ?? 0, processing_fee_amount: item.processingFeeAmount ?? 0, network_fee_lamports: item.networkFeeLamports ?? 0, seller_net_amount: Number((Number(item.grossAmount || 0) - Number(item.platformFeeAmount ?? item.protocolFee ?? 0)).toFixed(6)), asset: item.asset || null, timestamp: item.timestamp || null }));
+  const sellerRevenue = revenue.filter((item) => item.seller_agent_id === agentId || item.jobId && item.seller_agent_id === agentId).map((item) => ({ id: item.id, gross_amount: item.grossAmount ?? 0, buyer_amount: item.buyerAmount ?? item.grossAmount ?? 0, platform_fee_amount: item.platformFeeAmount ?? item.protocolFee ?? 0, processing_fee_amount: item.processingFeeAmount ?? 0, network_fee_lamports: item.networkFeeLamports ?? 0, seller_net_amount: Number(item.providerAmount ?? item.grossAmount ?? 0), asset: item.asset || null, timestamp: item.timestamp || null }));
   const accountingSales = sellerSettlements;
   return { agent: publicRegistryAgent(agent), readiness, listing: listing ? { id: listing.id, status: listing.status, payment_status: listing.payment_status, listing_fee_status: listing.listing_fee_status, commercial_publication_status: listing.commercial_publication_status, service_ids: listing.service_ids || [], receipt_id: listing.receipt_id || null } : null, quote_count: sellerQuotes.length, sales: { receipt_count: sellerReceipts.length, settlement_count: accountingSales.length, gross_amount: accountingSales.reduce((n, item) => n + Number(item.gross_amount || 0), 0), platform_fee_amount: accountingSales.reduce((n, item) => n + Number(item.platform_fee_amount || 0), 0), processing_fee_amount: accountingSales.reduce((n, item) => n + Number(item.processing_fee_amount || 0), 0), network_fee_lamports: accountingSales.reduce((n, item) => n + Number(item.network_fee_lamports || 0), 0), seller_net_amount: accountingSales.reduce((n, item) => n + Number(item.seller_net_amount || 0), 0), receipts: sellerReceipts }, settlements: sellerSettlements, revenue: sellerRevenue };
 }

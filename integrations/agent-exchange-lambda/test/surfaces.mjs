@@ -1086,12 +1086,12 @@ test("external seller paid lifecycle quotes, executes once, and records attribut
     assert.equal(created.statusCode, 201);
     const paymentIntent = JSON.parse(created.body).payment_intent;
     assert.equal(JSON.parse(created.body).status, "awaiting_payment");
-    assert.equal(paymentIntent.amount, "0.030000");
+    assert.equal(paymentIntent.amount, "0.033000");
     assert.equal(paymentIntent.network, "solana-mainnet-beta");
     assert.equal(paymentIntent.target_network, "solana-mainnet-beta");
     expectedPaymentReference = paymentIntent.paymentReference;
     expectedTreasuryTokenAccount = paymentIntent.treasuryTokenAccount;
-    expectedAmountAtomic = String(Math.round(0.03 * 1e6));
+    expectedAmountAtomic = String(Math.round(0.033 * 1e6));
 
     const paid = await request(`/api/external/jobs/${paymentIntent.jobId}/payment`, "POST", { signature: paymentSignature });
     assert.equal(paid.statusCode, 200, paid.body);
@@ -1105,8 +1105,8 @@ test("external seller paid lifecycle quotes, executes once, and records attribut
     assert.equal(paidBody.receipt.seller_settlement.protocol_fee, 0.003);
     assert.equal(paidBody.receipt.seller_settlement.platform_fee_amount, 0.003);
     assert.equal(paidBody.receipt.seller_settlement.platform_fee_bps, 1000);
-    assert.equal(paidBody.receipt.seller_settlement.seller_amount, 0.027);
-    assert.equal(paidBody.receipt.seller_net_amount, 0.027);
+    assert.equal(paidBody.receipt.seller_settlement.seller_amount, 0.03);
+    assert.equal(paidBody.receipt.seller_net_amount, 0.03);
     assert.equal(paidBody.receipt.target_network, "solana-mainnet-beta");
     assert.equal(paidBody.receipt.payment_signature, paymentSignature);
     assert.equal(mcpCalls, 1);
@@ -1119,7 +1119,7 @@ test("external seller paid lifecycle quotes, executes once, and records attribut
     const concurrentIntent = JSON.parse(concurrentJob.body).payment_intent;
     expectedPaymentReference = concurrentIntent.paymentReference;
     expectedTreasuryTokenAccount = concurrentIntent.treasuryTokenAccount;
-    expectedAmountAtomic = String(Math.round(0.03 * 1e6));
+    expectedAmountAtomic = String(Math.round(0.033 * 1e6));
     const concurrentPayments = await Promise.all(Array.from({ length: 3 }, () => request(`/api/external/jobs/${concurrentIntent.jobId}/payment`, "POST", { signature: "4".repeat(88) })));
     assert.ok(concurrentPayments.every((response) => [200, 202, 409].includes(response.statusCode)));
     assert.ok(concurrentPayments.some((response) => response.statusCode === 200));
