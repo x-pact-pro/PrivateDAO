@@ -6,7 +6,11 @@ import { chromium, type Browser } from "playwright-core";
 
 const ROOT = process.cwd();
 const WEB_OUT_DIR = path.resolve(ROOT, "apps/web/out");
-const SURFACE_DIR = fs.existsSync(WEB_OUT_DIR) ? WEB_OUT_DIR : path.resolve(ROOT);
+const SURFACE_DIR = process.env.PDAO_WALLET_SURFACE_DIR
+  ? path.resolve(process.env.PDAO_WALLET_SURFACE_DIR)
+  : fs.existsSync(WEB_OUT_DIR)
+    ? WEB_OUT_DIR
+    : path.resolve(ROOT);
 
 const CONTENT_TYPES: Record<string, string> = {
   ".css": "text/css; charset=utf-8",
@@ -113,61 +117,44 @@ async function main() {
       executablePath: chrome,
       headless: true,
     });
-    const page = await browser.newPage({ viewport: { width: 1440, height: 1200 } });
-    const failures: string[] = [];
+    for (const viewport of [{ name: "desktop", width: 1440, height: 1200 }, { name: "mobile", width: 390, height: 844 }]) {
+      const page = await browser.newPage({ viewport: { width: viewport.width, height: viewport.height } });
+      const failures: string[] = [];
 
-    page.on("pageerror", (error) => {
-      if (error.message.includes("Minified React error #418")) {
-        return;
-      }
-      failures.push(`[pageerror] ${error.message}`);
-    });
-    page.on("requestfailed", (request) => {
-      if (request.method() === "HEAD") {
-        return;
-      }
-      const requestUrl = request.url();
-      if (isAllowedExternalRequest(requestUrl)) {
-        return;
-      }
-      const errorText = request.failure()?.errorText || "";
-      if (errorText.includes("net::ERR_ABORTED")) {
-        return;
-      }
-      failures.push(`${request.method()} ${requestUrl} :: ${errorText}`);
-    });
+      page.on("pageerror", (error) => {
+        if (!error.message.includes("Minified React error #418")) failures.push(`[pageerror] ${error.message}`);
+      });
+      page.on("requestfailed", (request) => {
+        if (request.method() === "HEAD" || isAllowedExternalRequest(request.url())) return;
+        const errorText = request.failure()?.errorText || "";
+        if (!errorText.includes("net::ERR_ABORTED")) failures.push(`${request.method()} ${request.url()} :: ${errorText}`);
+      });
 
-    await page.goto(url, { waitUntil: "networkidle" });
-    await page.waitForTimeout(5000);
-
-    const button = page.locator("[data-wallet-connect-trigger='true']").first();
-    const buttonText = (await button.textContent())?.trim();
-    const isDisabled = await button.isDisabled();
-
-    if (!buttonText?.toLowerCase().includes("connect")) {
-      throw new Error(`Wallet trigger did not render the expected label. Saw: ${buttonText ?? "empty"}`);
+      await page.goto(url, { waitUntil: "networkidle" });
+      await page.waitForTimeout(5000);
+      const button = page.locator("[data-wallet-connect-trigger='true']").first();
+      const buttonText = (await button.textContent())?.trim();
+      if (!buttonText?.toLowerCase().includes("connect")) throw new Error(`${viewport.name}: wallet trigger label is ${buttonText ?? "empty"}`);
+      if (await button.isDisabled()) throw new Error(`${viewport.name}: wallet trigger stayed disabled after hydration.`);
+      await button.click();
+      const picker = page.getByRole("heading", { name: /choose a supported wallet/i });
+      await picker.waitFor({ state: "visible", timeout: 5000 });
+      const pickerText = await page.locator("body").innerText();
+      for (const walletName of ["Solflare", "Phantom", "Glow", "Backpack"]) {
+        if (!pickerText.includes(walletName)) throw new Error(`${viewport.name}: wallet picker is missing ${walletName}.`);
+      }
+      await page.getByRole("button", { name: /open all wallet options/i }).click();
+      const walletModal = page.locator(".wallet-adapter-modal:visible").first();
+      await walletModal.waitFor({ state: "visible", timeout: 5000 });
+      const walletModalText = await walletModal.innerText();
+      if (!walletModalText.includes("Solflare") && !walletModalText.includes("Phantom")) {
+        throw new Error(`${viewport.name}: adapter modal did not expose a Solana wallet option.`);
+      }
+      if (failures.length > 0) throw new Error(`${viewport.name}: wallet surface emitted failures:\n${failures.join("\n")}`);
+      await page.close();
     }
 
-    if (isDisabled) {
-      throw new Error("Wallet trigger stayed disabled after hydration.");
-    }
-
-    await button.click();
-    const walletModal = page.locator(".wallet-adapter-modal:visible").first();
-    await walletModal.waitFor({ state: "visible", timeout: 5000 });
-    const walletModalText = await walletModal.innerText();
-
-    for (const walletName of ["Solflare", "Phantom", "Glow", "Backpack"]) {
-      if (!walletModalText.includes(walletName)) {
-        throw new Error(`Wallet modal is missing ${walletName}.`);
-      }
-    }
-
-    if (failures.length > 0) {
-      throw new Error(`Wallet surface emitted failures:\n${failures.join("\n")}`);
-    }
-
-    console.log("Wallet connect surface verification: PASS");
+    console.log("Wallet connect surface verification: PASS desktop+mobile");
   } finally {
     await browser?.close().catch(() => undefined);
     await close(server);
