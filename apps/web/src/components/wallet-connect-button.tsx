@@ -357,7 +357,7 @@ export function WalletConnectButton({
               <div className="mt-4 text-[11px] uppercase tracking-[0.2em] text-white/44">Available on this device</div>
             </div>
             <div className="mt-3 grid gap-3">
-              {(detectedWallets.length > 0 ? detectedWallets : availableWallets).map((entry) => {
+              {detectedWallets.map((entry) => {
                 const isCurrent = wallet?.adapter.name === entry.adapter.name;
                 return (
                   <button
@@ -394,6 +394,11 @@ export function WalletConnectButton({
                   </button>
                 );
               })}
+              {detectedWallets.length === 0 ? (
+                <div className="rounded-[24px] border border-white/10 bg-black/20 px-4 py-4 text-sm leading-6 text-white/64">
+                  No browser wallet is connected yet. Install or open one of the supported wallets below, then reopen this picker.
+                </div>
+              ) : null}
             </div>
             {installableWallets.length > 0 ? (
               <>
