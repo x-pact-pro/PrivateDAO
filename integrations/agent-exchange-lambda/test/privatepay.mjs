@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { decodePaymentRequiredHeader } from "@x402/core/http";
 import { PublicKey, TransactionMessage, VersionedTransaction } from "@solana/web3.js";
-import { assertPrivatePayPaymentPayload, auditPrivatePayTrace, auditPreparedPrivatePayTransfer, createPrivatePayChallenge, createPrivatePayCheckout, createPrivatePayRequirements, decodePrivatePaySignature, preparePrivatePayDeposit, preparePrivatePayTransfer, preparePrivatePayWithdrawal, privatePayFacilitatorRequest, privatePayStatus, probePrivatePayMerchantDelegation, probePrivatePayRail, probePrivatePayStealthHandle, publicPrivatePayFacilitatorResult, requestPrivatePayCheckoutChallenge } from "../src/privatepay.mjs";
+import { assertPrivatePayPaymentPayload, auditPrivatePayTrace, auditPreparedPrivatePayTransfer, createPrivatePayChallenge, createPrivatePayCheckout, createPrivatePayRequirements, decodePrivatePaySignature, preparePrivatePayDeposit, preparePrivatePayTransfer, preparePrivatePayWithdrawal, privatePayFacilitatorRequest, privatePayMagicBlockFacilitatorRequest, privatePayStatus, probePrivatePayMerchantDelegation, probePrivatePayRail, probePrivatePayStealthHandle, publicPrivatePayFacilitatorResult, requestPrivatePayCheckoutChallenge } from "../src/privatepay.mjs";
 import { assertPrivatePayNetworkAdapter } from "../src/privatepay-networks.mjs";
 
 const TEST_CONFIDENTIAL_MINT = new PublicKey(new Uint8Array(32).fill(7)).toBase58();
@@ -191,6 +191,38 @@ test("MagicBlock checkout challenge returns the provider PAYMENT-REQUIRED header
   assert.equal(calls[0].options.headers["X-Merchant-Id"], "merchant-fixture");
   assert.deepEqual(result, { payment_id: TEST_PAYMENT_ID, status: "payment_required", payment_required_header: header });
   assert.doesNotMatch(JSON.stringify(result), /privateKey|signature|transaction/);
+});
+
+test("MagicBlock SPL builder preserves documented 403 and 422 provider statuses", async () => {
+  for (const [providerStatus, expectedStatus] of [[403, 403], [422, 422], [500, 503]]) {
+    await assert.rejects(
+      preparePrivatePayTransfer(magicBlockCheckoutConfig({ privatePayRequireGasless: false }), {
+        payer: TEST_PAYER,
+        request_id: TEST_REQUEST_ID,
+        amount_base_units: "1000",
+        gasless: false,
+      }, async () => response(providerStatus, { error: { code: "fixture" } })),
+      (error) => error.code === "PRIVATEPAY_PROVIDER_REJECTED"
+        && error.statusCode === expectedStatus
+        && error.provider_status === providerStatus,
+    );
+  }
+});
+
+test("MagicBlock facilitator exposes 202 verify and settle as pending", async () => {
+  const accepted = {
+    scheme: "exact-magicblock",
+    network: "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+    asset: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+    amount: "1000",
+    payTo: TEST_PROVIDER_COMMITMENT.slice(0, 44),
+    extra: { paymentId: TEST_PAYMENT_ID, cluster: "mainnet-private", settlement: "ephemeral-rollup" },
+  };
+  const payload = { x402Version: 2, accepted, payload: { transaction: "AQ==" } };
+  for (const operation of ["verify", "settle"]) {
+    const result = await privatePayMagicBlockFacilitatorRequest(magicBlockCheckoutConfig(), operation, payload, async () => response(202, { status: "pending" }));
+    assert.deepEqual({ status: result.status, provider_status: result.provider_status, payment_id: result.payment_id }, { status: "pending", provider_status: 202, payment_id: TEST_PAYMENT_ID });
+  }
 });
 
 test("MagicBlock merchant checkout never calls the provider while its explicit gate is off", async () => {

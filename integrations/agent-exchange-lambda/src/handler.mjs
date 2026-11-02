@@ -3949,6 +3949,8 @@ async function submitPrivatePayPayment(jobId, event, body = {}) {
     return { job_id: jobId, status: "recovery_required", recovery_required: true, message: "private payment claim already exists; execution requires non-replaying recovery", retryAfterSeconds: 30 };
   }
   const verification = await privatePayFacilitatorRequest(config, "verify", facilitatorPayload);
+  if (verification.status === "pending")
+    return { job_id: jobId, status: "pending", retryAfterSeconds: verification.retry_after_seconds || 2 };
   if (verification.isValid !== true) {
     throw Object.assign(new Error("PrivatePAY payment was not accepted by the facilitator"), {
       statusCode: 402,
@@ -3976,6 +3978,8 @@ async function submitPrivatePayPayment(jobId, event, body = {}) {
   let settlement;
   try {
     settlement = await privatePayFacilitatorRequest(config, "settle", facilitatorPayload);
+    if (settlement.status === "pending")
+      return { job_id: jobId, status: "pending", retryAfterSeconds: settlement.retry_after_seconds || 2 };
     if (settlement.success !== true)
       throw new Error("PrivatePAY settlement was not confirmed by the facilitator");
     const onchainVerification = await verifyPrivatePayMainnetSettlement(config, {
@@ -5577,9 +5581,13 @@ async function handle(e) {
       : { required: false, status: "not_required" };
     const paymentPayload = decodePrivatePaySignature(paymentSignature);
     const verification = await privatePayMagicBlockFacilitatorRequest(config, "verify", paymentPayload);
+    if (verification.status === "pending")
+      return json({ error: "privatepay_verification_pending", request_id: requirements.request_id, payment_id: verification.payment_id, status: "pending", retry_after_seconds: verification.retry_after_seconds || 2 }, 202, { "retry-after": String(verification.retry_after_seconds || 2) });
     if (verification.isValid !== true)
       return json({ error: "privatepay_payment_invalid", request_id: requirements.request_id, status: "rejected" }, 402);
     const settlement = await privatePayMagicBlockFacilitatorRequest(config, "settle", paymentPayload);
+    if (settlement.status === "pending")
+      return json({ error: "privatepay_settlement_pending", request_id: requirements.request_id, payment_id: settlement.payment_id, status: "pending", retry_after_seconds: settlement.retry_after_seconds || 2 }, 202, { "retry-after": String(settlement.retry_after_seconds || 2) });
     if (settlement.success !== true)
       return json({ error: "privatepay_settlement_unconfirmed", request_id: requirements.request_id, status: "pending" }, 503);
     const onchainVerification = await verifyPrivatePayMainnetSettlement(config, {

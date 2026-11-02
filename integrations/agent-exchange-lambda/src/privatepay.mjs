@@ -368,7 +368,7 @@ export async function preparePrivatePayTransfer(config, input = {}, fetchImpl = 
   });
   const payload = await response.json().catch(() => ({}));
   if (!response.ok)
-    throw Object.assign(new Error(`PrivatePAY provider rejected transfer preparation (${response.status})`), { statusCode: 503, code: "PRIVATEPAY_PROVIDER_REJECTED", provider_status: response.status });
+    throw Object.assign(new Error(`PrivatePAY provider rejected transfer preparation (${response.status})`), { statusCode: splProviderStatusCode(response.status), code: "PRIVATEPAY_PROVIDER_REJECTED", provider_status: response.status });
   if (payload.kind !== "transfer" || typeof payload.transactionBase64 !== "string" || !Array.isArray(payload.requiredSigners))
     throw Object.assign(new Error("PrivatePAY provider returned an invalid transfer transaction"), { statusCode: 503, code: "PRIVATEPAY_INVALID_PROVIDER_RESPONSE" });
   const prepared = {
@@ -416,7 +416,7 @@ async function preparePrivatePayBaseTransaction(config, kind, path, body, reques
   });
   const payload = await response.json().catch(() => ({}));
   if (!response.ok)
-    throw Object.assign(new Error(`PrivatePAY provider rejected ${kind} preparation (${response.status})`), { statusCode: 503, code: "PRIVATEPAY_PROVIDER_REJECTED", provider_status: response.status });
+    throw Object.assign(new Error(`PrivatePAY provider rejected ${kind} preparation (${response.status})`), { statusCode: splProviderStatusCode(response.status), code: "PRIVATEPAY_PROVIDER_REJECTED", provider_status: response.status });
   if (payload.kind !== kind || typeof payload.transactionBase64 !== "string" || !Array.isArray(payload.requiredSigners))
     throw Object.assign(new Error(`PrivatePAY provider returned an invalid ${kind} transaction`), { statusCode: 503, code: "PRIVATEPAY_INVALID_PROVIDER_RESPONSE" });
   return {
@@ -543,6 +543,11 @@ function readResponseHeader(response, name) {
 function providerStatusCode(status) {
   const value = Number(status);
   return [202, 400, 401, 409, 503].includes(value) ? value : 503;
+}
+
+function splProviderStatusCode(status) {
+  const value = Number(status);
+  return [400, 403, 422, 503].includes(value) ? value : 503;
 }
 
 function providerRejectedError(message, code, response, payload = {}) {
@@ -688,6 +693,8 @@ export async function privatePayMagicBlockFacilitatorRequest(config, operation, 
     throw providerRejectedError(`MagicBlock facilitator rejected ${operation}`, "PRIVATEPAY_FACILITATOR_REJECTED", response, result);
   if (!result || typeof result !== "object" || Array.isArray(result))
     throw Object.assign(new Error(`MagicBlock facilitator returned an invalid ${operation} response`), { statusCode: 503, code: "PRIVATEPAY_INVALID_FACILITATOR_RESPONSE" });
+  if (response.status === 202)
+    return { operation, ...result, status: "pending", provider_status: 202, retry_after_seconds: 2, payment_id: paymentRequirements.extra.paymentId };
   return { operation, ...result, payment_id: paymentRequirements.extra.paymentId };
 }
 
@@ -775,6 +782,8 @@ export async function privatePayFacilitatorRequest(config, operation, payload, f
     throw providerRejectedError(`PrivatePAY facilitator rejected ${operation}`, "PRIVATEPAY_FACILITATOR_REJECTED", response, result);
   if (!result || typeof result !== "object" || Array.isArray(result))
     throw Object.assign(new Error(`PrivatePAY facilitator returned an invalid ${operation} response`), { statusCode: 503, code: "PRIVATEPAY_INVALID_FACILITATOR_RESPONSE" });
+  if (response.status === 202)
+    return { operation, ...result, status: "pending", provider_status: 202, retry_after_seconds: 2 };
   return { operation, ...result };
 }
 
