@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 
 const API_BASE = (process.env.NEXT_PUBLIC_AGENT_EXCHANGE_API_BASE || "https://agents.privatedao.org").replace(/\/$/, "");
 const DEFAULT_MINT = "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v";
+const VERIFICATION_NETWORKS = ["solana-mainnet-beta", "ethereum-mainnet", "base-mainnet", "arbitrum-mainnet"] as const;
 
 type Job = {
   id?: string;
@@ -37,6 +38,7 @@ async function readJson(response: Response) {
 
 export function WalletFreeServicePanel({ wallet }: { wallet: string }) {
   const [mint, setMint] = useState(DEFAULT_MINT);
+  const [network, setNetwork] = useState<(typeof VERIFICATION_NETWORKS)[number]>("solana-mainnet-beta");
   const [job, setJob] = useState<Job | null>(null);
   const [busy, setBusy] = useState(false);
   const [status, setStatus] = useState("Run a free, read-only verification while your wallet stays local.");
@@ -46,8 +48,8 @@ export function WalletFreeServicePanel({ wallet }: { wallet: string }) {
       setStatus("Connect a wallet first to continue.");
       return;
     }
-    if (!/^[1-9A-HJ-NP-Za-km-z]{32,88}$/.test(mint.trim())) {
-      setStatus("Enter a valid Solana mint address.");
+    if (!/^(?:[1-9A-HJ-NP-Za-km-z]{32,88}|0x[0-9a-fA-F]{40})$/.test(mint.trim())) {
+      setStatus("Enter a valid Solana or EVM asset address.");
       return;
     }
     setBusy(true);
@@ -59,7 +61,7 @@ export function WalletFreeServicePanel({ wallet }: { wallet: string }) {
         headers: { "content-type": "application/json", accept: "application/json" },
         body: JSON.stringify({
           service_id: "verify.basic",
-          input: { network: "solana-mainnet-beta", mint: mint.trim() },
+          input: { network, mint: mint.trim() },
           // Bind the free verification to the connected wallet for participation
           // records and downstream Questline validation. This remains read-only.
           payer: wallet,
@@ -89,7 +91,7 @@ export function WalletFreeServicePanel({ wallet }: { wallet: string }) {
     } finally {
       setBusy(false);
     }
-  }, [mint, wallet]);
+  }, [mint, network, wallet]);
 
   const jobId = job?.id || job?.job_id;
   const receiptId = job?.receipt?.id || job?.receipt?.receipt_id || job?.receipt_id;
@@ -105,7 +107,10 @@ export function WalletFreeServicePanel({ wallet }: { wallet: string }) {
           <div className="flex items-center gap-2 font-semibold text-[#10233f]"><CheckCircle2 className="h-4 w-4 text-[#16824c]" /> Wallet selected</div>
           <div className="mt-2 break-all font-mono text-xs">{wallet}</div>
         </div>
-        <label className="block text-sm font-semibold text-[#10233f]">Solana mint to verify
+        <label className="block text-sm font-semibold text-[#10233f]">Target network
+          <select value={network} onChange={(event) => setNetwork(event.target.value as (typeof VERIFICATION_NETWORKS)[number])} disabled={busy} className="mt-2 block w-full rounded-[10px] border border-[#cfe0ef] bg-white px-3 py-2.5 text-sm">{VERIFICATION_NETWORKS.map((item) => <option key={item} value={item}>{item}</option>)}</select>
+        </label>
+        <label className="block text-sm font-semibold text-[#10233f]">Asset or mint address to verify
           <input value={mint} onChange={(event) => setMint(event.target.value)} disabled={busy} spellCheck={false} className="mt-2 block w-full rounded-[10px] border border-[#cfe0ef] bg-white px-3 py-2.5 font-mono text-sm" />
         </label>
         <button type="button" onClick={() => void run()} disabled={busy || !wallet} className={cn(buttonVariants({ size: "default" }), "w-full justify-center bg-[#175cd3] hover:bg-[#124eb8]")}>
