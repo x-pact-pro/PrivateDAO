@@ -73,7 +73,7 @@ const gates = [
     args: ["--import", "tsx", "scripts/verify-wallet-connect-surface.ts"],
     skip: !hasBrowserArtifact && !liveBrowserSurface,
     reason: hasBrowserArtifact ? undefined : "apps/web/out is not present and live browser surface was not requested",
-    env: liveBrowserSurface ? { PDAO_WALLET_SURFACE_URL: process.env.PDAO_WALLET_SURFACE_URL || "https://privatedao.org/services/eitherway-live-dapp/" } : undefined,
+    env: liveBrowserSurface ? { PDAO_WALLET_SURFACE_URL: process.env.PDAO_WALLET_SURFACE_URL || "https://privatedao.org/wallet/" } : undefined,
   },
   {
     id: "managed-signer-base-sepolia",
