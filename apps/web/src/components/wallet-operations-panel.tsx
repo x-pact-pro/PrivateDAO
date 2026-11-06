@@ -116,11 +116,15 @@ function readAutopilotStatus(payload: unknown): AutopilotStatus {
 
 async function fetchWithTimeout(url: string, init: RequestInit = {}, timeoutMs = 10_000) {
   const controller = new AbortController();
-  const timeout = window.setTimeout(() => controller.abort(), timeoutMs);
+  let timedOut = false;
+  const timeout = window.setTimeout(() => { timedOut = true; controller.abort(); }, timeoutMs);
   const abort = () => controller.abort();
   init.signal?.addEventListener("abort", abort, { once: true });
   try {
     return await fetch(url, { ...init, signal: controller.signal });
+  } catch (error) {
+    if (timedOut) throw new Error("PrivateDAO service status timed out. Retry when the service is reachable.");
+    throw error;
   } finally {
     window.clearTimeout(timeout);
     init.signal?.removeEventListener("abort", abort);
@@ -157,12 +161,12 @@ export function WalletOperationsPanel({ wallet }: { wallet: string }) {
         const autopilotResponse = await fetchWithTimeout(`${API_BASE}/api/privatepay/autopilot/status`, { signal, headers: { accept: "application/json" } });
         setAutopilot(autopilotResponse.ok ? readAutopilotStatus(await autopilotResponse.json()) : { blockers: ["Agent policy status is temporarily unavailable."] });
       } catch (autopilotError) {
-        if (autopilotError instanceof DOMException && autopilotError.name === "AbortError") return;
+        if (signal?.aborted) return;
         setAutopilot({ blockers: ["Agent policy status is temporarily unavailable."] });
       }
       setState("ready");
     } catch (error) {
-      if (error instanceof DOMException && error.name === "AbortError") return;
+      if (signal?.aborted) return;
       setState("error");
       setMessage(error instanceof Error ? error.message : "Unable to load PrivateDAO operations.");
     }
