@@ -1,9 +1,11 @@
 import {
   Connection,
   type Commitment,
+  type Finality,
   type PublicKey,
   type Signer,
   type SendOptions,
+  type TokenAccountsFilter,
   type Transaction,
   type TransactionConfirmationStrategy,
   type VersionedTransaction,
@@ -12,7 +14,7 @@ import {
 export type SolanaBrowserConnection = Connection;
 export type SolanaWalletSendOptions = SendOptions & { signers?: Signer[] };
 export type SolanaWalletSender = (
-  transaction: Transaction,
+  transaction: Transaction | VersionedTransaction,
   connection: SolanaBrowserConnection,
   options?: SolanaWalletSendOptions,
 ) => Promise<string>;
@@ -23,6 +25,28 @@ export function createSolanaBrowserConnection(endpoint: string, commitment: Comm
 
 export function readAccountInfo(connection: SolanaBrowserConnection, address: PublicKey, commitment: Commitment) {
   return connection.getAccountInfo(address, commitment);
+}
+
+export function readBalance(connection: SolanaBrowserConnection, address: PublicKey, commitment: Commitment) {
+  return connection.getBalance(address, commitment);
+}
+
+export function readParsedTokenAccountsByOwner(
+  connection: SolanaBrowserConnection,
+  owner: PublicKey,
+  filter: TokenAccountsFilter,
+  commitment: Commitment,
+) {
+  return connection.getParsedTokenAccountsByOwner(owner, filter, commitment);
+}
+
+export function readSignaturesForAddress(
+  connection: SolanaBrowserConnection,
+  address: PublicKey,
+  options: Parameters<Connection["getSignaturesForAddress"]>[1],
+  commitment: Finality,
+) {
+  return connection.getSignaturesForAddress(address, options, commitment);
 }
 
 export function readTokenAccountBalance(connection: SolanaBrowserConnection, address: PublicKey, commitment: Commitment) {
@@ -49,17 +73,17 @@ export function submitSignedTransaction(
   return connection.sendRawTransaction(signed.serialize(), options);
 }
 
-export function confirmTransaction(
+export function confirmBrowserTransaction(
   connection: SolanaBrowserConnection,
   strategy: TransactionConfirmationStrategy,
   commitment: Commitment,
 ): ReturnType<Connection["confirmTransaction"]>;
-export function confirmTransaction(
+export function confirmBrowserTransaction(
   connection: SolanaBrowserConnection,
   strategy: string,
   commitment: Commitment,
 ): ReturnType<Connection["confirmTransaction"]>;
-export function confirmTransaction(
+export function confirmBrowserTransaction(
   connection: SolanaBrowserConnection,
   strategy: TransactionConfirmationStrategy | string,
   commitment: Commitment,
@@ -79,16 +103,16 @@ export async function sendAndConfirmBrowserTransaction(
   const signature = await sendTransaction(transaction, connection, options);
   const strategy = typeof confirmation === "function" ? confirmation(signature) : confirmation ?? signature;
   if (typeof strategy === "string") {
-    await confirmTransaction(connection, strategy, commitment);
+    await confirmBrowserTransaction(connection, strategy, commitment);
   } else {
-    await confirmTransaction(connection, strategy, commitment);
+    await confirmBrowserTransaction(connection, strategy, commitment);
   }
   return signature;
 }
 
 export function sendBrowserTransaction(
   connection: SolanaBrowserConnection,
-  transaction: Transaction,
+  transaction: Transaction | VersionedTransaction,
   sendTransaction: SolanaWalletSender,
   options?: SolanaWalletSendOptions,
 ) {
