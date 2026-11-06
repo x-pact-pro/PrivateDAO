@@ -177,7 +177,11 @@ export function EvmWalletSessionPanel() {
             method: "wallet_addEthereumChain",
             params: [{ chainId: toChainHex(selected.chainId), chainName: selected.label, nativeCurrency: { name: selected.currency, symbol: selected.currency, decimals: 18 }, rpcUrls: [selected.rpcUrl], blockExplorerUrls: [selected.explorer] }],
           });
-          setActiveChainId(toChainHex(selected.chainId));
+          const chain = await provider.request({ method: "eth_chainId" }) as string;
+          if (chain.toLowerCase() !== toChainHex(selected.chainId).toLowerCase()) {
+            throw new Error("The wallet added the network but did not switch to it. Switch networks before signing.");
+          }
+          setActiveChainId(chain);
           await refreshBalance(address, selected);
           setStatus(`${selected.label} was added to the wallet. Review the selected network before signing.`);
           return;
@@ -192,26 +196,28 @@ export function EvmWalletSessionPanel() {
 
   async function sendTransfer() {
     const provider = getProvider();
-    if (!provider || !address || !activeChainId) {
+    if (!provider || !address) {
       setError("Connect the EVM wallet before preparing a transfer.");
       return;
     }
-    if (!connectedOnSelected) {
-      setError("Switch the wallet to the selected network before signing.");
-      return;
-    }
-    if (!reviewConfirmed) {
-      setError("Review the recipient, asset, amount, and network before requesting a signature.");
-      return;
-    }
-    setError(null);
-    setTransferStatus("Preparing a wallet signature request…");
+    let submittedHash: string | null = null;
     try {
+      const liveChainId = await provider.request({ method: "eth_chainId" }) as string;
+      setActiveChainId(liveChainId);
+      if (liveChainId.toLowerCase() !== toChainHex(selected.chainId).toLowerCase()) {
+        throw new Error("Switch the wallet to the selected network before signing.");
+      }
+      if (!reviewConfirmed) {
+        throw new Error("Review the recipient, asset, amount, and network before requesting a signature.");
+      }
+      setError(null);
+      setTransferStatus("Preparing a wallet signature request…");
       const request = transferAsset === "usdc"
-        ? buildUsdcTransferRequest({ from: address, token: selected.usdcAddress ?? "", to: transferRecipient, amount: transferAmount, activeChainId, selectedChainId: selected.chainId })
-        : buildNativeTransferRequest({ from: address, to: transferRecipient, amount: transferAmount, activeChainId, selectedChainId: selected.chainId });
+        ? buildUsdcTransferRequest({ from: address, token: selected.usdcAddress ?? "", to: transferRecipient, amount: transferAmount, activeChainId: liveChainId, selectedChainId: selected.chainId })
+        : buildNativeTransferRequest({ from: address, to: transferRecipient, amount: transferAmount, activeChainId: liveChainId, selectedChainId: selected.chainId });
       await provider.request({ method: "eth_estimateGas", params: [request] });
       const hash = await provider.request({ method: "eth_sendTransaction", params: [request] }) as string;
+      submittedHash = hash;
       setTransferHash(hash);
       setTransferStatus("Submitted. Waiting for network confirmation…");
       setTransferAmount("");
@@ -229,7 +235,9 @@ export function EvmWalletSessionPanel() {
       setTransferStatus("Confirmed on the selected network.");
       await refreshBalance();
     } catch (cause) {
-      setTransferStatus(null);
+      setTransferStatus(submittedHash
+        ? "Submitted, but confirmation could not be completed. Keep the receipt link and verify it on the explorer before retrying."
+        : null);
       setError(cause instanceof Error ? cause.message : "The wallet rejected or could not submit the transfer.");
     }
   }
@@ -273,7 +281,7 @@ export function EvmWalletSessionPanel() {
           <input aria-label="Transfer recipient" value={transferRecipient} onChange={(event) => { setTransferRecipient(event.target.value); setReviewConfirmed(false); }} placeholder="Recipient 0x address" className="mt-3 w-full rounded-xl border border-white/10 bg-[#0b1421] px-3 py-3 font-mono text-sm text-white placeholder:font-sans placeholder:text-white/35" />
           <div className="mt-3 border border-white/10 bg-black/10 p-3 text-xs text-white/65"><div className="flex flex-wrap justify-between gap-2"><span>Network</span><strong className="text-white">{selected.label}</strong></div><div className="mt-1 flex flex-wrap justify-between gap-2"><span>Asset / amount</span><strong className="text-white">{transferAsset === "usdc" ? "USDC" : selected.currency} {transferAmount || "—"}</strong></div><div className="mt-1 flex flex-wrap justify-between gap-2"><span>Recipient</span><strong className="max-w-[70%] truncate font-mono text-white">{transferRecipient || "—"}</strong></div></div>
           <label className="mt-3 flex items-start gap-2 text-xs leading-5 text-white/70"><input type="checkbox" checked={reviewConfirmed} onChange={(event) => setReviewConfirmed(event.target.checked)} className="mt-1" /> I reviewed the network, recipient, asset, and amount. The next step will open my wallet for approval.</label>
-          <button type="button" onClick={() => void sendTransfer()} disabled={!connectedOnSelected || !reviewConfirmed || !transferAmount || !transferRecipient} className="mt-3 w-full rounded-xl bg-cyan-300 px-4 py-3 text-sm font-semibold text-slate-950 disabled:cursor-not-allowed disabled:opacity-40">Review and request signature</button>
+          <button type="button" onClick={() => void sendTransfer()} disabled={!connectedOnSelected || Boolean(transferHash && transferStatus?.startsWith("Submitted")) || !reviewConfirmed || !transferAmount || !transferRecipient} className="mt-3 w-full rounded-xl bg-cyan-300 px-4 py-3 text-sm font-semibold text-slate-950 disabled:cursor-not-allowed disabled:opacity-40">Review and request signature</button>
           {transferStatus ? <p className="mt-3 text-xs leading-5 text-emerald-200">{transferStatus}{transferHash ? <> {" "}<a href={`${selected.explorer}/tx/${transferHash}`} target="_blank" rel="noreferrer" className="underline underline-offset-2">Open receipt</a></> : null}</p> : null}
         </div>
       </> : null}
