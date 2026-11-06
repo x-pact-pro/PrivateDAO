@@ -111,7 +111,6 @@ export function WalletPaidServicePanel({ wallet, services }: { wallet: string; s
   useEffect(() => {
     if (!selected) return;
     setInput((current) => current === "{}" ? defaultInputForService(selected, wallet) : current);
-    setRecoveryRequired(false);
     setReceiptId(null);
   }, [selected, wallet]);
 
@@ -212,7 +211,7 @@ export function WalletPaidServicePanel({ wallet, services }: { wallet: string; s
     </CardHeader>
     <CardContent className="space-y-4">
       <div className="grid gap-4 sm:grid-cols-[minmax(0,1fr)_150px]">
-        <label className="text-sm font-semibold text-[#10233f]">Paid service<select value={serviceId || selected?.id || ""} onChange={(event) => { const next = paidServices.find((service) => service.id === event.target.value); setServiceId(event.target.value); setInput(defaultInputForService(next, wallet)); }} disabled={busy} className="mt-2 block w-full rounded-[10px] border border-[#cfe0d8] bg-white px-3 py-2.5"><option value="" disabled>Select a service</option>{paidServices.map((service) => <option key={service.id} value={service.id}>{service.title} · {service.price} {service.currency || "USDC"}</option>)}</select></label>
+        <label className="text-sm font-semibold text-[#10233f]">Paid service<select value={serviceId || selected?.id || ""} onChange={(event) => { const next = paidServices.find((service) => service.id === event.target.value); setServiceId(event.target.value); setRecoveryRequired(false); setReceiptId(null); setInput(defaultInputForService(next, wallet)); }} disabled={busy} className="mt-2 block w-full rounded-[10px] border border-[#cfe0d8] bg-white px-3 py-2.5"><option value="" disabled>Select a service</option>{paidServices.map((service) => <option key={service.id} value={service.id}>{service.title} · {service.price} {service.currency || "USDC"}</option>)}</select></label>
         <div className="rounded-[10px] border border-[#d6e6df] bg-[#f2fbf6] px-3 py-2.5 text-sm text-[#16824c]"><div className="text-xs uppercase tracking-[0.12em]">Payer</div><div className="mt-1 truncate font-mono text-xs">{wallet}</div></div>
       </div>
       <label className="block text-sm font-semibold text-[#10233f]">Service input JSON<textarea value={input} onChange={(event) => setInput(event.target.value)} disabled={busy} rows={4} className="mt-2 block w-full rounded-[10px] border border-[#cfe0d8] bg-white px-3 py-2.5 font-mono text-xs" /></label>
