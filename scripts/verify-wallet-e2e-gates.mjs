@@ -81,6 +81,7 @@ const gates = [
     skip: process.env.PDAO_AUTONOMOUS_SIGNER_PROVIDER !== "aws-secrets-manager"
       || !process.env.PDAO_AUTONOMOUS_SIGNER_SECRET_ID?.trim(),
     reason: "AWS Secrets Manager managed signer is not configured",
+    env: { NODE_ENV: "production" },
   },
   { id: "autonomous-wallet-gateway", args: ["--import", "tsx", "scripts/test-autonomous-wallet-gateway-e2e.mjs"] },
   { id: "b2b-b2c-wallet-gateway", args: ["--import", "tsx", "scripts/test-b2b-b2c-wallet-gateway-e2e.mjs"] },
