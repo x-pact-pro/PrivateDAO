@@ -111,6 +111,8 @@ export function WalletPaidServicePanel({ wallet, services }: { wallet: string; s
   useEffect(() => {
     if (!selected) return;
     setInput((current) => current === "{}" ? defaultInputForService(selected, wallet) : current);
+    setRecoveryRequired(false);
+    setReceiptId(null);
   }, [selected, wallet]);
 
   async function run() {
@@ -215,7 +217,7 @@ export function WalletPaidServicePanel({ wallet, services }: { wallet: string; s
       </div>
       <label className="block text-sm font-semibold text-[#10233f]">Service input JSON<textarea value={input} onChange={(event) => setInput(event.target.value)} disabled={busy} rows={4} className="mt-2 block w-full rounded-[10px] border border-[#cfe0d8] bg-white px-3 py-2.5 font-mono text-xs" /></label>
       {networkOptions.length > 0 ? <label className="block text-sm font-semibold text-[#10233f]">Target network<select value={(() => { try { const parsed = JSON.parse(input) as { network?: string }; return networkOptions.includes(parsed.network || "") ? parsed.network : networkOptions[0]; } catch { return networkOptions[0]; } })()} onChange={(event) => { try { const parsed = JSON.parse(input) as Record<string, unknown>; parsed.network = event.target.value; setInput(JSON.stringify(parsed, null, 2)); } catch { setInput(JSON.stringify({ network: event.target.value }, null, 2)); } }} disabled={busy} className="mt-2 block w-full rounded-[10px] border border-[#cfe0d8] bg-white px-3 py-2.5"><option value="" disabled>Select a network</option>{networkOptions.map((network) => <option key={network} value={network}>{network}</option>)}</select></label> : null}
-      {connectedWalletField ? <button type="button" onClick={() => setInput(JSON.stringify({ network: "solana-mainnet-beta", [connectedWalletField]: wallet }, null, 2))} disabled={busy} className="inline-flex min-h-9 items-center gap-2 border border-[#cfe0d8] px-3 text-xs font-semibold text-[#087f5b] hover:bg-[#f2fbf6]">Use connected wallet for this analysis</button> : null}
+      {connectedWalletField ? <button type="button" onClick={() => { try { const current = JSON.parse(input) as Record<string, unknown>; current[connectedWalletField] = wallet; setInput(JSON.stringify(current, null, 2)); } catch { setInput(JSON.stringify({ [connectedWalletField]: wallet }, null, 2)); } }} disabled={busy} className="inline-flex min-h-9 items-center gap-2 border border-[#cfe0d8] px-3 text-xs font-semibold text-[#087f5b] hover:bg-[#f2fbf6]">Use connected wallet for this analysis</button> : null}
       <button type="button" onClick={() => void run()} disabled={busy || !selected || recoveryRequired} className={cn(buttonVariants({ size: "default" }), "w-full justify-center bg-[#087f5b] hover:bg-[#066e4f]")}>{busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <ArrowRight className="h-4 w-4" />}{busy ? "Processing quote and payment..." : recoveryRequired ? "Recovery required" : "Get quote and pay"}</button>
       <div role="status" aria-live="polite" className="rounded-[12px] border border-[#d6e6df] bg-white px-4 py-3 text-sm leading-6 text-[#425570]">{status}</div>
       {receiptId ? <a href={`${API_BASE}/api/receipts/${encodeURIComponent(receiptId)}`} target="_blank" rel="noreferrer" className={cn(buttonVariants({ size: "sm", variant: "outline" }))}><CheckCircle2 className="h-4 w-4 text-[#16824c]" /><ReceiptText className="h-4 w-4" /> Open verified receipt</a> : null}
