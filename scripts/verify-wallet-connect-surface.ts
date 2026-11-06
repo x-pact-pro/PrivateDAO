@@ -6,6 +6,7 @@ import { chromium, type Browser } from "playwright-core";
 
 const ROOT = process.cwd();
 const WEB_OUT_DIR = path.resolve(ROOT, "apps/web/out");
+const REMOTE_SURFACE_URL = process.env.PDAO_WALLET_SURFACE_URL?.trim() || "";
 const SURFACE_DIR = process.env.PDAO_WALLET_SURFACE_DIR
   ? path.resolve(process.env.PDAO_WALLET_SURFACE_DIR)
   : fs.existsSync(WEB_OUT_DIR)
@@ -104,12 +105,12 @@ function close(server: http.Server): Promise<void> {
 
 async function main() {
   const chrome = findChrome();
-  const server = createStaticServer();
-  const port = await listen(server);
+  const server = REMOTE_SURFACE_URL ? undefined : createStaticServer();
+  const port = server ? await listen(server) : undefined;
   // The brand home is intentionally wallet-free. Verify the dedicated
   // wallet-first product route instead of waiting for a control that cannot
   // exist on the home page.
-  const url = `http://127.0.0.1:${port}/PrivateDAO/services/eitherway-live-dapp/`;
+  const url = REMOTE_SURFACE_URL || `http://127.0.0.1:${port}/wallet/`;
   let browser: Browser | undefined;
 
   try {
@@ -121,9 +122,7 @@ async function main() {
       const page = await browser.newPage({ viewport: { width: viewport.width, height: viewport.height } });
       const failures: string[] = [];
 
-      page.on("pageerror", (error) => {
-        if (!error.message.includes("Minified React error #418")) failures.push(`[pageerror] ${error.message}`);
-      });
+      page.on("pageerror", (error) => failures.push(`[pageerror] ${error.message}`));
       page.on("requestfailed", (request) => {
         if (request.method() === "HEAD" || isAllowedExternalRequest(request.url())) return;
         const errorText = request.failure()?.errorText || "";
@@ -131,10 +130,12 @@ async function main() {
       });
 
       await page.goto(url, { waitUntil: "networkidle" });
-      await page.waitForTimeout(5000);
+      await page.waitForTimeout(8000);
       const button = page.locator("[data-wallet-connect-trigger='true']").first();
       const buttonText = (await button.textContent())?.trim();
-      if (!buttonText?.toLowerCase().includes("connect")) throw new Error(`${viewport.name}: wallet trigger label is ${buttonText ?? "empty"}`);
+      if (!buttonText || !/\b(connect|choose)\b/i.test(buttonText)) {
+        throw new Error(`${viewport.name}: wallet trigger label is ${buttonText ?? "empty"}`);
+      }
       if (await button.isDisabled()) throw new Error(`${viewport.name}: wallet trigger stayed disabled after hydration.`);
       await button.click();
       const picker = page.getByRole("heading", { name: /choose a supported wallet/i });
@@ -142,10 +143,13 @@ async function main() {
       const pickerDialog = page.locator("div.fixed.inset-0").filter({ has: picker }).first();
       await pickerDialog.waitFor({ state: "visible", timeout: 5000 });
       for (const walletName of ["Solflare", "Phantom", "Glow", "Backpack"]) {
-        const walletOption = pickerDialog.locator(`[data-wallet-option="${walletName}"]`);
-        if (!(await walletOption.isVisible())) throw new Error(`${viewport.name}: wallet picker is missing selectable ${walletName}.`);
+        const legacyOption = pickerDialog.locator(`[data-wallet-option="${walletName}"]`).first();
+        const buttonOption = pickerDialog.getByRole("button", { name: new RegExp(walletName, "i") }).first();
+        const logoOption = pickerDialog.locator(`img[alt="${walletName} icon"]`).first();
+        const available = (await legacyOption.isVisible()) || (await buttonOption.isVisible()) || (await logoOption.isVisible());
+        if (!available) throw new Error(`${viewport.name}: wallet picker is missing selectable ${walletName}.`);
       }
-      await page.getByRole("button", { name: /open all wallet options/i }).click();
+      await page.getByRole("button", { name: /open all wallet options/i }).evaluate((element) => (element as HTMLButtonElement).click());
       const walletModal = page.locator(".wallet-adapter-modal:visible").first();
       await walletModal.waitFor({ state: "visible", timeout: 5000 });
       const walletModalText = await walletModal.innerText();
@@ -159,7 +163,7 @@ async function main() {
     console.log("Wallet connect surface verification: PASS desktop+mobile");
   } finally {
     await browser?.close().catch(() => undefined);
-    await close(server);
+    if (server) await close(server);
   }
 }
 

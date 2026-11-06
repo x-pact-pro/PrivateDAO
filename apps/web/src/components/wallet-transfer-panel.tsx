@@ -16,6 +16,7 @@ import { ArrowRight, CheckCircle2, Loader2, Send, ShieldCheck } from "lucide-rea
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { buildSolanaTxUrl, SOLANA_NETWORK } from "@/lib/solana-network";
+import { confirmBrowserTransaction, latestBlockhash, readAccountInfo, readParsedTokenAccountsByOwner, sendBrowserTransaction } from "@/lib/network-adapters/solana-browser";
 import { MAINNET_USDC_MINT } from "@/lib/pdao-wallet-assets";
 import { cn } from "@/lib/utils";
 
@@ -78,26 +79,26 @@ export function WalletTransferPanel() {
       } else {
         const mint = new PublicKey(MAINNET_USDC_MINT);
         const [classic, token2022] = await Promise.all([
-          connection.getParsedTokenAccountsByOwner(publicKey, { programId: TOKEN_PROGRAM_ID }, "confirmed"),
-          connection.getParsedTokenAccountsByOwner(publicKey, { programId: TOKEN_2022_PROGRAM_ID }, "confirmed"),
+          readParsedTokenAccountsByOwner(connection, publicKey, { programId: TOKEN_PROGRAM_ID }, "confirmed"),
+          readParsedTokenAccountsByOwner(connection, publicKey, { programId: TOKEN_2022_PROGRAM_ID }, "confirmed"),
         ]);
         const source = findTokenAccounts(classic).concat(findTokenAccounts(token2022)).find((account) => account.mint.equals(mint) && BigInt(account.amount) > BigInt(0));
         if (!source) throw new Error("No funded USDC token account was found for this wallet.");
         const amountBaseUnits = parseUnits(amount, source.decimals);
         if (BigInt(source.amount) < amountBaseUnits) throw new Error("The wallet balance is lower than the requested amount.");
         const destinationAta = getAssociatedTokenAddressSync(mint, destination, false, source.programId, ASSOCIATED_TOKEN_PROGRAM_ID);
-        if (!(await connection.getAccountInfo(destinationAta, "confirmed"))) {
+        if (!(await readAccountInfo(connection, destinationAta, "confirmed"))) {
           transaction.add(createAssociatedTokenAccountInstruction(publicKey, destinationAta, destination, mint, source.programId, ASSOCIATED_TOKEN_PROGRAM_ID));
         }
         transaction.add(createTransferCheckedInstruction(source.address, mint, destinationAta, publicKey, amountBaseUnits, source.decimals, [], source.programId));
       }
-      const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash("confirmed");
+      const { blockhash, lastValidBlockHeight } = await latestBlockhash(connection, "confirmed");
       transaction.feePayer = publicKey;
       transaction.recentBlockhash = blockhash;
       setStatus("Review the exact transaction in your wallet, then approve it to broadcast.");
-      const nextSignature = await sendTransaction(transaction, connection, { preflightCommitment: "confirmed" });
+      const nextSignature = await sendBrowserTransaction(connection, transaction, sendTransaction, { preflightCommitment: "confirmed" });
       setStatus("Transaction submitted. Waiting for Mainnet confirmation...");
-      await connection.confirmTransaction({ signature: nextSignature, blockhash, lastValidBlockHeight }, "confirmed");
+      await confirmBrowserTransaction(connection, { signature: nextSignature, blockhash, lastValidBlockHeight }, "confirmed");
       setSignature(nextSignature);
       setStatus("Transaction confirmed on Solana Mainnet.");
     } catch (error) {
@@ -115,11 +116,11 @@ export function WalletTransferPanel() {
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="grid gap-4 sm:grid-cols-[150px_1fr]">
-          <label className="text-sm font-semibold text-[#10233f]">Asset<select value={asset} onChange={(event) => setAsset(event.target.value as AssetChoice)} disabled={busy} className="mt-2 block w-full rounded-[10px] border border-[#cfe0ef] bg-white px-3 py-2.5 font-medium"><option value="USDC">USDC</option><option value="SOL">SOL</option></select></label>
-          <label className="text-sm font-semibold text-[#10233f]">Amount<input value={amount} onChange={(event) => setAmount(event.target.value)} inputMode="decimal" disabled={busy} className="mt-2 block w-full rounded-[10px] border border-[#cfe0ef] bg-white px-3 py-2.5" /></label>
+          <label htmlFor="wallet-transfer-asset" className="text-sm font-semibold text-[#10233f]">Asset<select id="wallet-transfer-asset" value={asset} onChange={(event) => setAsset(event.target.value as AssetChoice)} disabled={busy} className="mt-2 block w-full rounded-[10px] border border-[#cfe0ef] bg-white px-3 py-2.5 font-medium"><option value="USDC">USDC</option><option value="SOL">SOL</option></select></label>
+          <label htmlFor="wallet-transfer-amount" className="text-sm font-semibold text-[#10233f]">Amount<input id="wallet-transfer-amount" value={amount} onChange={(event) => setAmount(event.target.value)} inputMode="decimal" disabled={busy} className="mt-2 block w-full rounded-[10px] border border-[#cfe0ef] bg-white px-3 py-2.5" /></label>
         </div>
-        <label className="block text-sm font-semibold text-[#10233f]">Recipient<input value={recipient} onChange={(event) => setRecipient(event.target.value)} placeholder="Solana wallet address" spellCheck={false} disabled={busy} className="mt-2 block w-full rounded-[10px] border border-[#cfe0ef] bg-white px-3 py-2.5 font-mono text-sm" /></label>
-        <div className="rounded-[12px] border border-[#dce5f0] bg-[#f7faff] p-4 text-sm"><div className="flex items-center gap-2 font-semibold text-[#10233f]"><ShieldCheck className="h-4 w-4 text-[#175cd3]" /> Review before signing</div><dl className="mt-3 grid gap-2 text-xs sm:grid-cols-3"><div><dt className="text-[#7a8ba0]">Asset</dt><dd className="font-medium text-[#10233f]">{review.asset}</dd></div><div><dt className="text-[#7a8ba0]">Amount</dt><dd className="font-medium text-[#10233f]">{review.amount}</dd></div><div className="min-w-0"><dt className="text-[#7a8ba0]">Recipient</dt><dd className="truncate font-mono text-[#10233f]">{review.recipient}</dd></div></dl></div>
+        <label htmlFor="wallet-transfer-recipient" className="block text-sm font-semibold text-[#10233f]">Recipient<input id="wallet-transfer-recipient" value={recipient} onChange={(event) => setRecipient(event.target.value)} placeholder="Solana wallet address" spellCheck={false} disabled={busy} className="mt-2 block w-full rounded-[10px] border border-[#cfe0ef] bg-white px-3 py-2.5 font-mono text-sm" /></label>
+        <div className="rounded-[12px] border border-[#dce5f0] bg-[#f7faff] p-4 text-sm"><div className="flex items-center gap-2 font-semibold text-[#10233f]"><ShieldCheck className="h-4 w-4 text-[#175cd3]" /> Review before signing</div><dl className="mt-3 grid gap-2 text-xs sm:grid-cols-3"><div><dt className="text-[#52647d]">Asset</dt><dd className="font-medium text-[#10233f]">{review.asset}</dd></div><div><dt className="text-[#52647d]">Amount</dt><dd className="font-medium text-[#10233f]">{review.amount}</dd></div><div className="min-w-0"><dt className="text-[#52647d]">Recipient</dt><dd className="truncate font-mono text-[#10233f]">{review.recipient}</dd></div></dl></div>
         <button type="button" onClick={() => void submit()} disabled={!connected || busy || !recipient.trim()} className={cn(buttonVariants({ size: "default" }), "w-full justify-center bg-[#175cd3] hover:bg-[#124eb8]")}>{busy ? <Loader2 className="h-4 w-4 animate-spin" /> : signature ? <CheckCircle2 className="h-4 w-4" /> : <ArrowRight className="h-4 w-4" />} {busy ? "Confirming..." : signature ? "Confirmed" : "Review and send"}</button>
         <div role="status" aria-live="polite" className="rounded-[12px] border border-[#dce5f0] bg-white px-4 py-3 font-mono text-xs leading-5 text-[#425570]">{status}</div>
         {signature ? <a className="block truncate text-xs font-medium text-[#175cd3] underline-offset-4 hover:underline" href={buildSolanaTxUrl(signature)} target="_blank" rel="noreferrer">View confirmed transaction: {signature}</a> : null}

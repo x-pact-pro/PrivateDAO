@@ -3,12 +3,65 @@ import { spawnSync } from "node:child_process";
 import path from "node:path";
 
 const root = process.cwd();
-const hasMongoUri = Boolean((process.env.PDAO_WALLET_MONGODB_URI || process.env.MONGODB_URI || "").trim());
+const hasMongoUri = Boolean((process.env.PDAO_WALLET_MONGODB_URI
+  || process.env.MONGODB_URI
+  || process.env.PDAO_WALLET_MONGODB_SECRET_ID
+  || "").trim());
 const hasBrowserArtifact = existsSync(path.join(root, "apps/web/out"));
+const liveBrowserSurface = process.env.PDAO_WALLET_LIVE_SURFACE === "1";
 
 const gates = [
   { id: "wallet-security-local", args: ["--import", "tsx", "scripts/test-wallet-security-layer.mjs"] },
-  { id: "kernel-gateway-local", args: ["scripts/test-kernel-gateway.mjs"] },
+  { id: "evm-transaction-safety-local", args: ["--experimental-strip-types", "apps/web/scripts/test-evm-transaction-safety.mjs"] },
+  {
+    id: "kernel-gateway-local",
+    args: ["scripts/test-kernel-gateway.mjs"],
+    // This gate asserts the gateway's fail-closed behavior when durable
+    // wallet storage and identity are absent. Do not let production runtime
+    // references supplied to the parent orchestrator change that fixture.
+    clearEnv: [
+      "PDAO_WALLET_MONGODB_URI",
+      "MONGODB_URI",
+      "PDAO_WALLET_MONGODB_SECRET_ID",
+      "PDAO_MONGODB_SECRET_DATABASE",
+      "PDAO_WALLET_MONGODB_DATABASE",
+      "MONGODB_DATABASE",
+      "PDAO_IDENTITY_PROVIDER",
+      "PDAO_COGNITO_USER_POOL_ID",
+      "PDAO_COGNITO_ISSUER",
+      "PDAO_COGNITO_AUDIENCE",
+      "PDAO_AUTH0_ISSUER",
+      "PDAO_AUTH0_AUDIENCE",
+      "PRIVY_APP_ID",
+      "PRIVY_APP_SECRET",
+      "PDAO_PRIVY_SECRET_ID",
+      "PDAO_AUTONOMOUS_SIGNER_PROVIDER",
+      "PDAO_AUTONOMOUS_SIGNER_SECRET_ID",
+      "PDAO_KERNEL_EVM_ENABLED",
+      "PDAO_KERNEL_EVM_BROADCAST_ENABLED",
+      "PDAO_KERNEL_EVM_BROWSER_ENABLED",
+      "PDAO_KERNEL_EVM_NETWORKS",
+      "PDAO_KERNEL_EVM_PRODUCT_EXECUTION_NETWORKS",
+      "PDAO_KERNEL_EVM_ALLOWED_CONTRACTS",
+      "PDAO_KERNEL_EVM_ALLOWED_FUNCTIONS",
+      "PDAO_KERNEL_EVM_ALLOWED_FUNCTION_SELECTORS",
+      "PDAO_EVM_ETHEREUM_SEPOLIA_RPC_URL",
+      "PDAO_EVM_ARBITRUM_SEPOLIA_RPC_URL",
+      "PDAO_EVM_TEMPO_TESTNET_RPC_URL",
+      "PDAO_EVM_BASE_SEPOLIA_RPC_URL",
+      "PDAO_EVM_BNB_TESTNET_RPC_URL",
+      "PDAO_EVM_ROBINHOOD_TESTNET_RPC_URL",
+      "PDAO_EVM_HYPERLIQUID_TESTNET_RPC_URL",
+      "PDAO_PQC_KEY_PROVIDER",
+      "PDAO_PQC_KEY_ID",
+      "PDAO_PQC_CLASSICAL_KEY_ID",
+      "PDAO_PQC_ACTIVE_KEY_ID",
+      "PDAO_PQC_ROTATION_ID",
+      "PDAO_PQC_REQUIRE_HYBRID_AUTHORIZATION",
+      "PDAO_PQC_PUBLIC_KEYS_JSON",
+    ],
+  },
+  { id: "wallet-commerce-live", args: ["scripts/verify-wallet-commerce-gates.mjs"] },
   {
     id: "mongodb-live",
     args: ["--import", "tsx", "scripts/test-wallet-security-mongodb.mjs"],
@@ -18,8 +71,9 @@ const gates = [
   {
     id: "browser-desktop-mobile",
     args: ["--import", "tsx", "scripts/verify-wallet-connect-surface.ts"],
-    skip: !hasBrowserArtifact,
-    reason: "apps/web/out is not present",
+    skip: !hasBrowserArtifact && !liveBrowserSurface,
+    reason: hasBrowserArtifact ? undefined : "apps/web/out is not present and live browser surface was not requested",
+    env: liveBrowserSurface ? { PDAO_WALLET_SURFACE_URL: process.env.PDAO_WALLET_SURFACE_URL || "https://privatedao.org/wallet/" } : undefined,
   },
   {
     id: "managed-signer-base-sepolia",
@@ -40,9 +94,11 @@ for (const gate of gates) {
     continue;
   }
   console.log(`wallet-e2e-gate ${gate.id}: RUN`);
+  const gateEnv = { ...process.env, ...(gate.env || {}) };
+  for (const name of gate.clearEnv || []) delete gateEnv[name];
   const result = spawnSync(process.execPath, gate.args, {
     cwd: root,
-    env: process.env,
+    env: gateEnv,
     encoding: "utf8",
     stdio: ["ignore", "pipe", "pipe"],
     timeout: 120_000,
@@ -77,7 +133,8 @@ function summarizeDiagnostic(stdout, stderr, spawnError) {
     .filter((line) => !line.startsWith("> private-dao@"))
     .filter((line) => !line.startsWith("wallet-e2e-gate "));
   if (lines.length === 0) return undefined;
-  const useful = lines.find((line) => /bad auth|authentication failed|MongoServerError|Error:|\bFAIL\b|\bBLOCKED\b/i.test(line));
+    const useful = lines.find((line) => /wallet-commerce-gate:|MONGODB_WALLET_LIVE:|AUTONOMOUS_WALLET_GATEWAY_E2E:|B2B_B2C_WALLET_GATEWAY_E2E:|wallet production readiness:/i.test(line))
+    || lines.find((line) => /AssertionError|bad auth|authentication failed|MongoServerError|ERR_MODULE_NOT_FOUND|Cannot find (?:package|module)|did not become healthy|Error:|\bFAIL\b|\bBLOCKED\b/i.test(line));
   return redactDiagnostic((useful || lines.at(-1)).slice(0, 240));
 }
 
