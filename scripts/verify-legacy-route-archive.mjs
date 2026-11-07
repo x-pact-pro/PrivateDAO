@@ -68,7 +68,7 @@ function assertRedirectSurface(relativeDir, allowedEntries) {
 }
 
 requireRedirect("integrations/index.html");
-assertRedirectSurface("integrations", ["agent-exchange-lambda", "index.html"]);
+assertRedirectSurface("integrations", ["index.html"]);
 requireRedirect("tracks/index.html");
 const trackEntries = fs.readdirSync(path.join(root, "tracks")).sort();
 const expectedTrackEntries = ["index.html", ...archivedTracks].sort();

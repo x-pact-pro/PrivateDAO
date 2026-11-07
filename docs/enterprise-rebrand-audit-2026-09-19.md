@@ -122,10 +122,11 @@ closure is still missing. No item is marked complete from intent alone.
    exposing it. The resulting verifier, registry, anchor, rejection, expiry,
    and revocation evidence is recorded below. Other EVM networks remain
    unexecuted write paths until independently funded and tested.
-11. The independently deployed Agent Exchange Lambda source is now tracked in
-   `integrations/agent-exchange-lambda/`, excluding `node_modules` and
-   secrets. Its handler passes syntax and secret-pattern checks, and the full
-   release verification suite remains green after adding the source.
+11. The independently deployed Agent Exchange Lambda source is maintained in
+   the dedicated `x-pact-pro/PrivateDAO-Agent-Exchange` repository. This
+   institutional repository keeps only the public integration and boundary
+   contract; runtime code, deployment workflows, and service secrets remain
+   outside the enterprise source tree.
 12. A fresh Ethereum Sepolia Phase 2 E2E completed with real testnet writes:
    verifier, Blind Registry, and Record Registry deployment; record and blind
    anchors; wrong-chain, altered-proof, expiry, and revocation assertions.
