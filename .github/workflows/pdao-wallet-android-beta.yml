@@ -1,0 +1,51 @@
+name: PDAO Wallet Android Beta
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "apps/pdao-wallet-android/**"
+      - ".github/workflows/pdao-wallet-android-beta.yml"
+  push:
+    branches:
+      - "feature/pdao-wallet-android-beta"
+    paths:
+      - "apps/pdao-wallet-android/**"
+      - ".github/workflows/pdao-wallet-android-beta.yml"
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.13"
+      - name: Install Android SDK command-line tools
+        run: |
+          mkdir -p "$HOME/android-sdk/cmdline-tools/latest"
+          curl --fail --location --retry 3 --silent --show-error "https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip" -o /tmp/android-tools.zip
+          unzip -q /tmp/android-tools.zip -d /tmp/android-tools
+          mv /tmp/android-tools/cmdline-tools/* "$HOME/android-sdk/cmdline-tools/latest/"
+          echo "ANDROID_HOME=$HOME/android-sdk" >> "$GITHUB_ENV"
+          echo "ANDROID_SDK_ROOT=$HOME/android-sdk" >> "$GITHUB_ENV"
+          echo "$HOME/android-sdk/cmdline-tools/latest/bin" >> "$GITHUB_PATH"
+      - name: Install Android SDK packages
+        run: |
+          yes | sdkmanager --licenses >/dev/null || true
+          sdkmanager "platforms;android-36" "build-tools;36.0.0" "platform-tools"
+      - name: Build beta APK
+        working-directory: apps/pdao-wallet-android
+        run: |
+          gradle --version
+          gradle --no-daemon :app:assembleDebug
+      - name: Upload Android beta
+        uses: actions/upload-artifact@v4
+        with:
+          name: PDAO-Wallet-Android-Beta-0.1.0
+          path: apps/pdao-wallet-android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
