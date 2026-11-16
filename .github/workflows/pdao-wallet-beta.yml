@@ -41,9 +41,17 @@ jobs:
           echo "$JAVA_HOME_17_X64/bin" >> "$GITHUB_PATH"
       - name: Verify build environment
         run: java -version && test -n "$ANDROID_HOME"
-      - name: Build unsigned beta APK
+      - name: Build installable debug and unsigned release APKs
         working-directory: apps/pdao-wallet-android
-        run: ./gradlew --no-daemon clean assembleRelease
+        run: |
+          ./gradlew --no-daemon clean assembleDebug assembleRelease
+          mkdir -p ../../dist/android-debug
+          cp app/build/outputs/apk/debug/app-debug.apk ../../dist/android-debug/PDAO-Wallet-0.1.0-beta-debug.apk
+          sha256sum ../../dist/android-debug/PDAO-Wallet-0.1.0-beta-debug.apk > ../../dist/android-debug/SHA256SUMS.txt
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: pdao-wallet-android-0.1.0-beta-debug
+          path: dist/android-debug/
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: pdao-wallet-android-0.1.0-beta-unsigned
