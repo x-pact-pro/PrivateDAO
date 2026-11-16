@@ -81,9 +81,11 @@ export default function PrivatePayPage() {
           <div className="rounded-[20px] border border-[#dce5f0] bg-[#f7f9fc] p-5">
             <div className="text-[11px] font-bold uppercase tracking-[0.24em] text-[#7a8ba0]">Start here</div>
             <h2 className="mt-3 text-xl font-semibold text-[#10233f]">Connect PrivatePAY to your workflow</h2>
-            <p className="mt-3 text-sm leading-7 text-[#5d6d82]">Use the public MCP endpoint for ChatGPT, Claude, Grok, Cursor, or another MCP-compatible client. The connector exposes discovery, quote, preparation, verification, settlement, and receipt tools.</p>
+            <p className="mt-3 text-sm leading-7 text-[#5d6d82]">PrivatePAY has a dedicated x402 MCP interface for challenge, wallet-authorized private balance, checkout, verification, settlement, and receipts. The original Agent Exchange MCP remains available for discovery and other services.</p>
+            <p className="mt-3 text-sm leading-7 text-[#5d6d82]">To view shielded USDC, request a MagicBlock challenge and sign the exact message in your own Solana wallet. PrivateDAO performs the login and private-balance lookup server-side; payments require a separate approved transaction signature. No private key is shared.</p>
             <div className="mt-5 flex flex-wrap gap-3">
-              <a href="https://agents.privatedao.org/mcp" target="_blank" rel="noreferrer" className={cn(buttonVariants({ size: "sm" }))}>Open MCP endpoint <ArrowRight className="h-4 w-4" /></a>
+              <a href="https://agents.privatedao.org/mcp/privatepay" target="_blank" rel="noreferrer" className={cn(buttonVariants({ size: "sm" }))}>PrivatePAY x402 MCP <ArrowRight className="h-4 w-4" /></a>
+              <a href="https://agents.privatedao.org/mcp" target="_blank" rel="noreferrer" className={cn(buttonVariants({ size: "sm", variant: "outline" }))}>Agent Exchange MCP</a>
               <a href="https://glama.ai/mcp/connectors/io.github.X-PACT/pdao-agent-exchange" target="_blank" rel="noreferrer" className={cn(buttonVariants({ size: "sm", variant: "outline" }))}>View Glama connector</a>
             </div>
           </div>
