@@ -1,0 +1,8 @@
+<resources>
+    <color name="pdao_bg">#04070D</color>
+    <color name="pdao_panel">#0B1421</color>
+    <color name="pdao_blue">#16A8FF</color>
+    <color name="pdao_gold">#DDBB72</color>
+    <color name="pdao_text">#F3F7FC</color>
+    <color name="pdao_muted">#9FB0C5</color>
+</resources>

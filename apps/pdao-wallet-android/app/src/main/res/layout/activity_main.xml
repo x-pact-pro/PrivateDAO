@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent" android:background="@color/pdao_bg">
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:orientation="vertical" android:padding="20dp">
+        <ImageView android:layout_width="72dp" android:layout_height="72dp" android:src="@drawable/pdao_logo"
+            android:contentDescription="PDAO Wallet" />
+        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="10dp"
+            android:text="PDAO WALLET" android:textColor="@color/pdao_text" android:textSize="26sp" android:textStyle="bold" />
+        <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:text="MAINNET BETA · NON-CUSTODIAL" android:textColor="@color/pdao_gold" android:textSize="12sp" />
+
+        <TextView android:id="@+id/status" android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:layout_marginTop="18dp" android:background="@color/pdao_panel" android:padding="16dp"
+            android:text="Checking live services and market data…" android:textColor="@color/pdao_text" android:textSize="15sp" />
+
+        <EditText android:id="@+id/address" android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:layout_marginTop="18dp" android:hint="Solana public address" android:inputType="textNoSuggestions"
+            android:textColor="@color/pdao_text" android:textColorHint="@color/pdao_muted" />
+        <Button android:id="@+id/checkBalance" android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:text="Check Mainnet balance" />
+        <TextView android:id="@+id/balance" android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:padding="12dp" android:text="No address checked" android:textColor="@color/pdao_muted" />
+
+        <Button android:id="@+id/openWallet" android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:layout_marginTop="10dp" android:text="Open wallet & sign" />
+        <Button android:id="@+id/openAgents" android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:text="Agent Exchange · live catalog" />
+        <Button android:id="@+id/openPrivatePay" android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:text="PrivatePAY x402 · wallet approval" />
+
+        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="16dp"
+            android:text="TRADING CONNECTIONS" android:textColor="@color/pdao_gold" android:textStyle="bold" />
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
+            <Button android:id="@+id/pump" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Pump.fun" />
+            <Button android:id="@+id/gmgn" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="GMGN" />
+        </LinearLayout>
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
+            <Button android:id="@+id/moonshot" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Moonshot" />
+            <Button android:id="@+id/telegram" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Telegram" />
+        </LinearLayout>
+        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="14dp"
+            android:text="The app never requests or stores a seed phrase. Transactions are built by the live service and require explicit approval in a compatible wallet. Venue buttons open the official service; they do not imply an API trading integration."
+            android:textColor="@color/pdao_muted" android:textSize="12sp" />
+    </LinearLayout>
+</ScrollView>

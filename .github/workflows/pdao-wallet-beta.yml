@@ -1,0 +1,45 @@
+name: PDAO Wallet Beta
+
+on:
+  pull_request:
+    paths:
+      - 'apps/pdao-wallet-android/**'
+      - 'apps/pdao-wallet-extension/**'
+      - 'fdroid/**'
+      - '.github/workflows/pdao-wallet-beta.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  extension:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
+        with: { node-version: '22.21.1' }
+      - run: node --check apps/pdao-wallet-extension/popup.js
+      - run: jq -e '.manifest_version == 3 and (.permissions | index("storage"))' apps/pdao-wallet-extension/manifest.json
+      - run: |
+          mkdir -p dist
+          cd apps/pdao-wallet-extension
+          zip -r ../../dist/pdao-wallet-extension-0.1.0-beta.zip .
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: pdao-wallet-extension-0.1.0-beta
+          path: dist/pdao-wallet-extension-0.1.0-beta.zip
+
+  android:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+      - name: Verify build environment
+        run: java -version && test -n "$ANDROID_HOME"
+      - name: Build unsigned beta APK
+        working-directory: apps/pdao-wallet-android
+        run: ./gradlew --no-daemon clean assembleRelease
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: pdao-wallet-android-0.1.0-beta-unsigned
+          path: apps/pdao-wallet-android/app/build/outputs/apk/release/*.apk
