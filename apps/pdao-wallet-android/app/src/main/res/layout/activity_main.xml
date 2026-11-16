@@ -23,7 +23,7 @@
             android:padding="12dp" android:text="No address checked" android:textColor="@color/pdao_muted" />
 
         <Button android:id="@+id/openWallet" android:layout_width="match_parent" android:layout_height="wrap_content"
-            android:layout_marginTop="10dp" android:text="Open wallet & sign" />
+            android:layout_marginTop="10dp" android:text="Open wallet &amp; sign" />
         <Button android:id="@+id/openAgents" android:layout_width="match_parent" android:layout_height="wrap_content"
             android:text="Agent Exchange · live catalog" />
         <Button android:id="@+id/openPrivatePay" android:layout_width="match_parent" android:layout_height="wrap_content"
