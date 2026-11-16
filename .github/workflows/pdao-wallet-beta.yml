@@ -1,0 +1,58 @@
+name: PDAO Wallet Beta
+
+on:
+  pull_request:
+    paths:
+      - 'apps/pdao-wallet-android/**'
+      - 'apps/pdao-wallet-extension/**'
+      - 'fdroid/**'
+      - '.github/workflows/pdao-wallet-beta.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  extension:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
+        with: { node-version: '22.21.1' }
+      - run: node --check apps/pdao-wallet-extension/popup.js
+      - run: jq -e '.manifest_version == 3 and (.permissions | index("storage"))' apps/pdao-wallet-extension/manifest.json
+      - run: |
+          mkdir -p dist
+          cd apps/pdao-wallet-extension
+          zip -r ../../dist/pdao-wallet-extension-0.1.0-beta.zip .
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: pdao-wallet-extension-0.1.0-beta
+          path: dist/pdao-wallet-extension-0.1.0-beta.zip
+
+  android:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+      - name: Select Java 17 build runtime
+        run: |
+          test -n "$JAVA_HOME_17_X64"
+          echo "JAVA_HOME=$JAVA_HOME_17_X64" >> "$GITHUB_ENV"
+          echo "$JAVA_HOME_17_X64/bin" >> "$GITHUB_PATH"
+      - name: Verify build environment
+        run: java -version && test -n "$ANDROID_HOME"
+      - name: Build installable debug and unsigned release APKs
+        working-directory: apps/pdao-wallet-android
+        run: |
+          ./gradlew --no-daemon clean assembleDebug assembleRelease
+          mkdir -p ../../dist/android-debug
+          cp app/build/outputs/apk/debug/app-debug.apk ../../dist/android-debug/PDAO-Wallet-0.1.0-beta-debug.apk
+          sha256sum ../../dist/android-debug/PDAO-Wallet-0.1.0-beta-debug.apk > ../../dist/android-debug/SHA256SUMS.txt
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: pdao-wallet-android-0.1.0-beta-debug
+          path: dist/android-debug/
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: pdao-wallet-android-0.1.0-beta-unsigned
+          path: apps/pdao-wallet-android/app/build/outputs/apk/release/*.apk

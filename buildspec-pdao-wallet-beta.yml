@@ -1,0 +1,14 @@
+version: 0.2
+phases:
+  build:
+    commands:
+      - mkdir -p dist
+      - cd apps/pdao-wallet-extension
+      - zip -r ../../dist/pdao-wallet-extension-0.1.0-beta.zip . -x '*.DS_Store'
+      - cd ../..
+      - sha256sum dist/pdao-wallet-extension-0.1.0-beta.zip > dist/SHA256SUMS.txt
+      - cp release/pdao-wallet-beta/index.html dist/index.html
+artifacts:
+  files:
+    - '**/*'
+  base-directory: dist

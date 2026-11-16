@@ -1,0 +1,15 @@
+{
+  "manifest_version": 3,
+  "name": "PDAO Wallet Beta",
+  "version": "0.1.0",
+  "description": "Non-custodial Mainnet companion for PDAO Wallet, Agent Exchange and PrivatePAY x402.",
+  "action": { "default_title": "PDAO Wallet", "default_popup": "popup.html" },
+  "icons": { "16": "icons/pdao-128.png", "32": "icons/pdao-128.png", "48": "icons/pdao-128.png", "128": "icons/pdao-128.png" },
+  "permissions": ["storage"],
+  "host_permissions": [
+    "https://api.mainnet-beta.solana.com/*",
+    "https://api.coingecko.com/*",
+    "https://agents.privatedao.org/*"
+  ],
+  "content_security_policy": { "extension_pages": "script-src 'self'; object-src 'self'" }
+}

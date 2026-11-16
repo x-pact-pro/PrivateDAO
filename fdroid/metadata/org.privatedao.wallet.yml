@@ -1,0 +1,27 @@
+Categories:
+  - Money
+License: AGPL-3.0-only
+AuthorName: PrivateDAO
+AuthorWebSite: https://privatedao.org
+SourceCode: https://github.com/x-pact-pro/PrivateDAO
+IssueTracker: https://github.com/x-pact-pro/PrivateDAO/issues
+WebSite: https://privatedao.org/wallet
+AutoName: PDAO Wallet
+Summary: Non-custodial Mainnet wallet companion for PrivateDAO services
+Description: |-
+  Native PDAO Wallet beta with Solana Mainnet balance reads, live market data,
+  Agent Exchange discovery, and explicit-wallet handoff for PrivatePAY x402.
+  It never requests or stores a seed phrase.
+RepoType: git
+Repo: https://github.com/x-pact-pro/PrivateDAO.git
+Builds:
+  - versionName: 0.1.0-beta
+    versionCode: 1
+    commit: v0.1.0-beta
+    subdir: apps/pdao-wallet-android
+    gradle:
+      - yes
+AutoUpdateMode: None
+UpdateCheckMode: Tags
+CurrentVersion: 0.1.0-beta
+CurrentVersionCode: 1

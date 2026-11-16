@@ -1,0 +1,13 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="popup.css"><title>PDAO Wallet Beta</title></head>
+<body>
+  <header><img src="icons/pdao-128.png" alt=""><div><strong>PDAO Wallet</strong><small>MAINNET BETA · NON-CUSTODIAL</small></div><button id="refresh" class="icon" title="Refresh">↻</button></header>
+  <main>
+    <section class="hero"><span class="kicker">LIVE MARKET</span><div class="prices"><b id="sol">SOL —</b><b id="btc">BTC —</b><b id="eth">ETH —</b></div><p id="marketStatus">Fetching live prices…</p></section>
+    <section><label for="address">Public Solana address</label><div class="row"><input id="address" autocomplete="off" spellcheck="false" placeholder="Paste public address"><button id="balanceBtn">Check</button></div><p id="balance">Private keys and seed phrases are never accepted.</p></section>
+    <section><div class="sectionTitle"><span>Agent Exchange</span><span id="serviceCount">LIVE —</span></div><p id="agentStatus">Checking the production catalog…</p><button data-url="https://agents.privatedao.org/marketplace" class="primary">Open live marketplace</button></section>
+    <section class="x402"><span class="kicker">PRIVATEPAY x402</span><h2>Quote → approve → settle</h2><p>Build the exact Mainnet transaction, review it in your wallet, and receive a verifiable receipt.</p><button data-url="https://privatedao.org/privatepay" class="primary gold">Open PrivatePAY</button></section>
+    <section><div class="grid"><button data-url="https://privatedao.org/wallet">PDAO Wallet</button><button data-url="https://pump.fun/coin/9isGuumtaqvJeJeyLF44fvfskk2cv5mYsopexMBfpump">Pump.fun</button><button data-url="https://gmgn.ai/sol/token/9isGuumtaqvJeJeyLF44fvfskk2cv5mYsopexMBfpump">GMGN</button><button data-url="https://moonshot.money">Moonshot</button></div><p class="fine">Venue buttons open official services. They do not claim direct order-routing integration.</p></section>
+  </main><script src="popup.js"></script>
+</body></html>
